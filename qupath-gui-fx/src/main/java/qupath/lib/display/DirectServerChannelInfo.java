@@ -129,6 +129,8 @@ public class DirectServerChannelInfo extends AbstractSingleChannelInfo {
 
 	@Override
 	public float getValue(BufferedImage img, int x, int y) {
+		ImageData<BufferedImage> imageData = getImageData();
+		System.out.println("Name: " + imageData.getServer().getChannel(channel).getName() + " x: " + x + " y: " + y + " Pixel Value: " + img.getRaster().getSampleFloat(x, y, channel));
 		return img.getRaster().getSampleFloat(x, y, channel);
 	}
 
