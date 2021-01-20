@@ -139,7 +139,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param type
 	 */
 	public ImageData(ImageServer<T> server, PathObjectHierarchy hierarchy, ImageType type) {
-		System.out.println("image data ImageData");
+		System.out.println("image data ImageData 1");
 		pcs = new PropertyChangeSupport(this);
 		this.server = server;
 		this.hierarchy = hierarchy == null ? new PathObjectHierarchy() : hierarchy;
@@ -165,7 +165,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	public ImageData(ImageServer<T> server, ImageType type) {
 
 		this(server, new PathObjectHierarchy(), type);
-		System.out.println("image data ImageData");
+		System.out.println("image data ImageData 2");
 	}
 	
 	/**
@@ -174,7 +174,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public Workflow getHistoryWorkflow() {
-		System.out.println("image data getHistoryWorkflow");
+		//System.out.println("image data getHistoryWorkflow");
 		return workflow;
 	}
 	
@@ -188,7 +188,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageData(ImageServer<T> server, PathObjectHierarchy hierarchy) {
 		this(server, hierarchy, null);
-		System.out.println("image data ImageData");
+		System.out.println("image data ImageData 3");
 	}
 
 	/**
@@ -198,12 +198,12 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageData(ImageServer<T> server) {
 		this(server, new PathObjectHierarchy());
-		System.out.println("image data ImageData");
+		System.out.println("image data ImageData 4");
 	}
 	
 	
 	private void initializeStainMap() {
-		System.out.println("image data initializeStainMap");
+		//System.out.println("image data initializeStainMap");
 		stainMap.put(ImageType.BRIGHTFIELD_H_DAB, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_DAB));
 		stainMap.put(ImageType.BRIGHTFIELD_H_E, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_E));
 		stainMap.put(ImageType.BRIGHTFIELD_OTHER, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_DAB));
@@ -218,7 +218,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param stains
 	 */
 	public void setColorDeconvolutionStains(ColorDeconvolutionStains stains) {
-		System.out.println("image data setColorDeconvolutionStains");
 		if (!isBrightfield())
 			throw new IllegalArgumentException("Cannot set color deconvolution stains for image type " + type);
 		logger.trace("Setting stains to {}", stains);
@@ -238,7 +237,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param newMetadata
 	 */
 	public void updateServerMetadata(ImageServerMetadata newMetadata) {
-		System.out.println("image data updateServerMetadata");
 		Objects.requireNonNull(newMetadata);
 		logger.trace("Updating server metadata");
 		var oldMetadata = server.getMetadata();
@@ -260,7 +258,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public boolean isBrightfield() {
-		System.out.println("image data isBrightfield");
+		//System.out.println("image data isBrightfield");
 		return getImageType().toString().toLowerCase().startsWith("brightfield");
 	}
 	
@@ -269,7 +267,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public boolean isFluorescence() {
-		System.out.println("image data isFluorescence");
 		return getImageType() == ImageType.FLUORESCENCE;
 	}
 	
@@ -278,7 +275,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param type
 	 */
 	public void setImageType(final ImageType type) {
-		System.out.println("image data setImageType");
+		//System.out.println("image data setImageType");
 		if (this.type == type)
 			return;
 		logger.trace("Setting image type to {}", type);
@@ -312,7 +309,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	
 	// TODO: REINTRODUCE LOGGING!
 	private static void addColorDeconvolutionStainsToWorkflow(ImageData<?> imageData) {
-		System.out.println("image dataaddColorDeconvolutionStainsToWorkflow");
 //		logger.warn("Color deconvolution stain logging not currently enabled!");
 
 		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();
@@ -357,7 +353,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public ImageServer<T> getServer() {
-		System.out.println("image data getServer");
+		//System.out.println("image data getServer");
 		return server;
 	}
 	
@@ -366,7 +362,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public String getServerPath() {
-		System.out.println("image data getServerPath");
 		return serverPath;
 	}
 	
@@ -376,7 +371,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public PathObjectHierarchy getHierarchy() {
 
-		System.out.println("image data getHierarchy");
+		//System.out.println("image data getHierarchy");
 		return hierarchy;
 	}
 	
@@ -386,7 +381,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageType getImageType() {
 
-		System.out.println("image data getImageType");
+		//System.out.println("image data getImageType");
 		return type;
 	}
 	
@@ -395,7 +390,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @return
 	 */
 	public ColorDeconvolutionStains getColorDeconvolutionStains() {
-		System.out.println("image data getColorDeconvolutionStains");
 		return stainMap.get(getImageType());
 	}
 	
@@ -404,7 +398,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param listener
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
-		System.out.println("image data addPropertyChangeListener");
+		//System.out.println("image data addPropertyChangeListener");
 		if (pcs == null)
 			pcs = new PropertyChangeSupport(this);
         this.pcs.addPropertyChangeListener(listener);
@@ -415,7 +409,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 * @param listener
 	 */
     public void removePropertyChangeListener(PropertyChangeListener listener) {
-		System.out.println("image data removePropertyChangeListener");
+		//System.out.println("image data removePropertyChangeListener");
         this.pcs.removePropertyChangeListener(listener);
     }
 
@@ -427,7 +421,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      */
     public Object getProperty(String key) {
 
-		System.out.println("image data getProperty");
+		//System.out.println("image data getProperty");
 		return propertiesMap.get(key);
     }
 
@@ -439,7 +433,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      * @return
      */
     public Object setProperty(String key, Object value) {
-		System.out.println("image data setProperty");
+		//System.out.println("image data setProperty");
 	    	Object oldValue = propertiesMap.put(key, value);
 	    	if (oldValue == null)
 	    		changes = value != null;
@@ -458,7 +452,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      * @return
      */
     public Object removeProperty(String key) {
-		System.out.println("image data removeProperty");
+		//System.out.println("image data removeProperty");
     	if (propertiesMap.containsKey(key)) {
         	Object oldValue = propertiesMap.remove(key);
     		changes = true;
@@ -473,10 +467,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      * Get an unmodifiable map representing all known properties for this ImageData.
      * @return
      */
-    public Map<String, Object> getProperties() {
-
-		System.out.println("image data getProperties");
-		return Collections.unmodifiableMap(propertiesMap);
+    public Map<String, Object> getProperties() { return Collections.unmodifiableMap(propertiesMap);
     }
     
     
@@ -484,11 +475,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      * Get the last path used to save this object;
      * @return
      */
-    public String getLastSavedPath() {
-
-		System.out.println("image data getLastSavedPath");
-		return lastSavedPath;
-    }
+    public String getLastSavedPath() { return lastSavedPath; }
     
     /**
      * Returns true if changes have been recorded since the last time this object was notified that it was saved.
@@ -497,20 +484,14 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
      * 
      * @see #setLastSavedPath
      */
-    public boolean isChanged() {
-		System.out.println("image data isChanged");
-    	return changes;
-    }
+    public boolean isChanged() { return changes; }
         
     /**
      * Set {@link #isChanged()} status.
      * 
      * @param isChanged
      */
-    public void setChanged(boolean isChanged) {
-    	this.changes = isChanged;
-		System.out.println("image data setChanged");
-    }
+    public void setChanged(boolean isChanged) { this.changes = isChanged; }
     
     /**
      * Set the last path used to save this object;
@@ -522,27 +503,25 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
     	this.lastSavedPath = path;
     	if (resetChanged)
     		this.changes = false;
-		System.out.println("image data setLastSavedPath");
     }
 
 
 	@Override
 	public void hierarchyChanged(PathObjectHierarchyEvent event) {
-		System.out.println("image data hierarchyChanged");
     	changes = true;
 	}
 
 
 	@Override
 	public void workflowUpdated(Workflow workflow) {
-		System.out.println("image  workflowUpdated");
+		//System.out.println("image  workflowUpdated");
     	changes = true;
 	}
 	
 	
 	@Override
 	public String toString() {
-		System.out.println("image data to string");
+		//System.out.println("image data to string");
 		if (getServer() == null)
 			return "ImageData: " + getImageType() + ", no server";
 		else

@@ -89,6 +89,7 @@ public class PathHierarchyImageServer extends AbstractTileableImageServer implem
 	 */
 	public PathHierarchyImageServer(final ImageData<BufferedImage> imageData, final OverlayOptions options) {
 		this(DEFAULT_PREFIX + " " + counter + "::", imageData, options);
+		//System.out.println("PathHierarchyImageServer PathHierarchyImageServer 1");
 	}
 	
 //	public PathHierarchyImageServer(final ImageServer<BufferedImage> server, final PathObjectHierarchy hierarchy, final OverlayOptions options) {
@@ -103,7 +104,7 @@ public class PathHierarchyImageServer extends AbstractTileableImageServer implem
 		this.server = imageData.getServer();
 		this.hierarchy = imageData.getHierarchy();
 		this.options = options;
-		
+		//System.out.println("PathHierarchyImageServer PathHierarchyImageServer 2");
 		double minDim = Math.min(server.getWidth(), server.getHeight());
 //		double maxDim = Math.max(server.getWidth(), server.getHeight());
 		double nextDownsample = 1.0;
