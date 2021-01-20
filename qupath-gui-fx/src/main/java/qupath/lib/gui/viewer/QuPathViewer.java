@@ -1459,6 +1459,7 @@ public class QuPathViewer implements TileListener<BufferedImage>, PathObjectHier
 	 * @param imageDataNew
 	 */
 	public void setImageData(ImageData<BufferedImage> imageDataNew) {
+		System.out.println("in set image data");
 		if (this.imageDataProperty.get() == imageDataNew)
 			return;
 		
