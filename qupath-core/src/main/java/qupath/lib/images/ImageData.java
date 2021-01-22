@@ -155,6 +155,13 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 		
 		// Discard any changes during construction
 		changes = false;
+
+		System.out.println("type: " + type.text);
+		System.out.println("get height: " + server.getMetadata().getHeight());
+		System.out.println("get name: " + server.getMetadata().getName());
+		System.out.println("get averagedpixelsize: " + server.getMetadata().getAveragedPixelSize());
+		System.out.println("get number of levels: " + server.getMetadata().getLevels().size());
+		System.out.println("get level 0 downsample: " + server.getMetadata().getLevels().get(0).getDownsample());
 	}
 	
 	/**
@@ -166,6 +173,12 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 
 		this(server, new PathObjectHierarchy(), type);
 		System.out.println("image data ImageData 2");
+		System.out.println("type: " + type.text);
+		System.out.println("get height: " + server.getMetadata().getHeight());
+		System.out.println("get name: " + server.getMetadata().getName());
+		System.out.println("get averagedpixelsize: " + server.getMetadata().getAveragedPixelSize());
+		System.out.println("get number of levels: " + server.getMetadata().getLevels().size());
+		System.out.println("get level 0 downsample: " + server.getMetadata().getLevels().get(0).getDownsample());
 	}
 	
 	/**
@@ -188,7 +201,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageData(ImageServer<T> server, PathObjectHierarchy hierarchy) {
 		this(server, hierarchy, null);
-		System.out.println("image data ImageData 3");
 	}
 
 	/**
@@ -198,7 +210,6 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageData(ImageServer<T> server) {
 		this(server, new PathObjectHierarchy());
-		System.out.println("image data ImageData 4");
 	}
 	
 	
