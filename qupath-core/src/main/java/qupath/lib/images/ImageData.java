@@ -33,6 +33,7 @@ import java.util.Objects;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import qupath.lib.awt.common.TestCommon;
 import qupath.lib.color.ColorDeconvolutionStains;
 import qupath.lib.color.ColorDeconvolutionStains.DefaultColorDeconvolutionStains;
 import qupath.lib.common.GeneralTools;
@@ -140,6 +141,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	 */
 	public ImageData(ImageServer<T> server, PathObjectHierarchy hierarchy, ImageType type) {
 		System.out.println("image data ImageData 1");
+		System.out.println("method called: " + TestCommon.methodCalled());
 		pcs = new PropertyChangeSupport(this);
 		this.server = server;
 		this.hierarchy = hierarchy == null ? new PathObjectHierarchy() : hierarchy;
@@ -172,6 +174,7 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	public ImageData(ImageServer<T> server, ImageType type) {
 
 		this(server, new PathObjectHierarchy(), type);
+		System.out.println("method called: " + TestCommon.methodCalled());
 		System.out.println("image data ImageData 2");
 		System.out.println("type: " + type.text);
 		System.out.println("get height: " + server.getMetadata().getHeight());
