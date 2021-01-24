@@ -1,0 +1,366 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TileRequest</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TileRequest (qupath.lib.images.servers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TileRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.9%
+  </span>
+  <span class="absValue">
+    (13/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    65.1%
+  </span>
+  <span class="absValue">
+    (54/ 83)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.servers;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.Collection;
+<i>25</i>&nbsp;import java.util.LinkedHashSet;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>28</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>29</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * A wrapper for a {@link RegionRequest}, useful to precisely specify image tiles at a particular resolution.
+<i>33</i>&nbsp; * &lt;p&gt;
+<i>34</i>&nbsp; * Why?
+<i>35</i>&nbsp; * &lt;p&gt;
+<i>36</i>&nbsp; * Because downsamples can be defined with floating point precision, and are not always unambiguous when 
+<i>37</i>&nbsp; * calculated as the ratios of pyramid level dimensions (i.e. different apparent horizontal and vertical scaling), 
+<i>38</i>&nbsp; * a RegionRequest is too fuzzy a way to refer to a specific rectangle of pixels from a specific pyramid level. 
+<i>39</i>&nbsp; * Rounding errors can easily occur, and different image readers might respond differently to the same request.
+<i>40</i>&nbsp; * &lt;p&gt;
+<i>41</i>&nbsp; * Consequently, TileRequests provide a means to reproducibly define coordinates at pyramid levels and not only 
+<i>42</i>&nbsp; * the full resolution image space.  They wrap a RegionRequest, because this is still used for caching purposes. 
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public class TileRequest {
+<i>45</i>&nbsp;			
+<i>46</i>&nbsp;	private final int level;
+<i>47</i>&nbsp;	private final ImageRegion tileRegion;
+<i>48</i>&nbsp;	private final RegionRequest request;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;	/**
+<i>51</i>&nbsp;	 * Request a collection of &lt;i&gt;all&lt;/i&gt; tiles that this server must be capable of returning. 
+<i>52</i>&nbsp;	 * The default implementation provides a dense grid of all expected tiles across all resolutions, 
+<i>53</i>&nbsp;	 * time points, z-slices and x,y coordinates.
+<i>54</i>&nbsp;	 * 
+<i>55</i>&nbsp;	 * @return
+<i>56</i>&nbsp;	 */
+<i>57</i>&nbsp;	static Collection&lt;TileRequest&gt; getAllTileRequests(ImageServer&lt;?&gt; server) {
+<b class="fc"><i>58</i>&nbsp;		var set = new LinkedHashSet&lt;TileRequest&gt;();</b>
+<i>59</i>&nbsp;		
+<b class="fc"><i>60</i>&nbsp;		var tileWidth = server.getMetadata().getPreferredTileWidth();</b>
+<b class="fc"><i>61</i>&nbsp;		var tileHeight = server.getMetadata().getPreferredTileHeight();</b>
+<b class="fc"><i>62</i>&nbsp;		var downsamples = server.getPreferredDownsamples();</b>
+<i>63</i>&nbsp;		
+<b class="fc"><i>64</i>&nbsp;		for (int level = 0; level &lt; downsamples.length; level++) {</b>
+<b class="fc"><i>65</i>&nbsp;			var resolutionLevel = server.getMetadata().getLevel(level);</b>
+<b class="fc"><i>66</i>&nbsp;			int height = resolutionLevel.getHeight();</b>
+<b class="fc"><i>67</i>&nbsp;			int width = resolutionLevel.getWidth();</b>
+<b class="fc"><i>68</i>&nbsp;			for (int t = 0; t &lt; server.nTimepoints(); t++) {</b>
+<b class="fc"><i>69</i>&nbsp;				for (int z = 0; z &lt; server.nZSlices(); z++) {</b>
+<b class="fc"><i>70</i>&nbsp;					for (int y = 0; y &lt; height; y += tileHeight) {</b>
+<b class="fc"><i>71</i>&nbsp;						int th = tileHeight;</b>
+<b class="fc"><i>72</i>&nbsp;						if (y + th &gt; height)</b>
+<b class="fc"><i>73</i>&nbsp;							th = height - y;</b>
+<i>74</i>&nbsp;						
+<b class="fc"><i>75</i>&nbsp;						for (int x = 0; x &lt; width; x += tileWidth) {</b>
+<b class="fc"><i>76</i>&nbsp;							int tw = tileWidth;</b>
+<b class="fc"><i>77</i>&nbsp;							if (x + tw &gt; width)</b>
+<b class="nc"><i>78</i>&nbsp;								tw = width - x;</b>
+<i>79</i>&nbsp;							
+<b class="fc"><i>80</i>&nbsp;							var tile = TileRequest.createInstance(server, level, </b>
+<b class="fc"><i>81</i>&nbsp;									ImageRegion.createInstance(</b>
+<i>82</i>&nbsp;											x, y, tw, th, z, t)
+<i>83</i>&nbsp;									);
+<b class="fc"><i>84</i>&nbsp;							set.add(tile);</b>
+<i>85</i>&nbsp;						}
+<i>86</i>&nbsp;					}					
+<i>87</i>&nbsp;				}
+<i>88</i>&nbsp;			}
+<i>89</i>&nbsp;		}
+<b class="fc"><i>90</i>&nbsp;		return set;</b>
+<i>91</i>&nbsp;	}
+<i>92</i>&nbsp;	
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Create a new tile request for a specified region and resolution level.
+<i>95</i>&nbsp;	 * @param server
+<i>96</i>&nbsp;	 * @param level
+<i>97</i>&nbsp;	 * @param tileRegion
+<i>98</i>&nbsp;	 * @return
+<i>99</i>&nbsp;	 */
+<i>100</i>&nbsp;	private static TileRequest createInstance(ImageServer&lt;?&gt; server, int level, ImageRegion tileRegion) {
+<b class="fc"><i>101</i>&nbsp;		double downsample = server.getDownsampleForResolution(level);</b>
+<b class="fc"><i>102</i>&nbsp;		return new TileRequest(</b>
+<b class="fc"><i>103</i>&nbsp;				getRegionRequest(server.getPath(), downsample, tileRegion),</b>
+<i>104</i>&nbsp;				level,
+<i>105</i>&nbsp;				tileRegion
+<i>106</i>&nbsp;				);
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	private static RegionRequest getRegionRequest(String path, double downsample, ImageRegion tileRegion) {
+<b class="fc"><i>110</i>&nbsp;		double x1 = tileRegion.getX() * downsample;</b>
+<b class="fc"><i>111</i>&nbsp;		double y1 = tileRegion.getY() * downsample;</b>
+<b class="fc"><i>112</i>&nbsp;		double x2 = (tileRegion.getX() + tileRegion.getWidth()) * downsample;</b>
+<b class="fc"><i>113</i>&nbsp;		double y2 = (tileRegion.getY() + tileRegion.getHeight()) * downsample;</b>
+<b class="fc"><i>114</i>&nbsp;		return RegionRequest.createInstance(path, downsample,</b>
+<b class="fc"><i>115</i>&nbsp;				(int)Math.round(x1),</b>
+<b class="fc"><i>116</i>&nbsp;				(int)Math.round(y1),</b>
+<b class="fc"><i>117</i>&nbsp;				(int)Math.round(x2 - Math.round(x1)),</b>
+<b class="fc"><i>118</i>&nbsp;				(int)Math.round(y2 - Math.round(y1)),</b>
+<b class="fc"><i>119</i>&nbsp;				tileRegion.getZ(),</b>
+<b class="fc"><i>120</i>&nbsp;				tileRegion.getT());</b>
+<i>121</i>&nbsp;	}
+<i>122</i>&nbsp;	
+<i>123</i>&nbsp;	/**
+<i>124</i>&nbsp;	 * Get the RegionRequest that this tile represents.
+<i>125</i>&nbsp;	 * @return
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public RegionRequest getRegionRequest() {
+<b class="fc"><i>128</i>&nbsp;		return request;</b>
+<i>129</i>&nbsp;	}
+<i>130</i>&nbsp;	
+<b class="fc"><i>131</i>&nbsp;	private TileRequest(final RegionRequest request, final int level, final ImageRegion tileRegion) {</b>
+<b class="fc"><i>132</i>&nbsp;		this.request = request;</b>
+<b class="fc"><i>133</i>&nbsp;		this.level = level;</b>
+<b class="fc"><i>134</i>&nbsp;		this.tileRegion = tileRegion;</b>
+<b class="fc"><i>135</i>&nbsp;	}</b>
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;	/**
+<i>138</i>&nbsp;	 * Get the downsample value for this tile.
+<i>139</i>&nbsp;	 * @return
+<i>140</i>&nbsp;	 */
+<i>141</i>&nbsp;	public double getDownsample() {
+<b class="nc"><i>142</i>&nbsp;		return request.getDownsample();</b>
+<i>143</i>&nbsp;	}
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	/**
+<i>146</i>&nbsp;	 * Get the resolution level.
+<i>147</i>&nbsp;	 * @return
+<i>148</i>&nbsp;	 */
+<i>149</i>&nbsp;	public int getLevel() {
+<b class="fc"><i>150</i>&nbsp;		return level;</b>
+<i>151</i>&nbsp;	}
+<i>152</i>&nbsp;	
+<i>153</i>&nbsp;	/**
+<i>154</i>&nbsp;	 * Get the x-coordinate of the bounding box for this tile in the full resolution image.
+<i>155</i>&nbsp;	 * @return
+<i>156</i>&nbsp;	 */
+<i>157</i>&nbsp;	public int getImageX() {
+<b class="nc"><i>158</i>&nbsp;		return request.getX();</b>
+<i>159</i>&nbsp;	}
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;	/**
+<i>162</i>&nbsp;	 * Get the y-coordinate of the bounding box for this tile in the full resolution image.
+<i>163</i>&nbsp;	 * @return
+<i>164</i>&nbsp;	 */
+<i>165</i>&nbsp;	public int getImageY() {
+<b class="nc"><i>166</i>&nbsp;		return request.getY();</b>
+<i>167</i>&nbsp;	}
+<i>168</i>&nbsp;	
+<i>169</i>&nbsp;	/**
+<i>170</i>&nbsp;	 * Get the width of the bounding box for this tile in the full resolution image.
+<i>171</i>&nbsp;	 * @return
+<i>172</i>&nbsp;	 */
+<i>173</i>&nbsp;	public int getImageWidth() {
+<b class="nc"><i>174</i>&nbsp;		return request.getWidth();</b>
+<i>175</i>&nbsp;	}
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;	/**
+<i>178</i>&nbsp;	 * Get the height of the bounding box for this tile in the full resolution image.
+<i>179</i>&nbsp;	 * @return
+<i>180</i>&nbsp;	 */
+<i>181</i>&nbsp;	public int getImageHeight() {
+<b class="nc"><i>182</i>&nbsp;		return request.getHeight();</b>
+<i>183</i>&nbsp;	}
+<i>184</i>&nbsp;	
+<i>185</i>&nbsp;	/**
+<i>186</i>&nbsp;	 * Get the x-coordinate of the bounding box for this tile at the tile resolution.
+<i>187</i>&nbsp;	 * @return
+<i>188</i>&nbsp;	 */
+<i>189</i>&nbsp;	public int getTileX() {
+<b class="fc"><i>190</i>&nbsp;		return tileRegion.getX();</b>
+<i>191</i>&nbsp;	}
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	/**
+<i>194</i>&nbsp;	 * Get the y-coordinate of the bounding box for this tile at the tile resolution.
+<i>195</i>&nbsp;	 * @return
+<i>196</i>&nbsp;	 */
+<i>197</i>&nbsp;	public int getTileY() {
+<b class="fc"><i>198</i>&nbsp;		return tileRegion.getY();</b>
+<i>199</i>&nbsp;	}
+<i>200</i>&nbsp;	
+<i>201</i>&nbsp;	/**
+<i>202</i>&nbsp;	 * Get the width of the bounding box for this tile at the tile resolution.
+<i>203</i>&nbsp;	 * @return
+<i>204</i>&nbsp;	 */
+<i>205</i>&nbsp;	public int getTileWidth() {
+<b class="fc"><i>206</i>&nbsp;		return tileRegion.getWidth();</b>
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;	
+<i>209</i>&nbsp;	/**
+<i>210</i>&nbsp;	 * Get the height of the bounding box for this tile at the tile resolution.
+<i>211</i>&nbsp;	 * @return
+<i>212</i>&nbsp;	 */
+<i>213</i>&nbsp;	public int getTileHeight() {
+<b class="fc"><i>214</i>&nbsp;		return tileRegion.getHeight();</b>
+<i>215</i>&nbsp;	}
+<i>216</i>&nbsp;	
+<i>217</i>&nbsp;	/**
+<i>218</i>&nbsp;	 * Get the z-slice index for this request.
+<i>219</i>&nbsp;	 * @return
+<i>220</i>&nbsp;	 */
+<i>221</i>&nbsp;	public int getZ() {
+<b class="fc"><i>222</i>&nbsp;		return tileRegion.getZ();</b>
+<i>223</i>&nbsp;	}
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;	 * Get the time point index for this request.
+<i>227</i>&nbsp;	 * @return
+<i>228</i>&nbsp;	 */
+<i>229</i>&nbsp;	public int getT() {
+<b class="fc"><i>230</i>&nbsp;		return tileRegion.getT();</b>
+<i>231</i>&nbsp;	}
+<i>232</i>&nbsp;	
+<i>233</i>&nbsp;	/**
+<i>234</i>&nbsp;	 * Get the ImagePlane for this request.
+<i>235</i>&nbsp;	 * @return
+<i>236</i>&nbsp;	 */
+<i>237</i>&nbsp;	public ImagePlane getPlane() {
+<b class="nc"><i>238</i>&nbsp;		return tileRegion.getPlane();</b>
+<i>239</i>&nbsp;	}
+<i>240</i>&nbsp;	
+<i>241</i>&nbsp;	
+<i>242</i>&nbsp;	
+<i>243</i>&nbsp;	@Override
+<i>244</i>&nbsp;	public int hashCode() {
+<b class="fc"><i>245</i>&nbsp;		final int prime = 31;</b>
+<b class="fc"><i>246</i>&nbsp;		int result = 1;</b>
+<b class="fc"><i>247</i>&nbsp;		result = prime * result + level;</b>
+<b class="fc"><i>248</i>&nbsp;		result = prime * result + ((request == null) ? 0 : request.hashCode());</b>
+<b class="fc"><i>249</i>&nbsp;		result = prime * result + ((tileRegion == null) ? 0 : tileRegion.hashCode());</b>
+<b class="fc"><i>250</i>&nbsp;		return result;</b>
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;	@Override
+<i>254</i>&nbsp;	public boolean equals(Object obj) {
+<b class="nc"><i>255</i>&nbsp;		if (this == obj)</b>
+<b class="nc"><i>256</i>&nbsp;			return true;</b>
+<b class="nc"><i>257</i>&nbsp;		if (obj == null)</b>
+<b class="nc"><i>258</i>&nbsp;			return false;</b>
+<b class="nc"><i>259</i>&nbsp;		if (getClass() != obj.getClass())</b>
+<b class="nc"><i>260</i>&nbsp;			return false;</b>
+<b class="nc"><i>261</i>&nbsp;		TileRequest other = (TileRequest) obj;</b>
+<b class="nc"><i>262</i>&nbsp;		if (level != other.level)</b>
+<b class="nc"><i>263</i>&nbsp;			return false;</b>
+<b class="nc"><i>264</i>&nbsp;		if (request == null) {</b>
+<b class="nc"><i>265</i>&nbsp;			if (other.request != null)</b>
+<b class="nc"><i>266</i>&nbsp;				return false;</b>
+<b class="nc"><i>267</i>&nbsp;		} else if (!request.equals(other.request))</b>
+<b class="nc"><i>268</i>&nbsp;			return false;</b>
+<b class="nc"><i>269</i>&nbsp;		if (tileRegion == null) {</b>
+<b class="nc"><i>270</i>&nbsp;			if (other.tileRegion != null)</b>
+<b class="nc"><i>271</i>&nbsp;				return false;</b>
+<b class="nc"><i>272</i>&nbsp;		} else if (!tileRegion.equals(other.tileRegion))</b>
+<b class="nc"><i>273</i>&nbsp;			return false;</b>
+<b class="nc"><i>274</i>&nbsp;		return true;</b>
+<i>275</i>&nbsp;	}
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;	@Override
+<i>278</i>&nbsp;	public String toString() {
+<b class="nc"><i>279</i>&nbsp;		return String.format(&quot;Tile: level=%d, bounds=(%d, %d, %d, %d), %s&quot;, level,</b>
+<b class="nc"><i>280</i>&nbsp;				tileRegion.getX(), tileRegion.getY(), tileRegion.getWidth(), tileRegion.getHeight(), request.toString());</b>
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

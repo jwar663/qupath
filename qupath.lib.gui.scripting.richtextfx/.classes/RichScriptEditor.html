@@ -1,0 +1,819 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RichScriptEditor</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.scripting.richtextfx</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RichScriptEditor (qupath.lib.gui.scripting.richtextfx)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RichScriptEditor</td>
+<td class="coverageStat">
+  <span class="percent">
+    23.1%
+  </span>
+  <span class="absValue">
+    (3/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    30.2%
+  </span>
+  <span class="absValue">
+    (45/ 149)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RichScriptEditor$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RichScriptEditor$AutoCompletor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RichScriptEditor$CodeAreaControl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RichScriptEditor$CustomCodeArea</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    6.4%
+  </span>
+  <span class="absValue">
+    (3/ 47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.7%
+  </span>
+  <span class="absValue">
+    (45/ 217)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.scripting.richtextfx;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.lang.reflect.Field;
+<i>27</i>&nbsp;import java.lang.reflect.Method;
+<i>28</i>&nbsp;import java.lang.reflect.Modifier;
+<i>29</i>&nbsp;import java.time.Duration;
+<i>30</i>&nbsp;import java.util.Collection;
+<i>31</i>&nbsp;import java.util.Collections;
+<i>32</i>&nbsp;import java.util.HashSet;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.Optional;
+<i>35</i>&nbsp;import java.util.Set;
+<i>36</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>37</i>&nbsp;import java.util.concurrent.Executors;
+<i>38</i>&nbsp;import java.util.regex.Matcher;
+<i>39</i>&nbsp;import java.util.regex.Pattern;
+<i>40</i>&nbsp;import java.util.stream.Collectors;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import org.fxmisc.flowless.VirtualizedScrollPane;
+<i>43</i>&nbsp;import org.fxmisc.richtext.CodeArea;
+<i>44</i>&nbsp;import org.fxmisc.richtext.LineNumberFactory;
+<i>45</i>&nbsp;import org.fxmisc.richtext.model.StyleSpans;
+<i>46</i>&nbsp;import org.fxmisc.richtext.model.StyleSpansBuilder;
+<i>47</i>&nbsp;import org.slf4j.Logger;
+<i>48</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import javafx.beans.property.ReadOnlyBooleanProperty;
+<i>51</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>52</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>53</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>54</i>&nbsp;import javafx.concurrent.Task;
+<i>55</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>56</i>&nbsp;import javafx.scene.control.IndexRange;
+<i>57</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>58</i>&nbsp;import javafx.scene.input.KeyCodeCombination;
+<i>59</i>&nbsp;import javafx.scene.input.KeyCombination;
+<i>60</i>&nbsp;import javafx.scene.input.KeyEvent;
+<i>61</i>&nbsp;import javafx.scene.layout.Region;
+<i>62</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>63</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>64</i>&nbsp;import qupath.lib.gui.scripting.DefaultScriptEditor;
+<i>65</i>&nbsp;import qupath.lib.gui.scripting.QPEx;
+<i>66</i>&nbsp;import qupath.lib.gui.tools.MenuTools;
+<i>67</i>&nbsp;import qupath.lib.scripting.QP;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;/*
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * The rich text script editor makes use of RichTextFX, including aspects of the demo code JavaKeywordsAsyncDemo.java, both from https://github.com/TomasMikula/RichTextFX
+<i>74</i>&nbsp; * License for these components:
+<i>75</i>&nbsp; * 
+<i>76</i>&nbsp; * Copyright (c) 2013-2017, Tomas Mikula and contributors
+<i>77</i>&nbsp; * All rights reserved.
+<i>78</i>&nbsp; * 
+<i>79</i>&nbsp; * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+<i>80</i>&nbsp; * 
+<i>81</i>&nbsp; * 1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+<i>82</i>&nbsp; * 
+<i>83</i>&nbsp; * 2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+<i>84</i>&nbsp; *
+<i>85</i>&nbsp; * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+<i>86</i>&nbsp; * 
+<i>87</i>&nbsp; */
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;/**
+<i>90</i>&nbsp; * 
+<i>91</i>&nbsp; * Rich text script editor for QuPath.
+<i>92</i>&nbsp; * &lt;p&gt;
+<i>93</i>&nbsp; * Makes use of RichTextFX, Copyright (c) 2013-2017, Tomas Mikula and contributors (BSD 2-clause license).
+<i>94</i>&nbsp; * 
+<i>95</i>&nbsp; * @author Pete Bankhead
+<i>96</i>&nbsp; * 
+<i>97</i>&nbsp; */
+<b class="fc"><i>98</i>&nbsp;public class RichScriptEditor extends DefaultScriptEditor {</b>
+<i>99</i>&nbsp;	
+<b class="fc"><i>100</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(RichScriptEditor.class);</b>
+<i>101</i>&nbsp;	
+<b class="fc"><i>102</i>&nbsp;	private static final String[] KEYWORDS = new String[] {</b>
+<i>103</i>&nbsp;            &quot;abstract&quot;, &quot;assert&quot;, &quot;boolean&quot;, &quot;break&quot;, &quot;byte&quot;,
+<i>104</i>&nbsp;            &quot;case&quot;, &quot;catch&quot;, &quot;char&quot;, &quot;class&quot;, &quot;const&quot;,
+<i>105</i>&nbsp;            &quot;continue&quot;, &quot;default&quot;, &quot;do&quot;, &quot;double&quot;, &quot;else&quot;,
+<i>106</i>&nbsp;            &quot;enum&quot;, &quot;extends&quot;, &quot;final&quot;, &quot;finally&quot;, &quot;float&quot;,
+<i>107</i>&nbsp;            &quot;for&quot;, &quot;goto&quot;, &quot;if&quot;, &quot;implements&quot;, &quot;import&quot;,
+<i>108</i>&nbsp;            &quot;instanceof&quot;, &quot;int&quot;, &quot;interface&quot;, &quot;long&quot;, &quot;native&quot;,
+<i>109</i>&nbsp;            &quot;new&quot;, &quot;null&quot;, &quot;package&quot;, &quot;private&quot;, &quot;protected&quot;, &quot;public&quot;,
+<i>110</i>&nbsp;            &quot;return&quot;, &quot;short&quot;, &quot;static&quot;, &quot;strictfp&quot;, &quot;super&quot;,
+<i>111</i>&nbsp;            &quot;switch&quot;, &quot;synchronized&quot;, &quot;this&quot;, &quot;throw&quot;, &quot;throws&quot;,
+<i>112</i>&nbsp;            &quot;transient&quot;, &quot;try&quot;, &quot;void&quot;, &quot;volatile&quot;, &quot;while&quot;,
+<i>113</i>&nbsp;            &quot;def&quot;, &quot;in&quot;, &quot;with&quot;, &quot;trait&quot;, &quot;true&quot;, &quot;false&quot;, &quot;var&quot; // Groovy
+<i>114</i>&nbsp;    };
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;	// Delay for async formatting, in milliseconds
+<b class="fc"><i>117</i>&nbsp;	private static int delayMillis = 100;</b>
+<i>118</i>&nbsp;	
+<i>119</i>&nbsp;	private static Pattern PATTERN;
+<i>120</i>&nbsp;	private static Pattern PATTERN_CONSOLE;
+<b class="fc"><i>121</i>&nbsp;	private static final Set&lt;String&gt; METHOD_NAMES = new HashSet&lt;&gt;();</b>
+<i>122</i>&nbsp;	static {
+<b class="fc"><i>123</i>&nbsp;		for (Method method : QPEx.class.getMethods()) {</b>
+<i>124</i>&nbsp;			// Exclude deprecated methods (don&#39;t want to encourage them...)
+<b class="fc"><i>125</i>&nbsp;			if (method.getAnnotation(Deprecated.class) == null)</b>
+<b class="fc"><i>126</i>&nbsp;				METHOD_NAMES.add(method.getName());</b>
+<i>127</i>&nbsp;		}
+<i>128</i>&nbsp;		
+<i>129</i>&nbsp;		// Remove the methods that come from the Object class...
+<i>130</i>&nbsp;		// they tend to be quite confusing
+<b class="fc"><i>131</i>&nbsp;		for (Method method : Object.class.getMethods()) {</b>
+<b class="fc"><i>132</i>&nbsp;			if (Modifier.isStatic(method.getModifiers()) &amp;&amp; Modifier.isPublic(method.getModifiers()))</b>
+<b class="nc"><i>133</i>&nbsp;				METHOD_NAMES.remove(method.getName());</b>
+<i>134</i>&nbsp;		}
+<i>135</i>&nbsp;		
+<b class="fc"><i>136</i>&nbsp;		for (Field field : QPEx.class.getFields()) {</b>
+<b class="fc"><i>137</i>&nbsp;			if (Modifier.isStatic(field.getModifiers()) &amp;&amp; Modifier.isPublic(field.getModifiers()))</b>
+<b class="fc"><i>138</i>&nbsp;				METHOD_NAMES.add(field.getName());</b>
+<i>139</i>&nbsp;		}
+<i>140</i>&nbsp;		
+<b class="fc"><i>141</i>&nbsp;		for (Class&lt;?&gt; cls : QP.getCoreClasses()) {</b>
+<b class="fc"><i>142</i>&nbsp;			int countStatic = 0;</b>
+<b class="fc"><i>143</i>&nbsp;			for (Method method : cls.getMethods()) {</b>
+<b class="fc"><i>144</i>&nbsp;				if (Modifier.isStatic(method.getModifiers()) &amp;&amp; Modifier.isPublic(method.getModifiers())) {</b>
+<b class="fc"><i>145</i>&nbsp;					METHOD_NAMES.add(cls.getSimpleName() + &quot;.&quot; + method.getName());</b>
+<b class="fc"><i>146</i>&nbsp;					countStatic++;</b>
+<i>147</i>&nbsp;				}
+<i>148</i>&nbsp;			}
+<b class="fc"><i>149</i>&nbsp;			if (countStatic &gt; 0)</b>
+<b class="fc"><i>150</i>&nbsp;				METHOD_NAMES.add(cls.getSimpleName() + &quot;.&quot;);</b>
+<b class="fc"><i>151</i>&nbsp;		}</b>
+<i>152</i>&nbsp;		
+<i>153</i>&nbsp;//		for (Method method : ImageData.class.getMethods()) {
+<i>154</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>155</i>&nbsp;//		}
+<i>156</i>&nbsp;//		for (Method method : PathObjectHierarchy.class.getMethods()) {
+<i>157</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>158</i>&nbsp;//		}
+<i>159</i>&nbsp;//		for (Method method : PathObject.class.getMethods()) {
+<i>160</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>161</i>&nbsp;//		}
+<i>162</i>&nbsp;//		for (Method method : TMACoreObject.class.getMethods()) {
+<i>163</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>164</i>&nbsp;//		}
+<i>165</i>&nbsp;//		for (Method method : PathCellObject.class.getMethods()) {
+<i>166</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>167</i>&nbsp;//		}
+<i>168</i>&nbsp;//		for (Method method : PathClassFactory.class.getMethods()) {
+<i>169</i>&nbsp;//			METHOD_NAMES.add(method.getName());
+<i>170</i>&nbsp;//		}
+<b class="fc"><i>171</i>&nbsp;		METHOD_NAMES.add(&quot;print&quot;);</b>
+<b class="fc"><i>172</i>&nbsp;		METHOD_NAMES.add(&quot;println&quot;);</b>
+<i>173</i>&nbsp;		
+<b class="fc"><i>174</i>&nbsp;		final String KEYWORD_PATTERN = &quot;\\b(&quot; + String.join(&quot;|&quot;, KEYWORDS) + &quot;)\\b&quot;;</b>
+<i>175</i>&nbsp;//		final String METHOD_PATTERN = &quot;[a-zA-Z]+\\(&quot;;
+<i>176</i>&nbsp;//		final String METHOD_PATTERN = &quot;\\b(&quot; + String.join(&quot;|&quot;, METHOD_NAMES) + &quot;)\\b&quot;;
+<b class="fc"><i>177</i>&nbsp;	    final String PAREN_PATTERN = &quot;\\(|\\)&quot;;</b>
+<b class="fc"><i>178</i>&nbsp;	    final String BRACE_PATTERN = &quot;\\{|\\}&quot;;</b>
+<b class="fc"><i>179</i>&nbsp;	    final String BRACKET_PATTERN = &quot;\\[|\\]&quot;;</b>
+<b class="fc"><i>180</i>&nbsp;	    final String SEMICOLON_PATTERN = &quot;\\;&quot;;</b>
+<b class="fc"><i>181</i>&nbsp;	    final String TRIPLE_QUOTE_PATTERN = &quot;\&quot;\&quot;\&quot;([^\&quot;\&quot;\&quot;\\\\]|\\\\.)*\&quot;\&quot;\&quot;&quot;;</b>
+<b class="fc"><i>182</i>&nbsp;	    final String DOUBLE_QUOTE_PATTERN = &quot;\&quot;([^\&quot;\\\\]|\\\\.)*\&quot;&quot;;</b>
+<b class="fc"><i>183</i>&nbsp;	    final String SINGLE_QUOTE_PATTERN = &quot;&#39;([^&#39;\\\\]|\\\\.)*\&#39;&quot;;</b>
+<b class="fc"><i>184</i>&nbsp;	    final String COMMENT_PATTERN = &quot;//[^\n]*&quot; + &quot;|&quot; + &quot;/\\*(.|\\R)*?\\*/&quot;;</b>
+<i>185</i>&nbsp;	    
+<b class="fc"><i>186</i>&nbsp;	    PATTERN = Pattern.compile(</b>
+<i>187</i>&nbsp;	            &quot;(?&lt;KEYWORD&gt;&quot; + KEYWORD_PATTERN + &quot;)&quot;
+<i>188</i>&nbsp;//	            + &quot;|(?&lt;METHOD&gt;&quot; + METHOD_PATTERN + &quot;)&quot;
+<i>189</i>&nbsp;	            + &quot;|(?&lt;PAREN&gt;&quot; + PAREN_PATTERN + &quot;)&quot;
+<i>190</i>&nbsp;	            + &quot;|(?&lt;BRACE&gt;&quot; + BRACE_PATTERN + &quot;)&quot;
+<i>191</i>&nbsp;	            + &quot;|(?&lt;BRACKET&gt;&quot; + BRACKET_PATTERN + &quot;)&quot;
+<i>192</i>&nbsp;	            + &quot;|(?&lt;SEMICOLON&gt;&quot; + SEMICOLON_PATTERN + &quot;)&quot;
+<i>193</i>&nbsp;	            + &quot;|(?&lt;TRIPLEQUOTES&gt;&quot; + TRIPLE_QUOTE_PATTERN + &quot;)&quot;
+<i>194</i>&nbsp;	            + &quot;|(?&lt;DOUBLEQUOTES&gt;&quot; + DOUBLE_QUOTE_PATTERN + &quot;)&quot;
+<i>195</i>&nbsp;	            + &quot;|(?&lt;SINGLEQUOTES&gt;&quot; + SINGLE_QUOTE_PATTERN + &quot;)&quot;
+<i>196</i>&nbsp;	            + &quot;|(?&lt;COMMENT&gt;&quot; + COMMENT_PATTERN + &quot;)&quot;
+<i>197</i>&nbsp;	    );
+<i>198</i>&nbsp;	    
+<i>199</i>&nbsp;	    
+<b class="fc"><i>200</i>&nbsp;	    final String WARNING_PATTERN = &quot;WARN[^\n]*&quot;;</b>
+<b class="fc"><i>201</i>&nbsp;	    final String ERROR_PATTERN = &quot;ERROR:[^\n]*&quot;;</b>
+<i>202</i>&nbsp;	    
+<b class="fc"><i>203</i>&nbsp;	    PATTERN_CONSOLE = Pattern.compile(</b>
+<i>204</i>&nbsp;	            &quot;(?&lt;ERROR&gt;&quot; + ERROR_PATTERN + &quot;)&quot;
+<i>205</i>&nbsp;	            + &quot;|(?&lt;WARN&gt;&quot; + WARNING_PATTERN + &quot;)&quot;
+<i>206</i>&nbsp;	    );
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;	
+<b class="fc"><i>209</i>&nbsp;	private ExecutorService executor = Executors.newSingleThreadExecutor(ThreadTools.createThreadFactory(&quot;rich-text-highlighting&quot;, true));</b>
+<i>210</i>&nbsp;	
+<i>211</i>&nbsp;	private ContextMenu menu;
+<i>212</i>&nbsp;	
+<i>213</i>&nbsp;	/**
+<i>214</i>&nbsp;	 * Constructor.
+<i>215</i>&nbsp;	 * @param qupath the current QuPath instance.
+<i>216</i>&nbsp;	 */
+<i>217</i>&nbsp;	public RichScriptEditor(QuPathGUI qupath) {
+<b class="fc"><i>218</i>&nbsp;		super(qupath);</b>
+<i>219</i>&nbsp;		
+<b class="fc"><i>220</i>&nbsp;		menu = new ContextMenu();</b>
+<b class="fc"><i>221</i>&nbsp;		MenuTools.addMenuItems(menu.getItems(),</b>
+<b class="fc"><i>222</i>&nbsp;				MenuTools.createMenu(&quot;Run...&quot;,</b>
+<i>223</i>&nbsp;						runScriptAction,
+<i>224</i>&nbsp;						runSelectedAction,
+<i>225</i>&nbsp;						runProjectScriptAction,
+<i>226</i>&nbsp;						runProjectScriptNoSaveAction
+<i>227</i>&nbsp;						),
+<b class="fc"><i>228</i>&nbsp;				MenuTools.createMenu(&quot;Undo/Redo...&quot;,</b>
+<i>229</i>&nbsp;					undoAction,
+<i>230</i>&nbsp;					redoAction
+<i>231</i>&nbsp;					),
+<i>232</i>&nbsp;				null,
+<i>233</i>&nbsp;				copyAction,
+<i>234</i>&nbsp;				pasteAction,
+<i>235</i>&nbsp;				pasteAndEscapeAction
+<i>236</i>&nbsp;				);
+<b class="fc"><i>237</i>&nbsp;	}</b>
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;	@Override
+<i>240</i>&nbsp;	protected ScriptEditorControl getNewEditor() {
+<i>241</i>&nbsp;		try {
+<b class="nc"><i>242</i>&nbsp;			CodeArea codeArea = new CustomCodeArea();</b>
+<b class="nc"><i>243</i>&nbsp;			codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));</b>
+<i>244</i>&nbsp;			
+<b class="nc"><i>245</i>&nbsp;			codeArea.setStyle(&quot;-fx-background-color: -fx-control-inner-background;&quot;);</b>
+<i>246</i>&nbsp;			
+<i>247</i>&nbsp;			
+<b class="nc"><i>248</i>&nbsp;			codeArea.setOnContextMenuRequested(e -&gt; {</b>
+<b class="nc"><i>249</i>&nbsp;				menu.show(codeArea.getScene().getWindow(), e.getScreenX(), e.getScreenY());</b>
+<i>250</i>&nbsp;//				menu.show(codeArea, e.getScreenX(), e.getScreenY());
+<b class="nc"><i>251</i>&nbsp;			});</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;			
+<b class="nc"><i>254</i>&nbsp;			CodeAreaControl control = new CodeAreaControl(codeArea);</b>
+<i>255</i>&nbsp;			
+<i>256</i>&nbsp;			@SuppressWarnings(&quot;unused&quot;)
+<b class="nc"><i>257</i>&nbsp;			var cleanup = codeArea</b>
+<b class="nc"><i>258</i>&nbsp;					.multiPlainChanges()</b>
+<b class="nc"><i>259</i>&nbsp;					.successionEnds(Duration.ofMillis(delayMillis))</b>
+<b class="nc"><i>260</i>&nbsp;					.supplyTask(() -&gt; computeHighlightingAsync(codeArea.getText()))</b>
+<b class="nc"><i>261</i>&nbsp;					.awaitLatest(codeArea.multiPlainChanges())</b>
+<b class="nc"><i>262</i>&nbsp;					.filterMap(t -&gt; {</b>
+<b class="nc"><i>263</i>&nbsp;						if (t.isSuccess()) {</b>
+<b class="nc"><i>264</i>&nbsp;							return Optional.of(t.get());</b>
+<i>265</i>&nbsp;						} else {
+<b class="nc"><i>266</i>&nbsp;							var exception = t.getFailure();</b>
+<b class="nc"><i>267</i>&nbsp;							String message = exception.getLocalizedMessage() == null ? exception.getClass().getSimpleName() : exception.getLocalizedMessage();</b>
+<b class="nc"><i>268</i>&nbsp;							logger.error(&quot;Error applying syntax highlighting: {}&quot;, message);</b>
+<b class="nc"><i>269</i>&nbsp;							logger.debug(&quot;{}&quot;, t);</b>
+<b class="nc"><i>270</i>&nbsp;							return Optional.empty();</b>
+<i>271</i>&nbsp;						}
+<i>272</i>&nbsp;					})
+<b class="nc"><i>273</i>&nbsp;					.subscribe(change -&gt; codeArea.setStyleSpans(0, change));</b>
+<i>274</i>&nbsp;			
+<i>275</i>&nbsp;			
+<b class="nc"><i>276</i>&nbsp;			codeArea.getStylesheets().add(getClass().getClassLoader().getResource(&quot;scripting_styles.css&quot;).toExternalForm());</b>
+<i>277</i>&nbsp;						
+<b class="nc"><i>278</i>&nbsp;			codeArea.addEventFilter(KeyEvent.KEY_PRESSED, e -&gt; {</b>
+<b class="nc"><i>279</i>&nbsp;				if (e.isConsumed())</b>
+<b class="nc"><i>280</i>&nbsp;					return;</b>
+<b class="nc"><i>281</i>&nbsp;				if (e.getCode() == KeyCode.TAB) {</b>
+<b class="nc"><i>282</i>&nbsp;					handleTabPress(control, e.isShiftDown());</b>
+<b class="nc"><i>283</i>&nbsp;					e.consume();</b>
+<b class="nc"><i>284</i>&nbsp;				} else if (e.isShortcutDown() &amp;&amp; e.getCode() == KeyCode.SLASH) {</b>
+<b class="nc"><i>285</i>&nbsp;					handleLineComment(control);</b>
+<b class="nc"><i>286</i>&nbsp;					e.consume();</b>
+<b class="nc"><i>287</i>&nbsp;				} else if (e.getCode() == KeyCode.ENTER &amp;&amp; control.getSelectedText().length() == 0) {</b>
+<b class="nc"><i>288</i>&nbsp;					handleNewLine(control);</b>
+<b class="nc"><i>289</i>&nbsp;					e.consume();</b>
+<i>290</i>&nbsp;				}
+<b class="nc"><i>291</i>&nbsp;				if (!e.isConsumed())</b>
+<b class="nc"><i>292</i>&nbsp;					matchMethodName(control, e);</b>
+<b class="nc"><i>293</i>&nbsp;			});</b>
+<i>294</i>&nbsp;
+<b class="nc"><i>295</i>&nbsp;			return control;</b>
+<b class="nc"><i>296</i>&nbsp;		} catch (Exception e) {</b>
+<i>297</i>&nbsp;			// Default to superclass implementation
+<b class="nc"><i>298</i>&nbsp;			logger.error(&quot;Unable to create code area&quot;, e);</b>
+<b class="nc"><i>299</i>&nbsp;			return super.getNewEditor();</b>
+<i>300</i>&nbsp;		}
+<i>301</i>&nbsp;	}
+<i>302</i>&nbsp;	
+<b class="fc"><i>303</i>&nbsp;	private static KeyCodeCombination completionCode = new KeyCodeCombination(KeyCode.SPACE, KeyCombination.CONTROL_DOWN);</b>
+<i>304</i>&nbsp;	
+<i>305</i>&nbsp;	/**
+<i>306</i>&nbsp;	 * Try to match and auto-complete a method name.
+<i>307</i>&nbsp;	 * 
+<i>308</i>&nbsp;	 * @param control
+<i>309</i>&nbsp;	 * @param e
+<i>310</i>&nbsp;	 */
+<i>311</i>&nbsp;	private void matchMethodName(final ScriptEditorControl control, final KeyEvent e) {
+<b class="nc"><i>312</i>&nbsp;		if (!completionCode.match(e)) {</b>
+<b class="nc"><i>313</i>&nbsp;			if (!e.isControlDown())</b>
+<b class="nc"><i>314</i>&nbsp;				completor = null;</b>
+<b class="nc"><i>315</i>&nbsp;			return;</b>
+<i>316</i>&nbsp;		}
+<b class="nc"><i>317</i>&nbsp;		e.consume();</b>
+<b class="nc"><i>318</i>&nbsp;		if (completor == null)</b>
+<b class="nc"><i>319</i>&nbsp;			completor = new AutoCompletor(control);</b>
+<b class="nc"><i>320</i>&nbsp;		completor.applyNextCompletion();</b>
+<b class="nc"><i>321</i>&nbsp;	}</b>
+<i>322</i>&nbsp;	
+<i>323</i>&nbsp;	
+<i>324</i>&nbsp;	private AutoCompletor completor;
+<i>325</i>&nbsp;	
+<i>326</i>&nbsp;	/**
+<i>327</i>&nbsp;	 * Helper class for toggling through completions.
+<i>328</i>&nbsp;	 * 
+<i>329</i>&nbsp;	 * @author Pete Bankhead
+<i>330</i>&nbsp;	 */
+<i>331</i>&nbsp;	static class AutoCompletor {
+<i>332</i>&nbsp;		
+<i>333</i>&nbsp;		private final ScriptEditorControl control;
+<i>334</i>&nbsp;		private int pos;
+<i>335</i>&nbsp;		private List&lt;String&gt; completions;
+<b class="nc"><i>336</i>&nbsp;		private int idx = 0;</b>
+<i>337</i>&nbsp;		private String start; // Starting text
+<b class="nc"><i>338</i>&nbsp;		private String lastInsertion = null;</b>
+<i>339</i>&nbsp;		
+<b class="nc"><i>340</i>&nbsp;		AutoCompletor(final ScriptEditorControl control) {</b>
+<b class="nc"><i>341</i>&nbsp;			this.control = control;</b>
+<b class="nc"><i>342</i>&nbsp;			String text = control.getText();</b>
+<b class="nc"><i>343</i>&nbsp;			this.pos = control.getCaretPosition();</b>
+<b class="nc"><i>344</i>&nbsp;			String[] split = text.substring(0, pos).split(&quot;(\\s+)|(\\()|(\\))|(\\{)|(\\})|(\\[)|(\\])&quot;);</b>
+<b class="nc"><i>345</i>&nbsp;			if (split.length == 0)</b>
+<b class="nc"><i>346</i>&nbsp;				start = &quot;&quot;;</b>
+<i>347</i>&nbsp;			else
+<b class="nc"><i>348</i>&nbsp;				start = split[split.length-1].trim();</b>
+<i>349</i>&nbsp;//			if (start.length() == 0)
+<i>350</i>&nbsp;//				return;
+<i>351</i>&nbsp;			
+<i>352</i>&nbsp;			// Use all available completions if we have a dot included
+<b class="nc"><i>353</i>&nbsp;			if (text.contains(&quot;.&quot;))</b>
+<b class="nc"><i>354</i>&nbsp;				completions = METHOD_NAMES.stream()</b>
+<b class="nc"><i>355</i>&nbsp;						.filter(s -&gt; s.startsWith(start))</b>
+<b class="nc"><i>356</i>&nbsp;						.sorted()</b>
+<b class="nc"><i>357</i>&nbsp;						.collect(Collectors.toList());</b>
+<i>358</i>&nbsp;			else
+<i>359</i>&nbsp;				// Use only partial completions (methods, classes) if no dot
+<b class="nc"><i>360</i>&nbsp;				completions = METHOD_NAMES.stream()</b>
+<b class="nc"><i>361</i>&nbsp;				.filter(s -&gt; s.startsWith(start) &amp;&amp; (!s.contains(&quot;.&quot;) || s.lastIndexOf(&quot;.&quot;) == s.length()-1))</b>
+<b class="nc"><i>362</i>&nbsp;				.sorted()</b>
+<b class="nc"><i>363</i>&nbsp;				.collect(Collectors.toList());				</b>
+<i>364</i>&nbsp;		}
+<i>365</i>&nbsp;		
+<i>366</i>&nbsp;		public void applyNextCompletion() {
+<b class="nc"><i>367</i>&nbsp;			if (completions.isEmpty())</b>
+<i>368</i>&nbsp;				return;
+<b class="nc"><i>369</i>&nbsp;			if (completions.size() == 0 &amp;&amp; lastInsertion != null)</b>
+<i>370</i>&nbsp;				return;
+<b class="nc"><i>371</i>&nbsp;			if (lastInsertion != null &amp;&amp; lastInsertion.length() &gt; 0)</b>
+<b class="nc"><i>372</i>&nbsp;				control.deleteText(pos, pos + lastInsertion.length());</b>
+<b class="nc"><i>373</i>&nbsp;			lastInsertion = completions.get(idx).substring(start.length());// + &quot;(&quot;;</b>
+<b class="nc"><i>374</i>&nbsp;			control.insertText(pos, lastInsertion);</b>
+<b class="nc"><i>375</i>&nbsp;			idx++;</b>
+<b class="nc"><i>376</i>&nbsp;			idx = idx % completions.size();</b>
+<i>377</i>&nbsp;		}
+<i>378</i>&nbsp;		
+<i>379</i>&nbsp;	}
+<i>380</i>&nbsp;	
+<i>381</i>&nbsp;	
+<i>382</i>&nbsp;	
+<i>383</i>&nbsp;	@Override
+<i>384</i>&nbsp;	protected ScriptEditorControl getNewConsole() {
+<i>385</i>&nbsp;		try {
+<b class="nc"><i>386</i>&nbsp;			CodeArea codeArea = new CodeArea();</b>
+<b class="nc"><i>387</i>&nbsp;			codeArea.setStyle(&quot;-fx-background-color: -fx-control-inner-background;&quot;);</b>
+<i>388</i>&nbsp;			
+<i>389</i>&nbsp;//			var cleanup = codeArea
+<i>390</i>&nbsp;//					.multiPlainChanges()
+<i>391</i>&nbsp;//					.successionEnds(Duration.ofMillis(500))
+<i>392</i>&nbsp;//					.supplyTask(() -&gt; computeConsoleHighlightingAsync(codeArea.getText()))
+<i>393</i>&nbsp;//					.awaitLatest(codeArea.multiPlainChanges())
+<i>394</i>&nbsp;//					.filterMap(t -&gt; {
+<i>395</i>&nbsp;//						if (t.isSuccess()) {
+<i>396</i>&nbsp;//							return Optional.of(t.get());
+<i>397</i>&nbsp;//						} else {
+<i>398</i>&nbsp;//							var exception = t.getFailure();
+<i>399</i>&nbsp;//							String message = exception.getLocalizedMessage() == null ? exception.getClass().getSimpleName() : exception.getLocalizedMessage();
+<i>400</i>&nbsp;//							logger.error(&quot;Error applying syntax highlighting: {}&quot;, message);
+<i>401</i>&nbsp;//							logger.debug(&quot;{}&quot;, t);
+<i>402</i>&nbsp;//							return Optional.empty();
+<i>403</i>&nbsp;//						}
+<i>404</i>&nbsp;//					})
+<i>405</i>&nbsp;//					.subscribe(change -&gt; codeArea.setStyleSpans(0, change));
+<i>406</i>&nbsp;			
+<b class="nc"><i>407</i>&nbsp;			codeArea.richChanges()</b>
+<b class="nc"><i>408</i>&nbsp;				.successionEnds(Duration.ofMillis(delayMillis))</b>
+<b class="nc"><i>409</i>&nbsp;				.subscribe(change -&gt; {</b>
+<i>410</i>&nbsp;					// If anything was removed, do full reformatting
+<b class="nc"><i>411</i>&nbsp;					if (change.getRemoved().length() != 0 || change.getPosition() == 0) {</b>
+<b class="nc"><i>412</i>&nbsp;						if (!change.getRemoved().getText().equals(change.getInserted().getText()))</b>
+<b class="nc"><i>413</i>&nbsp;							codeArea.setStyleSpans(0, computeConsoleHighlighting(codeArea.getText()));					</b>
+<i>414</i>&nbsp;					} else {
+<i>415</i>&nbsp;						// Otherwise format only from changed position onwards
+<b class="nc"><i>416</i>&nbsp;						codeArea.setStyleSpans(change.getPosition(), computeConsoleHighlighting(change.getInserted().getText()));</b>
+<i>417</i>&nbsp;					}
+<b class="nc"><i>418</i>&nbsp;		        });</b>
+<b class="nc"><i>419</i>&nbsp;			codeArea.getStylesheets().add(getClass().getClassLoader().getResource(&quot;scripting_styles.css&quot;).toExternalForm());</b>
+<b class="nc"><i>420</i>&nbsp;			return new CodeAreaControl(codeArea);</b>
+<b class="nc"><i>421</i>&nbsp;		} catch (Exception e) {</b>
+<i>422</i>&nbsp;			// Default to superclass implementation
+<b class="nc"><i>423</i>&nbsp;			logger.error(&quot;Unable to create console area&quot;, e);</b>
+<b class="nc"><i>424</i>&nbsp;			return super.getNewEditor();</b>
+<i>425</i>&nbsp;		}
+<i>426</i>&nbsp;	}
+<i>427</i>&nbsp;	
+<i>428</i>&nbsp;	private Task&lt;StyleSpans&lt;Collection&lt;String&gt;&gt;&gt; computeHighlightingAsync(final String text) {
+<b class="nc"><i>429</i>&nbsp;		var task = new Task&lt;StyleSpans&lt;Collection&lt;String&gt;&gt;&gt;() {</b>
+<i>430</i>&nbsp;			@Override
+<i>431</i>&nbsp;			protected StyleSpans&lt;Collection&lt;String&gt;&gt; call() {
+<b class="nc"><i>432</i>&nbsp;				return computeHighlighting(text);</b>
+<i>433</i>&nbsp;			}
+<i>434</i>&nbsp;		};
+<b class="nc"><i>435</i>&nbsp;		executor.execute(task);</b>
+<b class="nc"><i>436</i>&nbsp;		return task;</b>
+<i>437</i>&nbsp;	}
+<i>438</i>&nbsp;	
+<i>439</i>&nbsp;//	private Task&lt;StyleSpans&lt;Collection&lt;String&gt;&gt;&gt; computeConsoleHighlightingAsync(final String text) {
+<i>440</i>&nbsp;//		var task = new Task&lt;StyleSpans&lt;Collection&lt;String&gt;&gt;&gt;() {
+<i>441</i>&nbsp;//			@Override
+<i>442</i>&nbsp;//			protected StyleSpans&lt;Collection&lt;String&gt;&gt; call() {
+<i>443</i>&nbsp;//				return computeConsoleHighlighting(text);
+<i>444</i>&nbsp;//			}
+<i>445</i>&nbsp;//		};
+<i>446</i>&nbsp;//		executor.execute(task);
+<i>447</i>&nbsp;//		return task;
+<i>448</i>&nbsp;//	}
+<i>449</i>&nbsp;	
+<i>450</i>&nbsp;	private static StyleSpans&lt;Collection&lt;String&gt;&gt; computeHighlighting(final String text) {
+<b class="nc"><i>451</i>&nbsp;        Matcher matcher = PATTERN.matcher(text);</b>
+<b class="nc"><i>452</i>&nbsp;        int lastKwEnd = 0;</b>
+<b class="nc"><i>453</i>&nbsp;        StyleSpansBuilder&lt;Collection&lt;String&gt;&gt; spansBuilder = new StyleSpansBuilder&lt;&gt;();</b>
+<b class="nc"><i>454</i>&nbsp;        while (matcher.find()) {</b>
+<i>455</i>&nbsp;            String styleClass =
+<b class="nc"><i>456</i>&nbsp;                    matcher.group(&quot;KEYWORD&quot;) != null ? &quot;keyword&quot; :</b>
+<i>457</i>&nbsp;//                    matcher.group(&quot;METHOD&quot;) != null ? &quot;method&quot; :
+<b class="nc"><i>458</i>&nbsp;                    matcher.group(&quot;PAREN&quot;) != null ? &quot;paren&quot; :</b>
+<b class="nc"><i>459</i>&nbsp;                    matcher.group(&quot;BRACE&quot;) != null ? &quot;brace&quot; :</b>
+<b class="nc"><i>460</i>&nbsp;                    matcher.group(&quot;BRACKET&quot;) != null ? &quot;bracket&quot; :</b>
+<b class="nc"><i>461</i>&nbsp;                    matcher.group(&quot;SEMICOLON&quot;) != null ? &quot;semicolon&quot; :</b>
+<b class="nc"><i>462</i>&nbsp;                    matcher.group(&quot;TRIPLEQUOTES&quot;) != null ? &quot;string&quot; :</b>
+<b class="nc"><i>463</i>&nbsp;                    matcher.group(&quot;DOUBLEQUOTES&quot;) != null ? &quot;string&quot; :</b>
+<b class="nc"><i>464</i>&nbsp;                    matcher.group(&quot;SINGLEQUOTES&quot;) != null ? &quot;string&quot; :</b>
+<b class="nc"><i>465</i>&nbsp;                    matcher.group(&quot;COMMENT&quot;) != null ? &quot;comment&quot; :</b>
+<b class="nc"><i>466</i>&nbsp;                    null; /* never happens */</b>
+<b class="nc"><i>467</i>&nbsp;            assert styleClass != null;</b>
+<b class="nc"><i>468</i>&nbsp;            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);</b>
+<b class="nc"><i>469</i>&nbsp;            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());</b>
+<b class="nc"><i>470</i>&nbsp;            lastKwEnd = matcher.end();</b>
+<b class="nc"><i>471</i>&nbsp;        }</b>
+<b class="nc"><i>472</i>&nbsp;        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);</b>
+<b class="nc"><i>473</i>&nbsp;        return spansBuilder.create();</b>
+<i>474</i>&nbsp;    }
+<i>475</i>&nbsp;	
+<i>476</i>&nbsp;	
+<i>477</i>&nbsp;	private static StyleSpans&lt;Collection&lt;String&gt;&gt; computeConsoleHighlighting(final String text) {
+<b class="nc"><i>478</i>&nbsp;        Matcher matcher = PATTERN_CONSOLE.matcher(text);</b>
+<b class="nc"><i>479</i>&nbsp;        int lastKwEnd = 0;</b>
+<b class="nc"><i>480</i>&nbsp;        StyleSpansBuilder&lt;Collection&lt;String&gt;&gt; spansBuilder = new StyleSpansBuilder&lt;&gt;();</b>
+<b class="nc"><i>481</i>&nbsp;        while (matcher.find()) {</b>
+<i>482</i>&nbsp;            String styleClass =
+<b class="nc"><i>483</i>&nbsp;                    matcher.group(&quot;ERROR&quot;) != null ? &quot;error&quot; :</b>
+<b class="nc"><i>484</i>&nbsp;                    matcher.group(&quot;WARN&quot;) != null ? &quot;warning&quot; :</b>
+<b class="nc"><i>485</i>&nbsp;                    null; /* never happens */</b>
+<b class="nc"><i>486</i>&nbsp;            assert styleClass != null;</b>
+<b class="nc"><i>487</i>&nbsp;            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);</b>
+<b class="nc"><i>488</i>&nbsp;            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());</b>
+<b class="nc"><i>489</i>&nbsp;            lastKwEnd = matcher.end();</b>
+<b class="nc"><i>490</i>&nbsp;        }</b>
+<b class="nc"><i>491</i>&nbsp;        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);</b>
+<b class="nc"><i>492</i>&nbsp;        return spansBuilder.create();</b>
+<i>493</i>&nbsp;    }
+<i>494</i>&nbsp;	
+<i>495</i>&nbsp;	
+<i>496</i>&nbsp;	
+<i>497</i>&nbsp;	
+<i>498</i>&nbsp;	static class CodeAreaControl implements ScriptEditorControl {
+<i>499</i>&nbsp;		
+<i>500</i>&nbsp;		private VirtualizedScrollPane&lt;CodeArea&gt; scrollpane;
+<i>501</i>&nbsp;		private CodeArea textArea;
+<b class="nc"><i>502</i>&nbsp;		private StringProperty textProperty = new SimpleStringProperty();</b>
+<i>503</i>&nbsp;		
+<b class="nc"><i>504</i>&nbsp;		CodeAreaControl(final CodeArea codeArea) {</b>
+<b class="nc"><i>505</i>&nbsp;			this.textArea = codeArea;</b>
+<b class="nc"><i>506</i>&nbsp;			textArea.textProperty().addListener((o, v, n) -&gt; textProperty.set(n));</b>
+<b class="nc"><i>507</i>&nbsp;			textProperty.addListener((o, v, n) -&gt; {</b>
+<b class="nc"><i>508</i>&nbsp;				if (n.equals(textArea.getText()))</b>
+<i>509</i>&nbsp;					return;
+<b class="nc"><i>510</i>&nbsp;				textArea.clear();</b>
+<b class="nc"><i>511</i>&nbsp;				textArea.insertText(0, n);</b>
+<i>512</i>&nbsp;			});
+<b class="nc"><i>513</i>&nbsp;			scrollpane = new VirtualizedScrollPane&lt;&gt;(textArea);</b>
+<i>514</i>&nbsp;		}
+<i>515</i>&nbsp;		
+<i>516</i>&nbsp;		@Override
+<i>517</i>&nbsp;		public StringProperty textProperty() {
+<i>518</i>&nbsp;//			return textArea.textProperty();
+<b class="nc"><i>519</i>&nbsp;			return textProperty;</b>
+<i>520</i>&nbsp;		}
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;		@Override
+<i>523</i>&nbsp;		public void setText(String text) {
+<b class="nc"><i>524</i>&nbsp;			textArea.clear();</b>
+<b class="nc"><i>525</i>&nbsp;			textArea.insertText(0, text);</b>
+<i>526</i>&nbsp;		}
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;		@Override
+<i>529</i>&nbsp;		public String getText() {
+<b class="nc"><i>530</i>&nbsp;			return textArea.getText();</b>
+<i>531</i>&nbsp;		}
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;		@Override
+<i>534</i>&nbsp;		public ObservableValue&lt;String&gt; selectedTextProperty() {
+<b class="nc"><i>535</i>&nbsp;			return textArea.selectedTextProperty();</b>
+<i>536</i>&nbsp;		}
+<i>537</i>&nbsp;
+<i>538</i>&nbsp;		@Override
+<i>539</i>&nbsp;		public String getSelectedText() {
+<b class="nc"><i>540</i>&nbsp;			return textArea.getSelectedText();</b>
+<i>541</i>&nbsp;		}
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;		@Override
+<i>544</i>&nbsp;		public Region getControl() {
+<b class="nc"><i>545</i>&nbsp;			return scrollpane;</b>
+<i>546</i>&nbsp;		}
+<i>547</i>&nbsp;
+<i>548</i>&nbsp;		@Override
+<i>549</i>&nbsp;		public boolean isUndoable() {
+<b class="nc"><i>550</i>&nbsp;			return textArea.isUndoAvailable();</b>
+<i>551</i>&nbsp;		}
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;		@Override
+<i>554</i>&nbsp;		public boolean isRedoable() {
+<b class="nc"><i>555</i>&nbsp;			return textArea.isRedoAvailable();</b>
+<i>556</i>&nbsp;		}
+<i>557</i>&nbsp;
+<i>558</i>&nbsp;		@Override
+<i>559</i>&nbsp;		public void undo() {
+<b class="nc"><i>560</i>&nbsp;			textArea.undo();</b>
+<i>561</i>&nbsp;		}
+<i>562</i>&nbsp;
+<i>563</i>&nbsp;		@Override
+<i>564</i>&nbsp;		public void redo() {
+<b class="nc"><i>565</i>&nbsp;			textArea.redo();</b>
+<i>566</i>&nbsp;		}
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;		@Override
+<i>569</i>&nbsp;		public void copy() {
+<b class="nc"><i>570</i>&nbsp;			textArea.copy();</b>
+<i>571</i>&nbsp;		}
+<i>572</i>&nbsp;
+<i>573</i>&nbsp;		@Override
+<i>574</i>&nbsp;		public void cut() {
+<b class="nc"><i>575</i>&nbsp;			textArea.cut();</b>
+<i>576</i>&nbsp;		}
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;		@Override
+<i>579</i>&nbsp;		public void paste(String text) {
+<b class="nc"><i>580</i>&nbsp;			if (text != null)</b>
+<b class="nc"><i>581</i>&nbsp;				textArea.replaceSelection(text);</b>
+<i>582</i>&nbsp;//			textArea.paste();
+<i>583</i>&nbsp;		}
+<i>584</i>&nbsp;		
+<i>585</i>&nbsp;		@Override
+<i>586</i>&nbsp;		public void appendText(final String text) {
+<b class="nc"><i>587</i>&nbsp;			textArea.appendText(text);</b>
+<i>588</i>&nbsp;		}
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;		@Override
+<i>591</i>&nbsp;		public void clear() {
+<b class="nc"><i>592</i>&nbsp;			textArea.clear();</b>
+<i>593</i>&nbsp;		}
+<i>594</i>&nbsp;		
+<i>595</i>&nbsp;		@Override
+<i>596</i>&nbsp;		public int getCaretPosition() {
+<b class="nc"><i>597</i>&nbsp;			return textArea.getCaretPosition();</b>
+<i>598</i>&nbsp;		}
+<i>599</i>&nbsp;		
+<i>600</i>&nbsp;		@Override
+<i>601</i>&nbsp;		public void insertText(int pos, String text) {
+<b class="nc"><i>602</i>&nbsp;			textArea.insertText(pos, text);</b>
+<i>603</i>&nbsp;		}
+<i>604</i>&nbsp;		
+<i>605</i>&nbsp;		@Override
+<i>606</i>&nbsp;		public void deleteText(int startIdx, int endIdx) {
+<b class="nc"><i>607</i>&nbsp;			textArea.deleteText(startIdx, endIdx);</b>
+<i>608</i>&nbsp;		}
+<i>609</i>&nbsp;		
+<i>610</i>&nbsp;		@Override
+<i>611</i>&nbsp;		public ReadOnlyBooleanProperty focusedProperty() {
+<b class="nc"><i>612</i>&nbsp;			return textArea.focusedProperty();</b>
+<i>613</i>&nbsp;		}
+<i>614</i>&nbsp;
+<i>615</i>&nbsp;		@Override
+<i>616</i>&nbsp;		public void deselect() {
+<b class="nc"><i>617</i>&nbsp;			textArea.deselect();</b>
+<i>618</i>&nbsp;		}
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;		@Override
+<i>621</i>&nbsp;		public IndexRange getSelection() {
+<b class="nc"><i>622</i>&nbsp;			return textArea.getSelection();</b>
+<i>623</i>&nbsp;		}
+<i>624</i>&nbsp;
+<i>625</i>&nbsp;		@Override
+<i>626</i>&nbsp;		public void selectRange(int anchor, int caretPosition) {
+<b class="nc"><i>627</i>&nbsp;			textArea.selectRange(anchor, caretPosition);</b>
+<i>628</i>&nbsp;		}
+<i>629</i>&nbsp;
+<i>630</i>&nbsp;		@Override
+<i>631</i>&nbsp;		public void setPopup(ContextMenu menu) {
+<b class="nc"><i>632</i>&nbsp;			textArea.setContextMenu(menu);</b>
+<i>633</i>&nbsp;		}
+<i>634</i>&nbsp;		
+<i>635</i>&nbsp;	}
+<i>636</i>&nbsp;	
+<i>637</i>&nbsp;	
+<b class="nc"><i>638</i>&nbsp;	static class CustomCodeArea extends CodeArea {</b>
+<i>639</i>&nbsp;		
+<i>640</i>&nbsp;		/**
+<i>641</i>&nbsp;		 * We need to override the default Paste command to handle escaping
+<i>642</i>&nbsp;		 */
+<i>643</i>&nbsp;		@Override
+<i>644</i>&nbsp;		public void paste() {
+<b class="nc"><i>645</i>&nbsp;			var text = getClipboardText(false);</b>
+<b class="nc"><i>646</i>&nbsp;			if (text != null)</b>
+<b class="nc"><i>647</i>&nbsp;				replaceSelection(text);</b>
+<b class="nc"><i>648</i>&nbsp;		}</b>
+<i>649</i>&nbsp;		
+<i>650</i>&nbsp;	}
+<i>651</i>&nbsp;	
+<i>652</i>&nbsp;	
+<i>653</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

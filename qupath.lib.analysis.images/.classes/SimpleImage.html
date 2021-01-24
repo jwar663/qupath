@@ -1,0 +1,102 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SimpleImage</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.images</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SimpleImage (qupath.lib.analysis.images)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">SimpleImage</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.images;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/**
+<i>27</i>&nbsp; * A minimal interface for accessing pixel values in a single-channel image.
+<i>28</i>&nbsp; * 
+<i>29</i>&nbsp; * @author Pete Bankhead
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; */
+<i>32</i>&nbsp;public interface SimpleImage {
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;	/**
+<i>35</i>&nbsp;	 * Get the value of a single pixel as a float.
+<i>36</i>&nbsp;	 * @param x x-coordinate of the pixel
+<i>37</i>&nbsp;	 * @param y y-coordinate of the pixel
+<i>38</i>&nbsp;	 * @return
+<i>39</i>&nbsp;	 */
+<i>40</i>&nbsp;	float getValue(int x, int y);
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;	/**
+<i>43</i>&nbsp;	 * Get the image width.
+<i>44</i>&nbsp;	 * @return
+<i>45</i>&nbsp;	 */
+<i>46</i>&nbsp;	int getWidth();
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;	/**
+<i>49</i>&nbsp;	 * Get the image height.
+<i>50</i>&nbsp;	 * @return
+<i>51</i>&nbsp;	 */
+<i>52</i>&nbsp;	int getHeight();
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

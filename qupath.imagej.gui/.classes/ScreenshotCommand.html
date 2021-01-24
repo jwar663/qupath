@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ScreenshotCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ScreenshotCommand (qupath.imagej.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ScreenshotCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.4%
+  </span>
+  <span class="absValue">
+    (3/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.gui;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import ij.ImageJ;
+<i>27</i>&nbsp;import ij.ImagePlus;
+<i>28</i>&nbsp;import ij.WindowManager;
+<i>29</i>&nbsp;import ij.macro.Interpreter;
+<i>30</i>&nbsp;import ij.measure.Calibration;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import java.awt.image.BufferedImage;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import javax.swing.SwingUtilities;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>37</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>38</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>39</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>40</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;/**
+<i>43</i>&nbsp; * Create a snapshot of the QuPath viewer, and send the image directly to ImageJ.
+<i>44</i>&nbsp; * 
+<i>45</i>&nbsp; * @author Pete Bankhead
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;class ScreenshotCommand implements Runnable {
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;	private QuPathGUI qupath;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;	/**
+<i>53</i>&nbsp;	 * Constructor.
+<i>54</i>&nbsp;	 * @param qupath QuPath instance where the command should be installed.
+<i>55</i>&nbsp;	 */
+<b class="fc"><i>56</i>&nbsp;	public ScreenshotCommand(QuPathGUI qupath) {</b>
+<i>57</i>&nbsp;//		super(&quot;Make screenshot&quot;, PathIconFactory.createIcon(QuPathGUI.iconSize, QuPathGUI.iconSize, PathIconFactory.PathIcons.SCREENSHOT));
+<b class="fc"><i>58</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>59</i>&nbsp;	}</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;	@Override
+<i>62</i>&nbsp;	public void run() {
+<i>63</i>&nbsp;		
+<b class="nc"><i>64</i>&nbsp;		QuPathViewer viewer = qupath.getViewer();</b>
+<b class="nc"><i>65</i>&nbsp;		if (viewer == null)</b>
+<b class="nc"><i>66</i>&nbsp;			return;</b>
+<i>67</i>&nbsp;		
+<b class="nc"><i>68</i>&nbsp;		BufferedImage img = GuiTools.makeSnapshot(qupath, GuiTools.SnapshotType.VIEWER);</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;		// Try to start up &amp; display ImageJ
+<b class="nc"><i>71</i>&nbsp;		ImageJ ij = IJExtension.getImageJInstance();</b>
+<b class="nc"><i>72</i>&nbsp;		if (ij != null)</b>
+<b class="nc"><i>73</i>&nbsp;			ij.setVisible(true);</b>
+<b class="nc"><i>74</i>&nbsp;		String name = &quot;QuPath screenshot&quot;;</b>
+<b class="nc"><i>75</i>&nbsp;		if (viewer.getServer() != null)</b>
+<b class="nc"><i>76</i>&nbsp;			name = WindowManager.getUniqueName(&quot;Screenshot - &quot; + ServerTools.getDisplayableImageName(viewer.getServer()));</b>
+<b class="nc"><i>77</i>&nbsp;		ImagePlus imp = new ImagePlus(name, img);</b>
+<b class="nc"><i>78</i>&nbsp;		double pixelWidth = getDisplayedPixelWidthMicrons(viewer);</b>
+<b class="nc"><i>79</i>&nbsp;		double pixelHeight = getDisplayedPixelHeightMicrons(viewer);</b>
+<b class="nc"><i>80</i>&nbsp;		if (!Double.isNaN(pixelWidth + pixelHeight)) {</b>
+<b class="nc"><i>81</i>&nbsp;			Calibration cal = imp.getCalibration();</b>
+<b class="nc"><i>82</i>&nbsp;			cal.pixelWidth = pixelWidth;</b>
+<b class="nc"><i>83</i>&nbsp;			cal.pixelHeight = pixelHeight;</b>
+<b class="nc"><i>84</i>&nbsp;			cal.setUnit(&quot;um&quot;);</b>
+<i>85</i>&nbsp;//			// TODO: Set the screenshot origin, if no rotations have been applied
+<i>86</i>&nbsp;//			cal.xOrigin = -viewer.componentXtoImageX(0) / viewer.getDownsampleFactor();
+<i>87</i>&nbsp;//			cal.yOrigin = -viewer.componentYtoImageY(0) / viewer.getDownsampleFactor();
+<i>88</i>&nbsp;		}
+<i>89</i>&nbsp;		// TODO: Put image path into screenshot images - so they can also be used as whole slide images later
+<b class="nc"><i>90</i>&nbsp;		Interpreter.batchMode = false; // Make sure we aren&#39;t in batch mode, so that image will display</b>
+<i>91</i>&nbsp;		
+<b class="nc"><i>92</i>&nbsp;		SwingUtilities.invokeLater(() -&gt; imp.show());</b>
+<b class="nc"><i>93</i>&nbsp;	}</b>
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	private double getDisplayedPixelWidthMicrons(QuPathViewer viewer) {
+<b class="nc"><i>97</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = viewer.getServer();</b>
+<b class="nc"><i>98</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>99</i>&nbsp;			return Double.NaN;</b>
+<b class="nc"><i>100</i>&nbsp;		return server.getPixelCalibration().getPixelWidthMicrons() * viewer.getDownsampleFactor();</b>
+<i>101</i>&nbsp;	}
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;	private double getDisplayedPixelHeightMicrons(QuPathViewer viewer) {
+<b class="nc"><i>104</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = viewer.getServer();</b>
+<b class="nc"><i>105</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>106</i>&nbsp;			return Double.NaN;</b>
+<b class="nc"><i>107</i>&nbsp;		return server.getPixelCalibration().getPixelHeightMicrons() * viewer.getDownsampleFactor();</b>
+<i>108</i>&nbsp;	}
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

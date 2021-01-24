@@ -1,0 +1,659 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageData</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageData (qupath.lib.images)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageData</td>
+<td class="coverageStat">
+  <span class="percent">
+    58.1%
+  </span>
+  <span class="absValue">
+    (18/ 31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    58.8%
+  </span>
+  <span class="absValue">
+    (77/ 131)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageData$ImageType</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    62.9%
+  </span>
+  <span class="absValue">
+    (22/ 35)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62%
+  </span>
+  <span class="absValue">
+    (88/ 142)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.beans.PropertyChangeListener;
+<i>28</i>&nbsp;import java.beans.PropertyChangeSupport;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.HashMap;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Objects;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import qupath.lib.awt.common.TestCommon;
+<i>38</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>39</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains.DefaultColorDeconvolutionStains;
+<i>40</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>41</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>42</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>43</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>44</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>45</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>46</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>47</i>&nbsp;import qupath.lib.plugins.workflow.DefaultScriptableWorkflowStep;
+<i>48</i>&nbsp;import qupath.lib.plugins.workflow.Workflow;
+<i>49</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowListener;
+<i>50</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowStep;
+<i>51</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;/**
+<i>54</i>&nbsp; * Class that brings together the main data in connection with the analysis of a single image.
+<i>55</i>&nbsp; * &lt;p&gt;
+<i>56</i>&nbsp; * Currently, this is really the server (to access the image &amp;amp; its pixels) and the object hierarchy that represents detections.
+<i>57</i>&nbsp; * In addition, there is an ImageType - as some options may change depending on this.
+<i>58</i>&nbsp; * &lt;p&gt;
+<i>59</i>&nbsp; * One particularly significant example is that of Brightfield images in pathology, for which stain vectors are often required for
+<i>60</i>&nbsp; * effective stain separation.
+<i>61</i>&nbsp; * 
+<i>62</i>&nbsp; * @author Pete Bankhead
+<i>63</i>&nbsp; * @param &lt;T&gt; 
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;public class ImageData&lt;T&gt; implements WorkflowListener, PathObjectHierarchyListener {
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	/**
+<i>69</i>&nbsp;	 * Enum representing possible image types.
+<i>70</i>&nbsp;	 * &lt;p&gt;
+<i>71</i>&nbsp;	 * TODO: Warning! This is liable to change in the future to remove specific stain information.
+<i>72</i>&nbsp;	 */
+<b class="fc"><i>73</i>&nbsp;	public enum ImageType {</b>
+<i>74</i>&nbsp;			/**
+<i>75</i>&nbsp;			 * Brightfield image with hematoxylin and DAB stains.
+<i>76</i>&nbsp;			 */
+<b class="fc"><i>77</i>&nbsp;			BRIGHTFIELD_H_DAB(&quot;Brightfield (H-DAB)&quot;),</b>
+<i>78</i>&nbsp;			/**
+<i>79</i>&nbsp;			 * Brightfield image with hematoxylin and eosin stains.
+<i>80</i>&nbsp;			 */
+<b class="fc"><i>81</i>&nbsp;			BRIGHTFIELD_H_E(&quot;Brightfield (H&amp;E)&quot;),</b>
+<i>82</i>&nbsp;			/**
+<i>83</i>&nbsp;			 * Brightfield image with any stains.
+<i>84</i>&nbsp;			 */
+<b class="fc"><i>85</i>&nbsp;			BRIGHTFIELD_OTHER(&quot;Brightfield (other)&quot;),</b>
+<i>86</i>&nbsp;			/**
+<i>87</i>&nbsp;			 * Fluorescence image.
+<i>88</i>&nbsp;			 */
+<b class="fc"><i>89</i>&nbsp;			FLUORESCENCE(&quot;Fluorescence&quot;),</b>
+<i>90</i>&nbsp;			/**
+<i>91</i>&nbsp;			 * Other image type, not covered by any of the alternatives above.
+<i>92</i>&nbsp;			 */
+<b class="fc"><i>93</i>&nbsp;			OTHER(&quot;Other&quot;),</b>
+<i>94</i>&nbsp;			/**
+<i>95</i>&nbsp;			 * Image type has not been set.
+<i>96</i>&nbsp;			 */
+<b class="fc"><i>97</i>&nbsp;			UNSET(&quot;Not set&quot;);</b>
+<i>98</i>&nbsp;		
+<i>99</i>&nbsp;		private final String text;
+<i>100</i>&nbsp;	
+<b class="fc"><i>101</i>&nbsp;		ImageType(String text) {</b>
+<b class="fc"><i>102</i>&nbsp;			this.text = text;</b>
+<b class="fc"><i>103</i>&nbsp;		}</b>
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;		@Override
+<i>106</i>&nbsp;		public String toString() {
+<b class="fc"><i>107</i>&nbsp;			return text;</b>
+<i>108</i>&nbsp;		}
+<i>109</i>&nbsp;		
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;
+<b class="fc"><i>112</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ImageData.class);</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;	transient private PropertyChangeSupport pcs;
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;	transient private ImageServer&lt;T&gt; server;
+<i>117</i>&nbsp;	
+<b class="fc"><i>118</i>&nbsp;	private String lastSavedPath = null;</b>
+<i>119</i>&nbsp;	
+<i>120</i>&nbsp;	private String serverPath;
+<i>121</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<b class="fc"><i>122</i>&nbsp;	private ImageType type = ImageType.UNSET;</b>
+<i>123</i>&nbsp;	
+<i>124</i>&nbsp;	// A log of steps that have been applied
+<b class="fc"><i>125</i>&nbsp;	private Workflow workflow = new Workflow();</b>
+<i>126</i>&nbsp;	
+<i>127</i>&nbsp;	// Really just one set of stains will be used, as there will only be one ImageType -
+<i>128</i>&nbsp;	// but here we store stains by ImageType anyway so that they are not instantly forgotten if the ImageType changes
+<i>129</i>&nbsp;	// Will return null for unsupported ImageTypes
+<b class="fc"><i>130</i>&nbsp;	private Map&lt;ImageType, ColorDeconvolutionStains&gt; stainMap = new HashMap&lt;&gt;();</b>
+<i>131</i>&nbsp;	
+<b class="fc"><i>132</i>&nbsp;	private Map&lt;String, Object&gt; propertiesMap = new HashMap&lt;&gt;();</b>
+<i>133</i>&nbsp;	
+<i>134</i>&nbsp;
+<b class="fc"><i>135</i>&nbsp;	private boolean changes = false; // Indicating changes since this ImageData was last saved</b>
+<i>136</i>&nbsp;	
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	/**
+<i>139</i>&nbsp;	 * Create a new ImageData with a specified object hierarchy and type.
+<i>140</i>&nbsp;	 * @param server
+<i>141</i>&nbsp;	 * @param hierarchy 
+<i>142</i>&nbsp;	 * @param type
+<i>143</i>&nbsp;	 */
+<b class="fc"><i>144</i>&nbsp;	public ImageData(ImageServer&lt;T&gt; server, PathObjectHierarchy hierarchy, ImageType type) {</b>
+<b class="fc"><i>145</i>&nbsp;		System.out.println(&quot;image data ImageData 1&quot;);</b>
+<b class="fc"><i>146</i>&nbsp;		System.out.println(&quot;method called: &quot; + TestCommon.methodCalled());</b>
+<b class="fc"><i>147</i>&nbsp;		pcs = new PropertyChangeSupport(this);</b>
+<b class="fc"><i>148</i>&nbsp;		this.server = server;</b>
+<b class="fc"><i>149</i>&nbsp;		this.hierarchy = hierarchy == null ? new PathObjectHierarchy() : hierarchy;</b>
+<b class="fc"><i>150</i>&nbsp;		this.serverPath = server == null ? null : server.getPath(); // TODO: Deal with sub image servers</b>
+<b class="fc"><i>151</i>&nbsp;		initializeStainMap();</b>
+<b class="fc"><i>152</i>&nbsp;		if (type == null)</b>
+<b class="nc"><i>153</i>&nbsp;			type = ImageType.UNSET;</b>
+<b class="fc"><i>154</i>&nbsp;		setImageType(type);</b>
+<i>155</i>&nbsp;		
+<i>156</i>&nbsp;		// Add listeners for changes
+<b class="fc"><i>157</i>&nbsp;		this.hierarchy.addPathObjectListener(this);</b>
+<b class="fc"><i>158</i>&nbsp;		workflow.addWorkflowListener(this);</b>
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		// Discard any changes during construction
+<b class="fc"><i>161</i>&nbsp;		changes = false;</b>
+<i>162</i>&nbsp;
+<b class="fc"><i>163</i>&nbsp;		System.out.println(&quot;type: &quot; + type.text);</b>
+<b class="fc"><i>164</i>&nbsp;		System.out.println(&quot;get height: &quot; + server.getMetadata().getHeight());</b>
+<b class="fc"><i>165</i>&nbsp;		System.out.println(&quot;get name: &quot; + server.getMetadata().getName());</b>
+<b class="fc"><i>166</i>&nbsp;		System.out.println(&quot;get averagedpixelsize: &quot; + server.getMetadata().getAveragedPixelSize());</b>
+<b class="fc"><i>167</i>&nbsp;		System.out.println(&quot;get number of levels: &quot; + server.getMetadata().getLevels().size());</b>
+<b class="fc"><i>168</i>&nbsp;		System.out.println(&quot;get level 0 downsample: &quot; + server.getMetadata().getLevels().get(0).getDownsample());</b>
+<b class="fc"><i>169</i>&nbsp;	}</b>
+<i>170</i>&nbsp;	
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;	 * Create a new ImageData with a specified type and creating a new object hierarchy.
+<i>173</i>&nbsp;	 * @param server
+<i>174</i>&nbsp;	 * @param type
+<i>175</i>&nbsp;	 */
+<i>176</i>&nbsp;	public ImageData(ImageServer&lt;T&gt; server, ImageType type) {
+<i>177</i>&nbsp;
+<b class="fc"><i>178</i>&nbsp;		this(server, new PathObjectHierarchy(), type);</b>
+<i>179</i>&nbsp;//		RegionRequest request =
+<i>180</i>&nbsp;//		BufferedImage img = server.readBufferedImage()
+<b class="fc"><i>181</i>&nbsp;		System.out.println(&quot;method called: &quot; + TestCommon.methodCalled());</b>
+<b class="fc"><i>182</i>&nbsp;		System.out.println(&quot;image data ImageData 2&quot;);</b>
+<b class="fc"><i>183</i>&nbsp;		System.out.println(&quot;type: &quot; + type.text);</b>
+<b class="fc"><i>184</i>&nbsp;		System.out.println(&quot;get height: &quot; + server.getMetadata().getHeight());</b>
+<b class="fc"><i>185</i>&nbsp;		System.out.println(&quot;get name: &quot; + server.getMetadata().getName());</b>
+<b class="fc"><i>186</i>&nbsp;		System.out.println(&quot;get averagedpixelsize: &quot; + server.getMetadata().getAveragedPixelSize());</b>
+<b class="fc"><i>187</i>&nbsp;		System.out.println(&quot;get number of levels: &quot; + server.getMetadata().getLevels().size());</b>
+<b class="fc"><i>188</i>&nbsp;		System.out.println(&quot;get level 0 downsample: &quot; + server.getMetadata().getLevels().get(0).getDownsample());</b>
+<b class="fc"><i>189</i>&nbsp;	}</b>
+<i>190</i>&nbsp;	
+<i>191</i>&nbsp;	/**
+<i>192</i>&nbsp;	 * Get a workflow representing a history of the processing steps applied to the ImageData.
+<i>193</i>&nbsp;	 * 
+<i>194</i>&nbsp;	 * @return
+<i>195</i>&nbsp;	 */
+<i>196</i>&nbsp;	public Workflow getHistoryWorkflow() {
+<i>197</i>&nbsp;		//System.out.println(&quot;image data getHistoryWorkflow&quot;);
+<b class="fc"><i>198</i>&nbsp;		return workflow;</b>
+<i>199</i>&nbsp;	}
+<i>200</i>&nbsp;	
+<i>201</i>&nbsp;	
+<i>202</i>&nbsp;	
+<i>203</i>&nbsp;	/**
+<i>204</i>&nbsp;	 * Create a new ImageData with ImageType.UNKNOWN.
+<i>205</i>&nbsp;	 * 
+<i>206</i>&nbsp;	 * @param server
+<i>207</i>&nbsp;	 * @param hierarchy
+<i>208</i>&nbsp;	 */
+<i>209</i>&nbsp;	public ImageData(ImageServer&lt;T&gt; server, PathObjectHierarchy hierarchy) {
+<b class="nc"><i>210</i>&nbsp;		this(server, hierarchy, null);</b>
+<b class="nc"><i>211</i>&nbsp;	}</b>
+<i>212</i>&nbsp;
+<i>213</i>&nbsp;	/**
+<i>214</i>&nbsp;	 * Create a new ImageData with ImageType.UNKNOWN and a new PathObjectHierarchy.
+<i>215</i>&nbsp;	 * 
+<i>216</i>&nbsp;	 * @param server
+<i>217</i>&nbsp;	 */
+<i>218</i>&nbsp;	public ImageData(ImageServer&lt;T&gt; server) {
+<b class="nc"><i>219</i>&nbsp;		this(server, new PathObjectHierarchy());</b>
+<b class="nc"><i>220</i>&nbsp;	}</b>
+<i>221</i>&nbsp;	
+<i>222</i>&nbsp;	
+<i>223</i>&nbsp;	private void initializeStainMap() {
+<i>224</i>&nbsp;		//System.out.println(&quot;image data initializeStainMap&quot;);
+<b class="fc"><i>225</i>&nbsp;		stainMap.put(ImageType.BRIGHTFIELD_H_DAB, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_DAB));</b>
+<b class="fc"><i>226</i>&nbsp;		stainMap.put(ImageType.BRIGHTFIELD_H_E, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_E));</b>
+<b class="fc"><i>227</i>&nbsp;		stainMap.put(ImageType.BRIGHTFIELD_OTHER, ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_DAB));</b>
+<b class="fc"><i>228</i>&nbsp;	}</b>
+<i>229</i>&nbsp;	
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	/**
+<i>232</i>&nbsp;	 * Set the color deconvolution stain vectors for the current image type.
+<i>233</i>&nbsp;	 * &lt;p&gt;
+<i>234</i>&nbsp;	 * If the type is not brightfield, an IllegalArgumentException is thrown.
+<i>235</i>&nbsp;	 * 
+<i>236</i>&nbsp;	 * @param stains
+<i>237</i>&nbsp;	 */
+<i>238</i>&nbsp;	public void setColorDeconvolutionStains(ColorDeconvolutionStains stains) {
+<b class="nc"><i>239</i>&nbsp;		if (!isBrightfield())</b>
+<b class="nc"><i>240</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot set color deconvolution stains for image type &quot; + type);</b>
+<b class="nc"><i>241</i>&nbsp;		logger.trace(&quot;Setting stains to {}&quot;, stains);</b>
+<b class="nc"><i>242</i>&nbsp;		ColorDeconvolutionStains stainsOld = stainMap.put(type, stains);</b>
+<b class="nc"><i>243</i>&nbsp;		pcs.firePropertyChange(&quot;stains&quot;, stainsOld, stains);</b>
+<i>244</i>&nbsp;		
+<b class="nc"><i>245</i>&nbsp;		addColorDeconvolutionStainsToWorkflow(this);</b>
+<i>246</i>&nbsp;//		logger.error(&quot;WARNING: Setting color deconvolution stains is not yet scriptable!!!!&quot;);
+<i>247</i>&nbsp;		
+<b class="nc"><i>248</i>&nbsp;		changes = true;</b>
+<b class="nc"><i>249</i>&nbsp;	}</b>
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	
+<i>252</i>&nbsp;	/**
+<i>253</i>&nbsp;	 * Update the ImageServer metadata. The benefit of using this method rather than manipulating 
+<i>254</i>&nbsp;	 * the ImageServer directly is that it will fire a property change.
+<i>255</i>&nbsp;	 * @param newMetadata
+<i>256</i>&nbsp;	 */
+<i>257</i>&nbsp;	public void updateServerMetadata(ImageServerMetadata newMetadata) {
+<b class="nc"><i>258</i>&nbsp;		Objects.requireNonNull(newMetadata);</b>
+<b class="nc"><i>259</i>&nbsp;		logger.trace(&quot;Updating server metadata&quot;);</b>
+<b class="nc"><i>260</i>&nbsp;		var oldMetadata = server.getMetadata();</b>
+<b class="nc"><i>261</i>&nbsp;		server.setMetadata(newMetadata);</b>
+<b class="nc"><i>262</i>&nbsp;		pcs.firePropertyChange(&quot;serverMetadata&quot;, oldMetadata, newMetadata);</b>
+<b class="nc"><i>263</i>&nbsp;		changes = changes || !oldMetadata.equals(newMetadata);</b>
+<b class="nc"><i>264</i>&nbsp;	}</b>
+<i>265</i>&nbsp;	
+<i>266</i>&nbsp;//	public void setColorDeconvolutionStains(final String stainsString) {
+<i>267</i>&nbsp;//		setColorDeconvolutionStains(ColorDeconvolutionStains.parseColorDeconvolutionStainsArg(stainsString));
+<i>268</i>&nbsp;//	}
+<i>269</i>&nbsp;//	
+<i>270</i>&nbsp;//	public void setImageType(final String type) {
+<i>271</i>&nbsp;//		setImageType(ImageType.valueOf(type));
+<i>272</i>&nbsp;//	}
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;	/**
+<i>275</i>&nbsp;	 * Returns true if the image type is set to brightfield.
+<i>276</i>&nbsp;	 * @return
+<i>277</i>&nbsp;	 */
+<i>278</i>&nbsp;	public boolean isBrightfield() {
+<i>279</i>&nbsp;		//System.out.println(&quot;image data isBrightfield&quot;);
+<b class="fc"><i>280</i>&nbsp;		return getImageType().toString().toLowerCase().startsWith(&quot;brightfield&quot;);</b>
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;	/**
+<i>284</i>&nbsp;	 * Returns true if the image type is set to fluorescence.
+<i>285</i>&nbsp;	 * @return
+<i>286</i>&nbsp;	 */
+<i>287</i>&nbsp;	public boolean isFluorescence() {
+<b class="nc"><i>288</i>&nbsp;		return getImageType() == ImageType.FLUORESCENCE;</b>
+<i>289</i>&nbsp;	}
+<i>290</i>&nbsp;	
+<i>291</i>&nbsp;	/**
+<i>292</i>&nbsp;	 * Set the image type.
+<i>293</i>&nbsp;	 * @param type
+<i>294</i>&nbsp;	 */
+<i>295</i>&nbsp;	public void setImageType(final ImageType type) {
+<i>296</i>&nbsp;		//System.out.println(&quot;image data setImageType&quot;);
+<b class="fc"><i>297</i>&nbsp;		if (this.type == type)</b>
+<b class="fc"><i>298</i>&nbsp;			return;</b>
+<b class="fc"><i>299</i>&nbsp;		logger.trace(&quot;Setting image type to {}&quot;, type);</b>
+<b class="fc"><i>300</i>&nbsp;		ImageType oldType = this.type;</b>
+<b class="fc"><i>301</i>&nbsp;		this.type = type;</b>
+<i>302</i>&nbsp;		
+<i>303</i>&nbsp;		// Log the step
+<b class="fc"><i>304</i>&nbsp;		getHistoryWorkflow().addStep(</b>
+<i>305</i>&nbsp;				new DefaultScriptableWorkflowStep(&quot;Set image type&quot;,
+<b class="fc"><i>306</i>&nbsp;						Collections.singletonMap(&quot;Image type&quot;, type),</b>
+<b class="fc"><i>307</i>&nbsp;						&quot;setImageType(\&#39;&quot; + type.name() + &quot;&#39;);&quot;)</b>
+<i>308</i>&nbsp;			);
+<b class="fc"><i>309</i>&nbsp;		if (isBrightfield())</b>
+<b class="nc"><i>310</i>&nbsp;			addColorDeconvolutionStainsToWorkflow(this);</b>
+<i>311</i>&nbsp;		
+<i>312</i>&nbsp;		// TODO: REINTRODUCE LOGGING!
+<i>313</i>&nbsp;//		// Log the step
+<i>314</i>&nbsp;//		getWorkflow().addStep(
+<i>315</i>&nbsp;//				new DefaultScriptableWorkflowStep(&quot;Set image type&quot;,
+<i>316</i>&nbsp;//						Collections.singletonMap(&quot;Image type&quot;, type),
+<i>317</i>&nbsp;//						QP.class.getSimpleName() + &quot;.setImageType(\&#39;&quot; + type.toString() + &quot;&#39;);&quot;)
+<i>318</i>&nbsp;//			);
+<i>319</i>&nbsp;//		if (isBrightfield())
+<i>320</i>&nbsp;//			addColorDeconvolutionStainsToWorkflow(this);
+<i>321</i>&nbsp;
+<b class="fc"><i>322</i>&nbsp;		pcs.firePropertyChange(&quot;imageType&quot;, oldType, type);</b>
+<b class="fc"><i>323</i>&nbsp;		changes = true;</b>
+<b class="fc"><i>324</i>&nbsp;	}</b>
+<i>325</i>&nbsp;	
+<i>326</i>&nbsp;	
+<i>327</i>&nbsp;	
+<i>328</i>&nbsp;	// TODO: REINTRODUCE LOGGING!
+<i>329</i>&nbsp;	private static void addColorDeconvolutionStainsToWorkflow(ImageData&lt;?&gt; imageData) {
+<i>330</i>&nbsp;//		logger.warn(&quot;Color deconvolution stain logging not currently enabled!&quot;);
+<i>331</i>&nbsp;
+<b class="nc"><i>332</i>&nbsp;		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>333</i>&nbsp;		if (stains == null) {</b>
+<b class="nc"><i>334</i>&nbsp;			return;</b>
+<i>335</i>&nbsp;		}
+<i>336</i>&nbsp;		
+<b class="nc"><i>337</i>&nbsp;		String arg = ColorDeconvolutionStains.getColorDeconvolutionStainsAsString(imageData.getColorDeconvolutionStains(), 5);</b>
+<b class="nc"><i>338</i>&nbsp;		Map&lt;String, String&gt; map = GeneralTools.parseArgStringValues(arg);</b>
+<b class="nc"><i>339</i>&nbsp;		WorkflowStep lastStep = imageData.getHistoryWorkflow().getLastStep();</b>
+<b class="nc"><i>340</i>&nbsp;		String commandName = &quot;Set color deconvolution stains&quot;;</b>
+<b class="nc"><i>341</i>&nbsp;		WorkflowStep newStep = new DefaultScriptableWorkflowStep(commandName,</b>
+<i>342</i>&nbsp;				map,
+<i>343</i>&nbsp;				&quot;setColorDeconvolutionStains(\&#39;&quot; + arg + &quot;&#39;);&quot;);
+<i>344</i>&nbsp;		
+<b class="nc"><i>345</i>&nbsp;		if (lastStep != null &amp;&amp; commandName.equals(lastStep.getName()))</b>
+<b class="nc"><i>346</i>&nbsp;			imageData.getHistoryWorkflow().replaceLastStep(newStep);</b>
+<i>347</i>&nbsp;		else
+<b class="nc"><i>348</i>&nbsp;			imageData.getHistoryWorkflow().addStep(newStep);</b>
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;		
+<i>351</i>&nbsp;//		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();
+<i>352</i>&nbsp;//		if (stains == null)
+<i>353</i>&nbsp;//			return;
+<i>354</i>&nbsp;//		
+<i>355</i>&nbsp;//		String arg = ColorDeconvolutionStains.getColorDeconvolutionStainsAsString(imageData.getColorDeconvolutionStains(), 5);
+<i>356</i>&nbsp;//		Map&lt;String, String&gt; map = GeneralTools.parseArgStringValues(arg);
+<i>357</i>&nbsp;//		WorkflowStep lastStep = imageData.getWorkflow().getLastStep();
+<i>358</i>&nbsp;//		String commandName = &quot;Set color deconvolution stains&quot;;
+<i>359</i>&nbsp;//		WorkflowStep newStep = new DefaultScriptableWorkflowStep(commandName,
+<i>360</i>&nbsp;//				map,
+<i>361</i>&nbsp;//				QP.class.getSimpleName() + &quot;.setColorDeconvolutionStains(\&#39;&quot; + arg + &quot;&#39;);&quot;);
+<i>362</i>&nbsp;//		
+<i>363</i>&nbsp;//		if (lastStep != null &amp;&amp; commandName.equals(lastStep.getName()))
+<i>364</i>&nbsp;//			imageData.getWorkflow().replaceLastStep(newStep);
+<i>365</i>&nbsp;//		else
+<i>366</i>&nbsp;//			imageData.getWorkflow().addStep(newStep);
+<b class="nc"><i>367</i>&nbsp;	}</b>
+<i>368</i>&nbsp;	
+<i>369</i>&nbsp;	/**
+<i>370</i>&nbsp;	 * Get the ImageServer.
+<i>371</i>&nbsp;	 * @return
+<i>372</i>&nbsp;	 */
+<i>373</i>&nbsp;	public ImageServer&lt;T&gt; getServer() {
+<i>374</i>&nbsp;		//System.out.println(&quot;image data getServer&quot;);
+<b class="fc"><i>375</i>&nbsp;		return server;</b>
+<i>376</i>&nbsp;	}
+<i>377</i>&nbsp;	
+<i>378</i>&nbsp;	/**
+<i>379</i>&nbsp;	 * Get the path of the ImageServer.
+<i>380</i>&nbsp;	 * @return
+<i>381</i>&nbsp;	 */
+<i>382</i>&nbsp;	public String getServerPath() {
+<b class="nc"><i>383</i>&nbsp;		return serverPath;</b>
+<i>384</i>&nbsp;	}
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;	/**
+<i>387</i>&nbsp;	 * Get the object hierarchy.
+<i>388</i>&nbsp;	 * @return
+<i>389</i>&nbsp;	 */
+<i>390</i>&nbsp;	public PathObjectHierarchy getHierarchy() {
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;		//System.out.println(&quot;image data getHierarchy&quot;);
+<b class="fc"><i>393</i>&nbsp;		return hierarchy;</b>
+<i>394</i>&nbsp;	}
+<i>395</i>&nbsp;	
+<i>396</i>&nbsp;	/**
+<i>397</i>&nbsp;	 * Get the image type
+<i>398</i>&nbsp;	 * @return
+<i>399</i>&nbsp;	 */
+<i>400</i>&nbsp;	public ImageType getImageType() {
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;		//System.out.println(&quot;image data getImageType&quot;);
+<b class="fc"><i>403</i>&nbsp;		return type;</b>
+<i>404</i>&nbsp;	}
+<i>405</i>&nbsp;	
+<i>406</i>&nbsp;	/**
+<i>407</i>&nbsp;	 * Get the stains defined for this image, or null if this is not a brightfield image suitable for color deconvolution.
+<i>408</i>&nbsp;	 * @return
+<i>409</i>&nbsp;	 */
+<i>410</i>&nbsp;	public ColorDeconvolutionStains getColorDeconvolutionStains() {
+<b class="nc"><i>411</i>&nbsp;		return stainMap.get(getImageType());</b>
+<i>412</i>&nbsp;	}
+<i>413</i>&nbsp;	
+<i>414</i>&nbsp;	/**
+<i>415</i>&nbsp;	 * Add a new property change listener.
+<i>416</i>&nbsp;	 * @param listener
+<i>417</i>&nbsp;	 */
+<i>418</i>&nbsp;	public void addPropertyChangeListener(PropertyChangeListener listener) {
+<i>419</i>&nbsp;		//System.out.println(&quot;image data addPropertyChangeListener&quot;);
+<b class="fc"><i>420</i>&nbsp;		if (pcs == null)</b>
+<b class="nc"><i>421</i>&nbsp;			pcs = new PropertyChangeSupport(this);</b>
+<b class="fc"><i>422</i>&nbsp;        this.pcs.addPropertyChangeListener(listener);</b>
+<b class="fc"><i>423</i>&nbsp;    }</b>
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;	/**
+<i>426</i>&nbsp;	 * Remove a property change listener.
+<i>427</i>&nbsp;	 * @param listener
+<i>428</i>&nbsp;	 */
+<i>429</i>&nbsp;    public void removePropertyChangeListener(PropertyChangeListener listener) {
+<i>430</i>&nbsp;		//System.out.println(&quot;image data removePropertyChangeListener&quot;);
+<b class="fc"><i>431</i>&nbsp;        this.pcs.removePropertyChangeListener(listener);</b>
+<b class="fc"><i>432</i>&nbsp;    }</b>
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    /**
+<i>436</i>&nbsp;     * Get a specified property.
+<i>437</i>&nbsp;     * @param key
+<i>438</i>&nbsp;     * @return
+<i>439</i>&nbsp;     */
+<i>440</i>&nbsp;    public Object getProperty(String key) {
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;		//System.out.println(&quot;image data getProperty&quot;);
+<b class="fc"><i>443</i>&nbsp;		return propertiesMap.get(key);</b>
+<i>444</i>&nbsp;    }
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;    /**
+<i>447</i>&nbsp;     * Set a property. Note that if properties are Serializable, they will be included in 
+<i>448</i>&nbsp;     * associated data files - otherwise they are stored only transiently.
+<i>449</i>&nbsp;     * @param key
+<i>450</i>&nbsp;     * @param value
+<i>451</i>&nbsp;     * @return
+<i>452</i>&nbsp;     */
+<i>453</i>&nbsp;    public Object setProperty(String key, Object value) {
+<i>454</i>&nbsp;		//System.out.println(&quot;image data setProperty&quot;);
+<b class="fc"><i>455</i>&nbsp;	    	Object oldValue = propertiesMap.put(key, value);</b>
+<b class="fc"><i>456</i>&nbsp;	    	if (oldValue == null)</b>
+<b class="fc"><i>457</i>&nbsp;	    		changes = value != null;</b>
+<i>458</i>&nbsp;	    	else
+<b class="nc"><i>459</i>&nbsp;	    		changes = changes || !oldValue.equals(value);</b>
+<b class="fc"><i>460</i>&nbsp;	    	logger.trace(&quot;Setting property: {}: {}&quot;, key, value);</b>
+<i>461</i>&nbsp;//	    	System.err.println(changes + &quot; setting &quot; + key + &quot; to &quot; + value);
+<b class="fc"><i>462</i>&nbsp;	    	if (oldValue != value)</b>
+<b class="fc"><i>463</i>&nbsp;	    		pcs.firePropertyChange(key, oldValue, value);</b>
+<b class="fc"><i>464</i>&nbsp;	    	return oldValue;</b>
+<i>465</i>&nbsp;    }
+<i>466</i>&nbsp;
+<i>467</i>&nbsp;    /**
+<i>468</i>&nbsp;     * Remove a specified property.
+<i>469</i>&nbsp;     * @param key
+<i>470</i>&nbsp;     * @return
+<i>471</i>&nbsp;     */
+<i>472</i>&nbsp;    public Object removeProperty(String key) {
+<i>473</i>&nbsp;		//System.out.println(&quot;image data removeProperty&quot;);
+<b class="nc"><i>474</i>&nbsp;    	if (propertiesMap.containsKey(key)) {</b>
+<b class="nc"><i>475</i>&nbsp;        	Object oldValue = propertiesMap.remove(key);</b>
+<b class="nc"><i>476</i>&nbsp;    		changes = true;</b>
+<b class="nc"><i>477</i>&nbsp;	    	logger.trace(&quot;Removing property: {}: {}&quot;, key, oldValue);</b>
+<b class="nc"><i>478</i>&nbsp;    		pcs.firePropertyChange(key, oldValue, null);</b>
+<b class="nc"><i>479</i>&nbsp;    		return oldValue;</b>
+<i>480</i>&nbsp;    	}
+<b class="nc"><i>481</i>&nbsp;    	return null;</b>
+<i>482</i>&nbsp;    }
+<i>483</i>&nbsp;
+<i>484</i>&nbsp;    /**
+<i>485</i>&nbsp;     * Get an unmodifiable map representing all known properties for this ImageData.
+<i>486</i>&nbsp;     * @return
+<i>487</i>&nbsp;     */
+<b class="nc"><i>488</i>&nbsp;    public Map&lt;String, Object&gt; getProperties() { return Collections.unmodifiableMap(propertiesMap);</b>
+<i>489</i>&nbsp;    }
+<i>490</i>&nbsp;    
+<i>491</i>&nbsp;    
+<i>492</i>&nbsp;    /**
+<i>493</i>&nbsp;     * Get the last path used to save this object;
+<i>494</i>&nbsp;     * @return
+<i>495</i>&nbsp;     */
+<b class="fc"><i>496</i>&nbsp;    public String getLastSavedPath() { return lastSavedPath; }</b>
+<i>497</i>&nbsp;    
+<i>498</i>&nbsp;    /**
+<i>499</i>&nbsp;     * Returns true if changes have been recorded since the last time this object was notified that it was saved.
+<i>500</i>&nbsp;     * 
+<i>501</i>&nbsp;     * @return
+<i>502</i>&nbsp;     * 
+<i>503</i>&nbsp;     * @see #setLastSavedPath
+<i>504</i>&nbsp;     */
+<b class="fc"><i>505</i>&nbsp;    public boolean isChanged() { return changes; }</b>
+<i>506</i>&nbsp;        
+<i>507</i>&nbsp;    /**
+<i>508</i>&nbsp;     * Set {@link #isChanged()} status.
+<i>509</i>&nbsp;     * 
+<i>510</i>&nbsp;     * @param isChanged
+<i>511</i>&nbsp;     */
+<b class="nc"><i>512</i>&nbsp;    public void setChanged(boolean isChanged) { this.changes = isChanged; }</b>
+<i>513</i>&nbsp;    
+<i>514</i>&nbsp;    /**
+<i>515</i>&nbsp;     * Set the last path used to save this object;
+<i>516</i>&nbsp;     * 
+<i>517</i>&nbsp;     * @param path
+<i>518</i>&nbsp;     * @param resetChanged If true, then the isChanged() flag will be reset to false;
+<i>519</i>&nbsp;     */
+<i>520</i>&nbsp;    public void setLastSavedPath(final String path, final boolean resetChanged) {
+<b class="nc"><i>521</i>&nbsp;    	this.lastSavedPath = path;</b>
+<b class="nc"><i>522</i>&nbsp;    	if (resetChanged)</b>
+<b class="nc"><i>523</i>&nbsp;    		this.changes = false;</b>
+<b class="nc"><i>524</i>&nbsp;    }</b>
+<i>525</i>&nbsp;
+<i>526</i>&nbsp;
+<i>527</i>&nbsp;	@Override
+<i>528</i>&nbsp;	public void hierarchyChanged(PathObjectHierarchyEvent event) {
+<b class="nc"><i>529</i>&nbsp;    	changes = true;</b>
+<b class="nc"><i>530</i>&nbsp;	}</b>
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;	@Override
+<i>534</i>&nbsp;	public void workflowUpdated(Workflow workflow) {
+<i>535</i>&nbsp;		//System.out.println(&quot;image  workflowUpdated&quot;);
+<b class="fc"><i>536</i>&nbsp;    	changes = true;</b>
+<b class="fc"><i>537</i>&nbsp;	}</b>
+<i>538</i>&nbsp;	
+<i>539</i>&nbsp;	
+<i>540</i>&nbsp;	@Override
+<i>541</i>&nbsp;	public String toString() {
+<i>542</i>&nbsp;		//System.out.println(&quot;image data to string&quot;);
+<b class="fc"><i>543</i>&nbsp;		if (getServer() == null)</b>
+<b class="nc"><i>544</i>&nbsp;			return &quot;ImageData: &quot; + getImageType() + &quot;, no server&quot;;</b>
+<i>545</i>&nbsp;		else
+<b class="fc"><i>546</i>&nbsp;			return &quot;ImageData: &quot; + getImageType() + &quot;, &quot; + ServerTools.getDisplayableImageName(getServer());</b>
+<i>547</i>&nbsp;	}
+<i>548</i>&nbsp;
+<i>549</i>&nbsp;    
+<i>550</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

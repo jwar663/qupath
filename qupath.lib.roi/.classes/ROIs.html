@@ -1,0 +1,351 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ROIs</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.roi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ROIs (qupath.lib.roi)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ROIs</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.roi;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Shape;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import qupath.lib.geom.Point2;
+<i>32</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>33</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>34</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * This class consists exclusively of static methods that operate on or return regions of interest (ROIs).
+<i>38</i>&nbsp; * &lt;p&gt;
+<i>39</i>&nbsp; * These methods should be used rather than constructors for individual ROI types.
+<i>40</i>&nbsp; * 
+<i>41</i>&nbsp; * @author Pete Bankhead
+<i>42</i>&nbsp; */
+<b class="nc"><i>43</i>&nbsp;public class ROIs {</b>
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;	/**
+<i>46</i>&nbsp;	 * Create an &#39;empty&#39; ROI with no length or area.
+<i>47</i>&nbsp;	 * 
+<i>48</i>&nbsp;	 * &lt;p&gt;The only guarantee is that it will return {@code isEmpty() == true}
+<i>49</i>&nbsp;	 * 
+<i>50</i>&nbsp;	 * @return
+<i>51</i>&nbsp;	 */
+<i>52</i>&nbsp;	public static ROI createEmptyROI() {
+<b class="nc"><i>53</i>&nbsp;		return createEmptyROI(ImagePlane.getDefaultPlane());</b>
+<i>54</i>&nbsp;	}
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	/**
+<i>57</i>&nbsp;	 * Create an &#39;empty&#39; ROI with no length or area.
+<i>58</i>&nbsp;	 * 
+<i>59</i>&nbsp;	 * &lt;p&gt;The only guarantee is that it will return {@code isEmpty() == true}
+<i>60</i>&nbsp;	 * 
+<i>61</i>&nbsp;	 * @param plane the plane associated with the ROI
+<i>62</i>&nbsp;	 * @return
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	static ROI createEmptyROI(ImagePlane plane) {
+<b class="nc"><i>65</i>&nbsp;		return createRectangleROI(0, 0, 0, 0, plane);</b>
+<i>66</i>&nbsp;	}
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	/**
+<i>69</i>&nbsp;	 * Create a rectangle ROI defined by its bounding box.
+<i>70</i>&nbsp;	 * 
+<i>71</i>&nbsp;	 * @param x
+<i>72</i>&nbsp;	 * @param y
+<i>73</i>&nbsp;	 * @param width
+<i>74</i>&nbsp;	 * @param height
+<i>75</i>&nbsp;	 * @param plane
+<i>76</i>&nbsp;	 * @return
+<i>77</i>&nbsp;	 */
+<i>78</i>&nbsp;	public static ROI createRectangleROI(double x, double y, double width, double height, ImagePlane plane) {
+<b class="nc"><i>79</i>&nbsp;		return new RectangleROI(x, y, width, height, plane);</b>
+<i>80</i>&nbsp;	}
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Create a rectangle ROI that matches an ImageRegion.
+<i>84</i>&nbsp;	 * @param region
+<i>85</i>&nbsp;	 * @return
+<i>86</i>&nbsp;	 */
+<i>87</i>&nbsp;	public static ROI createRectangleROI(ImageRegion region) {
+<b class="nc"><i>88</i>&nbsp;		return new RectangleROI(region.getX(), region.getY(), region.getWidth(), region.getHeight(), region.getPlane());</b>
+<i>89</i>&nbsp;	}
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	/**
+<i>92</i>&nbsp;	 * Create an ellipse ROI defined by its bounding box.
+<i>93</i>&nbsp;	 * 
+<i>94</i>&nbsp;	 * @param x
+<i>95</i>&nbsp;	 * @param y
+<i>96</i>&nbsp;	 * @param width
+<i>97</i>&nbsp;	 * @param height
+<i>98</i>&nbsp;	 * @param plane
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public static ROI createEllipseROI(double x, double y, double width, double height, ImagePlane plane) {
+<b class="nc"><i>102</i>&nbsp;		return new EllipseROI(x, y, width, height, plane);</b>
+<i>103</i>&nbsp;	}
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Create a line ROI with start and end coordinates.
+<i>107</i>&nbsp;	 * 
+<i>108</i>&nbsp;	 * @param x
+<i>109</i>&nbsp;	 * @param y
+<i>110</i>&nbsp;	 * @param x2
+<i>111</i>&nbsp;	 * @param y2
+<i>112</i>&nbsp;	 * @param plane
+<i>113</i>&nbsp;	 * @return
+<i>114</i>&nbsp;	 */
+<i>115</i>&nbsp;	public static ROI createLineROI(double x, double y, double x2, double y2, ImagePlane plane) {
+<b class="nc"><i>116</i>&nbsp;		return new LineROI(x, y, x2, y2, plane);</b>
+<i>117</i>&nbsp;	}
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Create a ROI representing a line with zero length.
+<i>121</i>&nbsp;	 * 
+<i>122</i>&nbsp;	 * @param x
+<i>123</i>&nbsp;	 * @param y
+<i>124</i>&nbsp;	 * @param plane
+<i>125</i>&nbsp;	 * @return
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public static ROI createLineROI(double x, double y, ImagePlane plane) {
+<b class="nc"><i>128</i>&nbsp;		return createLineROI(x, y, x, y, plane);</b>
+<i>129</i>&nbsp;	}
+<i>130</i>&nbsp;	
+<i>131</i>&nbsp;	/**
+<i>132</i>&nbsp;	 * Create an empty points ROI.
+<i>133</i>&nbsp;	 * 
+<i>134</i>&nbsp;	 * @param plane
+<i>135</i>&nbsp;	 * @return
+<i>136</i>&nbsp;	 */
+<i>137</i>&nbsp;	public static ROI createPointsROI(ImagePlane plane) {
+<b class="nc"><i>138</i>&nbsp;		return createPointsROI(Double.NaN, Double.NaN, plane);</b>
+<i>139</i>&nbsp;	}
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;	/**
+<i>142</i>&nbsp;	 * Create a points ROI containing a single point.
+<i>143</i>&nbsp;	 * @param x
+<i>144</i>&nbsp;	 * @param y
+<i>145</i>&nbsp;	 * @param plane
+<i>146</i>&nbsp;	 * @return
+<i>147</i>&nbsp;	 */
+<i>148</i>&nbsp;	public static ROI createPointsROI(double x, double y, ImagePlane plane) {
+<b class="nc"><i>149</i>&nbsp;		return new PointsROI(x, y, plane);</b>
+<i>150</i>&nbsp;	}
+<i>151</i>&nbsp;	
+<i>152</i>&nbsp;	/**
+<i>153</i>&nbsp;	 * Create a points ROI from a list of points.
+<i>154</i>&nbsp;	 * @param points
+<i>155</i>&nbsp;	 * @param plane
+<i>156</i>&nbsp;	 * @return
+<i>157</i>&nbsp;	 */
+<i>158</i>&nbsp;	public static ROI createPointsROI(List&lt;? extends Point2&gt; points, ImagePlane plane) {
+<b class="nc"><i>159</i>&nbsp;		return new PointsROI(points, plane);</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Create a points ROI from an array of x and y coordinates.
+<i>164</i>&nbsp;	 * @param x
+<i>165</i>&nbsp;	 * @param y
+<i>166</i>&nbsp;	 * @param plane
+<i>167</i>&nbsp;	 * @return
+<i>168</i>&nbsp;	 */
+<i>169</i>&nbsp;	public static ROI createPointsROI(double[] x, double y[], ImagePlane plane) {
+<b class="nc"><i>170</i>&nbsp;		if (x.length != y.length)</b>
+<b class="nc"><i>171</i>&nbsp;			throw new IllegalArgumentException(&quot;Point arrays have different lengths!&quot;);</b>
+<b class="nc"><i>172</i>&nbsp;		var points = new ArrayList&lt;Point2&gt;();</b>
+<b class="nc"><i>173</i>&nbsp;		for (int i = 0; i &lt; x.length; i++)</b>
+<b class="nc"><i>174</i>&nbsp;			points.add(new Point2(x[i], y[i]));</b>
+<b class="nc"><i>175</i>&nbsp;		return new PointsROI(points, plane);</b>
+<i>176</i>&nbsp;	}
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;	/**
+<i>179</i>&nbsp;	 * Create a closed polygon ROI from a list of points.
+<i>180</i>&nbsp;	 * @param points
+<i>181</i>&nbsp;	 * @param plane
+<i>182</i>&nbsp;	 * @return
+<i>183</i>&nbsp;	 */
+<i>184</i>&nbsp;	public static PolygonROI createPolygonROI(List&lt;Point2&gt; points, ImagePlane plane) {
+<b class="nc"><i>185</i>&nbsp;		return new PolygonROI(points, plane);</b>
+<i>186</i>&nbsp;	}
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	/**
+<i>189</i>&nbsp;	 * Create a polygon ROI from an array of x and y coordinates.
+<i>190</i>&nbsp;	 * @param x
+<i>191</i>&nbsp;	 * @param y
+<i>192</i>&nbsp;	 * @param plane
+<i>193</i>&nbsp;	 * @return
+<i>194</i>&nbsp;	 */
+<i>195</i>&nbsp;	public static ROI createPolygonROI(double[] x, double y[], ImagePlane plane) {
+<b class="nc"><i>196</i>&nbsp;		if (x.length != y.length)</b>
+<b class="nc"><i>197</i>&nbsp;			throw new IllegalArgumentException(&quot;Arrays have different lengths!&quot;);</b>
+<b class="nc"><i>198</i>&nbsp;		var points = new ArrayList&lt;Point2&gt;();</b>
+<b class="nc"><i>199</i>&nbsp;		for (int i = 0; i &lt; x.length; i++)</b>
+<b class="nc"><i>200</i>&nbsp;			points.add(new Point2(x[i], y[i]));</b>
+<b class="nc"><i>201</i>&nbsp;		return new PolygonROI(points, plane);</b>
+<i>202</i>&nbsp;	}
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;	
+<i>205</i>&nbsp;	/**
+<i>206</i>&nbsp;	 * Create an empty, closed polygon ROI consisting of a single point.
+<i>207</i>&nbsp;	 * 
+<i>208</i>&nbsp;	 * @param x
+<i>209</i>&nbsp;	 * @param y
+<i>210</i>&nbsp;	 * @param plane
+<i>211</i>&nbsp;	 * @return
+<i>212</i>&nbsp;	 */
+<i>213</i>&nbsp;	public static PolygonROI createPolygonROI(double x, double y, ImagePlane plane) {
+<b class="nc"><i>214</i>&nbsp;		return new PolygonROI(Collections.singletonList(new Point2(x, y)), plane);</b>
+<i>215</i>&nbsp;	}
+<i>216</i>&nbsp;	
+<i>217</i>&nbsp;	/**
+<i>218</i>&nbsp;	 * Create a polyline ROI from a list of points.
+<i>219</i>&nbsp;	 * @param points
+<i>220</i>&nbsp;	 * @param plane
+<i>221</i>&nbsp;	 * @return
+<i>222</i>&nbsp;	 */
+<i>223</i>&nbsp;	public static PolylineROI createPolylineROI(List&lt;Point2&gt; points, ImagePlane plane) {
+<b class="nc"><i>224</i>&nbsp;		return new PolylineROI(points, plane);</b>
+<i>225</i>&nbsp;	}
+<i>226</i>&nbsp;	
+<i>227</i>&nbsp;	/**
+<i>228</i>&nbsp;	 * Create an empty polyline ROI consisting of a single point.
+<i>229</i>&nbsp;	 * @param x
+<i>230</i>&nbsp;	 * @param y
+<i>231</i>&nbsp;	 * @param plane
+<i>232</i>&nbsp;	 * @return
+<i>233</i>&nbsp;	 */
+<i>234</i>&nbsp;	public static PolylineROI createPolylineROI(double x, double y, ImagePlane plane) {
+<b class="nc"><i>235</i>&nbsp;		return new PolylineROI(Collections.singletonList(new Point2(x, y)), plane);</b>
+<i>236</i>&nbsp;	}
+<i>237</i>&nbsp;	
+<i>238</i>&nbsp;	/**
+<i>239</i>&nbsp;	 * Create a polygon ROI from an array of x and y coordinates.
+<i>240</i>&nbsp;	 * @param x
+<i>241</i>&nbsp;	 * @param y
+<i>242</i>&nbsp;	 * @param plane
+<i>243</i>&nbsp;	 * @return
+<i>244</i>&nbsp;	 */
+<i>245</i>&nbsp;	public static ROI createPolylineROI(double[] x, double y[], ImagePlane plane) {
+<b class="nc"><i>246</i>&nbsp;		if (x.length != y.length)</b>
+<b class="nc"><i>247</i>&nbsp;			throw new IllegalArgumentException(&quot;Arrays have different lengths!&quot;);</b>
+<b class="nc"><i>248</i>&nbsp;		var points = new ArrayList&lt;Point2&gt;();</b>
+<b class="nc"><i>249</i>&nbsp;		for (int i = 0; i &lt; x.length; i++)</b>
+<b class="nc"><i>250</i>&nbsp;			points.add(new Point2(x[i], y[i]));</b>
+<b class="nc"><i>251</i>&nbsp;		return new PolylineROI(points, plane);</b>
+<i>252</i>&nbsp;	}
+<i>253</i>&nbsp;	
+<i>254</i>&nbsp;	/**
+<i>255</i>&nbsp;	 * Create an area ROI representing a 2D shape.
+<i>256</i>&nbsp;	 * &lt;p&gt;
+<i>257</i>&nbsp;	 * The resulting ROI may consist of multiple disconnected regions, possibly containing holes.
+<i>258</i>&nbsp;	 * 
+<i>259</i>&nbsp;	 * @param shape
+<i>260</i>&nbsp;	 * @param plane
+<i>261</i>&nbsp;	 * @return
+<i>262</i>&nbsp;	 */
+<i>263</i>&nbsp;	public static ROI createAreaROI(Shape shape, ImagePlane plane) {
+<b class="nc"><i>264</i>&nbsp;		return new GeometryROI(GeometryTools.shapeToGeometry(shape), plane);</b>
+<i>265</i>&nbsp;//		return new AWTAreaROI(shape, plane);
+<i>266</i>&nbsp;	}
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

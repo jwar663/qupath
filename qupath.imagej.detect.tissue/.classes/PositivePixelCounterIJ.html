@@ -1,0 +1,464 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PositivePixelCounterIJ</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.tissue</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PositivePixelCounterIJ (qupath.imagej.detect.tissue)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PositivePixelCounterIJ</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PositivePixelCounterIJ$PositivePixelDetector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 137)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 158)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.tissue;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Collection;
+<i>30</i>&nbsp;import java.util.Collections;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import ij.ImagePlus;
+<i>37</i>&nbsp;import ij.gui.Roi;
+<i>38</i>&nbsp;import ij.plugin.filter.ThresholdToSelection;
+<i>39</i>&nbsp;import ij.process.ByteProcessor;
+<i>40</i>&nbsp;import ij.process.ColorProcessor;
+<i>41</i>&nbsp;import ij.process.FloatProcessor;
+<i>42</i>&nbsp;import ij.process.ImageProcessor;
+<i>43</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>44</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>45</i>&nbsp;import qupath.lib.color.ColorTransformer;
+<i>46</i>&nbsp;import qupath.lib.color.ColorTransformer.ColorTransformMethod;
+<i>47</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>48</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>49</i>&nbsp;import qupath.lib.images.ImageData;
+<i>50</i>&nbsp;import qupath.lib.images.PathImage;
+<i>51</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>52</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>53</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>54</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>55</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>56</i>&nbsp;import qupath.lib.plugins.AbstractDetectionPlugin;
+<i>57</i>&nbsp;import qupath.lib.plugins.DetectionPluginTools;
+<i>58</i>&nbsp;import qupath.lib.plugins.ObjectDetector;
+<i>59</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>60</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>61</i>&nbsp;import qupath.lib.roi.RectangleROI;
+<i>62</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * Simple command to detect regions with positive staining.
+<i>66</i>&nbsp; * 
+<i>67</i>&nbsp; * For versions &amp;lt;= v0.1.2 this gave simple measurements that were influenced by the downsample values used.
+<i>68</i>&nbsp; * Later versions make calibrated measurements and give more flexibility in terms of output.
+<i>69</i>&nbsp; * 
+<i>70</i>&nbsp; * @author Pete Bankhead
+<i>71</i>&nbsp; *
+<i>72</i>&nbsp; */
+<b class="nc"><i>73</i>&nbsp;public class PositivePixelCounterIJ extends AbstractDetectionPlugin&lt;BufferedImage&gt; {</b>
+<i>74</i>&nbsp;	
+<b class="nc"><i>75</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(PositivePixelCounterIJ.class);</b>
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	transient private PositivePixelDetector detector;
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	static class PositivePixelDetector implements ObjectDetector&lt;BufferedImage&gt; {
+<i>81</i>&nbsp;		
+<i>82</i>&nbsp;		private final PathObject parent;
+<b class="nc"><i>83</i>&nbsp;		private String lastMessage = null;</b>
+<i>84</i>&nbsp;		
+<b class="nc"><i>85</i>&nbsp;		PositivePixelDetector(final PathObject parent) {</b>
+<b class="nc"><i>86</i>&nbsp;			this.parent = parent;</b>
+<i>87</i>&nbsp;		}
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;		@Override
+<i>90</i>&nbsp;		public Collection&lt;PathObject&gt; runDetection(final ImageData&lt;BufferedImage&gt; imageData, ParameterList params, ROI pathROI) throws IOException {
+<i>91</i>&nbsp;			// Reset any detected objects
+<b class="nc"><i>92</i>&nbsp;			List&lt; PathObject&gt; pathObjects = new ArrayList&lt;&gt;();</b>
+<i>93</i>&nbsp;			
+<i>94</i>&nbsp;			
+<i>95</i>&nbsp;			// Parse parameters
+<b class="nc"><i>96</i>&nbsp;			double downsample = Math.max(1, params.getIntParameterValue(&quot;downsampleFactor&quot;));</b>
+<i>97</i>&nbsp;			
+<b class="nc"><i>98</i>&nbsp;			double thresholdStain1 = params.getDoubleParameterValue(&quot;thresholdStain1&quot;);</b>
+<b class="nc"><i>99</i>&nbsp;			double thresholdStain2 = params.getDoubleParameterValue(&quot;thresholdStain2&quot;);</b>
+<b class="nc"><i>100</i>&nbsp;			double gaussianSigmaMicrons = params.getDoubleParameterValue(&quot;gaussianSigmaMicrons&quot;);</b>
+<i>101</i>&nbsp;			
+<i>102</i>&nbsp;			// Check whether to clear any existing measurements from parent objects
+<b class="nc"><i>103</i>&nbsp;			boolean clearParentMeasurements = Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;clearParentMeasurements&quot;));</b>
+<b class="nc"><i>104</i>&nbsp;			boolean appendDetectionParameters = Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;appendDetectionParameters&quot;));</b>
+<i>105</i>&nbsp;			
+<i>106</i>&nbsp;			// Default to using legacy measurements if no key is present
+<b class="nc"><i>107</i>&nbsp;			boolean useLegacyMeasurements = params.containsKey(&quot;legacyMeasurements0.1.2&quot;) ? params.getBooleanParameterValue(&quot;legacyMeasurements0.1.2&quot;) : true;</b>
+<b class="nc"><i>108</i>&nbsp;			if (useLegacyMeasurements) {</b>
+<b class="nc"><i>109</i>&nbsp;				logger.warn(&quot;Legacy measurements will be made for compatibility with QuPath v0.1.2 - note that pixel counts will depend on the downsample selected!&quot;);</b>
+<i>110</i>&nbsp;			}
+<i>111</i>&nbsp;			
+<i>112</i>&nbsp;			// Derive more useful values
+<b class="nc"><i>113</i>&nbsp;			PixelCalibration cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>114</i>&nbsp;			double pixelSize = cal.getAveragedPixelSizeMicrons() * downsample;</b>
+<b class="nc"><i>115</i>&nbsp;			double gaussianSigma = gaussianSigmaMicrons / pixelSize;</b>
+<i>116</i>&nbsp;			
+<i>117</i>&nbsp;			// Read the image, if necessary
+<b class="nc"><i>118</i>&nbsp;			RegionRequest request = RegionRequest.createInstance(imageData.getServerPath(), downsample, pathROI);</b>
+<b class="nc"><i>119</i>&nbsp;			PathImage&lt;ImagePlus&gt; pathImage = IJTools.convertToImagePlus(imageData.getServer(), request);</b>
+<b class="nc"><i>120</i>&nbsp;			ImagePlus imp = pathImage.getImage();</b>
+<i>121</i>&nbsp;			
+<b class="nc"><i>122</i>&nbsp;			int w = imp.getWidth();</b>
+<b class="nc"><i>123</i>&nbsp;			int h = imp.getHeight();</b>
+<i>124</i>&nbsp;			
+<i>125</i>&nbsp;			// Extract the color deconvolved channels
+<i>126</i>&nbsp;			// TODO: Support alternative stain vectors
+<b class="nc"><i>127</i>&nbsp;			ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<i>128</i>&nbsp;//			boolean isH_DAB = stains.isH_DAB() &amp;&amp; imp.getType() == ImagePlus.COLOR_RGB;
+<b class="nc"><i>129</i>&nbsp;			boolean isRGB = stains != null &amp;&amp; imp.getType() == ImagePlus.COLOR_RGB;</b>
+<b class="nc"><i>130</i>&nbsp;			if (!isRGB) {</b>
+<b class="nc"><i>131</i>&nbsp;				logger.error(&quot;Only brightfield RGB images are supported!&quot;);</b>
+<b class="nc"><i>132</i>&nbsp;				return Collections.emptyList();</b>
+<i>133</i>&nbsp;			}
+<b class="nc"><i>134</i>&nbsp;			ColorProcessor cp = (ColorProcessor)imp.getProcessor();</b>
+<b class="nc"><i>135</i>&nbsp;			int[] rgb = (int[])cp.getPixels();</b>
+<i>136</i>&nbsp;			
+<b class="nc"><i>137</i>&nbsp;			float[] pxHematoxylin = ColorTransformer.getTransformedPixels(rgb, ColorTransformMethod.Stain_1, null, stains);</b>
+<b class="nc"><i>138</i>&nbsp;			float[] pxDAB = ColorTransformer.getTransformedPixels(rgb, ColorTransformMethod.Stain_2, null, stains);</b>
+<i>139</i>&nbsp;//			float[] pxHematoxylin = ColorDeconvolution.colorDeconvolveRGBArray(rgb, stains, 0, null);
+<i>140</i>&nbsp;//			float[] pxDAB = ColorDeconvolution.colorDeconvolveRGBArray(rgb, stains, 1, null);
+<i>141</i>&nbsp;			
+<i>142</i>&nbsp;			// Create images
+<b class="nc"><i>143</i>&nbsp;			FloatProcessor fpHematoxylin = new FloatProcessor(w, h, pxHematoxylin);</b>
+<b class="nc"><i>144</i>&nbsp;			FloatProcessor fpDAB = new FloatProcessor(w, h, pxDAB);</b>
+<i>145</i>&nbsp;					
+<i>146</i>&nbsp;			// Apply Gaussian filter
+<b class="nc"><i>147</i>&nbsp;			fpHematoxylin.blurGaussian(gaussianSigma);</b>
+<b class="nc"><i>148</i>&nbsp;			fpDAB.blurGaussian(gaussianSigma);</b>
+<i>149</i>&nbsp;			
+<i>150</i>&nbsp;			// Threshold
+<b class="nc"><i>151</i>&nbsp;			ByteProcessor bpH = new ByteProcessor(w, h);</b>
+<b class="nc"><i>152</i>&nbsp;			ByteProcessor bpDAB = new ByteProcessor(w, h);</b>
+<i>153</i>&nbsp;			// Apply mask, if necessary
+<b class="nc"><i>154</i>&nbsp;			if (pathROI != null &amp;&amp; !(pathROI instanceof RectangleROI)) {</b>
+<b class="nc"><i>155</i>&nbsp;				bpH.set(1);</b>
+<b class="nc"><i>156</i>&nbsp;				Roi roi = IJTools.convertToIJRoi(pathROI, pathImage);</b>
+<b class="nc"><i>157</i>&nbsp;				bpH.setValue(0);</b>
+<b class="nc"><i>158</i>&nbsp;				bpH.fill(roi);</b>
+<i>159</i>&nbsp;			}
+<b class="nc"><i>160</i>&nbsp;			int nNegative = 0;</b>
+<b class="nc"><i>161</i>&nbsp;			int nPositive = 0;</b>
+<b class="nc"><i>162</i>&nbsp;			double sumPositive = 0;</b>
+<b class="nc"><i>163</i>&nbsp;			double sumNegative = 0;</b>
+<b class="nc"><i>164</i>&nbsp;			for (int i = 0; i &lt; w*h; i++) {</b>
+<i>165</i>&nbsp;				// Check mask
+<b class="nc"><i>166</i>&nbsp;				if (bpH.get(i) != (byte)0)</b>
+<b class="nc"><i>167</i>&nbsp;					continue;</b>
+<b class="nc"><i>168</i>&nbsp;				float valH = fpHematoxylin.getf(i);</b>
+<b class="nc"><i>169</i>&nbsp;				float valDAB = fpDAB.getf(i);</b>
+<b class="nc"><i>170</i>&nbsp;				if (valDAB &gt;= thresholdStain2) {</b>
+<i>171</i>&nbsp;//					if (valDAB &gt; valH) {
+<b class="nc"><i>172</i>&nbsp;						bpDAB.set(i, (byte)255);</b>
+<b class="nc"><i>173</i>&nbsp;						sumPositive += valDAB;</b>
+<b class="nc"><i>174</i>&nbsp;						nPositive++;</b>
+<i>175</i>&nbsp;//					} else {
+<i>176</i>&nbsp;//						bpH.set(i, (byte)255);
+<i>177</i>&nbsp;//						nStained++;
+<i>178</i>&nbsp;//					}
+<b class="nc"><i>179</i>&nbsp;				} else if (valH &gt;= thresholdStain1) {</b>
+<b class="nc"><i>180</i>&nbsp;					bpH.set(i, (byte)255);</b>
+<b class="nc"><i>181</i>&nbsp;					sumNegative += valH;</b>
+<b class="nc"><i>182</i>&nbsp;					nNegative++;</b>
+<i>183</i>&nbsp;				}
+<i>184</i>&nbsp;			}
+<i>185</i>&nbsp;			
+<b class="nc"><i>186</i>&nbsp;			bpH.setThreshold(128, Double.MAX_VALUE, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>187</i>&nbsp;			bpDAB.setThreshold(128, Double.MAX_VALUE, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>188</i>&nbsp;			Roi roiStained = nNegative &gt; 0 ? new ThresholdToSelection().convert(bpH) : null;</b>
+<b class="nc"><i>189</i>&nbsp;			Roi roiDAB = nPositive &gt; 0 ? new ThresholdToSelection().convert(bpDAB) : null;</b>
+<i>190</i>&nbsp;			
+<b class="nc"><i>191</i>&nbsp;			double meanPositive = nPositive == 0 ? Double.NaN : sumPositive / nPositive;</b>
+<b class="nc"><i>192</i>&nbsp;			double meanNegative = nNegative == 0 ? Double.NaN : sumNegative / nNegative;</b>
+<i>193</i>&nbsp;			
+<b class="nc"><i>194</i>&nbsp;			boolean hasPixelSizeMicrons = cal.hasPixelSizeMicrons();</b>
+<b class="nc"><i>195</i>&nbsp;			String areaUnits = hasPixelSizeMicrons ? GeneralTools.micrometerSymbol() + &quot;^2&quot; : &quot;px^2&quot;;</b>
+<b class="nc"><i>196</i>&nbsp;			double pixelWidth = hasPixelSizeMicrons ? cal.getPixelWidthMicrons() : 1;</b>
+<b class="nc"><i>197</i>&nbsp;			double pixelHeight = hasPixelSizeMicrons ? cal.getPixelHeightMicrons() : 1;</b>
+<b class="nc"><i>198</i>&nbsp;			double areaNegative = 0;</b>
+<b class="nc"><i>199</i>&nbsp;			double areaPositive = 0;</b>
+<i>200</i>&nbsp;			
+<i>201</i>&nbsp;			// Create a String to store measurement parameters, if requested
+<b class="nc"><i>202</i>&nbsp;			int maxDP = 3;</b>
+<b class="nc"><i>203</i>&nbsp;			String paramsString = &quot;&quot;;</b>
+<b class="nc"><i>204</i>&nbsp;			if (appendDetectionParameters)</b>
+<b class="nc"><i>205</i>&nbsp;				paramsString = String.format(&quot; (d=%s, s=%s, tN=%s, tP=%s)&quot;, </b>
+<b class="nc"><i>206</i>&nbsp;					GeneralTools.formatNumber(downsample, maxDP),</b>
+<b class="nc"><i>207</i>&nbsp;					GeneralTools.formatNumber(gaussianSigmaMicrons, maxDP),</b>
+<b class="nc"><i>208</i>&nbsp;					GeneralTools.formatNumber(thresholdStain1, maxDP),</b>
+<b class="nc"><i>209</i>&nbsp;					GeneralTools.formatNumber(thresholdStain2, maxDP));</b>
+<i>210</i>&nbsp;						
+<i>211</i>&nbsp;			
+<b class="nc"><i>212</i>&nbsp;			if (roiStained != null) {</b>
+<b class="nc"><i>213</i>&nbsp;				ROI roiTissue = IJTools.convertToROI(roiStained, pathImage);</b>
+<b class="nc"><i>214</i>&nbsp;				PathObject pathObject = PathObjects.createDetectionObject(roiTissue);</b>
+<b class="nc"><i>215</i>&nbsp;				PathClass pathClass = null;</b>
+<b class="nc"><i>216</i>&nbsp;				if (useLegacyMeasurements) {</b>
+<b class="nc"><i>217</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Num pixels&quot;, nNegative);</b>
+<b class="nc"><i>218</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Mean hematoxylin OD&quot;, meanNegative);</b>
+<b class="nc"><i>219</i>&nbsp;					pathClass = PathClassFactory.getNegative(null);</b>
+<i>220</i>&nbsp;				} else {
+<b class="nc"><i>221</i>&nbsp;					areaNegative = roiTissue.getScaledArea(pixelWidth, pixelHeight);</b>
+<b class="nc"><i>222</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Stained area &quot; + areaUnits + paramsString, areaNegative);</b>
+<b class="nc"><i>223</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Mean &quot; + stains.getStain(1).getName() + &quot; OD&quot; + paramsString, meanNegative);</b>
+<b class="nc"><i>224</i>&nbsp;					pathClass = PathClassFactory.getPathClass(&quot;Pixel count negative&quot;, ColorTools.makeScaledRGB(PathClassFactory.getNegative(null).getColor(), 1.25));</b>
+<i>225</i>&nbsp;				}
+<b class="nc"><i>226</i>&nbsp;				pathObject.setPathClass(pathClass);</b>
+<b class="nc"><i>227</i>&nbsp;				pathObject.getMeasurementList().close();</b>
+<b class="nc"><i>228</i>&nbsp;				pathObjects.add(pathObject);</b>
+<i>229</i>&nbsp;			}
+<b class="nc"><i>230</i>&nbsp;			if (roiDAB != null) {</b>
+<b class="nc"><i>231</i>&nbsp;				ROI roiPositive = IJTools.convertToROI(roiDAB, pathImage);</b>
+<i>232</i>&nbsp;//				roiDAB = ShapeSimplifierAwt.simplifyShape(roiDAB, simplifyAmount);
+<b class="nc"><i>233</i>&nbsp;				PathClass pathClass = null;</b>
+<b class="nc"><i>234</i>&nbsp;				PathObject pathObject = PathObjects.createDetectionObject(roiPositive);</b>
+<b class="nc"><i>235</i>&nbsp;				if (useLegacyMeasurements) {</b>
+<b class="nc"><i>236</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Num pixels&quot;, nPositive);</b>
+<b class="nc"><i>237</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Mean DAB OD&quot;, meanPositive);</b>
+<b class="nc"><i>238</i>&nbsp;					pathClass = PathClassFactory.getPositive(null);</b>
+<i>239</i>&nbsp;				} else {
+<b class="nc"><i>240</i>&nbsp;					areaPositive = roiPositive.getScaledArea(pixelWidth, pixelHeight);</b>
+<b class="nc"><i>241</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Stained area &quot; + areaUnits + paramsString, areaPositive);</b>
+<b class="nc"><i>242</i>&nbsp;					pathObject.getMeasurementList().addMeasurement(&quot;Mean &quot; + stains.getStain(2).getName() + &quot; OD&quot; + paramsString, meanPositive);</b>
+<b class="nc"><i>243</i>&nbsp;					pathClass = PathClassFactory.getPathClass(&quot;Pixel count positive&quot;, ColorTools.makeScaledRGB(PathClassFactory.getPositive(null).getColor(), 1.25));</b>
+<i>244</i>&nbsp;				}
+<b class="nc"><i>245</i>&nbsp;				pathObject.setPathClass(pathClass);</b>
+<b class="nc"><i>246</i>&nbsp;				pathObject.getMeasurementList().close();</b>
+<b class="nc"><i>247</i>&nbsp;				pathObjects.add(pathObject);</b>
+<i>248</i>&nbsp;			}
+<i>249</i>&nbsp;			
+<b class="nc"><i>250</i>&nbsp;			boolean addMeasurements = params.getBooleanParameterValue(&quot;addSummaryMeasurements&quot;);</b>
+<b class="nc"><i>251</i>&nbsp;			double positivePercentage = nPositive * 100.0 / (nPositive + nNegative);</b>
+<i>252</i>&nbsp;						
+<b class="nc"><i>253</i>&nbsp;			if (clearParentMeasurements &amp;&amp; !parent.getMeasurementList().isEmpty()) {</b>
+<b class="nc"><i>254</i>&nbsp;				parent.getMeasurementList().clear();				</b>
+<b class="nc"><i>255</i>&nbsp;				parent.getMeasurementList().close();			</b>
+<i>256</i>&nbsp;			}
+<i>257</i>&nbsp;			
+<b class="nc"><i>258</i>&nbsp;			if (addMeasurements) {</b>
+<b class="nc"><i>259</i>&nbsp;				if (useLegacyMeasurements) {</b>
+<b class="nc"><i>260</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Positive pixel %&quot;, positivePercentage);</b>
+<b class="nc"><i>261</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Positive pixel count&quot;, nPositive);</b>
+<b class="nc"><i>262</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Negative pixel count&quot;, nNegative);</b>
+<b class="nc"><i>263</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Mean positive DAB staining OD&quot;, meanPositive);</b>
+<b class="nc"><i>264</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Stained pixel count&quot;, nPositive + nNegative);</b>
+<b class="nc"><i>265</i>&nbsp;					parent.getMeasurementList().close();</b>
+<i>266</i>&nbsp;				} else {
+<b class="nc"><i>267</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Positive % of stained pixels&quot; + paramsString, positivePercentage);</b>
+<b class="nc"><i>268</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Positive pixel area &quot; + areaUnits + paramsString, areaPositive);</b>
+<b class="nc"><i>269</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Negative pixel area &quot; + areaUnits + paramsString, areaNegative);</b>
+<b class="nc"><i>270</i>&nbsp;					parent.getMeasurementList().putMeasurement(&quot;Stained area (Positive + Negative)&quot; + areaUnits + paramsString, areaPositive + areaNegative);					</b>
+<i>271</i>&nbsp;					//					parent.getMeasurementList().putMeasurement(&quot;Positive pixel count (full image)&quot;, nPositive * downsample * downsample);
+<i>272</i>&nbsp;//					parent.getMeasurementList().putMeasurement(&quot;Negative pixel count (full image)&quot;, nNegative * downsample * downsample);
+<i>273</i>&nbsp;//					// Uncalibrated counts really only might be useful for a sanity check
+<i>274</i>&nbsp;//					parent.getMeasurementList().putMeasurement(String.format(&quot;Uncalibrated positive pixel count&quot; + paramsString, GeneralTools.formatNumber(downsample, 4)), nPositive);
+<i>275</i>&nbsp;//					parent.getMeasurementList().putMeasurement(String.format(&quot;Uncalibrated negative pixel count&quot; + paramsString, GeneralTools.formatNumber(downsample, 4)), nNegative);
+<i>276</i>&nbsp;//					parent.getMeasurementList().putMeasurement(&quot;Mean positive &quot; + stains.getStain(2).getName() + &quot; staining OD&quot;, meanPositive);
+<i>277</i>&nbsp;					
+<i>278</i>&nbsp;					// If we can, add measurements relative to the parent ROI
+<b class="nc"><i>279</i>&nbsp;					ROI roiParent = parent.getROI();</b>
+<b class="nc"><i>280</i>&nbsp;					boolean roisMatch = roiParent == pathROI;</b>
+<b class="nc"><i>281</i>&nbsp;					if (!roisMatch) {</b>
+<b class="nc"><i>282</i>&nbsp;						logger.warn(&quot;Unexpected mismatch between parent ROI &amp; analysis ROI! No measurements based on ROI area will be added.&quot;);</b>
+<i>283</i>&nbsp;					}
+<b class="nc"><i>284</i>&nbsp;					if (roisMatch &amp;&amp; roiParent.isArea()) {</b>
+<i>285</i>&nbsp;						// Clip to 100% (could conceivably go slightly above because of sub-pixel errors)
+<b class="nc"><i>286</i>&nbsp;						double areaROI = roiParent.getScaledArea(pixelWidth, pixelHeight);</b>
+<b class="nc"><i>287</i>&nbsp;						parent.getMeasurementList().putMeasurement(&quot;Total ROI area &quot; + areaUnits + paramsString, areaROI);					</b>
+<i>288</i>&nbsp;//						parent.getMeasurementList().putMeasurement(&quot;Stained % of total ROI area&quot; + paramsString, Math.min(100, (areaPositive + areaNegative) / areaROI * 100.0));					
+<b class="nc"><i>289</i>&nbsp;						parent.getMeasurementList().putMeasurement(&quot;Positive % of total ROI area&quot; + paramsString, Math.min(100, areaPositive / areaROI * 100.0));</b>
+<i>290</i>&nbsp;					}
+<i>291</i>&nbsp;					
+<b class="nc"><i>292</i>&nbsp;					parent.getMeasurementList().close();					</b>
+<i>293</i>&nbsp;				}
+<i>294</i>&nbsp;			}
+<i>295</i>&nbsp;			
+<b class="nc"><i>296</i>&nbsp;			lastMessage = String.format(&quot;Stained positive percentage: %.2f%%&quot;, positivePercentage);</b>
+<i>297</i>&nbsp;			
+<b class="nc"><i>298</i>&nbsp;			return pathObjects;</b>
+<i>299</i>&nbsp;		}
+<i>300</i>&nbsp;		
+<i>301</i>&nbsp;		
+<i>302</i>&nbsp;		
+<i>303</i>&nbsp;		@Override
+<i>304</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>305</i>&nbsp;			return lastMessage;</b>
+<i>306</i>&nbsp;		}
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;		
+<i>309</i>&nbsp;	}
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;	
+<i>312</i>&nbsp;	
+<i>313</i>&nbsp;	
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;	@Override
+<i>316</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>317</i>&nbsp;		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>318</i>&nbsp;		String stain1Name = stains == null ? &quot;Hematoxylin&quot; : stains.getStain(1).getName();</b>
+<b class="nc"><i>319</i>&nbsp;		String stain2Name = stains == null ? &quot;DAB&quot; : stains.getStain(2).getName();</b>
+<b class="nc"><i>320</i>&nbsp;		ParameterList params = new ParameterList()</b>
+<b class="nc"><i>321</i>&nbsp;				.addIntParameter(&quot;downsampleFactor&quot;, &quot;Downsample factor&quot;, 4, &quot;&quot;, 1, 32, &quot;Amount to downsample image prior to detection - higher values lead to smaller images (and faster but less accurate processing)&quot;)</b>
+<b class="nc"><i>322</i>&nbsp;				.addDoubleParameter(&quot;gaussianSigmaMicrons&quot;, &quot;Gaussian sigma&quot;, 2, GeneralTools.micrometerSymbol(), &quot;Gaussian filter size - higher values give a smoother (less-detailed) result&quot;)</b>
+<b class="nc"><i>323</i>&nbsp;				.addDoubleParameter(&quot;thresholdStain1&quot;, stain1Name + &quot; threshold (&#39;Negative&#39;)&quot;, 0.1, &quot;OD units&quot;, &quot;Threshold to use for &#39;Negative&#39; detection&quot;)</b>
+<b class="nc"><i>324</i>&nbsp;				.addDoubleParameter(&quot;thresholdStain2&quot;, stain2Name + &quot; threshold (&#39;Positive&#39;)&quot;, 0.3, &quot;OD units&quot;, &quot;Threshold to use for &#39;Positive&#39; stain detection&quot;)</b>
+<b class="nc"><i>325</i>&nbsp;				.addBooleanParameter(&quot;addSummaryMeasurements&quot;, &quot;Add summary measurements to parent&quot;, true, &quot;Add summary measurements to parent objects&quot;)</b>
+<b class="nc"><i>326</i>&nbsp;				.addBooleanParameter(&quot;clearParentMeasurements&quot;, &quot;Clear existing parent measurements&quot;, true, &quot;Remove any existing measurements from parent objects&quot;)</b>
+<b class="nc"><i>327</i>&nbsp;				.addBooleanParameter(&quot;appendDetectionParameters&quot;, &quot;Add parameters to measurement names&quot;, false, &quot;Append the detection parameters to any measurement names&quot;)</b>
+<b class="nc"><i>328</i>&nbsp;				.addBooleanParameter(&quot;legacyMeasurements0.1.2&quot;, &quot;Use legacy measurements (v0.1.2)&quot;, false, &quot;Generate measurements compatible with QuPath v0.1.2&quot;);	</b>
+<b class="nc"><i>329</i>&nbsp;		return params;</b>
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;	@Override
+<i>333</i>&nbsp;	public String getName() {
+<b class="nc"><i>334</i>&nbsp;		return &quot;Detect positive staining (TMA, IHC)&quot;;</b>
+<i>335</i>&nbsp;	}
+<i>336</i>&nbsp;	
+<i>337</i>&nbsp;	@Override
+<i>338</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>339</i>&nbsp;		return &quot;Determine positive pixel counts in an H-DAB stained image&quot;;</b>
+<i>340</i>&nbsp;	}
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;	@Override
+<i>343</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>344</i>&nbsp;		return detector == null ? &quot;&quot; : detector.getLastResultsDescription();</b>
+<i>345</i>&nbsp;	}
+<i>346</i>&nbsp;	
+<i>347</i>&nbsp;	@Override
+<i>348</i>&nbsp;	protected void addRunnableTasks(ImageData&lt;BufferedImage&gt; imageData, PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<i>349</i>&nbsp;//		if (detector == null)
+<b class="nc"><i>350</i>&nbsp;			detector = new PositivePixelDetector(parentObject);</b>
+<b class="nc"><i>351</i>&nbsp;		tasks.add(DetectionPluginTools.createRunnableTask(detector, getParameterList(imageData), imageData, parentObject));</b>
+<b class="nc"><i>352</i>&nbsp;	}</b>
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;	
+<i>355</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

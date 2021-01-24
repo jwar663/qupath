@@ -1,0 +1,429 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: QuPathViewerPlus</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: QuPathViewerPlus (qupath.lib.gui.viewer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QuPathViewerPlus</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.2%
+  </span>
+  <span class="absValue">
+    (19/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    79.9%
+  </span>
+  <span class="absValue">
+    (127/ 159)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import java.awt.geom.Rectangle2D;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>31</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>32</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>33</i>&nbsp;import javafx.geometry.Bounds;
+<i>34</i>&nbsp;import javafx.geometry.Insets;
+<i>35</i>&nbsp;import javafx.geometry.Orientation;
+<i>36</i>&nbsp;import javafx.scene.Node;
+<i>37</i>&nbsp;import javafx.scene.control.Label;
+<i>38</i>&nbsp;import javafx.scene.control.Slider;
+<i>39</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>40</i>&nbsp;import javafx.scene.layout.AnchorPane;
+<i>41</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>42</i>&nbsp;import javafx.scene.layout.Pane;
+<i>43</i>&nbsp;import javafx.scene.paint.Color;
+<i>44</i>&nbsp;import javafx.scene.text.TextAlignment;
+<i>45</i>&nbsp;import qupath.lib.gui.images.stores.DefaultImageRegionStore;
+<i>46</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>47</i>&nbsp;import qupath.lib.gui.tools.ColorToolsFX;
+<i>48</i>&nbsp;import qupath.lib.gui.tools.CommandFinderTools;
+<i>49</i>&nbsp;import qupath.lib.images.ImageData;
+<i>50</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * A whole slide viewer with optional extras... i.e. an overview, scalebar, location string...
+<i>54</i>&nbsp; * 
+<i>55</i>&nbsp; * @author Pete Bankhead
+<i>56</i>&nbsp; */
+<i>57</i>&nbsp;public class QuPathViewerPlus extends QuPathViewer {
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;	private ViewerPlusDisplayOptions viewerDisplayOptions;
+<i>60</i>&nbsp;	
+<b class="fc"><i>61</i>&nbsp;	private ChangeListener&lt;Boolean&gt; locationListener = (v, o, n) -&gt; setLocationVisible(n);</b>
+<b class="fc"><i>62</i>&nbsp;	private ChangeListener&lt;Boolean&gt; overviewListener = (v, o, n) -&gt; setOverviewVisible(n);</b>
+<b class="fc"><i>63</i>&nbsp;	private ChangeListener&lt;Boolean&gt; scalebarListener = (v, o, n) -&gt; setScalebarVisible(n);</b>
+<i>64</i>&nbsp;
+<b class="fc"><i>65</i>&nbsp;	private AnchorPane basePane = new AnchorPane();</b>
+<i>66</i>&nbsp;	
+<b class="fc"><i>67</i>&nbsp;	private ImageOverview overview = new ImageOverview(this);</b>
+<b class="fc"><i>68</i>&nbsp;	private Scalebar scalebar = new Scalebar(this);</b>
+<i>69</i>&nbsp;
+<b class="fc"><i>70</i>&nbsp;	private BorderPane panelLocation = new BorderPane();</b>
+<b class="fc"><i>71</i>&nbsp;	private Label labelLocation = new Label(&quot; &quot;);</b>
+<b class="fc"><i>72</i>&nbsp;	private BooleanProperty useCalibratedLocationString = PathPrefs.useCalibratedLocationStringProperty();</b>
+<b class="fc"><i>73</i>&nbsp;	private Slider sliderZ = new Slider(0, 1, 0);</b>
+<b class="fc"><i>74</i>&nbsp;	private Slider sliderT = new Slider(0, 1, 0);</b>
+<i>75</i>&nbsp;
+<b class="fc"><i>76</i>&nbsp;	private int padding = 10;</b>
+<i>77</i>&nbsp;	
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	/**
+<i>80</i>&nbsp;	 * Create a new viewer.
+<i>81</i>&nbsp;	 * @param imageData image data to show within the viewer
+<i>82</i>&nbsp;	 * @param regionStore store used to tile caching
+<i>83</i>&nbsp;	 * @param overlayOptions overlay options to control the viewer display
+<i>84</i>&nbsp;	 * @param viewerDisplayOptions viewer options to control additional panes and labels
+<i>85</i>&nbsp;	 */
+<i>86</i>&nbsp;	public QuPathViewerPlus(final ImageData&lt;BufferedImage&gt; imageData, final DefaultImageRegionStore regionStore, final OverlayOptions overlayOptions,
+<i>87</i>&nbsp;			final ViewerPlusDisplayOptions viewerDisplayOptions) {
+<b class="fc"><i>88</i>&nbsp;		super(imageData, regionStore, overlayOptions);</b>
+<i>89</i>&nbsp;		
+<i>90</i>&nbsp;		
+<b class="fc"><i>91</i>&nbsp;		sliderZ.setOrientation(Orientation.VERTICAL);</b>
+<b class="fc"><i>92</i>&nbsp;		sliderT.setOrientation(Orientation.HORIZONTAL);</b>
+<i>93</i>&nbsp;		
+<b class="fc"><i>94</i>&nbsp;		sliderT.setSnapToTicks(true);</b>
+<b class="fc"><i>95</i>&nbsp;		sliderZ.setSnapToTicks(true);</b>
+<i>96</i>&nbsp;		
+<b class="fc"><i>97</i>&nbsp;		useCalibratedLocationString.addListener(v -&gt; updateLocationString());</b>
+<i>98</i>&nbsp;		
+<b class="fc"><i>99</i>&nbsp;		Pane view = super.getView();</b>
+<b class="fc"><i>100</i>&nbsp;		view.getChildren().add(basePane);</b>
+<i>101</i>&nbsp;		
+<b class="fc"><i>102</i>&nbsp;		basePane.prefWidthProperty().bind(view.widthProperty());</b>
+<b class="fc"><i>103</i>&nbsp;		basePane.prefHeightProperty().bind(view.heightProperty());</b>
+<b class="fc"><i>104</i>&nbsp;		view.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_MOVED, e -&gt; {</b>
+<b class="fc"><i>105</i>&nbsp;			updateLocationString();</b>
+<b class="fc"><i>106</i>&nbsp;		});</b>
+<i>107</i>&nbsp;		
+<i>108</i>&nbsp;		// Add the overview (preview image for navigation)
+<b class="fc"><i>109</i>&nbsp;		if (imageData != null)</b>
+<b class="nc"><i>110</i>&nbsp;			overview.imageDataChanged(this, null, imageData);</b>
+<b class="fc"><i>111</i>&nbsp;		Node overviewNode = overview.getNode();</b>
+<b class="fc"><i>112</i>&nbsp;		basePane.getChildren().add(overviewNode);</b>
+<b class="fc"><i>113</i>&nbsp;		AnchorPane.setTopAnchor(overviewNode, (double)padding);</b>
+<b class="fc"><i>114</i>&nbsp;		AnchorPane.setRightAnchor(overviewNode, (double)padding);</b>
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;		// Add the location label
+<b class="fc"><i>117</i>&nbsp;		labelLocation.setTextFill(Color.WHITE);</b>
+<b class="fc"><i>118</i>&nbsp;		labelLocation.setTextAlignment(TextAlignment.CENTER);</b>
+<b class="fc"><i>119</i>&nbsp;		var fontBinding = Bindings.createStringBinding(() -&gt; {</b>
+<b class="fc"><i>120</i>&nbsp;				var temp = PathPrefs.viewerFontSizeProperty().get();</b>
+<b class="fc"><i>121</i>&nbsp;				return temp == null ? null : &quot;-fx-font-size: &quot; + temp.getFontSize();</b>
+<b class="fc"><i>122</i>&nbsp;		}, PathPrefs.viewerFontSizeProperty());</b>
+<b class="fc"><i>123</i>&nbsp;		labelLocation.styleProperty().bind(fontBinding);</b>
+<i>124</i>&nbsp;//		labelLocation.setStyle(&quot;-fx-font-size: 0.8em;&quot;);
+<b class="fc"><i>125</i>&nbsp;		panelLocation.setStyle(&quot;-fx-background-color: rgba(0, 0, 0, 0.4);&quot;);</b>
+<b class="fc"><i>126</i>&nbsp;		panelLocation.setMinSize(140, 40);</b>
+<b class="fc"><i>127</i>&nbsp;		panelLocation.setCenter(labelLocation);</b>
+<b class="fc"><i>128</i>&nbsp;		panelLocation.setPadding(new Insets(5));</b>
+<b class="fc"><i>129</i>&nbsp;		basePane.getChildren().add(panelLocation);</b>
+<b class="fc"><i>130</i>&nbsp;		AnchorPane.setBottomAnchor(panelLocation, (double)padding);</b>
+<b class="fc"><i>131</i>&nbsp;		AnchorPane.setRightAnchor(panelLocation, (double)padding);</b>
+<i>132</i>&nbsp;		
+<i>133</i>&nbsp;		// Add the scalebar label
+<i>134</i>&nbsp;//		Node scalebarNode = PanelToolsFX.createSwingNode(scalebar);
+<b class="fc"><i>135</i>&nbsp;		Node scalebarNode = scalebar.getNode();</b>
+<b class="fc"><i>136</i>&nbsp;		basePane.getChildren().add(scalebarNode);</b>
+<b class="fc"><i>137</i>&nbsp;		AnchorPane.setBottomAnchor(scalebarNode, (double)padding);</b>
+<b class="fc"><i>138</i>&nbsp;		AnchorPane.setLeftAnchor(scalebarNode, (double)padding);</b>
+<i>139</i>&nbsp;		
+<i>140</i>&nbsp;		// Add the z-slider
+<b class="fc"><i>141</i>&nbsp;		sliderZ.valueProperty().bindBidirectional(zPositionProperty());</b>
+<i>142</i>&nbsp;//		sliderZ.setOpaque(false);
+<b class="fc"><i>143</i>&nbsp;		sliderZ.setVisible(false);</b>
+<b class="fc"><i>144</i>&nbsp;		var tooltipZ = new Tooltip(&quot;Change z-slice&quot;);</b>
+<b class="fc"><i>145</i>&nbsp;		tooltipZ.textProperty().bind(Bindings.createStringBinding(() -&gt; {</b>
+<b class="fc"><i>146</i>&nbsp;			return &quot;Z-slice (&quot; + zPositionProperty().get() + &quot;)&quot;;</b>
+<b class="fc"><i>147</i>&nbsp;		}, zPositionProperty()));</b>
+<b class="fc"><i>148</i>&nbsp;		sliderZ.setTooltip(tooltipZ);</b>
+<b class="fc"><i>149</i>&nbsp;		sliderZ.rotateProperty().bind(Bindings.createDoubleBinding(() -&gt; {</b>
+<b class="fc"><i>150</i>&nbsp;			if (PathPrefs.invertZSliderProperty().get())</b>
+<b class="nc"><i>151</i>&nbsp;				return 180.0;</b>
+<b class="fc"><i>152</i>&nbsp;			return 0.0;</b>
+<b class="fc"><i>153</i>&nbsp;		}, PathPrefs.invertZSliderProperty()));</b>
+<i>154</i>&nbsp;		
+<i>155</i>&nbsp;		// Add the t-slider
+<b class="fc"><i>156</i>&nbsp;		sliderT.valueProperty().bindBidirectional(tPositionProperty());</b>
+<i>157</i>&nbsp;//		sliderT.setOpaque(false);
+<b class="fc"><i>158</i>&nbsp;		sliderT.setVisible(false);</b>
+<b class="fc"><i>159</i>&nbsp;		var tooltipT = new Tooltip(&quot;Change time point&quot;);</b>
+<b class="fc"><i>160</i>&nbsp;		tooltipT.textProperty().bind(Bindings.createStringBinding(() -&gt; {</b>
+<b class="fc"><i>161</i>&nbsp;			return &quot;Time point (&quot; + tPositionProperty().get() + &quot;)&quot;;</b>
+<b class="fc"><i>162</i>&nbsp;		}, tPositionProperty()));</b>
+<b class="fc"><i>163</i>&nbsp;		sliderT.setTooltip(tooltipT);</b>
+<i>164</i>&nbsp;		
+<i>165</i>&nbsp;		// Set sliders&#39; position so they make space for command bar (only if needed!)
+<b class="fc"><i>166</i>&nbsp;		var commandBarDisplay = CommandFinderTools.commandBarDisplayProperty().getValue();</b>
+<b class="fc"><i>167</i>&nbsp;		setSlidersPosition(!commandBarDisplay.equals(CommandFinderTools.CommandBarDisplay.NEVER));</b>
+<i>168</i>&nbsp;
+<b class="fc"><i>169</i>&nbsp;		basePane.getChildren().addAll(sliderZ, sliderT);</b>
+<i>170</i>&nbsp;
+<b class="fc"><i>171</i>&nbsp;		updateSliders();</b>
+<i>172</i>&nbsp;		
+<b class="fc"><i>173</i>&nbsp;		zPositionProperty().addListener(v -&gt; updateLocationString());</b>
+<b class="fc"><i>174</i>&nbsp;		tPositionProperty().addListener(v -&gt; updateLocationString());</b>
+<i>175</i>&nbsp;		
+<b class="fc"><i>176</i>&nbsp;		this.viewerDisplayOptions = viewerDisplayOptions;</b>
+<i>177</i>&nbsp;		
+<b class="fc"><i>178</i>&nbsp;		setLocationVisible(viewerDisplayOptions.getShowLocation());</b>
+<b class="fc"><i>179</i>&nbsp;		setOverviewVisible(viewerDisplayOptions.getShowOverview());</b>
+<b class="fc"><i>180</i>&nbsp;		setScalebarVisible(viewerDisplayOptions.getShowScalebar());</b>
+<i>181</i>&nbsp;		
+<b class="fc"><i>182</i>&nbsp;		viewerDisplayOptions.showLocationProperty().addListener(locationListener);</b>
+<b class="fc"><i>183</i>&nbsp;		viewerDisplayOptions.showOverviewProperty().addListener(overviewListener);</b>
+<b class="fc"><i>184</i>&nbsp;		viewerDisplayOptions.showScalebarProperty().addListener(scalebarListener);</b>
+<b class="fc"><i>185</i>&nbsp;	}</b>
+<i>186</i>&nbsp;	
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	private void updateSliders() {
+<b class="fc"><i>189</i>&nbsp;		if (sliderZ == null || sliderT == null)</b>
+<b class="nc"><i>190</i>&nbsp;			return;</b>
+<b class="fc"><i>191</i>&nbsp;		ImageServer&lt;?&gt; server = getServer();</b>
+<b class="fc"><i>192</i>&nbsp;		if (server != null &amp;&amp; server.nZSlices() &gt; 1) {</b>
+<b class="nc"><i>193</i>&nbsp;			setSliderRange(sliderZ, getZPosition(), 0, server.nZSlices()-1);</b>
+<b class="nc"><i>194</i>&nbsp;			sliderZ.setVisible(true);</b>
+<i>195</i>&nbsp;		} else
+<b class="fc"><i>196</i>&nbsp;			sliderZ.setVisible(false);	</b>
+<i>197</i>&nbsp;				
+<b class="fc"><i>198</i>&nbsp;		if (server != null &amp;&amp; server.nTimepoints() &gt; 1) {</b>
+<b class="nc"><i>199</i>&nbsp;			setSliderRange(sliderT, getTPosition(), 0, server.nTimepoints()-1);</b>
+<b class="nc"><i>200</i>&nbsp;			sliderT.setVisible(true);</b>
+<i>201</i>&nbsp;		} else
+<b class="fc"><i>202</i>&nbsp;			sliderT.setVisible(false);</b>
+<b class="fc"><i>203</i>&nbsp;	}</b>
+<i>204</i>&nbsp;	
+<i>205</i>&nbsp;	
+<i>206</i>&nbsp;	static void setSliderRange(final Slider slider, double position, double min, double max) {
+<b class="nc"><i>207</i>&nbsp;		slider.setMin(min);</b>
+<b class="nc"><i>208</i>&nbsp;		slider.setMax(max);</b>
+<b class="nc"><i>209</i>&nbsp;		slider.setMajorTickUnit(1);</b>
+<b class="nc"><i>210</i>&nbsp;		slider.setMinorTickCount(0);</b>
+<b class="nc"><i>211</i>&nbsp;		slider.setSnapToTicks(true);</b>
+<b class="nc"><i>212</i>&nbsp;		slider.setShowTickMarks(false);</b>
+<b class="nc"><i>213</i>&nbsp;		slider.setShowTickLabels(false);</b>
+<b class="nc"><i>214</i>&nbsp;		slider.setValue(position);</b>
+<b class="nc"><i>215</i>&nbsp;		slider.setOpacity(0.25);</b>
+<b class="nc"><i>216</i>&nbsp;		slider.setBlockIncrement(1.0);</b>
+<i>217</i>&nbsp;		
+<b class="nc"><i>218</i>&nbsp;		slider.setOnMouseEntered(e -&gt; {</b>
+<b class="nc"><i>219</i>&nbsp;			slider.setOpacity(1);			</b>
+<b class="nc"><i>220</i>&nbsp;		});</b>
+<b class="nc"><i>221</i>&nbsp;		slider.setOnMouseExited(e -&gt; {</b>
+<b class="nc"><i>222</i>&nbsp;			slider.setOpacity(0.5);			</b>
+<b class="nc"><i>223</i>&nbsp;		});</b>
+<b class="nc"><i>224</i>&nbsp;	}</b>
+<i>225</i>&nbsp;	
+<i>226</i>&nbsp;	
+<i>227</i>&nbsp;	@Override
+<i>228</i>&nbsp;	public void initializeForServer(ImageServer&lt;BufferedImage&gt; server) {
+<b class="fc"><i>229</i>&nbsp;		super.initializeForServer(server);</b>
+<b class="fc"><i>230</i>&nbsp;		updateSliders();</b>
+<b class="fc"><i>231</i>&nbsp;	}</b>
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;	private void setLocationVisible(boolean showLocation) {
+<b class="fc"><i>235</i>&nbsp;		panelLocation.setVisible(showLocation);</b>
+<b class="fc"><i>236</i>&nbsp;	}</b>
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;	/**
+<i>239</i>&nbsp;	 * Returns true if the cursor location is visible, false otherwise.
+<i>240</i>&nbsp;	 * @return
+<i>241</i>&nbsp;	 */
+<i>242</i>&nbsp;	public boolean isLocationVisible() {
+<b class="fc"><i>243</i>&nbsp;		return panelLocation.isVisible();</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;	private void setScalebarVisible(boolean scalebarVisible) {
+<b class="fc"><i>247</i>&nbsp;		scalebar.setVisible(scalebarVisible);</b>
+<b class="fc"><i>248</i>&nbsp;	}</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;	/**
+<i>251</i>&nbsp;	 * Returns true if the scalebar is visible, false otherwise.
+<i>252</i>&nbsp;	 * @return
+<i>253</i>&nbsp;	 */
+<i>254</i>&nbsp;	public boolean isScalebarVisible() {
+<b class="fc"><i>255</i>&nbsp;		return scalebar.isVisible();</b>
+<i>256</i>&nbsp;	}
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;	private void setOverviewVisible(boolean overviewVisible) {
+<b class="fc"><i>259</i>&nbsp;		overview.setVisible(overviewVisible);</b>
+<b class="fc"><i>260</i>&nbsp;	}</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;	/**
+<i>263</i>&nbsp;	 * Returns true if the image overview is visible, false otherwise.
+<i>264</i>&nbsp;	 * @return
+<i>265</i>&nbsp;	 */
+<i>266</i>&nbsp;	public boolean isOverviewVisible() {
+<b class="fc"><i>267</i>&nbsp;		return overview.isVisible();</b>
+<i>268</i>&nbsp;	}
+<i>269</i>&nbsp;	
+<i>270</i>&nbsp;	/**
+<i>271</i>&nbsp;	 * Sets the Z and T sliders&#39; position to allow space for command bar
+<i>272</i>&nbsp;	 * @param down
+<i>273</i>&nbsp;	 */
+<i>274</i>&nbsp;	public void setSlidersPosition(boolean down) {
+<b class="fc"><i>275</i>&nbsp;		double slidersTopPadding = (double)padding + (down ? 20 : 0);</b>
+<i>276</i>&nbsp;		
+<i>277</i>&nbsp;		// Set Z sliders&#39; position
+<b class="fc"><i>278</i>&nbsp;		AnchorPane.setTopAnchor(sliderZ, (double)padding + slidersTopPadding);</b>
+<b class="fc"><i>279</i>&nbsp;		AnchorPane.setLeftAnchor(sliderZ, (double)padding);</b>
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;		// Set T sliders&#39; position
+<b class="fc"><i>282</i>&nbsp;		AnchorPane.setTopAnchor(sliderT, slidersTopPadding);</b>
+<b class="fc"><i>283</i>&nbsp;		AnchorPane.setLeftAnchor(sliderT, (double)padding*2);</b>
+<b class="fc"><i>284</i>&nbsp;	}</b>
+<i>285</i>&nbsp;	
+<i>286</i>&nbsp;	@Override
+<i>287</i>&nbsp;	public void closeViewer() {
+<b class="nc"><i>288</i>&nbsp;		super.closeViewer();</b>
+<b class="nc"><i>289</i>&nbsp;		viewerDisplayOptions.showLocationProperty().removeListener(locationListener);</b>
+<b class="nc"><i>290</i>&nbsp;		viewerDisplayOptions.showOverviewProperty().removeListener(overviewListener);</b>
+<b class="nc"><i>291</i>&nbsp;		viewerDisplayOptions.showScalebarProperty().removeListener(scalebarListener);</b>
+<i>292</i>&nbsp;		
+<b class="nc"><i>293</i>&nbsp;	}</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;	// TODO: Make location string protected?
+<i>296</i>&nbsp;	void updateLocationString() {
+<b class="fc"><i>297</i>&nbsp;		String s = null;</b>
+<b class="fc"><i>298</i>&nbsp;		if (labelLocation != null &amp;&amp; hasServer())</b>
+<b class="fc"><i>299</i>&nbsp;			s = getFullLocationString(useCalibratedLocationString());</b>
+<b class="fc"><i>300</i>&nbsp;		if (s != null &amp;&amp; s.length() &gt; 0) {</b>
+<b class="fc"><i>301</i>&nbsp;			labelLocation.setText(s);</b>
+<i>302</i>&nbsp;//			labelLocation.setTextAlignment(TextAlignment.CENTER);
+<b class="fc"><i>303</i>&nbsp;			panelLocation.setOpacity(1);</b>
+<i>304</i>&nbsp;		} else {
+<b class="fc"><i>305</i>&nbsp;			panelLocation.setOpacity(0);</b>
+<i>306</i>&nbsp;		}
+<b class="fc"><i>307</i>&nbsp;	}</b>
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;	private boolean useCalibratedLocationString() {
+<b class="fc"><i>311</i>&nbsp;		return useCalibratedLocationString.get();</b>
+<i>312</i>&nbsp;	}
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;	@Override
+<i>315</i>&nbsp;	void paintCanvas() {
+<b class="fc"><i>316</i>&nbsp;		boolean imageWasUpdated = imageUpdated || locationUpdated;</b>
+<i>317</i>&nbsp;		
+<b class="fc"><i>318</i>&nbsp;		super.paintCanvas();</b>
+<i>319</i>&nbsp;		
+<i>320</i>&nbsp;		// Ensure the scalebar color is set, if required
+<b class="fc"><i>321</i>&nbsp;		Bounds boundsFX = scalebar.getNode().getBoundsInParent();</b>
+<b class="fc"><i>322</i>&nbsp;		Rectangle2D bounds = new Rectangle2D.Double(boundsFX.getMinX(), boundsFX.getMinY(), boundsFX.getMaxX(), boundsFX.getMaxY());</b>
+<b class="fc"><i>323</i>&nbsp;		if (imageWasUpdated) {</b>
+<b class="fc"><i>324</i>&nbsp;			if (getDisplayedClipShape(bounds).intersects(0, 0, getServerWidth(), getServerHeight())) {</b>
+<b class="fc"><i>325</i>&nbsp;				scalebar.setTextColor(getSuggestedOverlayColorFX());</b>
+<i>326</i>&nbsp;			}
+<i>327</i>&nbsp;			else {
+<b class="fc"><i>328</i>&nbsp;				scalebar.setTextColor(ColorToolsFX.TRANSLUCENT_WHITE_FX);</b>
+<i>329</i>&nbsp;			}
+<i>330</i>&nbsp;		}
+<b class="fc"><i>331</i>&nbsp;	}</b>
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;	@Override
+<i>334</i>&nbsp;	public void setDownsampleFactor(double downsampleFactor, double cx, double cy) {
+<b class="nc"><i>335</i>&nbsp;		super.setDownsampleFactor(downsampleFactor, cx, cy);</b>
+<b class="nc"><i>336</i>&nbsp;		updateLocationString();</b>
+<b class="nc"><i>337</i>&nbsp;	}</b>
+<i>338</i>&nbsp;	
+<i>339</i>&nbsp;	@Override
+<i>340</i>&nbsp;	public void repaintEntireImage() {
+<b class="fc"><i>341</i>&nbsp;		super.repaintEntireImage();</b>
+<b class="fc"><i>342</i>&nbsp;		if (overview != null)</b>
+<b class="fc"><i>343</i>&nbsp;			overview.repaint();</b>
+<b class="fc"><i>344</i>&nbsp;	}</b>
+<i>345</i>&nbsp;
+<i>346</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

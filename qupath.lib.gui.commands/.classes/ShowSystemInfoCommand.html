@@ -1,0 +1,232 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShowSystemInfoCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShowSystemInfoCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShowSystemInfoCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.slf4j.Logger;
+<i>29</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import javafx.geometry.Insets;
+<i>32</i>&nbsp;import javafx.scene.Scene;
+<i>33</i>&nbsp;import javafx.scene.control.TextArea;
+<i>34</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>35</i>&nbsp;import javafx.stage.Modality;
+<i>36</i>&nbsp;import javafx.stage.Stage;
+<i>37</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Command to display some basic system info - useful to see memory etc.
+<i>41</i>&nbsp; * 
+<i>42</i>&nbsp; * @author Pete Bankhead
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; */
+<b class="nc"><i>45</i>&nbsp;class ShowSystemInfoCommand {</b>
+<i>46</i>&nbsp;	
+<b class="nc"><i>47</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ShowSystemInfoCommand.class);</b>
+<i>48</i>&nbsp;	
+<i>49</i>&nbsp;	public static Stage createShowSystemInfoDialog(QuPathGUI qupath) {
+<b class="nc"><i>50</i>&nbsp;		var dialog = new Stage();</b>
+<b class="nc"><i>51</i>&nbsp;		dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>52</i>&nbsp;		dialog.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc"><i>53</i>&nbsp;		dialog.setTitle(&quot;System info&quot;);</b>
+<i>54</i>&nbsp;		
+<b class="nc"><i>55</i>&nbsp;		var textArea = new TextArea();</b>
+<b class="nc"><i>56</i>&nbsp;		textArea.setPrefColumnCount(40);</b>
+<b class="nc"><i>57</i>&nbsp;		textArea.setPrefRowCount(25);</b>
+<b class="nc"><i>58</i>&nbsp;		textArea.setEditable(false);</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;		dialog.focusedProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>61</i>&nbsp;			if (n)</b>
+<b class="nc"><i>62</i>&nbsp;				updateText(qupath, textArea);</b>
+<i>63</i>&nbsp;		});
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>66</i>&nbsp;		pane.setPadding(new Insets(10, 10, 10, 10));</b>
+<b class="nc"><i>67</i>&nbsp;		pane.setCenter(textArea);</b>
+<i>68</i>&nbsp;		
+<b class="nc"><i>69</i>&nbsp;		dialog.setScene(new Scene(pane));</b>
+<b class="nc"><i>70</i>&nbsp;		return dialog;</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	/**
+<i>75</i>&nbsp;	 * Get a multi-line string containing some system info, created mostly by querying system properties &amp;amp; the current Runtime.
+<i>76</i>&nbsp;	 * 
+<i>77</i>&nbsp;	 * @return
+<i>78</i>&nbsp;	 */
+<i>79</i>&nbsp;	public static String getInfoString() {
+<b class="nc"><i>80</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;		Runtime rt = Runtime.getRuntime();</b>
+<b class="nc"><i>83</i>&nbsp;		rt.gc();</b>
+<i>84</i>&nbsp;		
+<i>85</i>&nbsp;		// Java info
+<b class="nc"><i>86</i>&nbsp;		sb.append(&quot;Java version:\t\t&quot;).append(System.getProperty(&quot;java.version&quot;)).append(&quot;\n&quot;);</b>
+<i>87</i>&nbsp;//		sb.append(&quot;Java vendor:\t\t&quot;).append(System.getProperty(&quot;java.vendor&quot;)).append(&quot;\n&quot;);
+<b class="nc"><i>88</i>&nbsp;		sb.append(&quot;Java vendor: \t\t&quot;).append(System.getProperty(&quot;java.vendor&quot;)).append(&quot;  -  &quot;).</b>
+<b class="nc"><i>89</i>&nbsp;			append(System.getProperty(&quot;java.vendor.url&quot;)).append(&quot;\n&quot;);</b>
+<b class="nc"><i>90</i>&nbsp;		sb.append(&quot;Java home:   \t\t&quot;).append(System.getProperty(&quot;java.home&quot;)).append(&quot;\n&quot;);</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;		
+<i>93</i>&nbsp;		// Operating system info
+<b class="nc"><i>94</i>&nbsp;		sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>95</i>&nbsp;		sb.append(&quot;Operating system:\t\t&quot;).append(System.getProperty(&quot;os.name&quot;)).append(&quot;  -  &quot;).append(System.getProperty(&quot;os.version&quot;)).append(&quot;\n&quot;);</b>
+<i>96</i>&nbsp;//		sb.append(&quot;Version:         \t\t&quot;).append(System.getProperty(&quot;os.version&quot;)).append(&quot;\n&quot;);
+<b class="nc"><i>97</i>&nbsp;		sb.append(&quot;Architecture:    \t\t&quot;).append(System.getProperty(&quot;os.arch&quot;)).append(&quot;\n&quot;);</b>
+<i>98</i>&nbsp;		
+<i>99</i>&nbsp;		// System info
+<b class="nc"><i>100</i>&nbsp;		sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>101</i>&nbsp;		sb.append(&quot;Number of available processors:\t\t&quot;).append(rt.availableProcessors()).append(&quot;\n&quot;);</b>
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		sb.append(&quot;\n&quot;);</b>
+<i>104</i>&nbsp;		
+<i>105</i>&nbsp;		// Memory info
+<b class="nc"><i>106</i>&nbsp;		int toMB = (1024*1024);</b>
+<b class="nc"><i>107</i>&nbsp;		sb.append(&quot;Memory already used by JVM:  \t\t&quot;).append((rt.totalMemory() - rt.freeMemory())/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);</b>
+<i>108</i>&nbsp;//		sb.append(&quot;Free memory available to JVM: \t\t&quot;).append(rt.freeMemory()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);
+<b class="nc"><i>109</i>&nbsp;		sb.append(&quot;Total memory available to JVM:\t\t&quot;).append(rt.totalMemory()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>110</i>&nbsp;		sb.append(&quot;Max memory JVM may try to use:\t\t&quot;).append(rt.maxMemory()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>111</i>&nbsp;		if (rt.maxMemory()/toMB &lt; 4096)</b>
+<b class="nc"><i>112</i>&nbsp;			sb.append(&quot;--- WARNING: Max memory is quite low (&lt; 4GB)  - may not be enough to run full whole slide analysis.&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>113</i>&nbsp;		if ((rt.maxMemory() - rt.freeMemory())/toMB &lt; 1024)</b>
+<b class="nc"><i>114</i>&nbsp;			sb.append(&quot;--- WARNING: Memory almost all in use (&lt; 1GB remaining).&quot;).append(&quot;\n&quot;);</b>
+<i>115</i>&nbsp;		
+<i>116</i>&nbsp;		
+<i>117</i>&nbsp;//		// File system info - excluded (can be very slow to access!)
+<i>118</i>&nbsp;//		sb.append(&quot;\n&quot;);
+<i>119</i>&nbsp;//	    for (File root : File.listRoots()) {
+<i>120</i>&nbsp;//	      sb.append(&quot;File system: \t\t&quot; + root.getAbsolutePath()).append(&quot;\n&quot;);
+<i>121</i>&nbsp;//	      sb.append(&quot;Total space: \t\t&quot; + root.getTotalSpace()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);
+<i>122</i>&nbsp;//	      sb.append(&quot;Free space:  \t\t&quot; + root.getFreeSpace()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);
+<i>123</i>&nbsp;//	      sb.append(&quot;Usable space:\t\t&quot; + root.getUsableSpace()/toMB).append(&quot; MB&quot;).append(&quot;\n&quot;);
+<i>124</i>&nbsp;//	    }
+<i>125</i>&nbsp;	    
+<i>126</i>&nbsp;	    // Show paths (at the end, since they may be rather long)
+<b class="nc"><i>127</i>&nbsp;		sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>128</i>&nbsp;		sb.append(&quot;Library path:&quot;);</b>
+<b class="nc"><i>129</i>&nbsp;		for (String p : System.getProperty(&quot;java.library.path&quot;).split(File.pathSeparator))</b>
+<b class="nc"><i>130</i>&nbsp;			sb.append(&quot;\n      &quot;).append(p);</b>
+<b class="nc"><i>131</i>&nbsp;		sb.append(&quot;\n\n&quot;);</b>
+<b class="nc"><i>132</i>&nbsp;		sb.append(&quot;Class path:&quot;);</b>
+<b class="nc"><i>133</i>&nbsp;		for (String p : System.getProperty(&quot;java.class.path&quot;).split(File.pathSeparator))</b>
+<b class="nc"><i>134</i>&nbsp;			sb.append(&quot;\n      &quot;).append(p);</b>
+<i>135</i>&nbsp;		
+<b class="nc"><i>136</i>&nbsp;		logger.trace(&quot;Creating system info string:\n{}&quot;, sb);</b>
+<i>137</i>&nbsp;		
+<b class="nc"><i>138</i>&nbsp;		return sb.toString();</b>
+<i>139</i>&nbsp;	}
+<i>140</i>&nbsp;	
+<i>141</i>&nbsp;	private static void updateText(QuPathGUI qupath, TextArea textArea) {
+<b class="nc"><i>142</i>&nbsp;		String buildString = qupath.getBuildString();</b>
+<b class="nc"><i>143</i>&nbsp;		if (buildString == null)</b>
+<b class="nc"><i>144</i>&nbsp;			textArea.setText(getInfoString());</b>
+<i>145</i>&nbsp;		else
+<b class="nc"><i>146</i>&nbsp;			textArea.setText(buildString + &quot;\n\n&quot; + getInfoString());</b>
+<i>147</i>&nbsp;	}
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

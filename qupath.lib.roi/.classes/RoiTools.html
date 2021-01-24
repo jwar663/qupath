@@ -1,0 +1,985 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RoiTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.roi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RoiTools (qupath.lib.roi)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RoiTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 310)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RoiTools$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RoiTools$CombineOp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 315)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.roi;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Rectangle;
+<i>27</i>&nbsp;import java.awt.Shape;
+<i>28</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>29</i>&nbsp;import java.awt.geom.Area;
+<i>30</i>&nbsp;import java.awt.geom.Ellipse2D;
+<i>31</i>&nbsp;import java.awt.geom.Line2D;
+<i>32</i>&nbsp;import java.awt.geom.Path2D;
+<i>33</i>&nbsp;import java.awt.geom.PathIterator;
+<i>34</i>&nbsp;import java.awt.geom.Rectangle2D;
+<i>35</i>&nbsp;import java.util.ArrayList;
+<i>36</i>&nbsp;import java.util.Collection;
+<i>37</i>&nbsp;import java.util.Collections;
+<i>38</i>&nbsp;import java.util.HashMap;
+<i>39</i>&nbsp;import java.util.List;
+<i>40</i>&nbsp;import java.util.Map;
+<i>41</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>42</i>&nbsp;import org.locationtech.jts.geom.util.AffineTransformation;
+<i>43</i>&nbsp;import org.slf4j.Logger;
+<i>44</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>47</i>&nbsp;import qupath.lib.geom.ImmutableDimension;
+<i>48</i>&nbsp;import qupath.lib.geom.Point2;
+<i>49</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>50</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * A collection of static methods for working with ROIs.
+<i>54</i>&nbsp; * 
+<i>55</i>&nbsp; * @author Pete Bankhead
+<i>56</i>&nbsp; *
+<i>57</i>&nbsp; */
+<b class="nc"><i>58</i>&nbsp;public class RoiTools {</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(RoiTools.class);</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * Methods of combining two ROIs.
+<i>64</i>&nbsp;	 */
+<b class="nc"><i>65</i>&nbsp;	public enum CombineOp {</b>
+<i>66</i>&nbsp;		/**
+<i>67</i>&nbsp;		 * Add ROIs (union).
+<i>68</i>&nbsp;		 */
+<b class="nc"><i>69</i>&nbsp;		ADD,</b>
+<i>70</i>&nbsp;		
+<i>71</i>&nbsp;		/**
+<i>72</i>&nbsp;		 * Subtract from first ROI.
+<i>73</i>&nbsp;		 */
+<b class="nc"><i>74</i>&nbsp;		SUBTRACT,</b>
+<i>75</i>&nbsp;		
+<i>76</i>&nbsp;		/**
+<i>77</i>&nbsp;		 * Calculate intersection (overlap) between ROIs.
+<i>78</i>&nbsp;		 */
+<b class="nc"><i>79</i>&nbsp;		INTERSECT</b>
+<i>80</i>&nbsp;		}//, XOR}
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Combine two shape ROIs together.
+<i>84</i>&nbsp;	 * 
+<i>85</i>&nbsp;	 * @param shape1
+<i>86</i>&nbsp;	 * @param shape2
+<i>87</i>&nbsp;	 * @param op
+<i>88</i>&nbsp;	 * @return
+<i>89</i>&nbsp;	 */
+<i>90</i>&nbsp;	public static ROI combineROIs(ROI shape1, ROI shape2, CombineOp op) {
+<b class="nc"><i>91</i>&nbsp;		logger.trace(&quot;Combining {} and {} with op {}&quot;, shape1, shape2, op);</b>
+<i>92</i>&nbsp;		// Check we can combine
+<b class="nc"><i>93</i>&nbsp;		if (!RoiTools.sameImagePlane(shape1, shape2))</b>
+<b class="nc"><i>94</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot combine - shapes &quot; + shape1 + &quot; and &quot; + shape2 + &quot; do not share the same image plane&quot;);</b>
+<b class="nc"><i>95</i>&nbsp;		var area1 = shape1.getGeometry();</b>
+<b class="nc"><i>96</i>&nbsp;		var area2 = shape2.getGeometry();</b>
+<i>97</i>&nbsp;		
+<i>98</i>&nbsp;		// Do a quick check to see if a combination might be avoided
+<b class="nc"><i>99</i>&nbsp;		switch (op) {</b>
+<i>100</i>&nbsp;		case ADD:
+<b class="nc"><i>101</i>&nbsp;			return GeometryTools.geometryToROI(area1.union(area2), shape1.getImagePlane());</b>
+<i>102</i>&nbsp;		case INTERSECT:
+<b class="nc"><i>103</i>&nbsp;			return GeometryTools.geometryToROI(area1.intersection(area2), shape1.getImagePlane());</b>
+<i>104</i>&nbsp;		case SUBTRACT:
+<b class="nc"><i>105</i>&nbsp;			return GeometryTools.geometryToROI(area1.difference(area2), shape1.getImagePlane());</b>
+<i>106</i>&nbsp;		default:
+<b class="nc"><i>107</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown op &quot; + op);</b>
+<i>108</i>&nbsp;		}
+<i>109</i>&nbsp;	}
+<i>110</i>&nbsp;	
+<i>111</i>&nbsp;	/**
+<i>112</i>&nbsp;	 * Create union of multiple ROIs. This assumes that ROIs fall on the same plane, if not an {@link IllegalArgumentException} 
+<i>113</i>&nbsp;	 * will be thrown. Similarly, ROIs must be of a similar type (e.g. area, point) or an exception will be thrown by Java Topology Suite.
+<i>114</i>&nbsp;	 * @param rois
+<i>115</i>&nbsp;	 * @return
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public static ROI union(Collection&lt;ROI&gt; rois) {
+<b class="nc"><i>118</i>&nbsp;		logger.trace(&quot;Calculating union of {} ROIs&quot;, rois.size());</b>
+<b class="nc"><i>119</i>&nbsp;		if (rois.isEmpty())</b>
+<b class="nc"><i>120</i>&nbsp;			return ROIs.createEmptyROI();</b>
+<b class="nc"><i>121</i>&nbsp;		if (rois.size() == 1)</b>
+<b class="nc"><i>122</i>&nbsp;			return rois.iterator().next();</b>
+<b class="nc"><i>123</i>&nbsp;		ImagePlane plane = rois.iterator().next().getImagePlane();</b>
+<b class="nc"><i>124</i>&nbsp;		List&lt;Geometry&gt; geometries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>125</i>&nbsp;		for (var r : rois) {</b>
+<b class="nc"><i>126</i>&nbsp;			if (!r.getImagePlane().equals(plane)) {</b>
+<b class="nc"><i>127</i>&nbsp;				throw new IllegalArgumentException(&quot;Cannot merge ROIs - found plane &quot; </b>
+<b class="nc"><i>128</i>&nbsp;						+ r.getImagePlane() + &quot; but expected &quot; + plane);</b>
+<i>129</i>&nbsp;			}
+<b class="nc"><i>130</i>&nbsp;			geometries.add(r.getGeometry());</b>
+<b class="nc"><i>131</i>&nbsp;		}</b>
+<b class="nc"><i>132</i>&nbsp;		return GeometryTools.geometryToROI(GeometryTools.union(geometries), plane);</b>
+<i>133</i>&nbsp;	}
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	/**
+<i>136</i>&nbsp;	 * Create intersection of multiple ROIs. This assumes that ROIs fall on the same plane, if not an {@link IllegalArgumentException} 
+<i>137</i>&nbsp;	 * will be thrown. Similarly, ROIs must be of a similar type (e.g. area, point) or an exception will be thrown by Java Topology Suite.
+<i>138</i>&nbsp;	 * @param rois
+<i>139</i>&nbsp;	 * @return
+<i>140</i>&nbsp;	 */
+<i>141</i>&nbsp;	public static ROI intersection(Collection&lt;ROI&gt; rois) {
+<b class="nc"><i>142</i>&nbsp;		if (rois.isEmpty())</b>
+<b class="nc"><i>143</i>&nbsp;			return ROIs.createEmptyROI();</b>
+<b class="nc"><i>144</i>&nbsp;		if (rois.size() == 1)</b>
+<b class="nc"><i>145</i>&nbsp;			return rois.iterator().next();</b>
+<b class="nc"><i>146</i>&nbsp;		ImagePlane plane = rois.iterator().next().getImagePlane();</b>
+<b class="nc"><i>147</i>&nbsp;		List&lt;Geometry&gt; geometries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>148</i>&nbsp;		for (var r : rois) {</b>
+<b class="nc"><i>149</i>&nbsp;			if (!r.getImagePlane().equals(plane)) {</b>
+<b class="nc"><i>150</i>&nbsp;				throw new IllegalArgumentException(&quot;Cannot merge ROIs - found plane &quot; </b>
+<b class="nc"><i>151</i>&nbsp;						+ r.getImagePlane() + &quot; but expected &quot; + plane);</b>
+<i>152</i>&nbsp;			}
+<b class="nc"><i>153</i>&nbsp;			geometries.add(r.getGeometry());</b>
+<b class="nc"><i>154</i>&nbsp;		}</b>
+<b class="nc"><i>155</i>&nbsp;		Geometry first = geometries.remove(0);</b>
+<b class="nc"><i>156</i>&nbsp;		for (var geom : geometries)</b>
+<b class="nc"><i>157</i>&nbsp;			first = first.intersection(geom);</b>
+<b class="nc"><i>158</i>&nbsp;		return GeometryTools.geometryToROI(first, plane);</b>
+<i>159</i>&nbsp;	}
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Apply an affine transform to a ROI, returning the result.
+<i>164</i>&nbsp;	 * @param roi the ROI to transform
+<i>165</i>&nbsp;	 * @param transform the affine transform to apply; if null or the identity transform, the original ROI is returned unchanged
+<i>166</i>&nbsp;	 * @return the transformed ROI, or the original if no (non-identity) transform is specified
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;	public static ROI transformROI(ROI roi, AffineTransform transform) {
+<b class="nc"><i>169</i>&nbsp;		logger.trace(&quot;Applying affine transform {} to ROI {}&quot;, transform, roi);</b>
+<b class="nc"><i>170</i>&nbsp;		if (roi == null || transform == null || transform.isIdentity())</b>
+<b class="nc"><i>171</i>&nbsp;			return roi;</b>
+<b class="nc"><i>172</i>&nbsp;		var t = GeometryTools.convertTransform(transform);</b>
+<b class="nc"><i>173</i>&nbsp;		var geometry2 = t.transform(roi.getGeometry());</b>
+<b class="nc"><i>174</i>&nbsp;		return GeometryTools.geometryToROI(geometry2, roi.getImagePlane());</b>
+<i>175</i>&nbsp;	}
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;	
+<i>178</i>&nbsp;	/**
+<i>179</i>&nbsp;	 * Intersect a collection of ROIs with a single parent ROI, returning all results that are valid.
+<i>180</i>&nbsp;	 * Where possible, ROIs are returned unchanged.
+<i>181</i>&nbsp;	 * 
+<i>182</i>&nbsp;	 * @param parent the parent ROI, used to define the clip boundary
+<i>183</i>&nbsp;	 * @param rois a collection of ROIs that should be intersected with parent
+<i>184</i>&nbsp;	 * @return list of intersected ROIs; this may be shorter than rois if some lie completely outside parent
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public static List&lt;ROI&gt; clipToROI(ROI parent, Collection&lt;ROI&gt; rois) {
+<b class="nc"><i>187</i>&nbsp;		logger.trace(&quot;Clipping {} ROIs to {}&quot;, rois.size(), parent);</b>
+<b class="nc"><i>188</i>&nbsp;		var geom = parent.getGeometry();</b>
+<b class="nc"><i>189</i>&nbsp;		List&lt;ROI&gt; results = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>190</i>&nbsp;		for (var r : rois) {</b>
+<b class="nc"><i>191</i>&nbsp;			if (!sameImagePlane(parent, r))</b>
+<b class="nc"><i>192</i>&nbsp;				continue;</b>
+<b class="nc"><i>193</i>&nbsp;			var g = r.getGeometry();</b>
+<i>194</i>&nbsp;			// Quick check to see if we can use the ROI unchanged
+<b class="nc"><i>195</i>&nbsp;			if (geom.covers(g))</b>
+<b class="nc"><i>196</i>&nbsp;				results.add(r);</b>
+<i>197</i>&nbsp;			else {
+<i>198</i>&nbsp;				// Compute the intersection
+<b class="nc"><i>199</i>&nbsp;				g = geom.intersection(g);</b>
+<i>200</i>&nbsp;				// If we have a collection, we need to ensure homogeneity - intersections between two areas can result in lines occurring
+<b class="nc"><i>201</i>&nbsp;				g = GeometryTools.homogenizeGeometryCollection(geom.intersection(g));</b>
+<i>202</i>&nbsp;				// Return the intersection if it is non-null, and also avoids any &#39;collapse&#39;, e.g. an area becoming a line
+<b class="nc"><i>203</i>&nbsp;				if (!g.isEmpty()) {</b>
+<b class="nc"><i>204</i>&nbsp;					var r2 = GeometryTools.geometryToROI(g, r.getImagePlane());</b>
+<b class="nc"><i>205</i>&nbsp;					if (r.isArea() == r2.isArea() &amp;&amp; r.isLine() == r2.isLine() &amp;&amp; r.isPoint() == r2.isPoint())</b>
+<b class="nc"><i>206</i>&nbsp;						results.add(r2);</b>
+<i>207</i>&nbsp;				}
+<i>208</i>&nbsp;			}
+<b class="nc"><i>209</i>&nbsp;		}</b>
+<b class="nc"><i>210</i>&nbsp;		return results;</b>
+<i>211</i>&nbsp;	}
+<i>212</i>&nbsp;	
+<i>213</i>&nbsp;	/**
+<i>214</i>&nbsp;	 * Fill the holes of an Area ROI, or return the ROI unchanged if it contains no holes.
+<i>215</i>&nbsp;	 * 
+<i>216</i>&nbsp;	 * @param roi
+<i>217</i>&nbsp;	 * @return
+<i>218</i>&nbsp;	 */
+<i>219</i>&nbsp;	public static ROI fillHoles(ROI roi) {
+<b class="nc"><i>220</i>&nbsp;		return removeSmallPieces(roi, 0, Double.POSITIVE_INFINITY);</b>
+<i>221</i>&nbsp;	}
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;	/**
+<i>224</i>&nbsp;	 * Remove small fragments and fill small holes of an area ROI.
+<i>225</i>&nbsp;	 * 
+<i>226</i>&nbsp;	 * @param roi the ROI to refine
+<i>227</i>&nbsp;	 * @param minAreaPixels the minimum size of a fragment to retain
+<i>228</i>&nbsp;	 * @param minHoleAreaPixels the minimum size of a hole to retain, or -1 if all holes should be retained
+<i>229</i>&nbsp;	 * @return
+<i>230</i>&nbsp;	 * @see GeometryTools#refineAreas(Geometry, double, double)
+<i>231</i>&nbsp;	 */
+<i>232</i>&nbsp;	public static ROI removeSmallPieces(ROI roi, double minAreaPixels, double minHoleAreaPixels) {
+<b class="nc"><i>233</i>&nbsp;		if (!roi.isArea())</b>
+<b class="nc"><i>234</i>&nbsp;			throw new IllegalArgumentException(&quot;Only area ROIs supported!&quot;);</b>
+<i>235</i>&nbsp;		
+<b class="nc"><i>236</i>&nbsp;		logger.trace(&quot;Removing small pieces from {} (min = {}, max = {})&quot;, roi, minAreaPixels, minHoleAreaPixels);</b>
+<i>237</i>&nbsp;		
+<i>238</i>&nbsp;		// We can&#39;t have holes if we don&#39;t have an AreaROI
+<b class="nc"><i>239</i>&nbsp;		if (roi instanceof RectangleROI || roi instanceof EllipseROI || roi instanceof LineROI || roi instanceof PolylineROI) {</b>
+<b class="nc"><i>240</i>&nbsp;			if (roi.getArea() &lt; minAreaPixels)</b>
+<b class="nc"><i>241</i>&nbsp;				return null;</b>
+<i>242</i>&nbsp;			else
+<b class="nc"><i>243</i>&nbsp;				return roi;</b>
+<i>244</i>&nbsp;		}
+<i>245</i>&nbsp;		
+<b class="nc"><i>246</i>&nbsp;		var geometry = roi.getGeometry();</b>
+<b class="nc"><i>247</i>&nbsp;		var geometry2 = GeometryTools.refineAreas(geometry, minAreaPixels, minHoleAreaPixels);</b>
+<b class="nc"><i>248</i>&nbsp;		if (geometry == geometry2)</b>
+<b class="nc"><i>249</i>&nbsp;			return roi;</b>
+<b class="nc"><i>250</i>&nbsp;		if (geometry2 == null)</b>
+<b class="nc"><i>251</i>&nbsp;			return null;</b>
+<b class="nc"><i>252</i>&nbsp;		return GeometryTools.geometryToROI(geometry2, roi.getImagePlane());</b>
+<i>253</i>&nbsp;	}
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;	/**
+<i>257</i>&nbsp;	 * Get a {@link ROI} from an Area.
+<i>258</i>&nbsp;	 * This will try to return a simple representation of the ROI if possible (e.g. a rectangle or polygon).
+<i>259</i>&nbsp;	 * 
+<i>260</i>&nbsp;	 * @param area
+<i>261</i>&nbsp;	 * @param plane
+<i>262</i>&nbsp;	 * @param flatness - can be used to prefer polygons, see Shape.getPathIterator(AffineTransform at, double flatness)
+<i>263</i>&nbsp;	 * @return
+<i>264</i>&nbsp;	 */
+<i>265</i>&nbsp;	static ROI getShapeROI(Area area, ImagePlane plane, double flatness) {
+<b class="nc"><i>266</i>&nbsp;		if (area.isRectangular()) {</b>
+<b class="nc"><i>267</i>&nbsp;			Rectangle2D bounds = area.getBounds2D();</b>
+<b class="nc"><i>268</i>&nbsp;			return ROIs.createRectangleROI(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), plane);</b>
+<i>269</i>&nbsp;		}
+<i>270</i>&nbsp;		//		else if (area.isPolygonal() &amp;&amp; area.isSingular())
+<b class="nc"><i>271</i>&nbsp;		else if (area.isSingular() &amp;&amp; (area.isPolygonal() || flatness &gt; 0)) {</b>
+<b class="nc"><i>272</i>&nbsp;			Path2D path = new Path2D.Float(area);</b>
+<b class="nc"><i>273</i>&nbsp;			List&lt;Point2&gt; points = flatness &gt; 0 ? RoiTools.getLinearPathPoints(path, path.getPathIterator(null, flatness)) : RoiTools.getLinearPathPoints(path, path.getPathIterator(null));</b>
+<b class="nc"><i>274</i>&nbsp;			return ROIs.createPolygonROI(points, plane);</b>
+<i>275</i>&nbsp;		}
+<b class="nc"><i>276</i>&nbsp;		return ROIs.createAreaROI(area, plane);		</b>
+<i>277</i>&nbsp;	}
+<i>278</i>&nbsp;	
+<i>279</i>&nbsp;	
+<i>280</i>&nbsp;	/**
+<i>281</i>&nbsp;	 * Get circularity measurement for Area ROIs, calculated as {@code 4 * PI * (area / perimeter^2)}.
+<i>282</i>&nbsp;	 * Non-area ROIs return Double.NaN.
+<i>283</i>&nbsp;	 * &lt;p&gt;
+<i>284</i>&nbsp;	 * This ranges between 0 (for a line) and 1 (for a circle).  Note that the pixel (i.e. not scaled) areas and perimeters are used.
+<i>285</i>&nbsp;	 * @param roi the ROI to measure
+<i>286</i>&nbsp;	 * @return a circularity value, between 0 (a line) and 1 (a perfect circle)
+<i>287</i>&nbsp;	 */
+<i>288</i>&nbsp;	public static double getCircularity(ROI roi) {
+<b class="nc"><i>289</i>&nbsp;		return getCircularity(roi, 1, 1);</b>
+<i>290</i>&nbsp;	}
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;	/**
+<i>293</i>&nbsp;	 * Get circularity measurement for area ROIs, with optional pixel calibration, calculated as {@code 4 * PI * (area / perimeter^2)}.
+<i>294</i>&nbsp;	 * Non-area ROIs return Double.NaN.
+<i>295</i>&nbsp;	 * &lt;p&gt;
+<i>296</i>&nbsp;	 * This ranges between 0 (for a line) and 1 (for a circle).  This version optionally allows non-square pixels to be used.
+<i>297</i>&nbsp;	 * @param roi the ROI to measure
+<i>298</i>&nbsp;	 * @param pixelWidth the calibrated pixel width (use 1.0 for uncalibrated pixels)
+<i>299</i>&nbsp;	 * @param pixelHeight the calibrated pixel height (use 1.0 for uncalibrated pixels)
+<i>300</i>&nbsp;	 * @return a circularity value, between 0 (a line) and 1 (a perfect circle)
+<i>301</i>&nbsp;	 */
+<i>302</i>&nbsp;	public static double getCircularity(ROI roi, double pixelWidth, double pixelHeight) {
+<b class="nc"><i>303</i>&nbsp;		if (roi.isArea()) {</b>
+<b class="nc"><i>304</i>&nbsp;			double perim = roi.getScaledLength(pixelWidth, pixelHeight);</b>
+<b class="nc"><i>305</i>&nbsp;			return 4.0 * Math.PI * (roi.getScaledArea(pixelWidth, pixelHeight) / (perim * perim));</b>
+<i>306</i>&nbsp;		}
+<b class="nc"><i>307</i>&nbsp;		return Double.NaN;</b>
+<i>308</i>&nbsp;	}
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;	/**
+<i>312</i>&nbsp;	 * Create a {@link ROI} from an Shape with a specified &#39;flatness&#39;.
+<i>313</i>&nbsp;	 * This will try to return a RectangleROI or PolygonROI if possible,
+<i>314</i>&nbsp;	 * or AreaROI if neither of the other classes can adequately represent the area.
+<i>315</i>&nbsp;	 * 
+<i>316</i>&nbsp;	 * In the input shape is an Ellipse2D then an EllipseROI will be returned.
+<i>317</i>&nbsp;	 * 
+<i>318</i>&nbsp;	 * @param shape
+<i>319</i>&nbsp;	 * @param plane
+<i>320</i>&nbsp;	 * @param flatness - can be used to prefer polygons, see {@code Shape.getPathIterator(AffineTransform, double)}
+<i>321</i>&nbsp;	 * @return
+<i>322</i>&nbsp;	 */
+<i>323</i>&nbsp;	public static ROI getShapeROI(Shape shape, ImagePlane plane, double flatness) {
+<b class="nc"><i>324</i>&nbsp;		if (shape instanceof Rectangle2D) {</b>
+<b class="nc"><i>325</i>&nbsp;			Rectangle2D bounds = shape.getBounds2D();</b>
+<b class="nc"><i>326</i>&nbsp;			return ROIs.createRectangleROI(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), plane);</b>
+<i>327</i>&nbsp;		}
+<b class="nc"><i>328</i>&nbsp;		if (shape instanceof Ellipse2D) {</b>
+<b class="nc"><i>329</i>&nbsp;			Rectangle2D bounds = shape.getBounds2D();</b>
+<b class="nc"><i>330</i>&nbsp;			return ROIs.createEllipseROI(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), plane);</b>
+<i>331</i>&nbsp;		}
+<b class="nc"><i>332</i>&nbsp;		if (shape instanceof Line2D) {</b>
+<b class="nc"><i>333</i>&nbsp;			Line2D line = (Line2D)shape;</b>
+<b class="nc"><i>334</i>&nbsp;			return ROIs.createLineROI(line.getX1(), line.getY1(), line.getX2(), line.getY2(), plane);</b>
+<i>335</i>&nbsp;		}
+<b class="nc"><i>336</i>&nbsp;		boolean isClosed = false;</b>
+<b class="nc"><i>337</i>&nbsp;		List&lt;Point2&gt; points = null;</b>
+<b class="nc"><i>338</i>&nbsp;		if (!(shape instanceof Area)) {</b>
+<b class="nc"><i>339</i>&nbsp;			PathIterator iterator = shape.getPathIterator(null, flatness);</b>
+<b class="nc"><i>340</i>&nbsp;			double[] coords = new double[6];</b>
+<b class="nc"><i>341</i>&nbsp;			points = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>342</i>&nbsp;			while (!iterator.isDone()) {</b>
+<b class="nc"><i>343</i>&nbsp;				int type = iterator.currentSegment(coords);</b>
+<b class="nc"><i>344</i>&nbsp;				if (type == PathIterator.SEG_CLOSE) {</b>
+<b class="nc"><i>345</i>&nbsp;					isClosed = true;</b>
+<b class="nc"><i>346</i>&nbsp;					break;</b>
+<i>347</i>&nbsp;				} else
+<b class="nc"><i>348</i>&nbsp;					points.add(new Point2(coords[0], coords[1]));</b>
+<b class="nc"><i>349</i>&nbsp;				iterator.next();</b>
+<b class="nc"><i>350</i>&nbsp;			}</b>
+<i>351</i>&nbsp;		}
+<i>352</i>&nbsp;		
+<i>353</i>&nbsp;		// Handle closed shapes via Area objects, as this gives more options to simplify 
+<i>354</i>&nbsp;		// (e.g. by checking isRectangular, isPolygonal)
+<b class="nc"><i>355</i>&nbsp;		if (isClosed) {</b>
+<i>356</i>&nbsp;			Area area;
+<b class="nc"><i>357</i>&nbsp;			if (shape instanceof Area) {</b>
+<b class="nc"><i>358</i>&nbsp;				area = (Area)shape;</b>
+<i>359</i>&nbsp;			} else
+<b class="nc"><i>360</i>&nbsp;				area = new Area(shape);</b>
+<b class="nc"><i>361</i>&nbsp;			return getShapeROI(area, plane, flatness);</b>
+<b class="nc"><i>362</i>&nbsp;		} else if (points.size() == 2) {</b>
+<i>363</i>&nbsp;			// Handle straight lines, with only two end points
+<b class="nc"><i>364</i>&nbsp;			Point2 p1 = points.get(0);</b>
+<b class="nc"><i>365</i>&nbsp;			Point2 p2 = points.get(1);</b>
+<b class="nc"><i>366</i>&nbsp;			return ROIs.createLineROI(p1.getX(), p1.getY(), p2.getX(), p2.getY(), plane);</b>
+<i>367</i>&nbsp;		} else
+<i>368</i>&nbsp;			// Handle polylines
+<b class="nc"><i>369</i>&nbsp;			return ROIs.createPolylineROI(points, plane);</b>
+<i>370</i>&nbsp;	}
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;	/**
+<i>373</i>&nbsp;	 * Get the Euclidean distance between the centroids of two ROIs.
+<i>374</i>&nbsp;	 * @param roi1 first ROI
+<i>375</i>&nbsp;	 * @param roi2 second ROI
+<i>376</i>&nbsp;	 * @return the distance between centroids
+<i>377</i>&nbsp;	 */
+<i>378</i>&nbsp;	public static double getCentroidDistance(ROI roi1, ROI roi2) {
+<b class="nc"><i>379</i>&nbsp;		return getCentroidDistance(roi1, roi2, 1.0, 1.0);</b>
+<i>380</i>&nbsp;	}
+<i>381</i>&nbsp;	
+<i>382</i>&nbsp;	/**
+<i>383</i>&nbsp;	 * Get the calibrated Euclidean distance between the centroids of two ROIs using specified pixel sizes.
+<i>384</i>&nbsp;	 * @param roi1 first ROI
+<i>385</i>&nbsp;	 * @param roi2 second ROI
+<i>386</i>&nbsp;	 * @param pixelWidth horizontal scale factor for pixels
+<i>387</i>&nbsp;	 * @param pixelHeight vertical scale factor for pixels
+<i>388</i>&nbsp;	 * @return the distance between centroids
+<i>389</i>&nbsp;	 */
+<i>390</i>&nbsp;	public static double getCentroidDistance(ROI roi1, ROI roi2, double pixelWidth, double pixelHeight) {
+<b class="nc"><i>391</i>&nbsp;		double dx = (roi1.getCentroidX() - roi2.getCentroidX()) * pixelWidth;</b>
+<b class="nc"><i>392</i>&nbsp;		double dy = (roi1.getCentroidY() - roi2.getCentroidY()) * pixelHeight;</b>
+<b class="nc"><i>393</i>&nbsp;		return Math.sqrt(dx*dx + dy*dy);</b>
+<i>394</i>&nbsp;	}
+<i>395</i>&nbsp;	
+<i>396</i>&nbsp;	/**
+<i>397</i>&nbsp;	 * Get the Euclidean distance between the boundaries of two ROIs.
+<i>398</i>&nbsp;	 * @param roi1 first ROI
+<i>399</i>&nbsp;	 * @param roi2 second ROI
+<i>400</i>&nbsp;	 * @return the distance between boundaries
+<i>401</i>&nbsp;	 */
+<i>402</i>&nbsp;	public static double getBoundaryDistance(ROI roi1, ROI roi2) {
+<b class="nc"><i>403</i>&nbsp;		return getBoundaryDistance(roi1, roi2, 1.0, 1.0);</b>
+<i>404</i>&nbsp;	}
+<i>405</i>&nbsp;	
+<i>406</i>&nbsp;	/**
+<i>407</i>&nbsp;	 * Get the calibrated Euclidean distance between the boundaries of two ROIs using specified pixel sizes.
+<i>408</i>&nbsp;	 * @param roi1 first ROI
+<i>409</i>&nbsp;	 * @param roi2 second ROI
+<i>410</i>&nbsp;	 * @param pixelWidth horizontal scale factor for pixels
+<i>411</i>&nbsp;	 * @param pixelHeight vertical scale factor for pixels
+<i>412</i>&nbsp;	 * @return the distance between boundaries
+<i>413</i>&nbsp;	 */
+<i>414</i>&nbsp;	public static double getBoundaryDistance(ROI roi1, ROI roi2, double pixelWidth, double pixelHeight) {
+<b class="nc"><i>415</i>&nbsp;		if (pixelWidth == pixelHeight) {</b>
+<b class="nc"><i>416</i>&nbsp;			double pixelSize = pixelWidth;</b>
+<b class="nc"><i>417</i>&nbsp;			return roi1.getGeometry().distance(roi2.getGeometry()) * pixelSize;</b>
+<i>418</i>&nbsp;		}
+<b class="nc"><i>419</i>&nbsp;		var transform = AffineTransformation.scaleInstance(pixelWidth, pixelHeight);</b>
+<b class="nc"><i>420</i>&nbsp;		var g1 = transform.transform(roi1.getGeometry());</b>
+<b class="nc"><i>421</i>&nbsp;		var g2 = transform.transform(roi2.getGeometry());</b>
+<b class="nc"><i>422</i>&nbsp;		return g1.distance(g2);</b>
+<i>423</i>&nbsp;	}
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;	/**
+<i>426</i>&nbsp;	 * Create a {@link ROI} from an Shape.
+<i>427</i>&nbsp;	 * This will try to return a RectangleROI or PolygonROI if possible,
+<i>428</i>&nbsp;	 * or AreaROI if neither of the other classes can adequately represent the area.
+<i>429</i>&nbsp;	 * 
+<i>430</i>&nbsp;	 * In the input shape is an Ellipse2D then an EllipseROI will be returned.
+<i>431</i>&nbsp;	 * 
+<i>432</i>&nbsp;	 * @param area
+<i>433</i>&nbsp;	 * @param plane
+<i>434</i>&nbsp;	 * @return
+<i>435</i>&nbsp;	 */
+<i>436</i>&nbsp;	public static ROI getShapeROI(Area area, ImagePlane plane) {
+<b class="nc"><i>437</i>&nbsp;		return getShapeROI(area, plane, -1);</b>
+<i>438</i>&nbsp;	}
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;	/**
+<i>444</i>&nbsp;	 * Get a {@link Shape} object representing a ROI.
+<i>445</i>&nbsp;	 * Previously this did more work; now it only calls {@link ROI#getShape()}
+<i>446</i>&nbsp;	 * 
+<i>447</i>&nbsp;	 * @param roi
+<i>448</i>&nbsp;	 * @return
+<i>449</i>&nbsp;	 * @throws IllegalArgumentException if the ROI is a Point ROI, which cannot be converted to a java.awtshape.
+<i>450</i>&nbsp;	 */
+<i>451</i>&nbsp;	public static Shape getShape(final ROI roi) throws IllegalArgumentException {
+<b class="nc"><i>452</i>&nbsp;		if (roi.isPoint())</b>
+<b class="nc"><i>453</i>&nbsp;			throw new IllegalArgumentException(roi + &quot; cannot be converted to a shape!&quot;);</b>
+<b class="nc"><i>454</i>&nbsp;		return roi.getShape();</b>
+<i>455</i>&nbsp;	}
+<i>456</i>&nbsp;
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;	/**
+<i>459</i>&nbsp;	 * Get an {@link Area} object representing a ROI.
+<i>460</i>&nbsp;	 * 
+<i>461</i>&nbsp;	 * @param roi
+<i>462</i>&nbsp;	 * @return
+<i>463</i>&nbsp;	 */
+<i>464</i>&nbsp;	public static Area getArea(final ROI roi) {
+<b class="nc"><i>465</i>&nbsp;		Shape shape = getShape(roi);</b>
+<b class="nc"><i>466</i>&nbsp;		if (shape instanceof Area)</b>
+<b class="nc"><i>467</i>&nbsp;			return (Area)shape;</b>
+<b class="nc"><i>468</i>&nbsp;		return new Area(shape);</b>
+<i>469</i>&nbsp;
+<i>470</i>&nbsp;	}
+<i>471</i>&nbsp;
+<i>472</i>&nbsp;	
+<i>473</i>&nbsp;	/**
+<i>474</i>&nbsp;	 * Make fixed-size rectangular tile ROIs for a specified area.
+<i>475</i>&nbsp;	 * 
+<i>476</i>&nbsp;	 * @param roi area to be tiled
+<i>477</i>&nbsp;	 * @param tileWidth requested tile width, in pixels
+<i>478</i>&nbsp;	 * @param tileHeight requested tile height, in pixels
+<i>479</i>&nbsp;	 * @param trimToROI if true, trim tiles at the ROI boundary according to the ROI shape, otherwise retain full tiles that may only partially overlap
+<i>480</i>&nbsp;	 * @return
+<i>481</i>&nbsp;	 */
+<i>482</i>&nbsp;	public static List&lt;ROI&gt; makeTiles(final ROI roi, final int tileWidth, final int tileHeight, final boolean trimToROI) {
+<i>483</i>&nbsp;		// TODO: Convert to use JTS Geometries rather than AWT Areas.
+<i>484</i>&nbsp;		// Create a collection of tiles
+<b class="nc"><i>485</i>&nbsp;		Rectangle bounds = AwtTools.getBounds(roi);</b>
+<b class="nc"><i>486</i>&nbsp;		Area area = getArea(roi);</b>
+<b class="nc"><i>487</i>&nbsp;		List&lt;ROI&gt; tiles = new ArrayList&lt;&gt;();</b>
+<i>488</i>&nbsp;		//		int ind = 0;
+<b class="nc"><i>489</i>&nbsp;		for (int y = bounds.y; y &lt; bounds.y + bounds.height; y += tileHeight) {</b>
+<b class="nc"><i>490</i>&nbsp;			for (int x = bounds.x; x &lt; bounds.x + bounds.width; x += tileWidth) {</b>
+<i>491</i>&nbsp;				//				int width = Math.min(x + tileWidth, bounds.x + bounds.width) - x;
+<i>492</i>&nbsp;				//				int height = Math.min(y + tileHeight, bounds.y + bounds.height) - y;
+<b class="nc"><i>493</i>&nbsp;				int width = tileWidth;</b>
+<b class="nc"><i>494</i>&nbsp;				int height = tileHeight;</b>
+<b class="nc"><i>495</i>&nbsp;				Rectangle tileBounds = new Rectangle(x, y, width, height);</b>
+<i>496</i>&nbsp;				ROI tile;
+<i>497</i>&nbsp;				// If the tile is completely contained by the ROI, it&#39;s straightforward
+<b class="nc"><i>498</i>&nbsp;				if (area.contains(x, y, width, height))</b>
+<b class="nc"><i>499</i>&nbsp;					tile = ROIs.createRectangleROI(x, y, width, height, roi.getImagePlane());</b>
+<b class="nc"><i>500</i>&nbsp;				else if (!trimToROI) {</b>
+<i>501</i>&nbsp;					// If we aren&#39;t trimming, then check if the centroid is contained
+<b class="nc"><i>502</i>&nbsp;					if (area.contains(x+0.5*width, y+0.5*height))</b>
+<b class="nc"><i>503</i>&nbsp;						tile = ROIs.createRectangleROI(x, y, width, height, roi.getImagePlane());</b>
+<i>504</i>&nbsp;					else
+<i>505</i>&nbsp;						continue;
+<i>506</i>&nbsp;				}
+<i>507</i>&nbsp;				else {
+<i>508</i>&nbsp;					// Check if we are actually within the object
+<b class="nc"><i>509</i>&nbsp;					if (!area.intersects(x, y, width, height))</b>
+<b class="nc"><i>510</i>&nbsp;						continue;</b>
+<i>511</i>&nbsp;					// Shrink the tile if that is sensible
+<i>512</i>&nbsp;					// TODO: Avoid converting tiles to Areas where not essential
+<b class="nc"><i>513</i>&nbsp;					Area tileArea = new Area(tileBounds);</b>
+<b class="nc"><i>514</i>&nbsp;					tileArea.intersect(area);</b>
+<b class="nc"><i>515</i>&nbsp;					if (tileArea.isEmpty())</b>
+<b class="nc"><i>516</i>&nbsp;						continue;</b>
+<b class="nc"><i>517</i>&nbsp;					if (tileArea.isRectangular()) {</b>
+<b class="nc"><i>518</i>&nbsp;						Rectangle2D bounds2 = tileArea.getBounds2D();</b>
+<b class="nc"><i>519</i>&nbsp;						tile = ROIs.createRectangleROI(bounds2.getX(), bounds2.getY(), bounds2.getWidth(), bounds2.getHeight(), roi.getImagePlane());</b>
+<b class="nc"><i>520</i>&nbsp;					}</b>
+<i>521</i>&nbsp;					else
+<b class="nc"><i>522</i>&nbsp;						tile = ROIs.createAreaROI(tileArea, roi.getImagePlane());</b>
+<i>523</i>&nbsp;				}
+<i>524</i>&nbsp;				//				tile.setName(&quot;Tile &quot; + (++ind));
+<b class="nc"><i>525</i>&nbsp;				tiles.add(tile);</b>
+<i>526</i>&nbsp;			}			
+<i>527</i>&nbsp;		}
+<b class="nc"><i>528</i>&nbsp;		return tiles;</b>
+<i>529</i>&nbsp;	}
+<i>530</i>&nbsp;	
+<i>531</i>&nbsp;	
+<i>532</i>&nbsp;	
+<i>533</i>&nbsp;	/**
+<i>534</i>&nbsp;	 * Create a collection of tiled ROIs corresponding to a specified parentROI if it is larger than sizeMax, with optional overlaps.
+<i>535</i>&nbsp;	 * &lt;p&gt;
+<i>536</i>&nbsp;	 * The purpose of this is to create useful tiles whenever the exact tile size may not be essential, and overlaps may be required.
+<i>537</i>&nbsp;	 * Tiles at the parentROI boundary will be trimmed to fit inside. If the parentROI is smaller, it is returned as is.
+<i>538</i>&nbsp;	 * 
+<i>539</i>&nbsp;	 * @param parentROI main ROI to be tiled
+<i>540</i>&nbsp;	 * @param sizePreferred the preferred size; in general tiles should have this size
+<i>541</i>&nbsp;	 * @param sizeMax the maximum allowed size; occasionally it is more efficient to have a tile larger than the preferred size towards a ROI boundary to avoid creating very small tiles unnecessarily
+<i>542</i>&nbsp;	 * @param fixedSize if true, the tile size is enforced so that complete tiles have the same size
+<i>543</i>&nbsp;	 * @param overlap optional requested overlap between tiles
+<i>544</i>&nbsp;	 * @return
+<i>545</i>&nbsp;	 * 
+<i>546</i>&nbsp;	 * @see #makeTiles(ROI, int, int, boolean)
+<i>547</i>&nbsp;	 */
+<i>548</i>&nbsp;	public static Collection&lt;? extends ROI&gt; computeTiledROIs(ROI parentROI, ImmutableDimension sizePreferred, ImmutableDimension sizeMax, boolean fixedSize, int overlap) {
+<i>549</i>&nbsp;
+<b class="nc"><i>550</i>&nbsp;		ROI pathArea = parentROI != null &amp;&amp; parentROI.isArea() ? parentROI : null;</b>
+<b class="nc"><i>551</i>&nbsp;		Rectangle2D bounds = AwtTools.getBounds2D(parentROI);</b>
+<b class="nc"><i>552</i>&nbsp;		if (pathArea == null || (bounds.getWidth() &lt;= sizeMax.width &amp;&amp; bounds.getHeight() &lt;= sizeMax.height)) {</b>
+<b class="nc"><i>553</i>&nbsp;			return Collections.singletonList(parentROI);</b>
+<i>554</i>&nbsp;		}
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;
+<b class="nc"><i>557</i>&nbsp;		List&lt;ROI&gt; pathROIs = new ArrayList&lt;&gt;();</b>
+<i>558</i>&nbsp;
+<b class="nc"><i>559</i>&nbsp;		Geometry area = pathArea.getGeometry();</b>
+<i>560</i>&nbsp;
+<b class="nc"><i>561</i>&nbsp;		double xMin = bounds.getMinX();</b>
+<b class="nc"><i>562</i>&nbsp;		double yMin = bounds.getMinY();</b>
+<b class="nc"><i>563</i>&nbsp;		int nx = (int)Math.ceil(bounds.getWidth() / sizePreferred.width);</b>
+<b class="nc"><i>564</i>&nbsp;		int ny = (int)Math.ceil(bounds.getHeight() / sizePreferred.height);</b>
+<b class="nc"><i>565</i>&nbsp;		double w = fixedSize ? sizePreferred.width : (int)Math.ceil(bounds.getWidth() / nx);</b>
+<b class="nc"><i>566</i>&nbsp;		double h = fixedSize ? sizePreferred.height : (int)Math.ceil(bounds.getHeight() / ny);</b>
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;		// Center the tiles
+<b class="nc"><i>569</i>&nbsp;		xMin = (int)(bounds.getCenterX() - (nx * w * .5));</b>
+<b class="nc"><i>570</i>&nbsp;		yMin = (int)(bounds.getCenterY() - (ny * h * .5));</b>
+<i>571</i>&nbsp;		
+<b class="nc"><i>572</i>&nbsp;		var plane = parentROI.getImagePlane();</b>
+<i>573</i>&nbsp;
+<b class="nc"><i>574</i>&nbsp;		for (int yi = 0; yi &lt; ny; yi++) {</b>
+<b class="nc"><i>575</i>&nbsp;			for (int xi = 0; xi &lt; nx; xi++) {</b>
+<i>576</i>&nbsp;
+<b class="nc"><i>577</i>&nbsp;				double x = xMin + xi * w - overlap;</b>
+<b class="nc"><i>578</i>&nbsp;				double y = yMin + yi * h - overlap;</b>
+<i>579</i>&nbsp;
+<b class="nc"><i>580</i>&nbsp;				var rect = ROIs.createRectangleROI(x, y, w + overlap*2, h + overlap*2, plane);</b>
+<b class="nc"><i>581</i>&nbsp;				var boundsTile = rect.getGeometry();</b>
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;				//				double x = xMin + xi * w;
+<i>584</i>&nbsp;				//				double y = yMin + yi * h;
+<i>585</i>&nbsp;				//				
+<i>586</i>&nbsp;				//				Rectangle2D boundsTile = new Rectangle2D.Double(x, y, w, h);
+<i>587</i>&nbsp;				//					logger.info(boundsTile);
+<b class="nc"><i>588</i>&nbsp;				ROI pathROI = null;</b>
+<b class="nc"><i>589</i>&nbsp;				if (area.contains(boundsTile))</b>
+<b class="nc"><i>590</i>&nbsp;					pathROI = rect;</b>
+<i>591</i>&nbsp;				else {
+<b class="nc"><i>592</i>&nbsp;					if (!area.intersects(boundsTile))</b>
+<b class="nc"><i>593</i>&nbsp;						continue;</b>
+<b class="nc"><i>594</i>&nbsp;					Geometry areaTemp = GeometryTools.homogenizeGeometryCollection(boundsTile.intersection(area));</b>
+<b class="nc"><i>595</i>&nbsp;					if (!areaTemp.isEmpty())</b>
+<b class="nc"><i>596</i>&nbsp;						pathROI = GeometryTools.geometryToROI(areaTemp, plane);</b>
+<i>597</i>&nbsp;				}
+<b class="nc"><i>598</i>&nbsp;				if (pathROI != null)</b>
+<b class="nc"><i>599</i>&nbsp;					pathROIs.add(pathROI);</b>
+<i>600</i>&nbsp;			}
+<i>601</i>&nbsp;		}
+<b class="nc"><i>602</i>&nbsp;		return pathROIs;</b>
+<i>603</i>&nbsp;	}
+<i>604</i>&nbsp;	
+<i>605</i>&nbsp;	
+<i>606</i>&nbsp;	/**
+<i>607</i>&nbsp;	 * Buffer the specified ROI, dilating (or eroding) by the specified distance.
+<i>608</i>&nbsp;	 * @param roi the ROI to buffer
+<i>609</i>&nbsp;	 * @param distance the distance to buffer, in pixels. If negative an erosion will be performed.
+<i>610</i>&nbsp;	 * @return the modified ROI (which may be empty)
+<i>611</i>&nbsp;	 */
+<i>612</i>&nbsp;	public static ROI buffer(ROI roi, double distance) {
+<b class="nc"><i>613</i>&nbsp;		return GeometryTools.geometryToROI(roi.getGeometry().buffer(distance), roi.getImagePlane());</b>
+<i>614</i>&nbsp;	}
+<i>615</i>&nbsp;	
+<i>616</i>&nbsp;	
+<i>617</i>&nbsp;	/**
+<i>618</i>&nbsp;	 * Split a multi-part ROI into separate pieces.
+<i>619</i>&nbsp;	 * &lt;p&gt;
+<i>620</i>&nbsp;	 * If the ROI is already a distinct, single region or line it is returned as a singleton list.
+<i>621</i>&nbsp;	 * 
+<i>622</i>&nbsp;	 * @param roi
+<i>623</i>&nbsp;	 * @return
+<i>624</i>&nbsp;	 */
+<i>625</i>&nbsp;	public static List&lt;ROI&gt; splitROI(final ROI roi) {
+<b class="nc"><i>626</i>&nbsp;		if (roi instanceof RectangleROI || roi instanceof LineROI || roi instanceof EllipseROI) {</b>
+<b class="nc"><i>627</i>&nbsp;			return Collections.singletonList(roi);</b>
+<i>628</i>&nbsp;		}
+<i>629</i>&nbsp;
+<b class="nc"><i>630</i>&nbsp;		var list = new ArrayList&lt;ROI&gt;();</b>
+<b class="nc"><i>631</i>&nbsp;		var plane = ImagePlane.getPlane(roi);</b>
+<i>632</i>&nbsp;		
+<b class="nc"><i>633</i>&nbsp;		if (roi.isPoint()) {</b>
+<i>634</i>&nbsp;			// Handle point ROIs
+<b class="nc"><i>635</i>&nbsp;			if (roi.getNumPoints() &lt;= 1)</b>
+<b class="nc"><i>636</i>&nbsp;				return Collections.singletonList(roi);</b>
+<b class="nc"><i>637</i>&nbsp;			for (var p : roi.getAllPoints()) {</b>
+<b class="nc"><i>638</i>&nbsp;				list.add(ROIs.createPointsROI(p.getX(), p.getY(), plane));</b>
+<b class="nc"><i>639</i>&nbsp;			}</b>
+<i>640</i>&nbsp;		} else {
+<i>641</i>&nbsp;			// Handle everything else
+<b class="nc"><i>642</i>&nbsp;			var geometry = roi.getGeometry();</b>
+<b class="nc"><i>643</i>&nbsp;			if (geometry.getNumGeometries() == 1)</b>
+<b class="nc"><i>644</i>&nbsp;				return Collections.singletonList(roi);</b>
+<b class="nc"><i>645</i>&nbsp;			for (int i = 0; i &lt; geometry.getNumGeometries(); i++) {</b>
+<b class="nc"><i>646</i>&nbsp;				list.add(GeometryTools.geometryToROI(geometry.getGeometryN(i), plane));</b>
+<i>647</i>&nbsp;			}
+<i>648</i>&nbsp;		}
+<b class="nc"><i>649</i>&nbsp;		return list;</b>
+<i>650</i>&nbsp;	}
+<i>651</i>&nbsp;	
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;	/**
+<i>654</i>&nbsp;	 * Split Area into PolygonROIs for the exterior and the holes.
+<i>655</i>&nbsp;	 * &lt;p&gt;
+<i>656</i>&nbsp;	 * The first array returned gives the &lt;i&gt;holes&lt;/i&gt; and the second the positive regions (admittedly, it might have 
+<i>657</i>&nbsp;	 * been more logical the other way around).
+<i>658</i>&nbsp;	 * 
+<i>659</i>&nbsp;	 * &lt;pre&gt;
+<i>660</i>&nbsp;	 * {@code
+<i>661</i>&nbsp;	 * var polygons = splitAreaToPolygons(area, -1, 0, 0);
+<i>662</i>&nbsp;	 * var holes = polygons[0];
+<i>663</i>&nbsp;	 * var regions = polygons[1];
+<i>664</i>&nbsp;	 * }
+<i>665</i>&nbsp;	 * &lt;/pre&gt;
+<i>666</i>&nbsp;	 * 
+<i>667</i>&nbsp;	 * @param area
+<i>668</i>&nbsp;	 * @param c
+<i>669</i>&nbsp;	 * @param z
+<i>670</i>&nbsp;	 * @param t
+<i>671</i>&nbsp;	 * @return
+<i>672</i>&nbsp;	 */
+<i>673</i>&nbsp;	public static PolygonROI[][] splitAreaToPolygons(final Area area, int c, int z, int t) {
+<i>674</i>&nbsp;
+<b class="nc"><i>675</i>&nbsp;		Map&lt;Boolean, List&lt;PolygonROI&gt;&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>676</i>&nbsp;		map.put(Boolean.TRUE, new ArrayList&lt;&gt;());</b>
+<b class="nc"><i>677</i>&nbsp;		map.put(Boolean.FALSE, new ArrayList&lt;&gt;());</b>
+<i>678</i>&nbsp;
+<b class="nc"><i>679</i>&nbsp;		PathIterator iter = area.getPathIterator(null, 0.5);</b>
+<i>680</i>&nbsp;
+<b class="nc"><i>681</i>&nbsp;		var plane = ImagePlane.getPlaneWithChannel(c, z, t);</b>
+<b class="nc"><i>682</i>&nbsp;		List&lt;Point2&gt; points = new ArrayList&lt;&gt;();</b>
+<i>683</i>&nbsp;
+<i>684</i>&nbsp;
+<b class="nc"><i>685</i>&nbsp;		double areaTempSigned = 0;</b>
+<b class="nc"><i>686</i>&nbsp;		double areaCached = 0;</b>
+<i>687</i>&nbsp;
+<b class="nc"><i>688</i>&nbsp;		double[] seg = new double[6];</b>
+<b class="nc"><i>689</i>&nbsp;		double startX = Double.NaN, startY = Double.NaN;</b>
+<b class="nc"><i>690</i>&nbsp;		double x0 = 0, y0 = 0, x1 = 0, y1 = 0;</b>
+<b class="nc"><i>691</i>&nbsp;		boolean closed = false;</b>
+<b class="nc"><i>692</i>&nbsp;		while (!iter.isDone()) {</b>
+<b class="nc"><i>693</i>&nbsp;			switch(iter.currentSegment(seg)) {</b>
+<i>694</i>&nbsp;			case PathIterator.SEG_MOVETO:
+<i>695</i>&nbsp;				// Log starting positions - need them again for closing the path
+<b class="nc"><i>696</i>&nbsp;				startX = seg[0];</b>
+<b class="nc"><i>697</i>&nbsp;				startY = seg[1];</b>
+<b class="nc"><i>698</i>&nbsp;				x0 = startX;</b>
+<b class="nc"><i>699</i>&nbsp;				y0 = startY;</b>
+<b class="nc"><i>700</i>&nbsp;				iter.next();</b>
+<b class="nc"><i>701</i>&nbsp;				areaCached += areaTempSigned;</b>
+<b class="nc"><i>702</i>&nbsp;				areaTempSigned = 0;</b>
+<b class="nc"><i>703</i>&nbsp;				points.clear();</b>
+<b class="nc"><i>704</i>&nbsp;				points.add(new Point2(startX, startY));</b>
+<b class="nc"><i>705</i>&nbsp;				closed = false;</b>
+<b class="nc"><i>706</i>&nbsp;				continue;</b>
+<i>707</i>&nbsp;			case PathIterator.SEG_CLOSE:
+<b class="nc"><i>708</i>&nbsp;				x1 = startX;</b>
+<b class="nc"><i>709</i>&nbsp;				y1 = startY;</b>
+<b class="nc"><i>710</i>&nbsp;				closed = true;</b>
+<b class="nc"><i>711</i>&nbsp;				break;</b>
+<i>712</i>&nbsp;			case PathIterator.SEG_LINETO:
+<b class="nc"><i>713</i>&nbsp;				x1 = seg[0];</b>
+<b class="nc"><i>714</i>&nbsp;				y1 = seg[1];</b>
+<b class="nc"><i>715</i>&nbsp;				points.add(new Point2(x1, y1));</b>
+<b class="nc"><i>716</i>&nbsp;				closed = false;</b>
+<b class="nc"><i>717</i>&nbsp;				break;</b>
+<i>718</i>&nbsp;			default:
+<i>719</i>&nbsp;				// Shouldn&#39;t happen because of flattened PathIterator
+<b class="nc"><i>720</i>&nbsp;				throw new RuntimeException(&quot;Invalid area computation!&quot;);</b>
+<i>721</i>&nbsp;			};
+<b class="nc"><i>722</i>&nbsp;			areaTempSigned += 0.5 * (x0 * y1 - x1 * y0);</b>
+<i>723</i>&nbsp;			// Add polygon if it has just been closed
+<b class="nc"><i>724</i>&nbsp;			if (closed) {</b>
+<b class="nc"><i>725</i>&nbsp;				if (areaTempSigned &lt; 0)</b>
+<b class="nc"><i>726</i>&nbsp;					map.get(Boolean.FALSE).add(ROIs.createPolygonROI(points, plane));</b>
+<b class="nc"><i>727</i>&nbsp;				else if (areaTempSigned &gt; 0)</b>
+<b class="nc"><i>728</i>&nbsp;					map.get(Boolean.TRUE).add(ROIs.createPolygonROI(points, plane));</b>
+<i>729</i>&nbsp;				// Zero indicates the shape is empty...
+<i>730</i>&nbsp;			}
+<i>731</i>&nbsp;			// Update the coordinates
+<b class="nc"><i>732</i>&nbsp;			x0 = x1;</b>
+<b class="nc"><i>733</i>&nbsp;			y0 = y1;</b>
+<b class="nc"><i>734</i>&nbsp;			iter.next();</b>
+<i>735</i>&nbsp;		}
+<i>736</i>&nbsp;		// TODO: Decide which is positive and which is negative
+<b class="nc"><i>737</i>&nbsp;		areaCached += areaTempSigned;</b>
+<b class="nc"><i>738</i>&nbsp;		PolygonROI[][] polyOutput = new PolygonROI[2][];</b>
+<b class="nc"><i>739</i>&nbsp;		if (areaCached &lt; 0) {</b>
+<b class="nc"><i>740</i>&nbsp;			polyOutput[0] = map.get(Boolean.TRUE).toArray(PolygonROI[]::new);</b>
+<b class="nc"><i>741</i>&nbsp;			polyOutput[1] = map.get(Boolean.FALSE).toArray(PolygonROI[]::new);</b>
+<i>742</i>&nbsp;		} else {
+<b class="nc"><i>743</i>&nbsp;			polyOutput[0] = map.get(Boolean.FALSE).toArray(PolygonROI[]::new);</b>
+<b class="nc"><i>744</i>&nbsp;			polyOutput[1] = map.get(Boolean.TRUE).toArray(PolygonROI[]::new);			</b>
+<i>745</i>&nbsp;		}
+<i>746</i>&nbsp;		//		areaCached = Math.abs(areaCached + areaTempSigned);
+<i>747</i>&nbsp;
+<b class="nc"><i>748</i>&nbsp;		return polyOutput;</b>
+<i>749</i>&nbsp;	}
+<i>750</i>&nbsp;
+<i>751</i>&nbsp;	static PolygonROI[][] splitAreaToPolygons(final ROI pathROI) {
+<b class="nc"><i>752</i>&nbsp;		return splitAreaToPolygons(getArea(pathROI), pathROI.getC(), pathROI.getZ(), pathROI.getT());</b>
+<i>753</i>&nbsp;	}
+<i>754</i>&nbsp;
+<i>755</i>&nbsp;	/**
+<i>756</i>&nbsp;	 * Test if two PathROIs share the same channel, z-slice &amp;amp; time-point
+<i>757</i>&nbsp;	 * 
+<i>758</i>&nbsp;	 * @param roi1
+<i>759</i>&nbsp;	 * @param roi2
+<i>760</i>&nbsp;	 * @return
+<i>761</i>&nbsp;	 */
+<i>762</i>&nbsp;	static boolean sameImagePlane(ROI roi1, ROI roi2) {
+<i>763</i>&nbsp;//		if (roi1.getC() != roi2.getC())
+<i>764</i>&nbsp;//			logger.info(&quot;Channels differ&quot;);
+<i>765</i>&nbsp;//		if (roi1.getT() != roi2.getT())
+<i>766</i>&nbsp;//			logger.info(&quot;Timepoints differ&quot;);
+<i>767</i>&nbsp;//		if (roi1.getZ() != roi2.getZ())
+<i>768</i>&nbsp;//			logger.info(&quot;Z-slices differ&quot;);
+<b class="nc"><i>769</i>&nbsp;		return roi1.getC() == roi2.getC() &amp;&amp; roi1.getT() == roi2.getT() &amp;&amp; roi1.getZ() == roi2.getZ();</b>
+<i>770</i>&nbsp;	}
+<i>771</i>&nbsp;
+<i>772</i>&nbsp;	/**
+<i>773</i>&nbsp;	 * Returns true if pathROI is an area that contains x &amp;amp; y somewhere within it.
+<i>774</i>&nbsp;	 * 
+<i>775</i>&nbsp;	 * @param pathROI
+<i>776</i>&nbsp;	 * @param x
+<i>777</i>&nbsp;	 * @param y
+<i>778</i>&nbsp;	 * @return
+<i>779</i>&nbsp;	 */
+<i>780</i>&nbsp;	public static boolean areaContains(final ROI pathROI, final double x, final double y) {
+<b class="nc"><i>781</i>&nbsp;		return pathROI.isArea() &amp;&amp; pathROI.contains(x, y);</b>
+<i>782</i>&nbsp;	}
+<i>783</i>&nbsp;
+<i>784</i>&nbsp;	static List&lt;Point2&gt; getLinearPathPoints(final Path2D path, final PathIterator iter) {
+<b class="nc"><i>785</i>&nbsp;			List&lt;Point2&gt; points = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>786</i>&nbsp;			double[] seg = new double[6];</b>
+<b class="nc"><i>787</i>&nbsp;			while (!iter.isDone()) {</b>
+<b class="nc"><i>788</i>&nbsp;				switch(iter.currentSegment(seg)) {</b>
+<i>789</i>&nbsp;				case PathIterator.SEG_MOVETO:
+<i>790</i>&nbsp;					// Fall through
+<i>791</i>&nbsp;				case PathIterator.SEG_LINETO:
+<b class="nc"><i>792</i>&nbsp;					points.add(new Point2(seg[0], seg[1]));</b>
+<b class="nc"><i>793</i>&nbsp;					break;</b>
+<i>794</i>&nbsp;				case PathIterator.SEG_CLOSE:
+<i>795</i>&nbsp;	//				// Add first point again
+<i>796</i>&nbsp;	//				if (!points.isEmpty())
+<i>797</i>&nbsp;	//					points.add(points.get(0));
+<b class="nc"><i>798</i>&nbsp;					break;</b>
+<i>799</i>&nbsp;				default:
+<b class="nc"><i>800</i>&nbsp;					throw new IllegalArgumentException(&quot;Invalid polygon &quot; + path + &quot; - only line connections are allowed&quot;);</b>
+<i>801</i>&nbsp;				};
+<b class="nc"><i>802</i>&nbsp;				iter.next();</b>
+<i>803</i>&nbsp;			}
+<b class="nc"><i>804</i>&nbsp;			return points;</b>
+<i>805</i>&nbsp;		}
+<i>806</i>&nbsp;
+<i>807</i>&nbsp;	static List&lt;Vertices&gt; getVertices(final Shape shape) {
+<b class="nc"><i>808</i>&nbsp;			Path2D path = shape instanceof Path2D ? (Path2D)shape : new Path2D.Float(shape);</b>
+<b class="nc"><i>809</i>&nbsp;			PathIterator iter = path.getPathIterator(null, 0.5);</b>
+<b class="nc"><i>810</i>&nbsp;			List&lt;Vertices&gt; verticesList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>811</i>&nbsp;			MutableVertices vertices = null;</b>
+<b class="nc"><i>812</i>&nbsp;			double[] seg = new double[6];</b>
+<b class="nc"><i>813</i>&nbsp;			while (!iter.isDone()) {</b>
+<b class="nc"><i>814</i>&nbsp;				switch(iter.currentSegment(seg)) {</b>
+<i>815</i>&nbsp;				case PathIterator.SEG_MOVETO:
+<b class="nc"><i>816</i>&nbsp;					vertices = new DefaultMutableVertices(new DefaultVertices());</b>
+<i>817</i>&nbsp;					// Fall through
+<i>818</i>&nbsp;				case PathIterator.SEG_LINETO:
+<b class="nc"><i>819</i>&nbsp;					vertices.add(seg[0], seg[1]);</b>
+<b class="nc"><i>820</i>&nbsp;					break;</b>
+<i>821</i>&nbsp;				case PathIterator.SEG_CLOSE:
+<i>822</i>&nbsp;	//				// Add first point again
+<b class="nc"><i>823</i>&nbsp;					vertices.close();</b>
+<b class="nc"><i>824</i>&nbsp;					verticesList.add(vertices.getVertices());</b>
+<b class="nc"><i>825</i>&nbsp;					break;</b>
+<i>826</i>&nbsp;				default:
+<b class="nc"><i>827</i>&nbsp;					throw new RuntimeException(&quot;Invalid polygon &quot; + path + &quot; - only line connections are allowed&quot;);</b>
+<i>828</i>&nbsp;				};
+<b class="nc"><i>829</i>&nbsp;				iter.next();</b>
+<i>830</i>&nbsp;			}
+<b class="nc"><i>831</i>&nbsp;			return verticesList;</b>
+<i>832</i>&nbsp;		}
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;	static Point2 scalePoint(Point2 p, double scaleX, double scaleY, double originX, double originY) {
+<b class="nc"><i>835</i>&nbsp;		return new Point2(</b>
+<b class="nc"><i>836</i>&nbsp;				scaleOrdinate(p.getX(), scaleX, originX),</b>
+<b class="nc"><i>837</i>&nbsp;				scaleOrdinate(p.getY(), scaleY, originY)</b>
+<i>838</i>&nbsp;				);
+<i>839</i>&nbsp;	}
+<i>840</i>&nbsp;
+<i>841</i>&nbsp;	static double scaleOrdinate(double v, double scale, double origin) {
+<b class="nc"><i>842</i>&nbsp;		v -= origin;</b>
+<b class="nc"><i>843</i>&nbsp;		v *= scale;</b>
+<b class="nc"><i>844</i>&nbsp;		v += origin;</b>
+<b class="nc"><i>845</i>&nbsp;		return v;</b>
+<i>846</i>&nbsp;	}
+<i>847</i>&nbsp;
+<i>848</i>&nbsp;	/**
+<i>849</i>&nbsp;	 * Returns true if the ROI is not null and is not a point ROI.
+<i>850</i>&nbsp;	 * @param roi
+<i>851</i>&nbsp;	 * @return
+<i>852</i>&nbsp;	 */
+<i>853</i>&nbsp;	public static boolean isShapeROI(ROI roi) {
+<b class="nc"><i>854</i>&nbsp;		return roi != null &amp;&amp; !roi.isPoint();</b>
+<i>855</i>&nbsp;	}
+<i>856</i>&nbsp;
+<i>857</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

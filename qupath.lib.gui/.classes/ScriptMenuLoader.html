@@ -1,0 +1,310 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ScriptMenuLoader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ScriptMenuLoader (qupath.lib.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ScriptMenuLoader</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (3/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.8%
+  </span>
+  <span class="absValue">
+    (22/ 106)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.nio.file.Files;
+<i>29</i>&nbsp;import java.nio.file.Path;
+<i>30</i>&nbsp;import java.nio.file.Paths;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.slf4j.Logger;
+<i>33</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>36</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>37</i>&nbsp;import javafx.beans.value.ObservableStringValue;
+<i>38</i>&nbsp;import javafx.scene.control.Menu;
+<i>39</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>40</i>&nbsp;import javafx.scene.control.SeparatorMenuItem;
+<i>41</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>42</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>43</i>&nbsp;import qupath.lib.gui.scripting.DefaultScriptEditor;
+<i>44</i>&nbsp;import qupath.lib.gui.scripting.DefaultScriptEditor.Language;
+<i>45</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>46</i>&nbsp;import qupath.lib.gui.tools.MenuTools;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;/**
+<i>49</i>&nbsp; * Helper class for creating a dynamic menu to a directory containing scripts.
+<i>50</i>&nbsp; * 
+<i>51</i>&nbsp; * @author Pete Bankhead
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; */
+<i>54</i>&nbsp;class ScriptMenuLoader {
+<i>55</i>&nbsp;	
+<b class="fc"><i>56</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ScriptMenuLoader.class);</b>
+<i>57</i>&nbsp;	
+<i>58</i>&nbsp;	private ObservableStringValue scriptDirectory;
+<i>59</i>&nbsp;	private Menu menu;
+<i>60</i>&nbsp;	private MenuItem miSetPath;
+<i>61</i>&nbsp;	private MenuItem miCreateScript;
+<i>62</i>&nbsp;	private MenuItem miOpenDirectory;
+<i>63</i>&nbsp;	
+<i>64</i>&nbsp;	private DefaultScriptEditor scriptEditor;
+<i>65</i>&nbsp;	
+<b class="fc"><i>66</i>&nbsp;	ScriptMenuLoader(final String name, final ObservableStringValue scriptDirectory, final DefaultScriptEditor editor) {</b>
+<b class="fc"><i>67</i>&nbsp;		this.menu = new Menu(name);</b>
+<b class="fc"><i>68</i>&nbsp;		this.scriptDirectory = scriptDirectory;</b>
+<b class="fc"><i>69</i>&nbsp;		this.scriptEditor = editor;</b>
+<b class="fc"><i>70</i>&nbsp;		scriptDirectory.addListener((v) -&gt; updateMenu()); // Rebuild the script menu next time</b>
+<i>71</i>&nbsp;		
+<b class="fc"><i>72</i>&nbsp;		var actionCreateScript = ActionTools.actionBuilder(&quot;New script...&quot;, e -&gt; {</b>
+<b class="nc"><i>73</i>&nbsp;			String dir = scriptDirectory.get();</b>
+<b class="nc"><i>74</i>&nbsp;			if (dir == null) {</b>
+<b class="nc"><i>75</i>&nbsp;				Dialogs.showErrorMessage(&quot;New script error&quot;, &quot;No script directory set!&quot;);</b>
+<i>76</i>&nbsp;			}
+<b class="nc"><i>77</i>&nbsp;			String scriptName = Dialogs.showInputDialog(&quot;New script&quot;, &quot;Enter script name&quot;, &quot;&quot;);</b>
+<b class="nc"><i>78</i>&nbsp;			if (scriptName == null || scriptName.trim().isEmpty())</b>
+<b class="nc"><i>79</i>&nbsp;				return;</b>
+<b class="nc"><i>80</i>&nbsp;			if (!scriptName.contains(&quot;.&quot;))</b>
+<b class="nc"><i>81</i>&nbsp;				scriptName = scriptName + &quot;.groovy&quot;;</b>
+<b class="nc"><i>82</i>&nbsp;			File scriptFile = new File(dir, scriptName);</b>
+<b class="nc"><i>83</i>&nbsp;			if (!scriptFile.exists()) {</b>
+<i>84</i>&nbsp;				try {
+<i>85</i>&nbsp;					// If we need to create the scripts directory, try to do so
+<i>86</i>&nbsp;					// (This helps for project scripts, when the directory might not exist yet)
+<b class="nc"><i>87</i>&nbsp;					File dirScripts = new File(dir);</b>
+<b class="nc"><i>88</i>&nbsp;					if (!dirScripts.exists())</b>
+<b class="nc"><i>89</i>&nbsp;						dirScripts.mkdir();</b>
+<b class="nc"><i>90</i>&nbsp;					scriptFile.createNewFile();</b>
+<b class="nc"><i>91</i>&nbsp;				} catch (Exception e1) {</b>
+<b class="nc"><i>92</i>&nbsp;					Dialogs.showErrorMessage(&quot;New script error&quot;, &quot;Unable to create new script!&quot;);</b>
+<b class="nc"><i>93</i>&nbsp;					logger.error(&quot;Create script error&quot;, e1);</b>
+<b class="nc"><i>94</i>&nbsp;				}</b>
+<i>95</i>&nbsp;			}
+<b class="nc"><i>96</i>&nbsp;			if (scriptEditor != null)</b>
+<b class="nc"><i>97</i>&nbsp;				scriptEditor.showScript(scriptFile);</b>
+<i>98</i>&nbsp;			else
+<b class="nc"><i>99</i>&nbsp;				QuPathGUI.getInstance().getScriptEditor().showScript(scriptFile);</b>
+<b class="nc"><i>100</i>&nbsp;		})</b>
+<b class="fc"><i>101</i>&nbsp;				.longText(&quot;Create a new script.&quot;)</b>
+<b class="fc"><i>102</i>&nbsp;				.build();</b>
+<i>103</i>&nbsp;		
+<i>104</i>&nbsp;		// Command to open directory
+<b class="fc"><i>105</i>&nbsp;		var actionOpenDirectory = ActionTools.actionBuilder(&quot;Open script directory&quot;,</b>
+<i>106</i>&nbsp;				e -&gt; {
+<i>107</i>&nbsp;					// Try to reveal directory in Finder/Windows Explorer etc.
+<b class="nc"><i>108</i>&nbsp;					File dir = new File(scriptDirectory.get());</b>
+<b class="nc"><i>109</i>&nbsp;					if (!dir.exists()) {</b>
+<b class="nc"><i>110</i>&nbsp;						dir.mkdir();</b>
+<i>111</i>&nbsp;					}
+<b class="nc"><i>112</i>&nbsp;					GuiTools.openFile(dir);</b>
+<b class="nc"><i>113</i>&nbsp;				}</b>
+<i>114</i>&nbsp;				)
+<b class="fc"><i>115</i>&nbsp;				.disabled(Bindings.isNotNull(scriptDirectory).not())</b>
+<b class="fc"><i>116</i>&nbsp;				.longText(&quot;Open the script directory outside QuPath.&quot;)</b>
+<b class="fc"><i>117</i>&nbsp;				.build();</b>
+<i>118</i>&nbsp;		
+<i>119</i>&nbsp;		
+<b class="fc"><i>120</i>&nbsp;		if (scriptDirectory instanceof StringProperty) {</b>
+<b class="fc"><i>121</i>&nbsp;			var actionSetPath = ActionTools.actionBuilder(&quot;Set script directory...&quot;, e -&gt; {</b>
+<b class="nc"><i>122</i>&nbsp;				File dirBase = scriptDirectory.get() == null ? null : new File(scriptDirectory.get());</b>
+<b class="nc"><i>123</i>&nbsp;				File dir = Dialogs.promptForDirectory(dirBase);</b>
+<b class="nc"><i>124</i>&nbsp;				if (dir != null)</b>
+<b class="nc"><i>125</i>&nbsp;					((StringProperty)scriptDirectory).set(dir.getAbsolutePath());</b>
+<b class="nc"><i>126</i>&nbsp;			})</b>
+<b class="fc"><i>127</i>&nbsp;					.longText(&quot;Set the directory containing scripts that should be shown in this menu.&quot;)</b>
+<b class="fc"><i>128</i>&nbsp;					.build();</b>
+<i>129</i>&nbsp;			
+<b class="fc"><i>130</i>&nbsp;			miSetPath = ActionTools.createMenuItem(actionSetPath);</b>
+<i>131</i>&nbsp;		}
+<b class="fc"><i>132</i>&nbsp;		miCreateScript = ActionTools.createMenuItem(actionCreateScript);</b>
+<b class="fc"><i>133</i>&nbsp;		miOpenDirectory = ActionTools.createMenuItem(actionOpenDirectory);</b>
+<b class="fc"><i>134</i>&nbsp;	}</b>
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	/**
+<i>137</i>&nbsp;	 * Request that the contents of the menu be updated.
+<i>138</i>&nbsp;	 */
+<i>139</i>&nbsp;	public void updateMenu() {
+<b class="nc"><i>140</i>&nbsp;		String scriptDir = scriptDirectory.get();</b>
+<i>141</i>&nbsp;		try {
+<b class="nc"><i>142</i>&nbsp;			if (scriptDir != null) {</b>
+<b class="nc"><i>143</i>&nbsp;				Path path = Paths.get(scriptDir);</b>
+<i>144</i>&nbsp;				// Can only set script directory if we have a property, not just any observable string
+<b class="nc"><i>145</i>&nbsp;				if (miSetPath != null)</b>
+<b class="nc"><i>146</i>&nbsp;					menu.getItems().setAll(miSetPath, miOpenDirectory, miCreateScript, new SeparatorMenuItem());</b>
+<i>147</i>&nbsp;				else
+<b class="nc"><i>148</i>&nbsp;					menu.getItems().setAll(miOpenDirectory, miCreateScript, new SeparatorMenuItem());</b>
+<b class="nc"><i>149</i>&nbsp;				if (path != null &amp;&amp; path.getFileName() != null) {</b>
+<b class="nc"><i>150</i>&nbsp;					addMenuItemsForPath(menu, path, true);</b>
+<i>151</i>&nbsp;				}
+<b class="nc"><i>152</i>&nbsp;			} else if (miSetPath != null)</b>
+<b class="nc"><i>153</i>&nbsp;				menu.getItems().setAll(miSetPath);</b>
+<i>154</i>&nbsp;			else
+<b class="nc"><i>155</i>&nbsp;				menu.getItems().clear();</b>
+<b class="nc"><i>156</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>157</i>&nbsp;			logger.warn(&quot;Unable to update scripts for path {} ({})&quot;, scriptDir, e.getLocalizedMessage());</b>
+<b class="nc"><i>158</i>&nbsp;			logger.debug(&quot;&quot;, e);</b>
+<b class="nc"><i>159</i>&nbsp;			menu.getItems().clear();</b>
+<b class="nc"><i>160</i>&nbsp;		}</b>
+<b class="nc"><i>161</i>&nbsp;	}</b>
+<i>162</i>&nbsp;	
+<i>163</i>&nbsp;	
+<i>164</i>&nbsp;	/**
+<i>165</i>&nbsp;	 * Add menu items for each script.
+<i>166</i>&nbsp;	 * 
+<i>167</i>&nbsp;	 * @param menu
+<i>168</i>&nbsp;	 * @param path
+<i>169</i>&nbsp;	 * @param addDirectly
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	private void addMenuItemsForPath(final Menu menu, final Path path, final boolean addDirectly) {
+<i>172</i>&nbsp;		
+<b class="nc"><i>173</i>&nbsp;		if (Files.isDirectory(path)) {</b>
+<b class="nc"><i>174</i>&nbsp;			Menu subMenu = MenuTools.createMenu(path.getFileName().toString());</b>
+<i>175</i>&nbsp;			
+<b class="nc"><i>176</i>&nbsp;			try (var stream = Files.list(path)) {</b>
+<b class="nc"><i>177</i>&nbsp;				stream.forEach(p -&gt; addMenuItemsForPath(addDirectly ? menu : subMenu, p, false));</b>
+<b class="nc"><i>178</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>179</i>&nbsp;				logger.debug(&quot;Error adding menu item for {}&quot;, path);</b>
+<b class="nc"><i>180</i>&nbsp;			}</b>
+<i>181</i>&nbsp;			// Don&#39;t add anything if the submenu is empty
+<b class="nc"><i>182</i>&nbsp;			if (subMenu.getItems().isEmpty())</b>
+<b class="nc"><i>183</i>&nbsp;				return;</b>
+<i>184</i>&nbsp;			// Add submenu itself, or its items directly
+<b class="nc"><i>185</i>&nbsp;			if (!addDirectly) {</b>
+<b class="nc"><i>186</i>&nbsp;				menu.getItems().add(subMenu);</b>
+<i>187</i>&nbsp;			}
+<b class="nc"><i>188</i>&nbsp;		} else {</b>
+<b class="nc"><i>189</i>&nbsp;			if (scriptEditor == null || scriptEditor.supportsFile(path.toFile())) {</b>
+<b class="nc"><i>190</i>&nbsp;				String name = path.getFileName().toString();</b>
+<b class="nc"><i>191</i>&nbsp;				boolean cleanName = true;</b>
+<b class="nc"><i>192</i>&nbsp;				if (cleanName) {</b>
+<b class="nc"><i>193</i>&nbsp;					name = name.replace(&quot;_&quot;, &quot; &quot;);</b>
+<b class="nc"><i>194</i>&nbsp;					int dotInd = name.lastIndexOf(&quot;.&quot;);</b>
+<b class="nc"><i>195</i>&nbsp;					if (dotInd &gt; 0)</b>
+<b class="nc"><i>196</i>&nbsp;						name = name.substring(0, dotInd);</b>
+<i>197</i>&nbsp;				}
+<b class="nc"><i>198</i>&nbsp;				MenuItem item = new MenuItem(name);</b>
+<b class="nc"><i>199</i>&nbsp;				item.setOnAction(e -&gt; {</b>
+<b class="nc"><i>200</i>&nbsp;					File scriptFile = path.toFile();</b>
+<b class="nc"><i>201</i>&nbsp;					if (scriptEditor != null)</b>
+<b class="nc"><i>202</i>&nbsp;						scriptEditor.showScript(scriptFile);</b>
+<i>203</i>&nbsp;					else {
+<b class="nc"><i>204</i>&nbsp;						Language language = DefaultScriptEditor.getLanguageFromName(scriptFile.getName());		</b>
+<i>205</i>&nbsp;						try {
+<b class="nc"><i>206</i>&nbsp;							String script = GeneralTools.readFileAsString(scriptFile.getAbsolutePath());</b>
+<b class="nc"><i>207</i>&nbsp;							var qupath = QuPathGUI.getInstance();</b>
+<b class="nc"><i>208</i>&nbsp;							DefaultScriptEditor.executeScript(language, script, qupath.getProject(), qupath.getImageData(), true, null);</b>
+<b class="nc"><i>209</i>&nbsp;						} catch (Exception e2) {</b>
+<b class="nc"><i>210</i>&nbsp;							Dialogs.showErrorMessage(&quot;Script error&quot;, e2);</b>
+<b class="nc"><i>211</i>&nbsp;						}</b>
+<i>212</i>&nbsp;					}
+<i>213</i>&nbsp;					
+<i>214</i>&nbsp;//					scriptEditor.showScript(path.toFile());
+<b class="nc"><i>215</i>&nbsp;				});</b>
+<b class="nc"><i>216</i>&nbsp;				menu.getItems().add(item);</b>
+<i>217</i>&nbsp;			}
+<i>218</i>&nbsp;		}
+<b class="nc"><i>219</i>&nbsp;	}</b>
+<i>220</i>&nbsp;	
+<i>221</i>&nbsp;	
+<i>222</i>&nbsp;	
+<i>223</i>&nbsp;	public Menu getMenu() {
+<b class="fc"><i>224</i>&nbsp;		return menu;</b>
+<i>225</i>&nbsp;	}
+<i>226</i>&nbsp;	
+<i>227</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1207 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EstimateStainVectorsCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EstimateStainVectorsCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EstimateStainVectorsCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 134)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$AxisColor</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$ScatterPlot</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 124)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$StainScatterPanel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 114)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$StainScatterPanel$MouseListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">EstimateStainVectorsCommand$StainsWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 68)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 403)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.geom.Point2D;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Arrays;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.Locale;
+<i>33</i>&nbsp;import java.util.Locale.Category;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
+<i>36</i>&nbsp;import org.apache.commons.math3.stat.correlation.SpearmansCorrelation;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>41</i>&nbsp;import javafx.event.EventHandler;
+<i>42</i>&nbsp;import javafx.geometry.Insets;
+<i>43</i>&nbsp;import javafx.geometry.Pos;
+<i>44</i>&nbsp;import javafx.geometry.Rectangle2D;
+<i>45</i>&nbsp;import javafx.scene.Group;
+<i>46</i>&nbsp;import javafx.scene.Node;
+<i>47</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>48</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>49</i>&nbsp;import javafx.scene.control.Button;
+<i>50</i>&nbsp;import javafx.scene.control.Label;
+<i>51</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>52</i>&nbsp;import javafx.scene.control.TableView;
+<i>53</i>&nbsp;import javafx.scene.control.TitledPane;
+<i>54</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>55</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>56</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>57</i>&nbsp;import javafx.scene.paint.Color;
+<i>58</i>&nbsp;import qupath.lib.analysis.algorithms.EstimateStainVectors;
+<i>59</i>&nbsp;import qupath.lib.color.ColorDeconvolutionHelper;
+<i>60</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>61</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>62</i>&nbsp;import qupath.lib.color.StainVector;
+<i>63</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>64</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>65</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>66</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>67</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs.DialogButton;
+<i>68</i>&nbsp;import qupath.lib.gui.tools.ColorToolsFX;
+<i>69</i>&nbsp;import qupath.lib.images.ImageData;
+<i>70</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>71</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>72</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>73</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>74</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>75</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;/**
+<i>78</i>&nbsp; * Command to help set stain vectors for brightfield chromogenic stains,
+<i>79</i>&nbsp; * e.g. H-DAB or H&amp;amp;E.
+<i>80</i>&nbsp; * 
+<i>81</i>&nbsp; * @author Pete Bankhead
+<i>82</i>&nbsp; *
+<i>83</i>&nbsp; */
+<b class="nc"><i>84</i>&nbsp;class EstimateStainVectorsCommand {</b>
+<i>85</i>&nbsp;	
+<b class="nc"><i>86</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(EstimateStainVectorsCommand.class);</b>
+<i>87</i>&nbsp;	
+<b class="nc"><i>88</i>&nbsp;	static int MAX_PIXELS = 4000*4000;</b>
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	private static final String TITLE = &quot;Estimate stain vectors&quot;;
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	
+<b class="nc"><i>93</i>&nbsp;	private enum AxisColor {RED, GREEN, BLUE;</b>
+<i>94</i>&nbsp;		@Override
+<i>95</i>&nbsp;		public String toString() {
+<b class="nc"><i>96</i>&nbsp;			switch(this) {</b>
+<b class="nc"><i>97</i>&nbsp;			case RED: return &quot;Red&quot;;</b>
+<b class="nc"><i>98</i>&nbsp;			case GREEN: return &quot;Green&quot;;</b>
+<b class="nc"><i>99</i>&nbsp;			case BLUE: return &quot;Blue&quot;;</b>
+<b class="nc"><i>100</i>&nbsp;			default: throw new IllegalArgumentException();</b>
+<i>101</i>&nbsp;			}
+<i>102</i>&nbsp;		}
+<i>103</i>&nbsp;	};
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;	public static void promptToEstimateStainVectors(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>107</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>108</i>&nbsp;			Dialogs.showNoImageError(TITLE);</b>
+<i>109</i>&nbsp;			return;
+<i>110</i>&nbsp;		}
+<b class="nc"><i>111</i>&nbsp;		if (imageData == null || !imageData.isBrightfield() || imageData.getServer() == null || !imageData.getServer().isRGB()) {</b>
+<b class="nc"><i>112</i>&nbsp;			Dialogs.showErrorMessage(TITLE, &quot;No brightfield, RGB image selected!&quot;);</b>
+<i>113</i>&nbsp;			return;
+<i>114</i>&nbsp;		}
+<b class="nc"><i>115</i>&nbsp;		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>116</i>&nbsp;		if (stains == null || !stains.getStain(3).isResidual()) {</b>
+<b class="nc"><i>117</i>&nbsp;			Dialogs.showErrorMessage(TITLE, &quot;Sorry, stain editing is only possible for brightfield, RGB images with 2 stains&quot;);</b>
+<i>118</i>&nbsp;			return;
+<i>119</i>&nbsp;		}
+<i>120</i>&nbsp;		
+<b class="nc"><i>121</i>&nbsp;		PathObject pathObject = imageData.getHierarchy().getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>122</i>&nbsp;		ROI roi = pathObject == null ? null : pathObject.getROI();</b>
+<b class="nc"><i>123</i>&nbsp;		if (roi == null)</b>
+<b class="nc"><i>124</i>&nbsp;			roi = ROIs.createRectangleROI(0, 0, imageData.getServer().getWidth(), imageData.getServer().getHeight(), ImagePlane.getDefaultPlane());</b>
+<i>125</i>&nbsp;		
+<b class="nc"><i>126</i>&nbsp;		double downsample = Math.max(1, Math.sqrt((roi.getBoundsWidth() * roi.getBoundsHeight()) / MAX_PIXELS));</b>
+<b class="nc"><i>127</i>&nbsp;		RegionRequest request = RegionRequest.createInstance(imageData.getServerPath(), downsample, roi);</b>
+<b class="nc"><i>128</i>&nbsp;		BufferedImage img = null;</b>
+<i>129</i>&nbsp;		
+<i>130</i>&nbsp;		try {
+<b class="nc"><i>131</i>&nbsp;			img = imageData.getServer().readBufferedImage(request);</b>
+<b class="nc"><i>132</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>133</i>&nbsp;			Dialogs.showErrorMessage(&quot;Estimate stain vectors&quot;, e);</b>
+<b class="nc"><i>134</i>&nbsp;			logger.error(&quot;Unable to obtain pixels for &quot; + request.toString(), e);</b>
+<b class="nc"><i>135</i>&nbsp;		}</b>
+<i>136</i>&nbsp;		
+<i>137</i>&nbsp;		// Apply small amount of smoothing to reduce compression artefacts
+<b class="nc"><i>138</i>&nbsp;		img = EstimateStainVectors.smoothImage(img);</b>
+<i>139</i>&nbsp;		
+<i>140</i>&nbsp;		// Check modes for background
+<b class="nc"><i>141</i>&nbsp;		int[] rgb = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());</b>
+<b class="nc"><i>142</i>&nbsp;		int[] rgbMode = EstimateStainVectors.getModeRGB(rgb);</b>
+<b class="nc"><i>143</i>&nbsp;		int rMax = rgbMode[0];</b>
+<b class="nc"><i>144</i>&nbsp;		int gMax = rgbMode[1];</b>
+<b class="nc"><i>145</i>&nbsp;		int bMax = rgbMode[2];</b>
+<i>146</i>&nbsp;		
+<i>147</i>&nbsp;		// Check if the background values may need to be changed
+<b class="nc"><i>148</i>&nbsp;		if (rMax != stains.getMaxRed() || gMax != stains.getMaxGreen() || bMax != stains.getMaxBlue()) {</b>
+<b class="nc"><i>149</i>&nbsp;			DialogButton response =</b>
+<b class="nc"><i>150</i>&nbsp;					Dialogs.showYesNoCancelDialog(TITLE,</b>
+<b class="nc"><i>151</i>&nbsp;							String.format(&quot;Modal RGB values %d, %d, %d do not match current background values - do you want to use the modal values?&quot;, rMax, gMax, bMax));</b>
+<b class="nc"><i>152</i>&nbsp;			if (response == DialogButton.CANCEL)</b>
+<i>153</i>&nbsp;				return;
+<b class="nc"><i>154</i>&nbsp;			else if (response == DialogButton.YES) {</b>
+<b class="nc"><i>155</i>&nbsp;				stains = stains.changeMaxValues(rMax, gMax, bMax);</b>
+<b class="nc"><i>156</i>&nbsp;				imageData.setColorDeconvolutionStains(stains);</b>
+<i>157</i>&nbsp;			}
+<i>158</i>&nbsp;		}
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		
+<b class="nc"><i>161</i>&nbsp;		ColorDeconvolutionStains stainsUpdated = null;</b>
+<b class="nc"><i>162</i>&nbsp;		logger.info(&quot;Requesting region for stain vector editing: &quot;, request);</b>
+<i>163</i>&nbsp;		try {
+<b class="nc"><i>164</i>&nbsp;			stainsUpdated = showStainEditor(img, stains);</b>
+<b class="nc"><i>165</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>166</i>&nbsp;			Dialogs.showErrorMessage(TITLE, &quot;Error with stain estimation: &quot; + e.getLocalizedMessage());</b>
+<b class="nc"><i>167</i>&nbsp;			logger.error(&quot;{}&quot;, e.getLocalizedMessage(), e);</b>
+<i>168</i>&nbsp;//			JOptionPane.showMessageDialog(qupath.getFrame(), &quot;Error with stain estimation: &quot; + e.getLocalizedMessage(), &quot;Estimate stain vectors&quot;, JOptionPane.ERROR_MESSAGE, null);
+<i>169</i>&nbsp;			return;
+<b class="nc"><i>170</i>&nbsp;		}</b>
+<b class="nc"><i>171</i>&nbsp;		if (!stains.equals(stainsUpdated)) {</b>
+<b class="nc"><i>172</i>&nbsp;			String name = stainsUpdated.getName();</b>
+<b class="nc"><i>173</i>&nbsp;			String newName = Dialogs.showInputDialog(TITLE, &quot;Set name for stain vectors&quot;, name);</b>
+<b class="nc"><i>174</i>&nbsp;			if (newName == null)</b>
+<i>175</i>&nbsp;				return;
+<b class="nc"><i>176</i>&nbsp;			if (!name.equals(newName) &amp;&amp; !newName.trim().isEmpty())</b>
+<b class="nc"><i>177</i>&nbsp;				stainsUpdated = stainsUpdated.changeName(newName);</b>
+<b class="nc"><i>178</i>&nbsp;			imageData.setColorDeconvolutionStains(stainsUpdated);</b>
+<i>179</i>&nbsp;		}
+<i>180</i>&nbsp;		
+<i>181</i>&nbsp;	}
+<i>182</i>&nbsp;	
+<i>183</i>&nbsp;	
+<i>184</i>&nbsp;	
+<i>185</i>&nbsp;	
+<i>186</i>&nbsp;	
+<i>187</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>188</i>&nbsp;	public static ColorDeconvolutionStains showStainEditor(final BufferedImage img, final ColorDeconvolutionStains stains) {
+<i>189</i>&nbsp;		
+<i>190</i>&nbsp;		// 
+<b class="nc"><i>191</i>&nbsp;		int[] buf = img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth());</b>
+<i>192</i>&nbsp;//		int[] rgb = buf;
+<b class="nc"><i>193</i>&nbsp;		int[] rgb = EstimateStainVectors.subsample(buf, 10000);</b>
+<i>194</i>&nbsp;		
+<b class="nc"><i>195</i>&nbsp;		float[] red = ColorDeconvolutionHelper.getRedOpticalDensities(rgb, stains.getMaxRed(), null);</b>
+<b class="nc"><i>196</i>&nbsp;		float[] green = ColorDeconvolutionHelper.getGreenOpticalDensities(rgb, stains.getMaxGreen(), null);</b>
+<b class="nc"><i>197</i>&nbsp;		float[] blue = ColorDeconvolutionHelper.getBlueOpticalDensities(rgb, stains.getMaxBlue(), null);</b>
+<i>198</i>&nbsp;		
+<i>199</i>&nbsp;		
+<i>200</i>&nbsp;//		panelPlots.setBorder(BorderFactory.createTitledBorder(null, &quot;Stain vector scatterplots&quot;, TitledBorder.CENTER, TitledBorder.TOP));
+<i>201</i>&nbsp;		
+<b class="nc"><i>202</i>&nbsp;		StainsWrapper stainsWrapper = new StainsWrapper(stains);</b>
+<b class="nc"><i>203</i>&nbsp;		Node panelRedGreen = createScatterPanel(new ScatterPlot(red, green, null, rgb), stainsWrapper, AxisColor.RED, AxisColor.GREEN);</b>
+<b class="nc"><i>204</i>&nbsp;		Node panelRedBlue = createScatterPanel(new ScatterPlot(red, blue, null, rgb), stainsWrapper, AxisColor.RED, AxisColor.BLUE);</b>
+<b class="nc"><i>205</i>&nbsp;		Node panelGreenBlue = createScatterPanel(new ScatterPlot(green, blue, null, rgb), stainsWrapper, AxisColor.GREEN, AxisColor.BLUE);</b>
+<i>206</i>&nbsp;		
+<i>207</i>&nbsp;//		GridPane panelPlots = PanelToolsFX.createColumnGrid(panelRedGreen, panelRedBlue, panelGreenBlue);
+<b class="nc"><i>208</i>&nbsp;		GridPane panelPlots = new GridPane();</b>
+<b class="nc"><i>209</i>&nbsp;		panelPlots.setHgap(10);</b>
+<b class="nc"><i>210</i>&nbsp;		panelPlots.add(panelRedGreen, 0, 0);</b>
+<b class="nc"><i>211</i>&nbsp;		panelPlots.add(panelRedBlue, 1, 0);</b>
+<b class="nc"><i>212</i>&nbsp;		panelPlots.add(panelGreenBlue, 2, 0);</b>
+<i>213</i>&nbsp;//		panelPlots.getChildren().addAll(panelRedGreen, panelRedBlue, panelGreenBlue);
+<b class="nc"><i>214</i>&nbsp;		panelPlots.setPadding(new Insets(0, 0, 10, 0));</b>
+<i>215</i>&nbsp;		
+<b class="nc"><i>216</i>&nbsp;		BorderPane panelSouth = new BorderPane();</b>
+<i>217</i>&nbsp;		
+<b class="nc"><i>218</i>&nbsp;		TableView&lt;Integer&gt; table = new TableView&lt;&gt;();</b>
+<b class="nc"><i>219</i>&nbsp;		table.getItems().setAll(1, 2, 3);</b>
+<i>220</i>&nbsp;		
+<b class="nc"><i>221</i>&nbsp;		stainsWrapper.addStainListener(new StainChangeListener() {</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;			@Override
+<i>224</i>&nbsp;			public void stainChanged(StainsWrapper stainsWrapper) {
+<b class="nc"><i>225</i>&nbsp;				table.refresh();</b>
+<i>226</i>&nbsp;			}
+<i>227</i>&nbsp;			
+<i>228</i>&nbsp;		});
+<b class="nc"><i>229</i>&nbsp;		TableColumn&lt;Integer, String&gt; colName = new TableColumn&lt;&gt;(&quot;Name&quot;);</b>
+<b class="nc"><i>230</i>&nbsp;		colName.setCellValueFactory(v -&gt; new SimpleStringProperty(stainsWrapper.getStains().getStain(v.getValue()).getName()));</b>
+<b class="nc"><i>231</i>&nbsp;		TableColumn&lt;Integer, String&gt; colOrig = new TableColumn&lt;&gt;(&quot;Original&quot;);</b>
+<b class="nc"><i>232</i>&nbsp;		colOrig.setCellValueFactory(v -&gt; new SimpleStringProperty(</b>
+<b class="nc"><i>233</i>&nbsp;				stainArrayAsString(Locale.getDefault(Category.FORMAT), stainsWrapper.getOriginalStains().getStain(v.getValue()), &quot; | &quot;, 3)));</b>
+<b class="nc"><i>234</i>&nbsp;		TableColumn&lt;Integer, String&gt; colCurrent = new TableColumn&lt;&gt;(&quot;Current&quot;);</b>
+<b class="nc"><i>235</i>&nbsp;		colCurrent.setCellValueFactory(v -&gt; new SimpleStringProperty(</b>
+<b class="nc"><i>236</i>&nbsp;				stainArrayAsString(Locale.getDefault(Category.FORMAT), stainsWrapper.getStains().getStain(v.getValue()), &quot; | &quot;, 3)));</b>
+<b class="nc"><i>237</i>&nbsp;		TableColumn&lt;Integer, String&gt; colAngle = new TableColumn&lt;&gt;(&quot;Angle&quot;);</b>
+<b class="nc"><i>238</i>&nbsp;		colAngle.setCellValueFactory(v -&gt; {</b>
+<b class="nc"><i>239</i>&nbsp;			return new SimpleStringProperty(</b>
+<b class="nc"><i>240</i>&nbsp;					GeneralTools.formatNumber(</b>
+<b class="nc"><i>241</i>&nbsp;						StainVector.computeAngle(</b>
+<b class="nc"><i>242</i>&nbsp;						stainsWrapper.getOriginalStains().getStain(v.getValue()),</b>
+<b class="nc"><i>243</i>&nbsp;						stainsWrapper.getStains().getStain(v.getValue()))</b>
+<i>244</i>&nbsp;						, 2)
+<i>245</i>&nbsp;					);
+<i>246</i>&nbsp;		});//new SimpleStringProperty(stainsWrapper.getStains().getStain(v.getValue()).arrayAsString(&quot;, &quot;, 3)));
+<b class="nc"><i>247</i>&nbsp;		table.getColumns().addAll(colName, colOrig, colCurrent, colAngle);</b>
+<b class="nc"><i>248</i>&nbsp;		table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);</b>
+<b class="nc"><i>249</i>&nbsp;		table.setPrefHeight(120);</b>
+<i>250</i>&nbsp;		
+<i>251</i>&nbsp;		
+<i>252</i>&nbsp;//		// Fix first &amp; preferred column sizes
+<i>253</i>&nbsp;//		int widthName = 0, widthStain = 0;
+<i>254</i>&nbsp;//		for (int row = 0; row &lt; table.getRowCount(); row++) {
+<i>255</i>&nbsp;//			TableCellRenderer renderer = table.getCellRenderer(row, 0);
+<i>256</i>&nbsp;//			Component comp = table.prepareRenderer(renderer, row, 0);
+<i>257</i>&nbsp;//			widthName = Math.max(comp.getPreferredSize().width, widthName);
+<i>258</i>&nbsp;//			
+<i>259</i>&nbsp;//			renderer = table.getCellRenderer(row, 1);
+<i>260</i>&nbsp;//			comp = table.prepareRenderer(renderer, row, 1);
+<i>261</i>&nbsp;//			widthStain = Math.max(comp.getPreferredSize().width, widthStain);
+<i>262</i>&nbsp;//			renderer = table.getCellRenderer(row, 2);
+<i>263</i>&nbsp;//			comp = table.prepareRenderer(renderer, row, 2);
+<i>264</i>&nbsp;//			widthStain = Math.max(comp.getPreferredSize().width, widthStain);
+<i>265</i>&nbsp;//		}
+<i>266</i>&nbsp;//		table.getColumnModel().getColumn(0).setMaxWidth(widthName + 10);
+<i>267</i>&nbsp;//		table.getColumnModel().getColumn(0).setPreferredWidth(widthName + 10);
+<i>268</i>&nbsp;//		table.getColumnModel().getColumn(1).setPreferredWidth(widthStain + 20);
+<i>269</i>&nbsp;//		table.getColumnModel().getColumn(2).setPreferredWidth(widthStain + 20);
+<i>270</i>&nbsp;		
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;		
+<i>273</i>&nbsp;		// Create auto detection parameters
+<b class="nc"><i>274</i>&nbsp;		ParameterList params = new ParameterList()</b>
+<b class="nc"><i>275</i>&nbsp;				.addDoubleParameter(&quot;minStainOD&quot;, &quot;Min channel OD&quot;, 0.05, &quot;&quot;, &quot;Minimum staining OD - pixels with a lower OD in any channel (RGB) are ignored (default = 0.05)&quot;)</b>
+<b class="nc"><i>276</i>&nbsp;				.addDoubleParameter(&quot;maxStainOD&quot;, &quot;Max total OD&quot;, 1., &quot;&quot;, &quot;Maximum staining OD - more densely stained pixels are ignored (default = 1)&quot;)</b>
+<b class="nc"><i>277</i>&nbsp;				.addDoubleParameter(&quot;ignorePercentage&quot;, &quot;Ignore extrema&quot;, 1., &quot;%&quot;, &quot;Percentage of extreme pixels to ignore, to improve robustness in the presence of noise/other artefacts (default = 1)&quot;)</b>
+<b class="nc"><i>278</i>&nbsp;				.addBooleanParameter(&quot;checkColors&quot;, &quot;Exclude unrecognised colors (H&amp;E only)&quot;, false, &quot;Exclude unexpected colors (e.g. green) that are likely to be caused by artefacts and not true staining&quot;);</b>
+<i>279</i>&nbsp;//				.addDoubleParameter(&quot;ignorePercentage&quot;, &quot;Ignore extrema&quot;, 1., &quot;%&quot;, 0, 20, &quot;Percentage of extreme pixels to ignore, to improve robustness in the presence of noise/other artefacts&quot;);
+<i>280</i>&nbsp;		
+<b class="nc"><i>281</i>&nbsp;		Button btnAuto = new Button(&quot;Auto&quot;);</b>
+<b class="nc"><i>282</i>&nbsp;		btnAuto.setOnAction(e -&gt; {</b>
+<b class="nc"><i>283</i>&nbsp;				double minOD = params.getDoubleParameterValue(&quot;minStainOD&quot;);</b>
+<b class="nc"><i>284</i>&nbsp;				double maxOD = params.getDoubleParameterValue(&quot;maxStainOD&quot;);</b>
+<b class="nc"><i>285</i>&nbsp;				double ignore = params.getDoubleParameterValue(&quot;ignorePercentage&quot;);</b>
+<b class="nc"><i>286</i>&nbsp;				boolean checkColors = params.getBooleanParameterValue(&quot;checkColors&quot;) &amp;&amp; stainsWrapper.getOriginalStains().isH_E(); // Only accept if H&amp;E</b>
+<b class="nc"><i>287</i>&nbsp;				ignore = Math.max(0, Math.min(ignore, 100));</b>
+<i>288</i>&nbsp;//				ColorDeconvolutionStains stains = estimateStains(imgFinal, stainsWrapper.getStains(), minOD, maxOD, ignore);
+<i>289</i>&nbsp;				try {
+<b class="nc"><i>290</i>&nbsp;					ColorDeconvolutionStains stainsNew = EstimateStainVectors.estimateStains(img, stainsWrapper.getStains(), minOD, maxOD, ignore, checkColors);</b>
+<b class="nc"><i>291</i>&nbsp;					stainsWrapper.setStains(stainsNew);</b>
+<b class="nc"><i>292</i>&nbsp;				} catch (Exception e2) {</b>
+<b class="nc"><i>293</i>&nbsp;					Dialogs.showErrorMessage(&quot;Estimate stain vectors&quot;, e2);</b>
+<b class="nc"><i>294</i>&nbsp;				}</b>
+<i>295</i>&nbsp;		});
+<i>296</i>&nbsp;		
+<b class="nc"><i>297</i>&nbsp;		ParameterPanelFX panelParams = new ParameterPanelFX(params);</b>
+<i>298</i>&nbsp;//		panelParams.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+<b class="nc"><i>299</i>&nbsp;		BorderPane panelAuto = new BorderPane();</b>
+<i>300</i>&nbsp;//		panelAuto.setBorder(BorderFactory.createTitledBorder(&quot;Auto detect&quot;));
+<b class="nc"><i>301</i>&nbsp;		panelAuto.setCenter(panelParams.getPane());</b>
+<b class="nc"><i>302</i>&nbsp;		panelAuto.setBottom(btnAuto);</b>
+<i>303</i>&nbsp;		
+<i>304</i>&nbsp;//		JScrollPane scrollPane = new JScrollPane(table);
+<i>305</i>&nbsp;//		JPanel panelTable = new JPanel(new BorderLayout());
+<i>306</i>&nbsp;//		panelTable.add(scrollPane, BorderLayout.CENTER);
+<i>307</i>&nbsp;////		JTextArea textInstructions = new JTextArea();
+<i>308</i>&nbsp;////		textInstructions.setWrapStyleWord(true);
+<i>309</i>&nbsp;////		textInstructions.setLineWrap(true);
+<i>310</i>&nbsp;////		textInstructions.setText(
+<i>311</i>&nbsp;////				&quot;Viewer for manually and automatically adjusting stain vectors used for stain separation.\n\n&quot; +
+<i>312</i>&nbsp;////				&quot;Each stain vector is 3 values describing the red, green and blue components that define the colour of each &quot; +
+<i>313</i>&nbsp;////				&quot;stain (e.g. hematoxylin, DAB, eosin).  The scatterplots show how these relate to pixel colours for each &quot; +
+<i>314</i>&nbsp;////				&quot;combination of red, green and blue.\n\n&quot; +
+<i>315</i>&nbsp;////				&quot;&#39;Good&#39; stain vectors should point along the edges of the scattered points, ignoring any artefacts resulting from &quot; + 
+<i>316</i>&nbsp;////				&quot;pixels that don&#39;t belong to normal staining patterns.&quot;
+<i>317</i>&nbsp;////				);
+<i>318</i>&nbsp;////		panelTable.add(new JScrollPane(textInstructions), BorderLayout.SOUTH);
+<i>319</i>&nbsp;//		panelTable.setBorder(BorderFactory.createTitledBorder(&quot;Stain vectors&quot;));
+<i>320</i>&nbsp;		
+<b class="nc"><i>321</i>&nbsp;		panelSouth.setCenter(new TitledPane(&quot;Stain vectors&quot;, table));</b>
+<b class="nc"><i>322</i>&nbsp;		panelSouth.setBottom(new TitledPane(&quot;Auto detect&quot;, panelAuto));</b>
+<i>323</i>&nbsp;		
+<b class="nc"><i>324</i>&nbsp;		BorderPane panelMain = new BorderPane();</b>
+<b class="nc"><i>325</i>&nbsp;		panelMain.setCenter(panelPlots);</b>
+<b class="nc"><i>326</i>&nbsp;		panelMain.setBottom(panelSouth);</b>
+<i>327</i>&nbsp;		
+<b class="nc"><i>328</i>&nbsp;		if (Dialogs.showConfirmDialog(&quot;Visual Stain Editor&quot;, panelMain)) {</b>
+<b class="nc"><i>329</i>&nbsp;			return stainsWrapper.getStains();</b>
+<i>330</i>&nbsp;		} else {
+<b class="nc"><i>331</i>&nbsp;			stainsWrapper.resetStains();</b>
+<b class="nc"><i>332</i>&nbsp;			return stainsWrapper.getStains();</b>
+<i>333</i>&nbsp;		}
+<i>334</i>&nbsp;	}
+<i>335</i>&nbsp;	
+<i>336</i>&nbsp;	
+<i>337</i>&nbsp;	
+<i>338</i>&nbsp;	private static String stainArrayAsString(final Locale locale, final StainVector stain, final String delimiter, final int nDecimalPlaces) {
+<b class="nc"><i>339</i>&nbsp;		return GeneralTools.arrayToString(locale, stain.getArray(), delimiter, nDecimalPlaces);</b>
+<i>340</i>&nbsp;	}
+<i>341</i>&nbsp;
+<i>342</i>&nbsp;	
+<i>343</i>&nbsp;	
+<i>344</i>&nbsp;	static Node createScatterPanel(final ScatterPlot scatterPlot, final StainsWrapper stainsWrapper, AxisColor axisX, AxisColor axisY) {
+<b class="nc"><i>345</i>&nbsp;		StainScatterPanel panelScatter = new StainScatterPanel(scatterPlot, stainsWrapper, axisX, axisY);</b>
+<i>346</i>&nbsp;//		panelScatter.setPreferredSize(new Dimension(200, 200));
+<i>347</i>&nbsp;//		panelScatter.setMinimumSize(new Dimension(100, 100));
+<b class="nc"><i>348</i>&nbsp;		panelScatter.setWidth(200);</b>
+<b class="nc"><i>349</i>&nbsp;		panelScatter.setHeight(200);</b>
+<i>350</i>&nbsp;		
+<b class="nc"><i>351</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="nc"><i>352</i>&nbsp;		Label y = new Label(axisY.toString());</b>
+<b class="nc"><i>353</i>&nbsp;		y.setAlignment(Pos.CENTER_LEFT);</b>
+<b class="nc"><i>354</i>&nbsp;		y.setRotate(-90);</b>
+<i>355</i>&nbsp;//		y.prefHeightProperty().bind(panelScatter.heightProperty());
+<i>356</i>&nbsp;//		Text y = new Text(axisY.toString());
+<b class="nc"><i>357</i>&nbsp;		Group group = new Group();</b>
+<b class="nc"><i>358</i>&nbsp;		group.getChildren().add(y);</b>
+<i>359</i>&nbsp;//		group.prefHeightProperty().bind(panelScatter.heightProperty());
+<b class="nc"><i>360</i>&nbsp;		pane.add(group, 0, 0);</b>
+<i>361</i>&nbsp;		
+<b class="nc"><i>362</i>&nbsp;		pane.add(panelScatter, 1, 0);</b>
+<i>363</i>&nbsp;
+<b class="nc"><i>364</i>&nbsp;		Label x = new Label(axisX.toString());</b>
+<b class="nc"><i>365</i>&nbsp;		x.setAlignment(Pos.CENTER);</b>
+<b class="nc"><i>366</i>&nbsp;		x.prefWidthProperty().bind(panelScatter.widthProperty());</b>
+<b class="nc"><i>367</i>&nbsp;		pane.add(x, 1, 1);</b>
+<i>368</i>&nbsp;		
+<b class="nc"><i>369</i>&nbsp;		return pane;</b>
+<i>370</i>&nbsp;	}
+<i>371</i>&nbsp;	
+<i>372</i>&nbsp;	
+<i>373</i>&nbsp;	
+<i>374</i>&nbsp;	static interface StainChangeListener {
+<i>375</i>&nbsp;		
+<i>376</i>&nbsp;		public void stainChanged(final StainsWrapper stainsWrapper);
+<i>377</i>&nbsp;		
+<i>378</i>&nbsp;	}
+<i>379</i>&nbsp;	
+<i>380</i>&nbsp;	static class StainsWrapper {
+<i>381</i>&nbsp;		
+<b class="nc"><i>382</i>&nbsp;		private List&lt;StainChangeListener&gt; listeners = new ArrayList&lt;&gt;();</b>
+<i>383</i>&nbsp;		
+<i>384</i>&nbsp;		private ColorDeconvolutionStains stainsOrig;
+<i>385</i>&nbsp;		private ColorDeconvolutionStains stains;
+<i>386</i>&nbsp;		
+<b class="nc"><i>387</i>&nbsp;		StainsWrapper(final ColorDeconvolutionStains stains) {</b>
+<b class="nc"><i>388</i>&nbsp;			this.stainsOrig = stains;</b>
+<b class="nc"><i>389</i>&nbsp;			this.stains = stains;</b>
+<i>390</i>&nbsp;		}
+<i>391</i>&nbsp;		
+<i>392</i>&nbsp;		public ColorDeconvolutionStains getOriginalStains() {
+<b class="nc"><i>393</i>&nbsp;			return stainsOrig;</b>
+<i>394</i>&nbsp;		}
+<i>395</i>&nbsp;		
+<i>396</i>&nbsp;		public void addStainListener(final StainChangeListener listener) {
+<b class="nc"><i>397</i>&nbsp;			this.listeners.add(listener);</b>
+<i>398</i>&nbsp;		}
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;		public void removeStainListener(final StainChangeListener listener) {
+<b class="nc"><i>401</i>&nbsp;			this.listeners.remove(listener);</b>
+<i>402</i>&nbsp;		}
+<i>403</i>&nbsp;
+<i>404</i>&nbsp;//		public void updateStains(final StainVector stain1, final StainVector stain2) {
+<i>405</i>&nbsp;//			stains = stains.changeStain(stain1, 1).changeStain(stain2, 2);
+<i>406</i>&nbsp;//		}
+<i>407</i>&nbsp;		
+<i>408</i>&nbsp;		public void changeStain(final StainVector stainOld, final StainVector stainNew) {
+<b class="nc"><i>409</i>&nbsp;			int n = stains.getStainNumber(stainOld);</b>
+<b class="nc"><i>410</i>&nbsp;			if (n &gt;= 1)</b>
+<b class="nc"><i>411</i>&nbsp;				setStains(stains.changeStain(stainNew, n));</b>
+<i>412</i>&nbsp;		}
+<i>413</i>&nbsp;		
+<i>414</i>&nbsp;		public void setStains(final ColorDeconvolutionStains stainsNew) {
+<b class="nc"><i>415</i>&nbsp;			this.stains = stainsNew;</b>
+<b class="nc"><i>416</i>&nbsp;			for (StainChangeListener l : listeners)</b>
+<b class="nc"><i>417</i>&nbsp;				l.stainChanged(this);</b>
+<i>418</i>&nbsp;		}
+<i>419</i>&nbsp;		
+<i>420</i>&nbsp;		
+<i>421</i>&nbsp;		public void resetStains() {
+<b class="nc"><i>422</i>&nbsp;			setStains(getOriginalStains());</b>
+<i>423</i>&nbsp;		}
+<i>424</i>&nbsp;		
+<i>425</i>&nbsp;		public ColorDeconvolutionStains getStains() {
+<b class="nc"><i>426</i>&nbsp;			return stains;</b>
+<i>427</i>&nbsp;		}
+<i>428</i>&nbsp;		
+<i>429</i>&nbsp;	}
+<i>430</i>&nbsp;	
+<i>431</i>&nbsp;	
+<i>432</i>&nbsp;	
+<i>433</i>&nbsp;	static class StainScatterPanel extends Canvas implements StainChangeListener {
+<i>434</i>&nbsp;		
+<i>435</i>&nbsp;		private AxisColor xAxis, yAxis;
+<i>436</i>&nbsp;		
+<i>437</i>&nbsp;		private ScatterPlot plot;
+<i>438</i>&nbsp;		private StainsWrapper stainsWrapper;
+<i>439</i>&nbsp;		
+<b class="nc"><i>440</i>&nbsp;		private StainVector stainEditing = null;</b>
+<b class="nc"><i>441</i>&nbsp;		private double handleSize = 5;</b>
+<i>442</i>&nbsp;		
+<b class="nc"><i>443</i>&nbsp;		private int padding = 2;</b>
+<i>444</i>&nbsp;		
+<b class="nc"><i>445</i>&nbsp;		private boolean constrainX = false;</b>
+<i>446</i>&nbsp;		
+<i>447</i>&nbsp;		public StainScatterPanel(final ScatterPlot plot, final StainsWrapper stainsWrapper, final AxisColor xAxis, final AxisColor yAxis) {
+<b class="nc"><i>448</i>&nbsp;			super();</b>
+<b class="nc"><i>449</i>&nbsp;			this.plot = plot;</b>
+<b class="nc"><i>450</i>&nbsp;			this.stainsWrapper = stainsWrapper;</b>
+<b class="nc"><i>451</i>&nbsp;			this.stainsWrapper.addStainListener(this);</b>
+<b class="nc"><i>452</i>&nbsp;			this.xAxis = xAxis;</b>
+<b class="nc"><i>453</i>&nbsp;			this.yAxis = yAxis;</b>
+<i>454</i>&nbsp;			
+<b class="nc"><i>455</i>&nbsp;			this.plot.setLimitsX(0, 1);</b>
+<b class="nc"><i>456</i>&nbsp;			this.plot.setLimitsY(0, 1);</b>
+<i>457</i>&nbsp;			
+<b class="nc"><i>458</i>&nbsp;			this.addEventHandler(MouseEvent.ANY, new MouseListener());</b>
+<i>459</i>&nbsp;			
+<b class="nc"><i>460</i>&nbsp;			updatePlot();</b>
+<i>461</i>&nbsp;			
+<i>462</i>&nbsp;			 // Redraw canvas when size changes.
+<b class="nc"><i>463</i>&nbsp;            widthProperty().addListener(e -&gt; updatePlot());</b>
+<b class="nc"><i>464</i>&nbsp;            heightProperty().addListener(e -&gt; updatePlot());</b>
+<i>465</i>&nbsp;
+<i>466</i>&nbsp;		}
+<i>467</i>&nbsp;		
+<i>468</i>&nbsp;//		public void setStains(final StainsWrapper stains) {
+<i>469</i>&nbsp;//			this.stains = stains;
+<i>470</i>&nbsp;//			repaint();
+<i>471</i>&nbsp;//		}
+<i>472</i>&nbsp;//
+<i>473</i>&nbsp;//		public ColorDeconvolutionStains getStains() {
+<i>474</i>&nbsp;//			return stains;
+<i>475</i>&nbsp;//		}
+<i>476</i>&nbsp;		
+<i>477</i>&nbsp;		private double componentXtoDataX(final double x) {
+<b class="nc"><i>478</i>&nbsp;			double scaleX = (getWidth() - padding * 2) / (plot.getMaxX() - plot.getMinY());</b>
+<b class="nc"><i>479</i>&nbsp;			return (x - padding) / scaleX + plot.getMinX();</b>
+<i>480</i>&nbsp;		}
+<i>481</i>&nbsp;		
+<i>482</i>&nbsp;		private double componentYtoDataY(final double y) {
+<b class="nc"><i>483</i>&nbsp;			double scaleY = (getHeight() - padding * 2) / (plot.getMaxY() - plot.getMinY());</b>
+<i>484</i>&nbsp;			// TODO: Check this!  I&#39;m not sure why it (appears) to work... so may be incorrect
+<b class="nc"><i>485</i>&nbsp;			return (padding - y)/scaleY + plot.getMaxX() + plot.getMinY();</b>
+<i>486</i>&nbsp;		}
+<i>487</i>&nbsp;		
+<i>488</i>&nbsp;		private double dataXtoComponentX(final double x) {
+<b class="nc"><i>489</i>&nbsp;			double scaleX = (getWidth() - padding * 2) / (plot.getMaxX() - plot.getMinY());</b>
+<b class="nc"><i>490</i>&nbsp;			return (x - plot.getMinX()) * scaleX + padding;</b>
+<i>491</i>&nbsp;		}
+<i>492</i>&nbsp;		
+<i>493</i>&nbsp;		private double dataYtoComponentY(final double y) {
+<b class="nc"><i>494</i>&nbsp;			double scaleY = (getHeight() - padding * 2) / (plot.getMaxY() - plot.getMinY());</b>
+<b class="nc"><i>495</i>&nbsp;			return (plot.getMaxY() - (y-plot.getMinY()))*scaleY + padding;</b>
+<i>496</i>&nbsp;//			return (plot.getMaxY() - (y-plot.getMinY()))*scaleY + padding;
+<i>497</i>&nbsp;		}
+<i>498</i>&nbsp;		
+<i>499</i>&nbsp;		private Rectangle2D getRegion() {
+<b class="nc"><i>500</i>&nbsp;			return new Rectangle2D(padding, padding, getWidth()-padding*2, getHeight()-padding*2);</b>
+<i>501</i>&nbsp;		}
+<i>502</i>&nbsp;		
+<i>503</i>&nbsp;		private StainVector grabHandle(double x, double y) {
+<b class="nc"><i>504</i>&nbsp;			ColorDeconvolutionStains stains = stainsWrapper == null ? null : stainsWrapper.getStains();</b>
+<b class="nc"><i>505</i>&nbsp;			if (stains == null)</b>
+<b class="nc"><i>506</i>&nbsp;				return null;</b>
+<i>507</i>&nbsp;			
+<b class="nc"><i>508</i>&nbsp;			StainVector s1 = stains.getStain(1);</b>
+<b class="nc"><i>509</i>&nbsp;			StainVector s2 = stains.getStain(2);</b>
+<b class="nc"><i>510</i>&nbsp;			double d1 = Point2D.distanceSq(x, y, dataXtoComponentX(getStainX(s1)), dataYtoComponentY(getStainY(s1)));</b>
+<b class="nc"><i>511</i>&nbsp;			double d2 = Point2D.distanceSq(x, y, dataXtoComponentX(getStainX(s2)), dataYtoComponentY(getStainY(s2)));</b>
+<b class="nc"><i>512</i>&nbsp;			if (d1 &lt;= d2 &amp;&amp; d1 &lt;= handleSize*handleSize)</b>
+<b class="nc"><i>513</i>&nbsp;				return s1;</b>
+<b class="nc"><i>514</i>&nbsp;			if (d2 &lt; d1 &amp;&amp; d2 &lt;= handleSize*handleSize)</b>
+<b class="nc"><i>515</i>&nbsp;				return s2;</b>
+<b class="nc"><i>516</i>&nbsp;			return null;</b>
+<i>517</i>&nbsp;		}
+<i>518</i>&nbsp;		
+<i>519</i>&nbsp;		
+<i>520</i>&nbsp;		private double getStainX(final StainVector stain) {
+<b class="nc"><i>521</i>&nbsp;			switch (xAxis) {</b>
+<i>522</i>&nbsp;			case BLUE:
+<b class="nc"><i>523</i>&nbsp;				return stain.getBlue();</b>
+<i>524</i>&nbsp;			case GREEN:
+<b class="nc"><i>525</i>&nbsp;				return stain.getGreen();</b>
+<i>526</i>&nbsp;			case RED:
+<b class="nc"><i>527</i>&nbsp;				return stain.getRed();</b>
+<i>528</i>&nbsp;			}
+<b class="nc"><i>529</i>&nbsp;			return Double.NaN;</b>
+<i>530</i>&nbsp;		}
+<i>531</i>&nbsp;		
+<i>532</i>&nbsp;		private double getStainY(final StainVector stain) {
+<b class="nc"><i>533</i>&nbsp;			switch (yAxis) {</b>
+<i>534</i>&nbsp;			case BLUE:
+<b class="nc"><i>535</i>&nbsp;				return stain.getBlue();</b>
+<i>536</i>&nbsp;			case GREEN:
+<b class="nc"><i>537</i>&nbsp;				return stain.getGreen();</b>
+<i>538</i>&nbsp;			case RED:
+<b class="nc"><i>539</i>&nbsp;				return stain.getRed();</b>
+<i>540</i>&nbsp;			}
+<b class="nc"><i>541</i>&nbsp;			return Double.NaN;</b>
+<i>542</i>&nbsp;		}
+<i>543</i>&nbsp;		
+<i>544</i>&nbsp;		
+<i>545</i>&nbsp;		public boolean getConstrainX() {
+<b class="nc"><i>546</i>&nbsp;			return constrainX;</b>
+<i>547</i>&nbsp;		}
+<i>548</i>&nbsp;		
+<i>549</i>&nbsp;		public void setConstrainX(final boolean constrainX) {
+<b class="nc"><i>550</i>&nbsp;			this.constrainX = constrainX;</b>
+<i>551</i>&nbsp;		}
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;		
+<i>554</i>&nbsp;		public void updatePlot() {
+<b class="nc"><i>555</i>&nbsp;			GraphicsContext g2d = getGraphicsContext2D();</b>
+<i>556</i>&nbsp;
+<b class="nc"><i>557</i>&nbsp;			g2d.setFill(javafx.scene.paint.Color.WHITE);</b>
+<b class="nc"><i>558</i>&nbsp;			g2d.clearRect(0, 0, getWidth(), getHeight());</b>
+<i>559</i>&nbsp;			
+<b class="nc"><i>560</i>&nbsp;			if (getWidth() &lt; padding*2 || getHeight() &lt; padding*2)</b>
+<i>561</i>&nbsp;				return;
+<i>562</i>&nbsp;
+<b class="nc"><i>563</i>&nbsp;			Rectangle2D region = getRegion();</b>
+<b class="nc"><i>564</i>&nbsp;			g2d.fillRect(padding, padding, getWidth()-padding*2, getHeight()-padding*2);</b>
+<b class="nc"><i>565</i>&nbsp;			plot.drawPlot(g2d, region);</b>
+<i>566</i>&nbsp;			
+<b class="nc"><i>567</i>&nbsp;			g2d.setLineWidth(1);</b>
+<b class="nc"><i>568</i>&nbsp;			g2d.setStroke(javafx.scene.paint.Color.GRAY);</b>
+<b class="nc"><i>569</i>&nbsp;			g2d.strokeRect(region.getMinX(), region.getMinY(), region.getWidth(), region.getHeight());</b>
+<i>570</i>&nbsp;
+<i>571</i>&nbsp;			
+<i>572</i>&nbsp;//			// Draw border
+<i>573</i>&nbsp;//			g2d.setStroke(javafx.scene.paint.Color.GRAY);
+<i>574</i>&nbsp;//			g2d.strokeRect(padding, padding, getWidth()-padding*2, getHeight()-padding*2);
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;			if (stainsWrapper == null)</b>
+<i>577</i>&nbsp;				return;
+<i>578</i>&nbsp;			
+<i>579</i>&nbsp;//			// Draw labels
+<i>580</i>&nbsp;//			String s = xAxis.toString();
+<i>581</i>&nbsp;//			g2d.drawString(s, (getWidth()-fm.stringWidth(s))*.5f, getHeight()-fm.getHeight()*.5f);
+<i>582</i>&nbsp;//			s = yAxis.toString();
+<i>583</i>&nbsp;//			Graphics2D g2d2 = (Graphics2D)g2d.create();
+<i>584</i>&nbsp;//			
+<i>585</i>&nbsp;//			g2d2.translate(0, getHeight());
+<i>586</i>&nbsp;//			g2d2.rotate(-Math.PI/2);
+<i>587</i>&nbsp;//			g2d2.drawString(s, (getHeight() - fm.stringWidth(s))*.5f, fm.getHeight());
+<i>588</i>&nbsp;//			g2d2.dispose();
+<i>589</i>&nbsp;//			
+<i>590</i>&nbsp;//			BasicStroke stroke = new BasicStroke(3f);
+<i>591</i>&nbsp;//			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+<i>592</i>&nbsp;			
+<b class="nc"><i>593</i>&nbsp;			g2d.setLineWidth(3);</b>
+<b class="nc"><i>594</i>&nbsp;			ColorDeconvolutionStains stains = stainsWrapper.getStains();</b>
+<b class="nc"><i>595</i>&nbsp;			for (int i = 1; i &lt;= 3; i++) {</b>
+<b class="nc"><i>596</i>&nbsp;				StainVector stain = stains.getStain(i);</b>
+<i>597</i>&nbsp;				
+<b class="nc"><i>598</i>&nbsp;				if (stain.isResidual())</b>
+<b class="nc"><i>599</i>&nbsp;					continue;</b>
+<i>600</i>&nbsp;				
+<b class="nc"><i>601</i>&nbsp;				double x2 = getStainX(stain);</b>
+<b class="nc"><i>602</i>&nbsp;				double y2 = getStainY(stain);</b>
+<b class="nc"><i>603</i>&nbsp;				if (Double.isNaN(x2) || Double.isNaN(y2))</b>
+<b class="nc"><i>604</i>&nbsp;					continue;</b>
+<i>605</i>&nbsp;
+<i>606</i>&nbsp;				
+<b class="nc"><i>607</i>&nbsp;				if (stain == stainEditing)</b>
+<b class="nc"><i>608</i>&nbsp;					g2d.setStroke(javafx.scene.paint.Color.YELLOW);</b>
+<i>609</i>&nbsp;				else
+<b class="nc"><i>610</i>&nbsp;					g2d.setStroke(ColorToolsFX.getCachedColor(stain.getColor()));</b>
+<b class="nc"><i>611</i>&nbsp;				g2d.strokeLine(</b>
+<b class="nc"><i>612</i>&nbsp;						dataXtoComponentX(0),</b>
+<b class="nc"><i>613</i>&nbsp;						dataYtoComponentY(0),</b>
+<b class="nc"><i>614</i>&nbsp;						dataXtoComponentX(x2),</b>
+<b class="nc"><i>615</i>&nbsp;						dataYtoComponentY(y2)</b>
+<i>616</i>&nbsp;						);
+<i>617</i>&nbsp;				
+<b class="nc"><i>618</i>&nbsp;				g2d.strokeOval(</b>
+<b class="nc"><i>619</i>&nbsp;						dataXtoComponentX(x2)-handleSize/2,</b>
+<b class="nc"><i>620</i>&nbsp;						dataYtoComponentY(y2)-handleSize/2,</b>
+<i>621</i>&nbsp;						handleSize,
+<i>622</i>&nbsp;						handleSize
+<i>623</i>&nbsp;						);
+<i>624</i>&nbsp;			}
+<i>625</i>&nbsp;			
+<i>626</i>&nbsp;		}
+<i>627</i>&nbsp;		
+<i>628</i>&nbsp;		
+<b class="nc"><i>629</i>&nbsp;		class MouseListener implements EventHandler&lt;MouseEvent&gt; {</b>
+<i>630</i>&nbsp;
+<i>631</i>&nbsp;			@Override
+<i>632</i>&nbsp;			public void handle(MouseEvent event) {
+<b class="nc"><i>633</i>&nbsp;				if (event.getEventType() == MouseEvent.MOUSE_DRAGGED)</b>
+<b class="nc"><i>634</i>&nbsp;					handleMouseDragged(event);</b>
+<b class="nc"><i>635</i>&nbsp;				else if (event.getEventType() == MouseEvent.MOUSE_PRESSED)</b>
+<b class="nc"><i>636</i>&nbsp;					handleMousePressed(event);</b>
+<b class="nc"><i>637</i>&nbsp;				else if (event.getEventType() == MouseEvent.MOUSE_RELEASED)</b>
+<b class="nc"><i>638</i>&nbsp;					handleMouseReleased(event);</b>
+<i>639</i>&nbsp;			}
+<i>640</i>&nbsp;			
+<i>641</i>&nbsp;		}
+<i>642</i>&nbsp;		
+<i>643</i>&nbsp;
+<i>644</i>&nbsp;		private void handleMouseDragged(MouseEvent e) {
+<b class="nc"><i>645</i>&nbsp;			if (stainEditing == null)</b>
+<i>646</i>&nbsp;				return;
+<i>647</i>&nbsp;			
+<b class="nc"><i>648</i>&nbsp;			double x = componentXtoDataX(e.getX());</b>
+<b class="nc"><i>649</i>&nbsp;			double y = componentYtoDataY(e.getY());</b>
+<i>650</i>&nbsp;			
+<b class="nc"><i>651</i>&nbsp;			double r = stainEditing.getRed();</b>
+<b class="nc"><i>652</i>&nbsp;			double g = stainEditing.getGreen();</b>
+<b class="nc"><i>653</i>&nbsp;			double b = stainEditing.getBlue();</b>
+<b class="nc"><i>654</i>&nbsp;			switch (yAxis) {</b>
+<i>655</i>&nbsp;			case BLUE:
+<b class="nc"><i>656</i>&nbsp;				b = y;</b>
+<b class="nc"><i>657</i>&nbsp;				break;</b>
+<i>658</i>&nbsp;			case GREEN:
+<b class="nc"><i>659</i>&nbsp;				g = y;</b>
+<b class="nc"><i>660</i>&nbsp;				break;</b>
+<i>661</i>&nbsp;			case RED:
+<b class="nc"><i>662</i>&nbsp;				r = y;</b>
+<i>663</i>&nbsp;				break;
+<i>664</i>&nbsp;			}
+<i>665</i>&nbsp;			// Only allow the x-value to update if it is not constrained
+<b class="nc"><i>666</i>&nbsp;			if (!constrainX) {</b>
+<b class="nc"><i>667</i>&nbsp;				switch (xAxis) {</b>
+<i>668</i>&nbsp;				case BLUE:
+<b class="nc"><i>669</i>&nbsp;					b = x;</b>
+<b class="nc"><i>670</i>&nbsp;					break;</b>
+<i>671</i>&nbsp;				case GREEN:
+<b class="nc"><i>672</i>&nbsp;					g = x;</b>
+<b class="nc"><i>673</i>&nbsp;					break;</b>
+<i>674</i>&nbsp;				case RED:
+<b class="nc"><i>675</i>&nbsp;					r = x;</b>
+<i>676</i>&nbsp;					break;
+<i>677</i>&nbsp;				}
+<i>678</i>&nbsp;			}
+<b class="nc"><i>679</i>&nbsp;			StainVector stainNew = StainVector.createStainVector(</b>
+<b class="nc"><i>680</i>&nbsp;					stainEditing.getName(), r, g, b);</b>
+<b class="nc"><i>681</i>&nbsp;			stainsWrapper.changeStain(stainEditing, stainNew);</b>
+<b class="nc"><i>682</i>&nbsp;			stainEditing = stainNew;</b>
+<i>683</i>&nbsp;			
+<i>684</i>&nbsp;//			logger.debug(String.format(&quot;x=%.2f, y=%.2f&quot;, x, y));
+<i>685</i>&nbsp;			
+<b class="nc"><i>686</i>&nbsp;			updatePlot();</b>
+<i>687</i>&nbsp;		}
+<i>688</i>&nbsp;
+<i>689</i>&nbsp;		void handleMousePressed(MouseEvent e) {
+<b class="nc"><i>690</i>&nbsp;			stainEditing = grabHandle(e.getX(), e.getY());</b>
+<b class="nc"><i>691</i>&nbsp;			if (stainEditing != null)</b>
+<b class="nc"><i>692</i>&nbsp;				logger.debug(&quot;Editing stain vector: &quot; + stainEditing);</b>
+<b class="nc"><i>693</i>&nbsp;			updatePlot();</b>
+<i>694</i>&nbsp;		}
+<i>695</i>&nbsp;
+<i>696</i>&nbsp;		void handleMouseReleased(MouseEvent e) {
+<b class="nc"><i>697</i>&nbsp;			if (stainEditing == null)</b>
+<i>698</i>&nbsp;				return;
+<b class="nc"><i>699</i>&nbsp;			logger.info(&quot;Updated stain vector: {}&quot;, stainEditing);</b>
+<b class="nc"><i>700</i>&nbsp;			stainEditing = null;</b>
+<b class="nc"><i>701</i>&nbsp;			updatePlot();</b>
+<i>702</i>&nbsp;		}
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;		@Override
+<i>705</i>&nbsp;		public void stainChanged(StainsWrapper stainsWrapper) {
+<b class="nc"><i>706</i>&nbsp;			updatePlot();</b>
+<i>707</i>&nbsp;		}
+<i>708</i>&nbsp;		
+<i>709</i>&nbsp;	}
+<i>710</i>&nbsp;	
+<i>711</i>&nbsp;	
+<i>712</i>&nbsp;	
+<i>713</i>&nbsp;	
+<i>714</i>&nbsp;	static class ScatterPlot {
+<i>715</i>&nbsp;		
+<b class="nc"><i>716</i>&nbsp;		private static Color DEFAULT_COLOR_DRAW = ColorToolsFX.getColorWithOpacity(Color.RED, 0.1);</b>
+<i>717</i>&nbsp;//		private static Color DEFAULT_COLOR_FILL = null; //DisplayHelpers.getColorWithOpacity(Color.RED, 0.5);
+<i>718</i>&nbsp;		
+<i>719</i>&nbsp;		private double[] x;
+<i>720</i>&nbsp;		private double[] y;
+<i>721</i>&nbsp;		private double minX, maxX, minY, maxY;
+<i>722</i>&nbsp;		
+<b class="nc"><i>723</i>&nbsp;		private boolean correlationsCalculated = false;</b>
+<b class="nc"><i>724</i>&nbsp;		private double pearsonsCorrelation = Double.NaN;</b>
+<b class="nc"><i>725</i>&nbsp;		private double spearmansCorrelation = Double.NaN;</b>
+<i>726</i>&nbsp;		
+<b class="nc"><i>727</i>&nbsp;		private Color[] colorDraw = null;</b>
+<b class="nc"><i>728</i>&nbsp;		private Color[] colorFill = null;</b>
+<i>729</i>&nbsp;		
+<b class="nc"><i>730</i>&nbsp;		private boolean fillMarkers = false;</b>
+<b class="nc"><i>731</i>&nbsp;		private double markerSize = 3;</b>
+<i>732</i>&nbsp;		
+<i>733</i>&nbsp;		public ScatterPlot(double[] x, double[] y) {
+<b class="nc"><i>734</i>&nbsp;			this(x, y, null, null);</b>
+<i>735</i>&nbsp;		}
+<i>736</i>&nbsp;
+<i>737</i>&nbsp;		public ScatterPlot(float[] x, float[] y) {
+<b class="nc"><i>738</i>&nbsp;			this(x, y, null, null);</b>
+<i>739</i>&nbsp;		}
+<i>740</i>&nbsp;
+<i>741</i>&nbsp;		public ScatterPlot(float[] x, float[] y, int[] colorDraw, int[] colorFill) {
+<b class="nc"><i>742</i>&nbsp;			this(toDouble(x), toDouble(y), colorDraw, colorFill);</b>
+<i>743</i>&nbsp;		}
+<i>744</i>&nbsp;		
+<i>745</i>&nbsp;		
+<i>746</i>&nbsp;		private void compute(double[] x, double[] y) {
+<b class="nc"><i>747</i>&nbsp;			this.x = x;</b>
+<b class="nc"><i>748</i>&nbsp;			this.y = y;</b>
+<i>749</i>&nbsp;			
+<b class="nc"><i>750</i>&nbsp;			minX = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>751</i>&nbsp;			maxX = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>752</i>&nbsp;			for (double v : x) {</b>
+<b class="nc"><i>753</i>&nbsp;				if (v &gt; maxX)</b>
+<b class="nc"><i>754</i>&nbsp;					maxX = v;</b>
+<b class="nc"><i>755</i>&nbsp;				else if (v &lt; minX)</b>
+<b class="nc"><i>756</i>&nbsp;					minX = v;</b>
+<i>757</i>&nbsp;			}
+<i>758</i>&nbsp;			
+<b class="nc"><i>759</i>&nbsp;			minY = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>760</i>&nbsp;			maxY = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>761</i>&nbsp;			for (double v : y) {</b>
+<b class="nc"><i>762</i>&nbsp;				if (v &gt; maxY)</b>
+<b class="nc"><i>763</i>&nbsp;					maxY = v;</b>
+<b class="nc"><i>764</i>&nbsp;				else if (v &lt; minY)</b>
+<b class="nc"><i>765</i>&nbsp;					minY = v;</b>
+<i>766</i>&nbsp;			}
+<i>767</i>&nbsp;		}
+<i>768</i>&nbsp;		
+<i>769</i>&nbsp;		
+<i>770</i>&nbsp;		private void setColors(int[] colorDraw, int[] colorFill) {
+<i>771</i>&nbsp;			// Set the colors
+<b class="nc"><i>772</i>&nbsp;			this.colorDraw = new Color[x.length];		</b>
+<b class="nc"><i>773</i>&nbsp;			if (colorDraw == null || colorDraw.length == 0) {</b>
+<b class="nc"><i>774</i>&nbsp;				if (colorFill == null)</b>
+<b class="nc"><i>775</i>&nbsp;					Arrays.fill(this.colorDraw, DEFAULT_COLOR_DRAW);</b>
+<i>776</i>&nbsp;				else
+<b class="nc"><i>777</i>&nbsp;					Arrays.fill(this.colorDraw, null);</b>
+<i>778</i>&nbsp;			}
+<b class="nc"><i>779</i>&nbsp;			else if (colorDraw.length == 1) {</b>
+<b class="nc"><i>780</i>&nbsp;				Arrays.fill(this.colorDraw, ColorToolsAwt.getCachedColor(colorDraw[0], ColorTools.alpha(colorDraw[0]) != 0));</b>
+<i>781</i>&nbsp;			} else {
+<b class="nc"><i>782</i>&nbsp;				for (int i = 0; i &lt; Math.min(this.colorDraw.length, colorDraw.length); i++) {</b>
+<b class="nc"><i>783</i>&nbsp;					this.colorDraw[i] = ColorToolsFX.getCachedColor(colorDraw[i], ColorTools.alpha(colorFill[i]) != 0);</b>
+<i>784</i>&nbsp;				}
+<i>785</i>&nbsp;			}
+<i>786</i>&nbsp;
+<b class="nc"><i>787</i>&nbsp;			this.colorFill = new Color[x.length];		</b>
+<b class="nc"><i>788</i>&nbsp;			fillMarkers = true;</b>
+<b class="nc"><i>789</i>&nbsp;			if (colorFill == null || colorFill.length == 0) {</b>
+<b class="nc"><i>790</i>&nbsp;				fillMarkers = false;</b>
+<i>791</i>&nbsp;			}
+<b class="nc"><i>792</i>&nbsp;			else if (colorFill.length == 1)</b>
+<b class="nc"><i>793</i>&nbsp;				Arrays.fill(this.colorFill, ColorToolsFX.getCachedColor(colorFill[0], false));</b>
+<i>794</i>&nbsp;//				Arrays.fill(this.colorFill, ColorToolsFX.getCachedColor(colorFill[0], ColorTools.alpha(colorFill[0]) != 0));
+<i>795</i>&nbsp;			else {
+<b class="nc"><i>796</i>&nbsp;				this.colorFill = new Color[x.length];</b>
+<b class="nc"><i>797</i>&nbsp;				for (int i = 0; i &lt; Math.min(this.colorFill.length, colorFill.length); i++) {</b>
+<i>798</i>&nbsp;					// TODO: Check what to do with alpha...?
+<b class="nc"><i>799</i>&nbsp;					this.colorFill[i] = ColorToolsFX.getCachedColor(colorFill[i], false);</b>
+<i>800</i>&nbsp;//					this.colorFill[i] = ColorToolsFX.getCachedColor(colorFill[i], ColorTools.alpha(colorFill[i]) != 0);
+<i>801</i>&nbsp;				}
+<i>802</i>&nbsp;			}
+<i>803</i>&nbsp;		}
+<i>804</i>&nbsp;		
+<i>805</i>&nbsp;		
+<i>806</i>&nbsp;		static double[][] removeNaNs(final double[] x, final double[] y) {
+<b class="nc"><i>807</i>&nbsp;			double[] x2 = new double[x.length];</b>
+<b class="nc"><i>808</i>&nbsp;			double[] y2 = new double[y.length];</b>
+<b class="nc"><i>809</i>&nbsp;			int k = 0;</b>
+<b class="nc"><i>810</i>&nbsp;			for (int i = 0; i &lt; x.length; i++) {</b>
+<b class="nc"><i>811</i>&nbsp;				double xx = x[i];</b>
+<b class="nc"><i>812</i>&nbsp;				double yy = y[i];</b>
+<b class="nc"><i>813</i>&nbsp;				if (Double.isNaN(xx) || Double.isNaN(yy))</b>
+<b class="nc"><i>814</i>&nbsp;					continue;</b>
+<b class="nc"><i>815</i>&nbsp;				x2[k] = xx;</b>
+<b class="nc"><i>816</i>&nbsp;				y2[k] = yy;</b>
+<b class="nc"><i>817</i>&nbsp;				k++;</b>
+<i>818</i>&nbsp;			}
+<b class="nc"><i>819</i>&nbsp;			if (k &lt; x.length) {</b>
+<b class="nc"><i>820</i>&nbsp;				x2 = Arrays.copyOf(x2, k);</b>
+<b class="nc"><i>821</i>&nbsp;				y2 = Arrays.copyOf(y2, k);</b>
+<i>822</i>&nbsp;			}
+<b class="nc"><i>823</i>&nbsp;			return new double[][]{x2, y2};</b>
+<i>824</i>&nbsp;		}
+<i>825</i>&nbsp;		
+<i>826</i>&nbsp;		
+<i>827</i>&nbsp;		private void calculateCorrelations() {
+<b class="nc"><i>828</i>&nbsp;			double[][] denaned = removeNaNs(x, y);</b>
+<b class="nc"><i>829</i>&nbsp;			if (denaned[0].length &gt; 0) {</b>
+<b class="nc"><i>830</i>&nbsp;				pearsonsCorrelation = new PearsonsCorrelation().correlation(denaned[0], denaned[1]);</b>
+<b class="nc"><i>831</i>&nbsp;				spearmansCorrelation = new SpearmansCorrelation().correlation(denaned[0], denaned[1]);</b>
+<i>832</i>&nbsp;			}
+<b class="nc"><i>833</i>&nbsp;			correlationsCalculated = true;</b>
+<i>834</i>&nbsp;		}
+<i>835</i>&nbsp;		
+<i>836</i>&nbsp;		public double getPearsonsCorrelation() {
+<b class="nc"><i>837</i>&nbsp;			if (!correlationsCalculated)</b>
+<b class="nc"><i>838</i>&nbsp;				calculateCorrelations();</b>
+<b class="nc"><i>839</i>&nbsp;			return pearsonsCorrelation;</b>
+<i>840</i>&nbsp;		}
+<i>841</i>&nbsp;
+<i>842</i>&nbsp;		
+<i>843</i>&nbsp;		public double getSpearmansCorrelation() {
+<b class="nc"><i>844</i>&nbsp;			if (!correlationsCalculated)</b>
+<b class="nc"><i>845</i>&nbsp;				calculateCorrelations();</b>
+<b class="nc"><i>846</i>&nbsp;			return spearmansCorrelation;</b>
+<i>847</i>&nbsp;		}
+<i>848</i>&nbsp;
+<i>849</i>&nbsp;		
+<b class="nc"><i>850</i>&nbsp;		public ScatterPlot(double[] x, double[] y, int[] colorDraw, int[] colorFill) {</b>
+<b class="nc"><i>851</i>&nbsp;			compute(x, y);</b>
+<b class="nc"><i>852</i>&nbsp;			setColors(colorDraw, colorFill);</b>
+<i>853</i>&nbsp;		}
+<i>854</i>&nbsp;		
+<i>855</i>&nbsp;		
+<i>856</i>&nbsp;//		public static float[] toFloat(final double[] arr) {
+<i>857</i>&nbsp;//			float[] arr2 = new float[arr.length];
+<i>858</i>&nbsp;//			for (int i = 0; i &lt; arr.length; i++)
+<i>859</i>&nbsp;//				arr2[i] = (float)arr[i];
+<i>860</i>&nbsp;//			return arr2;
+<i>861</i>&nbsp;//		}
+<i>862</i>&nbsp;		
+<i>863</i>&nbsp;		public static double[] toDouble(final float[] arr) {
+<b class="nc"><i>864</i>&nbsp;			double[] arr2 = new double[arr.length];</b>
+<b class="nc"><i>865</i>&nbsp;			for (int i = 0; i &lt; arr.length; i++)</b>
+<b class="nc"><i>866</i>&nbsp;				arr2[i] = arr[i];</b>
+<b class="nc"><i>867</i>&nbsp;			return arr2;</b>
+<i>868</i>&nbsp;		}
+<i>869</i>&nbsp;		
+<i>870</i>&nbsp;		public void setLimitsX(final double minX, final double maxX) {
+<b class="nc"><i>871</i>&nbsp;			this.minX = (float)minX;</b>
+<b class="nc"><i>872</i>&nbsp;			this.maxX = (float)maxX;</b>
+<i>873</i>&nbsp;		}
+<i>874</i>&nbsp;		
+<i>875</i>&nbsp;		public void setLimitsY(final double minY, final double maxY) {
+<b class="nc"><i>876</i>&nbsp;			this.minY = (float)minY;</b>
+<b class="nc"><i>877</i>&nbsp;			this.maxY = (float)maxY;</b>
+<i>878</i>&nbsp;		}
+<i>879</i>&nbsp;		
+<i>880</i>&nbsp;		
+<i>881</i>&nbsp;		public double getMinX() {
+<b class="nc"><i>882</i>&nbsp;			return minX;</b>
+<i>883</i>&nbsp;		}
+<i>884</i>&nbsp;
+<i>885</i>&nbsp;		public double getMinY() {
+<b class="nc"><i>886</i>&nbsp;			return minY;</b>
+<i>887</i>&nbsp;		}
+<i>888</i>&nbsp;		
+<i>889</i>&nbsp;		public double getMaxX() {
+<b class="nc"><i>890</i>&nbsp;			return maxX;</b>
+<i>891</i>&nbsp;		}
+<i>892</i>&nbsp;
+<i>893</i>&nbsp;		public double getMaxY() {
+<b class="nc"><i>894</i>&nbsp;			return maxY;</b>
+<i>895</i>&nbsp;		}
+<i>896</i>&nbsp;		
+<i>897</i>&nbsp;		public double getMarkerSize() {
+<b class="nc"><i>898</i>&nbsp;			return markerSize;</b>
+<i>899</i>&nbsp;		}
+<i>900</i>&nbsp;		
+<i>901</i>&nbsp;		public void setMarkerSize(final double markerSize) {
+<b class="nc"><i>902</i>&nbsp;			this.markerSize = markerSize;</b>
+<i>903</i>&nbsp;		}
+<i>904</i>&nbsp;		
+<i>905</i>&nbsp;		public boolean getFillMarkers() {
+<b class="nc"><i>906</i>&nbsp;			return fillMarkers;</b>
+<i>907</i>&nbsp;		}
+<i>908</i>&nbsp;		
+<i>909</i>&nbsp;		public void setFillMarkers(final boolean doFill) {
+<b class="nc"><i>910</i>&nbsp;			this.fillMarkers = doFill;</b>
+<i>911</i>&nbsp;		}
+<i>912</i>&nbsp;
+<i>913</i>&nbsp;		public void drawPlot(GraphicsContext g, Rectangle2D region) {
+<b class="nc"><i>914</i>&nbsp;			drawPlot(g, region, 10000);</b>
+<i>915</i>&nbsp;		}
+<i>916</i>&nbsp;
+<i>917</i>&nbsp;		
+<i>918</i>&nbsp;		public void drawPlot(GraphicsContext g, Rectangle2D region, int maxPoints) {
+<i>919</i>&nbsp;			
+<b class="nc"><i>920</i>&nbsp;			g.save();</b>
+<i>921</i>&nbsp;			
+<b class="nc"><i>922</i>&nbsp;			g.beginPath();</b>
+<b class="nc"><i>923</i>&nbsp;			g.moveTo(region.getMinX(), region.getMinY());</b>
+<b class="nc"><i>924</i>&nbsp;			g.lineTo(region.getMaxX(), region.getMinY());</b>
+<b class="nc"><i>925</i>&nbsp;			g.lineTo(region.getMaxX(), region.getMaxY());</b>
+<b class="nc"><i>926</i>&nbsp;			g.lineTo(region.getMinX(), region.getMaxY());</b>
+<b class="nc"><i>927</i>&nbsp;			g.closePath();</b>
+<b class="nc"><i>928</i>&nbsp;			g.clip();</b>
+<i>929</i>&nbsp;			
+<i>930</i>&nbsp;//			int pad = 10;
+<b class="nc"><i>931</i>&nbsp;			double scaleX = region.getWidth() / (maxX - minX);</b>
+<b class="nc"><i>932</i>&nbsp;			double scaleY = region.getHeight() / (maxY - minY);</b>
+<i>933</i>&nbsp;
+<b class="nc"><i>934</i>&nbsp;			g.setLineWidth(1.5f);</b>
+<i>935</i>&nbsp;			
+<i>936</i>&nbsp;//			g.setStroke(javafx.scene.paint.Color.GRAY);
+<i>937</i>&nbsp;//			g.strokeRect(region.getX(), region.getY(), region.getWidth(), region.getHeight());
+<i>938</i>&nbsp;			
+<b class="nc"><i>939</i>&nbsp;			g.translate(region.getMinX(), region.getMinY());</b>
+<i>940</i>&nbsp;
+<i>941</i>&nbsp;//			g2d.drawLine(0, 0, 0, region.height);
+<i>942</i>&nbsp;//			g2d.drawLine(0, region.height, region.width, region.height);
+<i>943</i>&nbsp;			
+<i>944</i>&nbsp;			double increment;
+<b class="nc"><i>945</i>&nbsp;			if (maxPoints &lt; 0 || x.length &lt;= maxPoints)</b>
+<b class="nc"><i>946</i>&nbsp;				increment = 1;</b>
+<i>947</i>&nbsp;			else
+<b class="nc"><i>948</i>&nbsp;				increment = (double)x.length / maxPoints;</b>
+<i>949</i>&nbsp;			
+<b class="nc"><i>950</i>&nbsp;			for (double i = 0; i &lt; x.length; i += increment) {</b>
+<b class="nc"><i>951</i>&nbsp;				int ind = (int)i;</b>
+<b class="nc"><i>952</i>&nbsp;				double xx = x[ind];</b>
+<b class="nc"><i>953</i>&nbsp;				double yy = y[ind];</b>
+<i>954</i>&nbsp;//				// Skip if out of range
+<i>955</i>&nbsp;//				if (xx &lt; minX || xx &gt; maxX || yy &lt; minY || yy &gt; maxY)
+<i>956</i>&nbsp;//					continue;
+<i>957</i>&nbsp;				
+<b class="nc"><i>958</i>&nbsp;				double xo = (xx-minX)*scaleX-markerSize/2;</b>
+<b class="nc"><i>959</i>&nbsp;				double yo = region.getHeight() - (yy-minY)*scaleY-markerSize/2;</b>
+<i>960</i>&nbsp;				
+<b class="nc"><i>961</i>&nbsp;				Color cDraw = colorDraw == null ? null : colorDraw[ind];</b>
+<b class="nc"><i>962</i>&nbsp;				if (fillMarkers) {</b>
+<b class="nc"><i>963</i>&nbsp;					Color cFill = colorFill[ind] == null ? cDraw : colorFill[ind];</b>
+<b class="nc"><i>964</i>&nbsp;					if (cFill != null) {</b>
+<b class="nc"><i>965</i>&nbsp;						g.setFill(cFill);</b>
+<b class="nc"><i>966</i>&nbsp;						g.fillOval(xo, yo, markerSize, markerSize);</b>
+<i>967</i>&nbsp;						// Don&#39;t need to draw if it would be the same color anyway
+<b class="nc"><i>968</i>&nbsp;						if (cFill == cDraw)</b>
+<b class="nc"><i>969</i>&nbsp;							continue;</b>
+<i>970</i>&nbsp;					}				
+<i>971</i>&nbsp;				}
+<b class="nc"><i>972</i>&nbsp;				if (cDraw != null) {</b>
+<b class="nc"><i>973</i>&nbsp;					g.setStroke(cDraw);</b>
+<b class="nc"><i>974</i>&nbsp;					g.strokeOval(xo, yo, markerSize, markerSize);</b>
+<i>975</i>&nbsp;				}
+<i>976</i>&nbsp;			}
+<i>977</i>&nbsp;			
+<b class="nc"><i>978</i>&nbsp;			g.restore();</b>
+<i>979</i>&nbsp;		}
+<i>980</i>&nbsp;		
+<i>981</i>&nbsp;		
+<i>982</i>&nbsp;	}
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

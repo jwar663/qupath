@@ -1,0 +1,239 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SplitAnnotationsPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SplitAnnotationsPlugin (qupath.lib.plugins.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SplitAnnotationsPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.HashSet;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Set;
+<i>32</i>&nbsp;import java.util.stream.Collectors;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import qupath.lib.images.ImageData;
+<i>35</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>36</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>37</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>38</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>39</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>40</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>41</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>42</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>43</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;/**
+<i>46</i>&nbsp; * Plugin to create new annotations by expanding the size of existing annotations.
+<i>47</i>&nbsp; * 
+<i>48</i>&nbsp; * @author Pete Bankhead
+<i>49</i>&nbsp; *
+<i>50</i>&nbsp; * @param &lt;T&gt;
+<i>51</i>&nbsp; */
+<b class="nc"><i>52</i>&nbsp;public class SplitAnnotationsPlugin&lt;T&gt; extends AbstractInteractivePlugin&lt;T&gt; {</b>
+<i>53</i>&nbsp;	
+<b class="nc"><i>54</i>&nbsp;	private String resultString = null;</b>
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	@Override
+<i>57</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>58</i>&nbsp;		return Collections.singleton(PathAnnotationObject.class);</b>
+<i>59</i>&nbsp;	}
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;	@Override
+<i>62</i>&nbsp;	public String getName() {
+<b class="nc"><i>63</i>&nbsp;		return &quot;Split annotations&quot;;</b>
+<i>64</i>&nbsp;	}
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;	@Override
+<i>67</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>68</i>&nbsp;		return &quot;Split annotations with multi-part ROIs into separate annotation objects&quot;;</b>
+<i>69</i>&nbsp;	}
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;	@Override
+<i>72</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>73</i>&nbsp;		return resultString;</b>
+<i>74</i>&nbsp;	}
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Returns an empty ParameterList.
+<i>78</i>&nbsp;	 */
+<i>79</i>&nbsp;	@Override
+<i>80</i>&nbsp;	public ParameterList getDefaultParameterList(ImageData&lt;T&gt; imageData) {
+<b class="nc"><i>81</i>&nbsp;		return new ParameterList();</b>
+<i>82</i>&nbsp;	}
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;	@Override
+<i>85</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>86</i>&nbsp;		return getHierarchy(runner).getSelectionModel().getSelectedObjects().stream().filter(p -&gt; p.isAnnotation()).collect(Collectors.toList());</b>
+<i>87</i>&nbsp;	}
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	@Override
+<b class="nc"><i>90</i>&nbsp;	protected void addRunnableTasks(ImageData&lt;T&gt; imageData, PathObject parentObject, List&lt;Runnable&gt; tasks) {}</b>
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	@Override
+<i>93</i>&nbsp;	protected Collection&lt;Runnable&gt; getTasks(final PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>94</i>&nbsp;		Collection&lt;? extends PathObject&gt; parentObjects = getParentObjects(runner);</b>
+<b class="nc"><i>95</i>&nbsp;		if (parentObjects == null || parentObjects.isEmpty())</b>
+<b class="nc"><i>96</i>&nbsp;			return Collections.emptyList();</b>
+<i>97</i>&nbsp;		
+<i>98</i>&nbsp;		// Add a single task, to avoid multithreading - which may complicate setting parents
+<b class="nc"><i>99</i>&nbsp;		List&lt;Runnable&gt; tasks = new ArrayList&lt;&gt;(1);</b>
+<b class="nc"><i>100</i>&nbsp;		PathObjectHierarchy hierarchy = getHierarchy(runner);</b>
+<i>101</i>&nbsp;		
+<i>102</i>&nbsp;		// Want to reset selection
+<b class="nc"><i>103</i>&nbsp;		PathObject selected = hierarchy.getSelectionModel().getSelectedObject();</b>
+<i>104</i>&nbsp;		
+<b class="nc"><i>105</i>&nbsp;		tasks.add(() -&gt; {</b>
+<i>106</i>&nbsp;			
+<i>107</i>&nbsp;			/*
+<i>108</i>&nbsp;			 * Resolving the hierarchy with many objects can be very slow.
+<i>109</i>&nbsp;			 * Here, we take an object, split it and then add it below the original object in the hierarchy.
+<i>110</i>&nbsp;			 * We then just need to remove the originals, allowing the newly-added objects to have their 
+<i>111</i>&nbsp;			 * parents reassigned.
+<i>112</i>&nbsp;			 */
+<i>113</i>&nbsp;			
+<b class="nc"><i>114</i>&nbsp;			List&lt;PathObject&gt; toAdd = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>115</i>&nbsp;			List&lt;PathObject&gt; toRemove = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>116</i>&nbsp;			List&lt;PathObject&gt; localSplit = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>117</i>&nbsp;			Set&lt;PathObject&gt; toSelect = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>118</i>&nbsp;			for (PathObject pathObject : parentObjects) {</b>
+<b class="nc"><i>119</i>&nbsp;				localSplit.clear();</b>
+<b class="nc"><i>120</i>&nbsp;				ROI roiOrig = pathObject.getROI();</b>
+<b class="nc"><i>121</i>&nbsp;				if (roiOrig == null) {</b>
+<b class="nc"><i>122</i>&nbsp;					toSelect.add(pathObject);</b>
+<b class="nc"><i>123</i>&nbsp;					continue;</b>
+<i>124</i>&nbsp;				}
+<b class="nc"><i>125</i>&nbsp;				var splitROIs = RoiTools.splitROI(roiOrig);</b>
+<b class="nc"><i>126</i>&nbsp;				if (splitROIs.size() == 1)</b>
+<b class="nc"><i>127</i>&nbsp;					continue;</b>
+<b class="nc"><i>128</i>&nbsp;				toRemove.add(pathObject);</b>
+<b class="nc"><i>129</i>&nbsp;				for (var r : splitROIs) {</b>
+<b class="nc"><i>130</i>&nbsp;					var annotation = PathObjects.createAnnotationObject(r, pathObject.getPathClass());</b>
+<b class="nc"><i>131</i>&nbsp;					annotation.setLocked(pathObject.isLocked());</b>
+<b class="nc"><i>132</i>&nbsp;					localSplit.add(annotation);</b>
+<b class="nc"><i>133</i>&nbsp;				}</b>
+<b class="nc"><i>134</i>&nbsp;				if (pathObject.hasChildren()) {</b>
+<b class="nc"><i>135</i>&nbsp;					for (var temp : localSplit)</b>
+<b class="nc"><i>136</i>&nbsp;						hierarchy.addPathObjectBelowParent(pathObject, temp, false);</b>
+<i>137</i>&nbsp;				} else 
+<b class="nc"><i>138</i>&nbsp;					pathObject.addPathObjects(localSplit);</b>
+<b class="nc"><i>139</i>&nbsp;				toAdd.addAll(localSplit);</b>
+<b class="nc"><i>140</i>&nbsp;			}</b>
+<b class="nc"><i>141</i>&nbsp;			if (toAdd.isEmpty() &amp;&amp; toRemove.isEmpty())</b>
+<b class="nc"><i>142</i>&nbsp;				return;</b>
+<b class="nc"><i>143</i>&nbsp;			hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>144</i>&nbsp;			toSelect.addAll(toAdd);</b>
+<b class="nc"><i>145</i>&nbsp;			hierarchy.removeObjects(toRemove, true);</b>
+<i>146</i>&nbsp;//			hierarchy.addPathObjects(toAdd, false);
+<i>147</i>&nbsp;			
+<b class="nc"><i>148</i>&nbsp;			hierarchy.getSelectionModel().selectObjects(toSelect);</b>
+<b class="nc"><i>149</i>&nbsp;			if (toSelect.contains(selected))</b>
+<b class="nc"><i>150</i>&nbsp;				hierarchy.getSelectionModel().setSelectedObject(selected, true);</b>
+<b class="nc"><i>151</i>&nbsp;		});</b>
+<b class="nc"><i>152</i>&nbsp;		return tasks;</b>
+<i>153</i>&nbsp;	}
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

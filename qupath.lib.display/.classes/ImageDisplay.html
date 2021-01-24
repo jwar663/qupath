@@ -1,0 +1,1165 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageDisplay</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.display</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageDisplay (qupath.lib.display)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageDisplay</td>
+<td class="coverageStat">
+  <span class="percent">
+    70.6%
+  </span>
+  <span class="absValue">
+    (24/ 34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.6%
+  </span>
+  <span class="absValue">
+    (204/ 326)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageDisplay$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageDisplay$HistogramManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    84.8%
+  </span>
+  <span class="absValue">
+    (67/ 79)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageDisplay$JsonHelperChannelInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    67.4%
+  </span>
+  <span class="absValue">
+    (31/ 46)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64.5%
+  </span>
+  <span class="absValue">
+    (271/ 420)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.display;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Color;
+<i>27</i>&nbsp;import java.awt.Graphics2D;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.io.IOException;
+<i>30</i>&nbsp;import java.lang.reflect.Type;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.HashMap;
+<i>34</i>&nbsp;import java.util.LinkedHashMap;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;import java.util.Map;
+<i>37</i>&nbsp;import java.util.stream.Collectors;
+<i>38</i>&nbsp;import java.util.stream.IntStream;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import org.slf4j.Logger;
+<i>41</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import com.google.gson.Gson;
+<i>44</i>&nbsp;import com.google.gson.GsonBuilder;
+<i>45</i>&nbsp;import com.google.gson.JsonArray;
+<i>46</i>&nbsp;import com.google.gson.JsonObject;
+<i>47</i>&nbsp;import com.google.gson.reflect.TypeToken;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>50</i>&nbsp;import javafx.beans.property.LongProperty;
+<i>51</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>52</i>&nbsp;import javafx.beans.property.SimpleLongProperty;
+<i>53</i>&nbsp;import javafx.collections.FXCollections;
+<i>54</i>&nbsp;import javafx.collections.ObservableList;
+<i>55</i>&nbsp;import qupath.lib.analysis.stats.Histogram;
+<i>56</i>&nbsp;import qupath.lib.color.ColorTransformer;
+<i>57</i>&nbsp;import qupath.lib.color.ColorTransformer.ColorTransformMethod;
+<i>58</i>&nbsp;import qupath.lib.display.ChannelDisplayInfo.ModifiableChannelDisplayInfo;
+<i>59</i>&nbsp;import qupath.lib.gui.images.stores.AbstractImageRenderer;
+<i>60</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>61</i>&nbsp;import qupath.lib.images.ImageData;
+<i>62</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>63</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;/**
+<i>66</i>&nbsp; * Class used to look after the color transforms that may be applied to an image,
+<i>67</i>&nbsp; * including brightness/contrast settings.
+<i>68</i>&nbsp; * &lt;p&gt;
+<i>69</i>&nbsp; * Warning! This implementation is likely to change in a future version.
+<i>70</i>&nbsp; * 
+<i>71</i>&nbsp; * @author Pete Bankhead
+<i>72</i>&nbsp; */
+<i>73</i>&nbsp;public class ImageDisplay extends AbstractImageRenderer {
+<i>74</i>&nbsp;
+<b class="fc"><i>75</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ImageDisplay.class);</b>
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	/**
+<i>78</i>&nbsp;	 * Identifier used when storing/retrieving display settings from ImageData properties.
+<i>79</i>&nbsp;	 */
+<b class="fc"><i>80</i>&nbsp;	private static final String PROPERTY_DISPLAY = ImageDisplay.class.getName();</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;	// Lists to store the different kinds of channels we might need
+<i>83</i>&nbsp;	private RGBDirectChannelInfo rgbDirectChannelInfo;
+<i>84</i>&nbsp;	private RGBNormalizedChannelInfo rgbNormalizedChannelInfo;
+<b class="fc"><i>85</i>&nbsp;	private List&lt;ChannelDisplayInfo&gt; rgbBasicChannels = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>86</i>&nbsp;	private List&lt;ChannelDisplayInfo&gt; rgbBrightfieldChannels = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>87</i>&nbsp;	private List&lt;ChannelDisplayInfo&gt; rgbChromaticityChannels = new ArrayList&lt;&gt;();</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	// Image &amp; color transform-related variables
+<b class="fc"><i>90</i>&nbsp;	private BooleanProperty useGrayscaleLuts = new SimpleBooleanProperty();</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<b class="fc"><i>93</i>&nbsp;	private ObservableList&lt;ChannelDisplayInfo&gt; channelOptions = FXCollections.observableArrayList();</b>
+<i>94</i>&nbsp;
+<b class="fc"><i>95</i>&nbsp;	private ObservableList&lt;ChannelDisplayInfo&gt; selectedChannels = FXCollections.observableArrayList();</b>
+<b class="fc"><i>96</i>&nbsp;	private ChannelDisplayInfo lastSelectedChannel = null;</b>
+<i>97</i>&nbsp;
+<b class="fc"><i>98</i>&nbsp;	private LongProperty changeTimestamp = new SimpleLongProperty(System.currentTimeMillis());</b>
+<i>99</i>&nbsp;	
+<b class="fc"><i>100</i>&nbsp;	transient private static Map&lt;String, HistogramManager&gt; cachedHistograms = Collections.synchronizedMap(new HashMap&lt;&gt;());</b>
+<b class="fc"><i>101</i>&nbsp;	private HistogramManager histogramManager = null;</b>
+<i>102</i>&nbsp;	
+<b class="fc"><i>103</i>&nbsp;	private static BooleanProperty showAllRGBTransforms = PathPrefs.createPersistentPreference(&quot;showAllRGBTransforms&quot;, true);</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Constructor.
+<i>107</i>&nbsp;	 * @param imageData image data that should be displayed
+<i>108</i>&nbsp;	 */
+<b class="fc"><i>109</i>&nbsp;	public ImageDisplay(final ImageData&lt;BufferedImage&gt; imageData) {</b>
+<b class="fc"><i>110</i>&nbsp;		setImageData(imageData, false);</b>
+<b class="fc"><i>111</i>&nbsp;		useGrayscaleLuts.addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>112</i>&nbsp;			if (n &amp;&amp; selectedChannels.size() &gt; 1)</b>
+<b class="nc"><i>113</i>&nbsp;				setChannelSelected(lastSelectedChannel, true);</b>
+<b class="nc"><i>114</i>&nbsp;			saveChannelColorProperties();</b>
+<b class="nc"><i>115</i>&nbsp;		});</b>
+<b class="fc"><i>116</i>&nbsp;	}</b>
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Set the {@link ImageData} to a new value
+<i>121</i>&nbsp;	 * @param imageData image data that should how be displayed
+<i>122</i>&nbsp;	 * @param retainDisplaySettings if true, retain the same display settings as for the previous image if possible 
+<i>123</i>&nbsp;	 *                              (i.e. the images have similar channels)
+<i>124</i>&nbsp;	 */
+<i>125</i>&nbsp;	public void setImageData(ImageData&lt;BufferedImage&gt; imageData, boolean retainDisplaySettings) {
+<b class="fc"><i>126</i>&nbsp;		if (this.imageData == imageData)</b>
+<b class="fc"><i>127</i>&nbsp;			return;</b>
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;		// Retain display settings if requested *and* we have two similar images 
+<i>130</i>&nbsp;		// (i.e. same bit depth, same number and names for channels)
+<b class="fc"><i>131</i>&nbsp;		String lastDisplayJSON = null;</b>
+<b class="fc"><i>132</i>&nbsp;		if (retainDisplaySettings &amp;&amp; this.imageData != null &amp;&amp; imageData != null) {</b>
+<b class="nc"><i>133</i>&nbsp;			ImageServer&lt;?&gt; lastServer = this.imageData.getServer();</b>
+<b class="nc"><i>134</i>&nbsp;			ImageServer&lt;?&gt; nextServer = imageData.getServer();</b>
+<b class="nc"><i>135</i>&nbsp;			retainDisplaySettings = lastServer.nChannels() == nextServer.nChannels() &amp;&amp;</b>
+<b class="nc"><i>136</i>&nbsp;					lastServer.getPixelType() == nextServer.getPixelType();</b>
+<b class="nc"><i>137</i>&nbsp;			if (retainDisplaySettings) {</b>
+<b class="nc"><i>138</i>&nbsp;				for (int c = 0; c &lt; lastServer.nChannels(); c++) {</b>
+<b class="nc"><i>139</i>&nbsp;					if (!lastServer.getChannel(c).getName().equals(nextServer.getChannel(c).getName())) {</b>
+<b class="nc"><i>140</i>&nbsp;						retainDisplaySettings = false;</b>
+<i>141</i>&nbsp;					}
+<i>142</i>&nbsp;				}
+<i>143</i>&nbsp;			}
+<i>144</i>&nbsp;		}
+<b class="fc"><i>145</i>&nbsp;		lastDisplayJSON = retainDisplaySettings ? toJSON() : null;</b>
+<i>146</i>&nbsp;		
+<b class="fc"><i>147</i>&nbsp;		this.imageData = imageData;</b>
+<b class="fc"><i>148</i>&nbsp;		updateChannelOptions(true);</b>
+<b class="fc"><i>149</i>&nbsp;		updateHistogramMap();</b>
+<b class="fc"><i>150</i>&nbsp;		if (imageData != null) {</b>
+<i>151</i>&nbsp;			// Load any existing color properties
+<b class="fc"><i>152</i>&nbsp;			loadChannelColorProperties();</b>
+<i>153</i>&nbsp;			// Update from the last image, if required
+<b class="fc"><i>154</i>&nbsp;			if (lastDisplayJSON != null &amp;&amp; !lastDisplayJSON.isEmpty())</b>
+<b class="nc"><i>155</i>&nbsp;				updateFromJSON(lastDisplayJSON);</b>
+<i>156</i>&nbsp;		}
+<b class="fc"><i>157</i>&nbsp;		changeTimestamp.set(System.currentTimeMillis());</b>
+<b class="fc"><i>158</i>&nbsp;	}</b>
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	/**
+<i>161</i>&nbsp;	 * Get the current image data
+<i>162</i>&nbsp;	 * @return
+<i>163</i>&nbsp;	 */
+<i>164</i>&nbsp;	public ImageData&lt;BufferedImage&gt; getImageData() {
+<b class="fc"><i>165</i>&nbsp;		return imageData;</b>
+<i>166</i>&nbsp;	}
+<i>167</i>&nbsp;	
+<i>168</i>&nbsp;	/**
+<i>169</i>&nbsp;	 * Property that specifies whether grayscale lookup tables should be preferred to color lookup tables
+<i>170</i>&nbsp;	 * @return
+<i>171</i>&nbsp;	 */
+<i>172</i>&nbsp;	public BooleanProperty useGrayscaleLutProperty() {
+<b class="fc"><i>173</i>&nbsp;		return useGrayscaleLuts;</b>
+<i>174</i>&nbsp;	}
+<i>175</i>&nbsp;	
+<i>176</i>&nbsp;	/**
+<i>177</i>&nbsp;	 * Get the value of {@link #useGrayscaleLutProperty()}
+<i>178</i>&nbsp;	 * @return
+<i>179</i>&nbsp;	 */
+<i>180</i>&nbsp;	public boolean useGrayscaleLuts() {
+<b class="fc"><i>181</i>&nbsp;		return useGrayscaleLuts.get();</b>
+<i>182</i>&nbsp;	}
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;	/**
+<i>185</i>&nbsp;	 * Set the value of {@link #useGrayscaleLutProperty()}
+<i>186</i>&nbsp;	 * @param useGrayscaleLuts
+<i>187</i>&nbsp;	 */
+<i>188</i>&nbsp;	public void setUseGrayscaleLuts(boolean useGrayscaleLuts) {
+<b class="nc"><i>189</i>&nbsp;		this.useGrayscaleLuts.set(useGrayscaleLuts);</b>
+<b class="nc"><i>190</i>&nbsp;	}</b>
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;	/**
+<i>193</i>&nbsp;	 * The opposite of {@link #useGrayscaleLuts()}
+<i>194</i>&nbsp;	 * @return
+<i>195</i>&nbsp;	 */
+<i>196</i>&nbsp;	public boolean useColorLUTs() {
+<b class="fc"><i>197</i>&nbsp;		return !useGrayscaleLuts();</b>
+<i>198</i>&nbsp;	}
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;	/**
+<i>202</i>&nbsp;	 * Get a timestamp the last known changes for the object.
+<i>203</i>&nbsp;	 * 
+<i>204</i>&nbsp;	 * This is useful to abort painting if the display changes during a paint run.
+<i>205</i>&nbsp;	 * 
+<i>206</i>&nbsp;	 * @return
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	@Override
+<i>209</i>&nbsp;	public long getLastChangeTimestamp() {
+<b class="fc"><i>210</i>&nbsp;		return changeTimestamp.get();</b>
+<i>211</i>&nbsp;	}
+<i>212</i>&nbsp;	
+<i>213</i>&nbsp;	/**
+<i>214</i>&nbsp;	 * Timestamp for the most recent change.  This can be used to listen for 
+<i>215</i>&nbsp;	 * display changes.
+<i>216</i>&nbsp;	 * 
+<i>217</i>&nbsp;	 * @return
+<i>218</i>&nbsp;	 */
+<i>219</i>&nbsp;	public LongProperty changeTimestampProperty() {
+<b class="nc"><i>220</i>&nbsp;		return changeTimestamp;</b>
+<i>221</i>&nbsp;	}
+<i>222</i>&nbsp;	
+<i>223</i>&nbsp;	
+<i>224</i>&nbsp;	private void createRGBChannels(final ImageData&lt;BufferedImage&gt; imageData) {
+<i>225</i>&nbsp;		
+<b class="fc"><i>226</i>&nbsp;		rgbDirectChannelInfo = null;</b>
+<b class="fc"><i>227</i>&nbsp;		rgbNormalizedChannelInfo = null;</b>
+<i>228</i>&nbsp;
+<b class="fc"><i>229</i>&nbsp;		rgbBasicChannels.clear();</b>
+<b class="fc"><i>230</i>&nbsp;		rgbBrightfieldChannels.clear();</b>
+<b class="fc"><i>231</i>&nbsp;		rgbChromaticityChannels.clear();</b>
+<i>232</i>&nbsp;		
+<b class="fc"><i>233</i>&nbsp;		if (imageData == null)</b>
+<b class="fc"><i>234</i>&nbsp;			return;</b>
+<i>235</i>&nbsp;		
+<b class="nc"><i>236</i>&nbsp;		rgbDirectChannelInfo = new RGBDirectChannelInfo(imageData);</b>
+<b class="nc"><i>237</i>&nbsp;		rgbNormalizedChannelInfo = new RGBNormalizedChannelInfo(imageData);</b>
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;		// Add simple channel separation
+<b class="nc"><i>240</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformMethod.Red, false));</b>
+<b class="nc"><i>241</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformMethod.Green, false));</b>
+<b class="nc"><i>242</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformMethod.Blue, false));</b>
+<i>243</i>&nbsp;//		rgbBasicChannels.add(new ChannelDisplayInfo.MultiChannelInfo(&quot;Red&quot;, 8, 0, 255, 0, 0));
+<i>244</i>&nbsp;//		rgbBasicChannels.add(new ChannelDisplayInfo.MultiChannelInfo(&quot;Green&quot;, 8, 1, 0, 255, 0));
+<i>245</i>&nbsp;//		rgbBasicChannels.add(new ChannelDisplayInfo.MultiChannelInfo(&quot;Blue&quot;, 8, 2, 0, 0, 255));
+<b class="nc"><i>246</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.Hue, false));</b>
+<b class="nc"><i>247</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.Saturation, false));</b>
+<b class="nc"><i>248</i>&nbsp;		rgbBasicChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.RGB_mean, false));</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;		// Add optical density &amp; color deconvolution options for brightfield images
+<b class="nc"><i>251</i>&nbsp;		rgbBrightfieldChannels.add(new RBGColorDeconvolutionInfo(imageData, ColorTransformMethod.Stain_1));</b>
+<b class="nc"><i>252</i>&nbsp;		rgbBrightfieldChannels.add(new RBGColorDeconvolutionInfo(imageData, ColorTransformMethod.Stain_2));</b>
+<b class="nc"><i>253</i>&nbsp;		rgbBrightfieldChannels.add(new RBGColorDeconvolutionInfo(imageData, ColorTransformMethod.Stain_3));</b>
+<b class="nc"><i>254</i>&nbsp;		rgbBrightfieldChannels.add(new RBGColorDeconvolutionInfo(imageData, ColorTransformer.ColorTransformMethod.Optical_density_sum));</b>
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;		rgbChromaticityChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.Red_chromaticity, false));		</b>
+<b class="nc"><i>257</i>&nbsp;		rgbChromaticityChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.Green_chromaticity, false));		</b>
+<b class="nc"><i>258</i>&nbsp;		rgbChromaticityChannels.add(new RBGColorTransformInfo(imageData, ColorTransformer.ColorTransformMethod.Blue_chromaticity, false));		</b>
+<b class="nc"><i>259</i>&nbsp;	}</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;	/**
+<i>262</i>&nbsp;	 * Refresh the channel options. This may be used if an underlying property of the image has changed, such 
+<i>263</i>&nbsp;	 * as the channel names or lookup tables.
+<i>264</i>&nbsp;	 */
+<i>265</i>&nbsp;	public void refreshChannelOptions() {
+<b class="fc"><i>266</i>&nbsp;		updateChannelOptions(false);</b>
+<i>267</i>&nbsp;		
+<b class="fc"><i>268</i>&nbsp;	}</b>
+<i>269</i>&nbsp;
+<i>270</i>&nbsp;	private void updateChannelOptions(boolean serverChanged) {
+<i>271</i>&nbsp;		
+<b class="fc"><i>272</i>&nbsp;		logger.trace(&quot;Updating channel options (serverChanged={})&quot;, serverChanged);</b>
+<i>273</i>&nbsp;		
+<i>274</i>&nbsp;		// If the server has changed, reset the RGB channels that we have cached
+<b class="fc"><i>275</i>&nbsp;		if (serverChanged) {</b>
+<b class="fc"><i>276</i>&nbsp;			createRGBChannels(null);</b>
+<i>277</i>&nbsp;		}
+<i>278</i>&nbsp;
+<b class="fc"><i>279</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = imageData == null ? null : imageData.getServer();</b>
+<b class="fc"><i>280</i>&nbsp;		if (server == null) {</b>
+<b class="fc"><i>281</i>&nbsp;			selectedChannels.clear();</b>
+<b class="fc"><i>282</i>&nbsp;			channelOptions.clear();</b>
+<b class="fc"><i>283</i>&nbsp;			return;</b>
+<i>284</i>&nbsp;		}
+<i>285</i>&nbsp;		
+<b class="fc"><i>286</i>&nbsp;		List&lt;ChannelDisplayInfo&gt; tempChannelOptions = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>287</i>&nbsp;		List&lt;ChannelDisplayInfo&gt; tempSelectedChannels = new ArrayList&lt;&gt;(this.selectedChannels);</b>
+<b class="fc"><i>288</i>&nbsp;		if (server.isRGB()) {</b>
+<b class="nc"><i>289</i>&nbsp;			createRGBChannels(imageData);</b>
+<b class="nc"><i>290</i>&nbsp;			tempChannelOptions.add(rgbDirectChannelInfo);</b>
+<i>291</i>&nbsp;			// Add color deconvolution options if we have a brightfield image
+<b class="nc"><i>292</i>&nbsp;			if (imageData.isBrightfield()) {</b>
+<b class="nc"><i>293</i>&nbsp;				tempChannelOptions.addAll(rgbBrightfieldChannels);</b>
+<i>294</i>&nbsp;			}
+<b class="nc"><i>295</i>&nbsp;			if (showAllRGBTransforms.get()) {</b>
+<b class="nc"><i>296</i>&nbsp;				tempChannelOptions.add(rgbNormalizedChannelInfo);</b>
+<b class="nc"><i>297</i>&nbsp;				tempChannelOptions.addAll(rgbBasicChannels);</b>
+<b class="nc"><i>298</i>&nbsp;				tempChannelOptions.addAll(rgbChromaticityChannels);</b>
+<i>299</i>&nbsp;			}
+<i>300</i>&nbsp;			// Remove any invalid channels
+<b class="nc"><i>301</i>&nbsp;			tempSelectedChannels.retainAll(tempChannelOptions);</b>
+<i>302</i>&nbsp;			// Select the original channel (RGB)
+<b class="nc"><i>303</i>&nbsp;			if (tempSelectedChannels.isEmpty())</b>
+<b class="nc"><i>304</i>&nbsp;				tempSelectedChannels.add(tempChannelOptions.get(0));</b>
+<b class="fc"><i>305</i>&nbsp;		} else if (serverChanged) {</b>
+<b class="fc"><i>306</i>&nbsp;			if (server.nChannels() == 1) {</b>
+<b class="nc"><i>307</i>&nbsp;				tempChannelOptions.add(new DirectServerChannelInfo(imageData, 0));</b>
+<i>308</i>&nbsp;			}
+<i>309</i>&nbsp;			else {
+<b class="fc"><i>310</i>&nbsp;				for (int c = 0; c &lt; server.nChannels(); c++) {</b>
+<b class="fc"><i>311</i>&nbsp;					tempChannelOptions.add(new DirectServerChannelInfo(imageData, c));</b>
+<i>312</i>&nbsp;				}
+<i>313</i>&nbsp;			}
+<i>314</i>&nbsp;		} else {
+<i>315</i>&nbsp;			// Ensure channel colors are set
+<b class="fc"><i>316</i>&nbsp;			boolean colorsUpdated = false;</b>
+<b class="fc"><i>317</i>&nbsp;			for (int c = 0; c &lt; channelOptions.size(); c++) {</b>
+<b class="fc"><i>318</i>&nbsp;				var option = channelOptions.get(c);</b>
+<b class="fc"><i>319</i>&nbsp;				if (option instanceof DirectServerChannelInfo &amp;&amp; c &lt; server.nChannels()) {</b>
+<b class="fc"><i>320</i>&nbsp;					var channel = server.getChannel(c);</b>
+<b class="fc"><i>321</i>&nbsp;					if (option.getColor() != channel.getColor()) {</b>
+<b class="fc"><i>322</i>&nbsp;						((DirectServerChannelInfo)option).setLUTColor(channel.getColor());</b>
+<b class="fc"><i>323</i>&nbsp;						colorsUpdated = true;</b>
+<i>324</i>&nbsp;					}
+<i>325</i>&nbsp;				}
+<i>326</i>&nbsp;			}
+<b class="fc"><i>327</i>&nbsp;			tempChannelOptions.addAll(channelOptions);</b>
+<b class="fc"><i>328</i>&nbsp;			if (colorsUpdated)</b>
+<b class="fc"><i>329</i>&nbsp;				saveChannelColorProperties();</b>
+<i>330</i>&nbsp;		}
+<i>331</i>&nbsp;		
+<i>332</i>&nbsp;		// Select all the channels
+<b class="fc"><i>333</i>&nbsp;		if (serverChanged) {</b>
+<b class="fc"><i>334</i>&nbsp;			tempSelectedChannels.clear();</b>
+<b class="fc"><i>335</i>&nbsp;			if (server.isRGB() || !useColorLUTs())</b>
+<b class="nc"><i>336</i>&nbsp;				tempSelectedChannels.add(tempChannelOptions.get(0));</b>
+<b class="fc"><i>337</i>&nbsp;			else if (useColorLUTs())</b>
+<b class="fc"><i>338</i>&nbsp;				tempSelectedChannels.addAll(tempChannelOptions);</b>
+<b class="fc"><i>339</i>&nbsp;			selectedChannels.clear();</b>
+<i>340</i>&nbsp;		}
+<b class="fc"><i>341</i>&nbsp;		channelOptions.setAll(tempChannelOptions);</b>
+<b class="fc"><i>342</i>&nbsp;		selectedChannels.setAll(tempSelectedChannels);</b>
+<b class="fc"><i>343</i>&nbsp;	}</b>
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;	
+<i>346</i>&nbsp;	/**
+<i>347</i>&nbsp;	 * Load any channel colors stored in the image properties.
+<i>348</i>&nbsp;	 * 
+<i>349</i>&nbsp;	 * @return
+<i>350</i>&nbsp;	 */
+<i>351</i>&nbsp;	private boolean loadChannelColorProperties() {
+<b class="fc"><i>352</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>353</i>&nbsp;			return false;</b>
+<i>354</i>&nbsp;		}
+<i>355</i>&nbsp;		// Parse display from JSON
+<b class="fc"><i>356</i>&nbsp;		Object property = imageData.getProperty(PROPERTY_DISPLAY);</b>
+<b class="fc"><i>357</i>&nbsp;		if (property instanceof String) {</b>
+<i>358</i>&nbsp;			try {
+<b class="nc"><i>359</i>&nbsp;				updateFromJSON((String)property);</b>
+<b class="nc"><i>360</i>&nbsp;				return true;</b>
+<b class="nc"><i>361</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>362</i>&nbsp;				logger.warn(&quot;Unable to parse display settings from {}&quot;, property);</b>
+<i>363</i>&nbsp;			}
+<i>364</i>&nbsp;		}
+<i>365</i>&nbsp;		
+<i>366</i>&nbsp;		// Legacy code for the old color-only-storing property approach
+<b class="fc"><i>367</i>&nbsp;		int n = 0;</b>
+<b class="fc"><i>368</i>&nbsp;		for (ChannelDisplayInfo info : channelOptions) {</b>
+<b class="fc"><i>369</i>&nbsp;			if (info instanceof DirectServerChannelInfo) {</b>
+<b class="fc"><i>370</i>&nbsp;				DirectServerChannelInfo multiInfo = (DirectServerChannelInfo)info;</b>
+<b class="fc"><i>371</i>&nbsp;				Integer colorOld = multiInfo.getColor();</b>
+<b class="fc"><i>372</i>&nbsp;				Object colorNew = imageData.getProperty(&quot;COLOR_CHANNEL:&quot; + info.getName());</b>
+<b class="fc"><i>373</i>&nbsp;				if (colorNew instanceof Integer &amp;&amp; ((Integer) colorNew).equals(colorOld)) {</b>
+<b class="nc"><i>374</i>&nbsp;					multiInfo.setLUTColor((Integer)colorNew);</b>
+<b class="nc"><i>375</i>&nbsp;					n++;</b>
+<i>376</i>&nbsp;				}
+<i>377</i>&nbsp;			}
+<b class="fc"><i>378</i>&nbsp;		}</b>
+<b class="fc"><i>379</i>&nbsp;		if (n == 1)</b>
+<b class="nc"><i>380</i>&nbsp;			logger.info(&quot;Loaded color channel info for one channel&quot;);</b>
+<b class="fc"><i>381</i>&nbsp;		else if (n &gt; 1)</b>
+<b class="nc"><i>382</i>&nbsp;			logger.info(&quot;Loaded color channel info for &quot; + n + &quot; channels&quot;);</b>
+<b class="fc"><i>383</i>&nbsp;		return n &gt; 0;</b>
+<i>384</i>&nbsp;	}
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;	
+<i>387</i>&nbsp;	/**
+<i>388</i>&nbsp;	 * Set the min/max display values for a specified ChannelDisplayInfo.
+<i>389</i>&nbsp;	 * 
+<i>390</i>&nbsp;	 * The benefit of calling this method is that it will update the ImageData metadata if appropriate.
+<i>391</i>&nbsp;	 * 
+<i>392</i>&nbsp;	 * @param info
+<i>393</i>&nbsp;	 * @param minDisplay
+<i>394</i>&nbsp;	 * @param maxDisplay
+<i>395</i>&nbsp;	 */
+<i>396</i>&nbsp;	public void setMinMaxDisplay(final ChannelDisplayInfo info , float minDisplay, float maxDisplay) {
+<b class="nc"><i>397</i>&nbsp;		setMinMaxDisplay(info, minDisplay, maxDisplay, true);</b>
+<b class="nc"><i>398</i>&nbsp;	}</b>
+<i>399</i>&nbsp;	
+<i>400</i>&nbsp;	void setMinMaxDisplay(final ChannelDisplayInfo info , float minDisplay, float maxDisplay, boolean fireUpdate) {
+<b class="fc"><i>401</i>&nbsp;		if (info instanceof ModifiableChannelDisplayInfo) {</b>
+<b class="fc"><i>402</i>&nbsp;			((ModifiableChannelDisplayInfo)info).setMinDisplay(minDisplay);</b>
+<b class="fc"><i>403</i>&nbsp;			((ModifiableChannelDisplayInfo)info).setMaxDisplay(maxDisplay);			</b>
+<i>404</i>&nbsp;		}
+<b class="fc"><i>405</i>&nbsp;		if (fireUpdate &amp;&amp; channelOptions.contains(info))</b>
+<b class="nc"><i>406</i>&nbsp;			saveChannelColorProperties();		</b>
+<b class="fc"><i>407</i>&nbsp;	}</b>
+<i>408</i>&nbsp;	
+<i>409</i>&nbsp;	
+<i>410</i>&nbsp;	/**
+<i>411</i>&nbsp;	 * Save color channels in the ImageData properties.  This lets them be deserialized later.
+<i>412</i>&nbsp;	 */
+<i>413</i>&nbsp;	public void saveChannelColorProperties() {
+<b class="fc"><i>414</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>415</i>&nbsp;			logger.warn(&quot;Cannot save color channel properties - no ImageData available&quot;);</b>
+<b class="nc"><i>416</i>&nbsp;			return;</b>
+<i>417</i>&nbsp;		}
+<i>418</i>&nbsp;		// Store the current display settings in the ImageData
+<b class="fc"><i>419</i>&nbsp;		imageData.setProperty(PROPERTY_DISPLAY, toJSON(false));</b>
+<b class="fc"><i>420</i>&nbsp;		changeTimestamp.set(System.currentTimeMillis());</b>
+<b class="fc"><i>421</i>&nbsp;	}</b>
+<i>422</i>&nbsp;	
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;//	public List&lt;ChannelDisplayInfo&gt; getAvailableChannels() {
+<i>425</i>&nbsp;//		return Collections.unmodifiableList(channelOptions);
+<i>426</i>&nbsp;//	}
+<i>427</i>&nbsp;
+<b class="fc"><i>428</i>&nbsp;	private ObservableList&lt;ChannelDisplayInfo&gt; selectedChannelsReadOnly = FXCollections.unmodifiableObservableList(selectedChannels);	</b>
+<i>429</i>&nbsp;	
+<i>430</i>&nbsp;	/**
+<i>431</i>&nbsp;	 * {@link ObservableList} containing the channels currently selected for display.
+<i>432</i>&nbsp;	 * @return
+<i>433</i>&nbsp;	 * @see #availableChannels()
+<i>434</i>&nbsp;	 */
+<i>435</i>&nbsp;	public ObservableList&lt;ChannelDisplayInfo&gt; selectedChannels() {
+<b class="nc"><i>436</i>&nbsp;		return selectedChannelsReadOnly;</b>
+<i>437</i>&nbsp;	}
+<i>438</i>&nbsp;	
+<b class="fc"><i>439</i>&nbsp;	private ObservableList&lt;ChannelDisplayInfo&gt; availableChannels = FXCollections.unmodifiableObservableList(channelOptions);</b>
+<i>440</i>&nbsp;	
+<i>441</i>&nbsp;	/**
+<i>442</i>&nbsp;	 * {@link ObservableList} containing the channels currently available for display.
+<i>443</i>&nbsp;	 * @return
+<i>444</i>&nbsp;	 * @see #selectedChannels()
+<i>445</i>&nbsp;	 */
+<i>446</i>&nbsp;	public ObservableList&lt;ChannelDisplayInfo&gt; availableChannels() {
+<b class="nc"><i>447</i>&nbsp;		return availableChannels;</b>
+<i>448</i>&nbsp;	}
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;	/**
+<i>452</i>&nbsp;	 * Set the selection of a channel on or off.
+<i>453</i>&nbsp;	 * 
+<i>454</i>&nbsp;	 * If a channel&#39;s isAdditive() method returns false, all other selected channels will be cleared.
+<i>455</i>&nbsp;	 * Otherwise, other selected channels will be cleared if they are non-additive - but kept if they are additive
+<i>456</i>&nbsp;	 * (and therefore can be sensibly displayed in combination with this channel).
+<i>457</i>&nbsp;	 * 
+<i>458</i>&nbsp;	 * @param channel
+<i>459</i>&nbsp;	 * @param selected true if the channel should be selected, false if it should not
+<i>460</i>&nbsp;	 */
+<i>461</i>&nbsp;	public void setChannelSelected(ChannelDisplayInfo channel, boolean selected) {
+<i>462</i>&nbsp;		// Try to minimize the number of events fired
+<b class="nc"><i>463</i>&nbsp;		List&lt;ChannelDisplayInfo&gt; tempSelectedChannels = new ArrayList&lt;&gt;(selectedChannels);</b>
+<b class="nc"><i>464</i>&nbsp;		if (selected) {</b>
+<i>465</i>&nbsp;			// If the channel is already selected, or wouldn&#39;t be valid anyway, we&#39;ve got nothing to do
+<i>466</i>&nbsp;			//			if (selectedChannels.contains(channel) || !getAvailableChannels().contains(channel))
+<i>467</i>&nbsp;			//				return getSelectedChannels();
+<i>468</i>&nbsp;			// If this channel can&#39;t be combined with existing channels, clear the existing ones
+<b class="nc"><i>469</i>&nbsp;			if (!useColorLUTs() || !channel.isAdditive() || (!tempSelectedChannels.isEmpty()) &amp;&amp; !tempSelectedChannels.get(0).isAdditive())</b>
+<b class="nc"><i>470</i>&nbsp;				tempSelectedChannels.clear();</b>
+<b class="nc"><i>471</i>&nbsp;			if (!tempSelectedChannels.contains(channel))</b>
+<b class="nc"><i>472</i>&nbsp;				tempSelectedChannels.add(channel);</b>
+<b class="nc"><i>473</i>&nbsp;			lastSelectedChannel = channel;</b>
+<i>474</i>&nbsp;		} else {
+<b class="nc"><i>475</i>&nbsp;			tempSelectedChannels.remove(channel);</b>
+<b class="nc"><i>476</i>&nbsp;			lastSelectedChannel = null;</b>
+<i>477</i>&nbsp;		}
+<i>478</i>&nbsp;		// For a brightfield image, revert to the original if all channels are turned off
+<b class="nc"><i>479</i>&nbsp;		if (tempSelectedChannels.isEmpty() &amp;&amp; imageData.isBrightfield()) {</b>
+<b class="nc"><i>480</i>&nbsp;			channel = channelOptions.get(0);</b>
+<b class="nc"><i>481</i>&nbsp;			tempSelectedChannels.add(channel);</b>
+<b class="nc"><i>482</i>&nbsp;			lastSelectedChannel = channel;</b>
+<i>483</i>&nbsp;		}
+<b class="nc"><i>484</i>&nbsp;		if (lastSelectedChannel == null &amp;&amp; !tempSelectedChannels.isEmpty())</b>
+<b class="nc"><i>485</i>&nbsp;			lastSelectedChannel = tempSelectedChannels.get(0);</b>
+<i>486</i>&nbsp;		
+<b class="nc"><i>487</i>&nbsp;		selectedChannels.setAll(tempSelectedChannels);</b>
+<b class="nc"><i>488</i>&nbsp;		saveChannelColorProperties();</b>
+<b class="nc"><i>489</i>&nbsp;	}</b>
+<i>490</i>&nbsp;
+<i>491</i>&nbsp;
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;
+<i>494</i>&nbsp;	/**
+<i>495</i>&nbsp;	 * Apply the required transforms to a BufferedImage to get the appropriate display.
+<i>496</i>&nbsp;	 * imgOutput should always be an RGB image (of some kind), or null if a new image should be created.
+<i>497</i>&nbsp;	 * 
+<i>498</i>&nbsp;	 * imgInput should always be an image of the kind that matches the imgData, e.g. RGB/non-RGB, same number of channels,
+<i>499</i>&nbsp;	 * same bit-depth.
+<i>500</i>&nbsp;	 * 
+<i>501</i>&nbsp;	 * Warning: This is not thread-safe.
+<i>502</i>&nbsp;	 * Warning #2: imgOutput should be TYPE_INT_RGB
+<i>503</i>&nbsp;	 * 
+<i>504</i>&nbsp;	 * @param imgInput
+<i>505</i>&nbsp;	 * @param imgOutput
+<i>506</i>&nbsp;	 * @return
+<i>507</i>&nbsp;	 */
+<i>508</i>&nbsp;	@Override
+<i>509</i>&nbsp;	public BufferedImage applyTransforms(BufferedImage imgInput, BufferedImage imgOutput) {
+<i>510</i>&nbsp;//		long startTime = System.currentTimeMillis();
+<b class="fc"><i>511</i>&nbsp;		BufferedImage imgResult = applyTransforms(imgInput, imgOutput, selectedChannels, useGrayscaleLuts());</b>
+<i>512</i>&nbsp;//		long endTime = System.currentTimeMillis();
+<i>513</i>&nbsp;//		System.err.println(&quot;Transform time: &quot; + (endTime - startTime));
+<b class="fc"><i>514</i>&nbsp;		return imgResult;</b>
+<i>515</i>&nbsp;	}
+<i>516</i>&nbsp;	
+<i>517</i>&nbsp;	/**
+<i>518</i>&nbsp;	 * Convert an image too RGB by applying the specified {@linkplain ChannelDisplayInfo ChannelDisplayInfos}.
+<i>519</i>&nbsp;	 * 
+<i>520</i>&nbsp;	 * @param imgInput the input image to transform
+<i>521</i>&nbsp;	 * @param imgOutput optional output image (must be the same size as the input image, and RGB)
+<i>522</i>&nbsp;	 * @param selectedChannels the channels to use
+<i>523</i>&nbsp;	 * @param useGrayscaleLuts if true, prefer grayscale lookup tables rather than color
+<i>524</i>&nbsp;	 * @return an RGB image determined by transforming the input image using the specified channels
+<i>525</i>&nbsp;	 */
+<i>526</i>&nbsp;	public static BufferedImage applyTransforms(BufferedImage imgInput, BufferedImage imgOutput, List&lt;? extends ChannelDisplayInfo&gt; selectedChannels, boolean useGrayscaleLuts) {
+<b class="fc"><i>527</i>&nbsp;		int width = imgInput.getWidth();</b>
+<b class="fc"><i>528</i>&nbsp;		int height = imgInput.getHeight();</b>
+<i>529</i>&nbsp;
+<b class="fc"><i>530</i>&nbsp;		if (imgOutput == null || imgOutput.getWidth() != width || imgOutput.getHeight() != height) {</b>
+<i>531</i>&nbsp;			//			imgOutput = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(width, height);
+<b class="fc"><i>532</i>&nbsp;			imgOutput = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);</b>
+<i>533</i>&nbsp;		}
+<i>534</i>&nbsp;
+<i>535</i>&nbsp;		// If we don&#39;t have anything, just give a black image
+<b class="fc"><i>536</i>&nbsp;		if (selectedChannels.isEmpty()) {</b>
+<b class="nc"><i>537</i>&nbsp;			Graphics2D g2d = imgOutput.createGraphics();</b>
+<b class="nc"><i>538</i>&nbsp;			g2d.setColor(Color.BLACK);</b>
+<b class="nc"><i>539</i>&nbsp;			g2d.fillRect(0, 0, width, height);</b>
+<b class="nc"><i>540</i>&nbsp;			g2d.dispose();</b>
+<b class="nc"><i>541</i>&nbsp;			return imgOutput;</b>
+<i>542</i>&nbsp;		}
+<i>543</i>&nbsp;
+<i>544</i>&nbsp;		// Check if we have any changes to make - if not, just copy the image
+<i>545</i>&nbsp;		// Sometimes the first entry of selectedChannels was null... not sure why... this test is therefore to paper over the cracks...
+<b class="fc"><i>546</i>&nbsp;		if (selectedChannels.size() == 1 &amp;&amp; (selectedChannels.get(0) == null || !selectedChannels.get(0).doesSomething())) {</b>
+<b class="nc"><i>547</i>&nbsp;			if (imgInput == imgOutput) {</b>
+<b class="nc"><i>548</i>&nbsp;				return imgOutput;</b>
+<i>549</i>&nbsp;			}
+<b class="nc"><i>550</i>&nbsp;			Graphics2D g2d = imgOutput.createGraphics();</b>
+<b class="nc"><i>551</i>&nbsp;			g2d.drawImage(imgInput, 0, 0, null);</b>
+<b class="nc"><i>552</i>&nbsp;			g2d.dispose();</b>
+<b class="nc"><i>553</i>&nbsp;			return imgOutput;</b>
+<i>554</i>&nbsp;		}
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;		// Loop through the channels &amp; build up an image as needed
+<b class="fc"><i>557</i>&nbsp;		boolean firstChannel = true;</b>
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;		// TODO: DEAL WITH BGR POSSIBILITY...?  Currently forces RGB - may need to benchmark on Linux in case this is a performance issue
+<i>560</i>&nbsp;		// The line below worked well for Java 7 &amp; 8 on a Mac, but terribly (killing acceleration) for Java 6
+<i>561</i>&nbsp;		//		int[] pixels = ((DataBufferInt)imgOutput.getRaster().getDataBuffer()).getData();
+<i>562</i>&nbsp;		
+<i>563</i>&nbsp;		// I don&#39;t know exactly why, but I can&#39;t set this to null if there are multiple channels displayed additively...
+<b class="fc"><i>564</i>&nbsp;		int[] pixels = selectedChannels.size() &lt;= 1 ? null : new int[imgInput.getWidth() * imgInput.getHeight()];</b>
+<i>565</i>&nbsp;
+<i>566</i>&nbsp;		try {
+<b class="fc"><i>567</i>&nbsp;			for (ChannelDisplayInfo info : selectedChannels.toArray(ChannelDisplayInfo[]::new)) {</b>
+<b class="fc"><i>568</i>&nbsp;				if (firstChannel) {</b>
+<b class="fc"><i>569</i>&nbsp;					pixels = info.getRGB(imgInput, pixels, !useGrayscaleLuts);</b>
+<b class="fc"><i>570</i>&nbsp;					firstChannel = false;</b>
+<i>571</i>&nbsp;				} else
+<b class="fc"><i>572</i>&nbsp;					info.updateRGBAdditive(imgInput, pixels, !useGrayscaleLuts);</b>
+<i>573</i>&nbsp;			}
+<b class="nc"><i>574</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>575</i>&nbsp;			logger.error(&quot;Error extracting pixels for display&quot;, e);</b>
+<b class="fc"><i>576</i>&nbsp;		}</b>
+<i>577</i>&nbsp;
+<b class="fc"><i>578</i>&nbsp;		imgOutput.getRaster().setDataElements(0, 0, imgOutput.getWidth(), imgOutput.getHeight(), pixels);</b>
+<i>579</i>&nbsp;		
+<i>580</i>&nbsp;//		imgOutput.setRGB(0, 0, imgOutput.getWidth(), imgOutput.getHeight(), pixels, 0, imgOutput.getWidth());
+<i>581</i>&nbsp;
+<i>582</i>&nbsp;
+<i>583</i>&nbsp;		//		imgOutput.setRGB(0, 0, width, height, pixels, 0, width);
+<i>584</i>&nbsp;		//		long endTime = System.currentTimeMillis();
+<i>585</i>&nbsp;		//		System.out.println(&quot;Time taken: &quot; + (endTime - startTime)/1000.);
+<b class="fc"><i>586</i>&nbsp;		return imgOutput;</b>
+<i>587</i>&nbsp;	}
+<i>588</i>&nbsp;
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;	/**
+<i>591</i>&nbsp;	 * Get a string representation of a transformed pixel value, using the currently-selected channels.
+<i>592</i>&nbsp;	 * @param img image providing the value
+<i>593</i>&nbsp;	 * @param x x-coordinate of the pixel
+<i>594</i>&nbsp;	 * @param y y-coordinate of the pixels
+<i>595</i>&nbsp;	 * @return a String representation of the pixel&#39;s transformed value
+<i>596</i>&nbsp;	 */
+<i>597</i>&nbsp;	public String getTransformedValueAsString(BufferedImage img, int x, int y) {
+<b class="fc"><i>598</i>&nbsp;		if (selectedChannels == null || selectedChannels.isEmpty() || selectedChannels.get(0) == null)</b>
+<b class="nc"><i>599</i>&nbsp;			return &quot;&quot;;</b>
+<b class="fc"><i>600</i>&nbsp;		if (selectedChannels.size() == 1)</b>
+<b class="nc"><i>601</i>&nbsp;			return selectedChannels.get(0).getValueAsString(img, x, y);</b>
+<i>602</i>&nbsp;		
+<b class="fc"><i>603</i>&nbsp;		String s = null;</b>
+<b class="fc"><i>604</i>&nbsp;		for (ChannelDisplayInfo channel : channelOptions) {</b>
+<b class="fc"><i>605</i>&nbsp;			if (selectedChannels.contains(channel) ) {</b>
+<b class="fc"><i>606</i>&nbsp;				if (s == null)</b>
+<b class="fc"><i>607</i>&nbsp;					s = channel.getValueAsString(img, x, y);</b>
+<i>608</i>&nbsp;				else
+<b class="fc"><i>609</i>&nbsp;					s += (&quot;, &quot; + channel.getValueAsString(img, x, y));</b>
+<i>610</i>&nbsp;			}
+<b class="fc"><i>611</i>&nbsp;		}</b>
+<i>612</i>&nbsp;//		String s = selectedChannels.get(0).getValueAsString(img, x, y);
+<i>613</i>&nbsp;//		for (int i = 1; i &lt; selectedChannels.size(); i++) {
+<i>614</i>&nbsp;//			s += (&quot;, &quot; + selectedChannels.get(i).getValueAsString(img, x, y));
+<i>615</i>&nbsp;//		}
+<b class="fc"><i>616</i>&nbsp;		return s;</b>
+<i>617</i>&nbsp;	}
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;
+<i>622</i>&nbsp;
+<i>623</i>&nbsp;	private void updateHistogramMap() {
+<b class="fc"><i>624</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = imageData == null ? null : imageData.getServer();</b>
+<b class="fc"><i>625</i>&nbsp;		if (server == null) {</b>
+<b class="fc"><i>626</i>&nbsp;			histogramManager = null;</b>
+<b class="fc"><i>627</i>&nbsp;			return;</b>
+<i>628</i>&nbsp;		}
+<i>629</i>&nbsp;		
+<b class="fc"><i>630</i>&nbsp;		histogramManager = cachedHistograms.get(server.getPath());</b>
+<b class="fc"><i>631</i>&nbsp;		if (histogramManager == null) {</b>
+<b class="fc"><i>632</i>&nbsp;			histogramManager = new HistogramManager(0L);</b>
+<i>633</i>&nbsp;//			histogramManager = new HistogramManager(server.getLastChangeTimestamp());
+<b class="fc"><i>634</i>&nbsp;			histogramManager.ensureChannels(server, channelOptions);</b>
+<b class="fc"><i>635</i>&nbsp;			if (server.getPixelType() == PixelType.UINT8) {</b>
+<b class="nc"><i>636</i>&nbsp;				channelOptions.parallelStream().filter(c -&gt; !(c instanceof DirectServerChannelInfo)).forEach(channel -&gt; autoSetDisplayRange(channel, false));								</b>
+<i>637</i>&nbsp;			} else {
+<b class="fc"><i>638</i>&nbsp;				channelOptions.parallelStream().forEach(channel -&gt; autoSetDisplayRange(channel, false));				</b>
+<i>639</i>&nbsp;			}
+<b class="fc"><i>640</i>&nbsp;			cachedHistograms.put(server.getPath(), histogramManager);</b>
+<i>641</i>&nbsp;		} else {
+<b class="nc"><i>642</i>&nbsp;			channelOptions.parallelStream().forEach(channel -&gt; autoSetDisplayRange(channel, false));</b>
+<i>643</i>&nbsp;		}
+<b class="fc"><i>644</i>&nbsp;	}</b>
+<i>645</i>&nbsp;
+<i>646</i>&nbsp;
+<i>647</i>&nbsp;
+<i>648</i>&nbsp;	private void autoSetDisplayRange(ChannelDisplayInfo info, Histogram histogram, double saturation, boolean fireUpdate) {
+<b class="fc"><i>649</i>&nbsp;		if (histogram == null) {</b>
+<i>650</i>&nbsp;			// TODO: Look at other times whenever no histogram will be provided
+<b class="nc"><i>651</i>&nbsp;			if (!(info instanceof RGBDirectChannelInfo))</b>
+<b class="nc"><i>652</i>&nbsp;				logger.warn(&quot;Cannot set display range for {} - no histogram found&quot;, info);</b>
+<i>653</i>&nbsp;			//			System.out.println(&quot;Cannot set display range for &quot; + info + &quot; - no histogram found&quot;);
+<b class="nc"><i>654</i>&nbsp;			return;</b>
+<i>655</i>&nbsp;		}
+<i>656</i>&nbsp;		// For unsupported saturation values, just set to the min/max
+<b class="fc"><i>657</i>&nbsp;		if (saturation &lt;= 0 || saturation &gt;= 1) {</b>
+<b class="nc"><i>658</i>&nbsp;			setMinMaxDisplay(info, (float)histogram.getEdgeMin(), (float)histogram.getEdgeMax());</b>
+<b class="nc"><i>659</i>&nbsp;			return;</b>
+<i>660</i>&nbsp;		}
+<i>661</i>&nbsp;
+<b class="fc"><i>662</i>&nbsp;		long countSum = histogram.getCountSum();</b>
+<b class="fc"><i>663</i>&nbsp;		int nBins = histogram.nBins();</b>
+<b class="fc"><i>664</i>&nbsp;		int ind = 0;</b>
+<i>665</i>&nbsp;		// Possibly skip the first and/or last bins; these can often represent unscanned/clipped regions
+<b class="fc"><i>666</i>&nbsp;		if (nBins &gt; 2) {</b>
+<b class="fc"><i>667</i>&nbsp;			long firstCount = histogram.getCountsForBin(0);</b>
+<b class="fc"><i>668</i>&nbsp;			if (firstCount &gt; histogram.getCountsForBin(1)) {</b>
+<b class="fc"><i>669</i>&nbsp;				countSum -= histogram.getCountsForBin(0);</b>
+<b class="fc"><i>670</i>&nbsp;				ind = 1;</b>
+<i>671</i>&nbsp;			}
+<b class="fc"><i>672</i>&nbsp;			long lastCount = histogram.getCountsForBin(nBins-1);</b>
+<b class="fc"><i>673</i>&nbsp;			if (lastCount &gt; histogram.getCountsForBin(nBins-2)) {</b>
+<b class="fc"><i>674</i>&nbsp;				countSum -= lastCount;</b>
+<b class="fc"><i>675</i>&nbsp;				nBins -= 1;</b>
+<i>676</i>&nbsp;			}
+<i>677</i>&nbsp;		}
+<i>678</i>&nbsp;		
+<b class="fc"><i>679</i>&nbsp;		double countMax = countSum * saturation;</b>
+<b class="fc"><i>680</i>&nbsp;		double count = countMax;</b>
+<b class="fc"><i>681</i>&nbsp;		double minDisplay = histogram.getEdgeMin();</b>
+<b class="fc"><i>682</i>&nbsp;		while (ind &lt; histogram.nBins()) {</b>
+<b class="fc"><i>683</i>&nbsp;			double nextCount = histogram.getCountsForBin(ind);</b>
+<b class="fc"><i>684</i>&nbsp;			if (count &lt; nextCount) {</b>
+<b class="fc"><i>685</i>&nbsp;				minDisplay = histogram.getBinLeftEdge(ind) + (count / nextCount) * histogram.getBinWidth(ind);</b>
+<b class="fc"><i>686</i>&nbsp;				break;</b>
+<i>687</i>&nbsp;			}
+<b class="fc"><i>688</i>&nbsp;			count -= nextCount;</b>
+<b class="fc"><i>689</i>&nbsp;			ind++;</b>
+<b class="fc"><i>690</i>&nbsp;		}</b>
+<i>691</i>&nbsp;
+<b class="fc"><i>692</i>&nbsp;		count = countMax;</b>
+<b class="fc"><i>693</i>&nbsp;		double maxDisplay = histogram.getEdgeMax();</b>
+<b class="fc"><i>694</i>&nbsp;		ind = histogram.nBins()-1;</b>
+<b class="fc"><i>695</i>&nbsp;		while (ind &gt;= 0) {</b>
+<b class="fc"><i>696</i>&nbsp;			double nextCount = histogram.getCountsForBin(ind);</b>
+<b class="fc"><i>697</i>&nbsp;			if (count &lt; nextCount) {</b>
+<b class="fc"><i>698</i>&nbsp;				maxDisplay = histogram.getBinRightEdge(ind) - (count / nextCount) * histogram.getBinWidth(ind);</b>
+<b class="fc"><i>699</i>&nbsp;				break;</b>
+<i>700</i>&nbsp;			}
+<b class="fc"><i>701</i>&nbsp;			count -= nextCount;</b>
+<b class="fc"><i>702</i>&nbsp;			ind--;</b>
+<b class="fc"><i>703</i>&nbsp;		}</b>
+<b class="fc"><i>704</i>&nbsp;		logger.debug(String.format(&quot;Display range for {}: %.3f - %.3f (saturation %.3f)&quot;,  minDisplay, maxDisplay, saturation), info.getName());</b>
+<b class="fc"><i>705</i>&nbsp;		setMinMaxDisplay(info, (float)minDisplay, (float)maxDisplay, fireUpdate);</b>
+<i>706</i>&nbsp;		
+<i>707</i>&nbsp;//		double countMax = histogram.getCountSum() * saturation;
+<i>708</i>&nbsp;//		double count = countMax;
+<i>709</i>&nbsp;//		int ind = 0;
+<i>710</i>&nbsp;//		double minDisplay = histogram.getEdgeMin();
+<i>711</i>&nbsp;//		while (ind &lt; histogram.nBins()) {
+<i>712</i>&nbsp;//			double nextCount = histogram.getCountsForBin(ind);
+<i>713</i>&nbsp;//			if (count &lt; nextCount) {
+<i>714</i>&nbsp;//				minDisplay = histogram.getBinLeftEdge(ind) + (count / nextCount) * histogram.getBinWidth(ind);
+<i>715</i>&nbsp;//				break;
+<i>716</i>&nbsp;//			}
+<i>717</i>&nbsp;//			count -= nextCount;
+<i>718</i>&nbsp;//			ind++;
+<i>719</i>&nbsp;//		}
+<i>720</i>&nbsp;//
+<i>721</i>&nbsp;//		count = countMax;
+<i>722</i>&nbsp;//		double maxDisplay = histogram.getEdgeMax();
+<i>723</i>&nbsp;//		ind = histogram.nBins()-1;
+<i>724</i>&nbsp;//		while (ind &gt;= 0) {
+<i>725</i>&nbsp;//			double nextCount = histogram.getCountsForBin(ind);
+<i>726</i>&nbsp;//			if (count &lt; nextCount) {
+<i>727</i>&nbsp;//				maxDisplay = histogram.getBinRightEdge(ind) - (count / nextCount) * histogram.getBinWidth(ind);
+<i>728</i>&nbsp;//				break;
+<i>729</i>&nbsp;//			}
+<i>730</i>&nbsp;//			count -= nextCount;
+<i>731</i>&nbsp;//			ind--;
+<i>732</i>&nbsp;//		}
+<i>733</i>&nbsp;//		logger.debug(String.format(&quot;Display range for {}: %.3f - %.3f (saturation %.3f)&quot;,  minDisplay, maxDisplay, saturation), info.getName());
+<i>734</i>&nbsp;//		setMinMaxDisplay(info, (float)minDisplay, (float)maxDisplay, fireUpdate);
+<b class="fc"><i>735</i>&nbsp;	}</b>
+<i>736</i>&nbsp;
+<i>737</i>&nbsp;	void autoSetDisplayRange(ChannelDisplayInfo info, boolean fireUpdate) {
+<b class="fc"><i>738</i>&nbsp;		autoSetDisplayRange(info, getHistogram(info), PathPrefs.autoBrightnessContrastSaturationPercentProperty().get()/100.0, fireUpdate);</b>
+<b class="fc"><i>739</i>&nbsp;	}</b>
+<i>740</i>&nbsp;
+<i>741</i>&nbsp;	/**
+<i>742</i>&nbsp;	 * Automatically set the display range for a channel, using the default saturation defined in {@link PathPrefs#autoBrightnessContrastSaturationPercentProperty()}.
+<i>743</i>&nbsp;	 * @param info channel to update
+<i>744</i>&nbsp;	 */
+<i>745</i>&nbsp;	public void autoSetDisplayRange(ChannelDisplayInfo info) {
+<b class="nc"><i>746</i>&nbsp;		autoSetDisplayRange(info, getHistogram(info), PathPrefs.autoBrightnessContrastSaturationPercentProperty().get()/100.0, true);</b>
+<b class="nc"><i>747</i>&nbsp;	}</b>
+<i>748</i>&nbsp;	
+<i>749</i>&nbsp;	/**
+<i>750</i>&nbsp;	 * Automatically set the display range for a channel.
+<i>751</i>&nbsp;	 * @param info channel to update
+<i>752</i>&nbsp;	 * @param saturation proportion of pixels that may be saturated, i.e. have the max/min display values (between 0.0 and 1.0)
+<i>753</i>&nbsp;	 */
+<i>754</i>&nbsp;	public void autoSetDisplayRange(ChannelDisplayInfo info, double saturation) {
+<b class="nc"><i>755</i>&nbsp;		autoSetDisplayRange(info, getHistogram(info), saturation, true);</b>
+<b class="nc"><i>756</i>&nbsp;	}</b>
+<i>757</i>&nbsp;
+<i>758</i>&nbsp;	
+<i>759</i>&nbsp;	ImageServer&lt;BufferedImage&gt; getServer() {
+<b class="fc"><i>760</i>&nbsp;		return imageData == null ? null : imageData.getServer();</b>
+<i>761</i>&nbsp;	}
+<i>762</i>&nbsp;	
+<i>763</i>&nbsp;
+<i>764</i>&nbsp;	/**
+<i>765</i>&nbsp;	 * Returns a histogram for a ChannelInfo, or none if no histogram is available (e.g. the channel is RGB)
+<i>766</i>&nbsp;	 * @param info
+<i>767</i>&nbsp;	 * @return
+<i>768</i>&nbsp;	 */
+<i>769</i>&nbsp;	public Histogram getHistogram(ChannelDisplayInfo info) {
+<b class="fc"><i>770</i>&nbsp;		if (info == null || histogramManager == null)</b>
+<b class="nc"><i>771</i>&nbsp;			return null;</b>
+<b class="fc"><i>772</i>&nbsp;		return histogramManager.getHistogram(getServer(), info);</b>
+<i>773</i>&nbsp;	}
+<i>774</i>&nbsp;
+<i>775</i>&nbsp;	
+<i>776</i>&nbsp;	
+<i>777</i>&nbsp;	/**
+<i>778</i>&nbsp;	 * Create a JSON representation of the main components of the current display.
+<i>779</i>&nbsp;	 * 
+<i>780</i>&nbsp;	 * @return
+<i>781</i>&nbsp;	 */
+<i>782</i>&nbsp;	private String toJSON() {
+<b class="fc"><i>783</i>&nbsp;		return toJSON(false);</b>
+<i>784</i>&nbsp;	}
+<i>785</i>&nbsp;	
+<i>786</i>&nbsp;	/**
+<i>787</i>&nbsp;	 * Create a JSON representation of the main components of the current display.
+<i>788</i>&nbsp;	 * 
+<i>789</i>&nbsp;	 * @param prettyPrint 
+<i>790</i>&nbsp;	 * @return
+<i>791</i>&nbsp;	 */
+<i>792</i>&nbsp;	public String toJSON(final boolean prettyPrint) {
+<b class="fc"><i>793</i>&nbsp;		if (this.imageData == null)</b>
+<b class="fc"><i>794</i>&nbsp;			return null;</b>
+<b class="fc"><i>795</i>&nbsp;		JsonArray array = new JsonArray();</b>
+<b class="fc"><i>796</i>&nbsp;		for (ChannelDisplayInfo info : channelOptions) {</b>
+<b class="fc"><i>797</i>&nbsp;			JsonObject obj = new JsonObject();</b>
+<b class="fc"><i>798</i>&nbsp;			obj.addProperty(&quot;name&quot;, info.getName());</b>
+<b class="fc"><i>799</i>&nbsp;			obj.addProperty(&quot;class&quot;, info.getClass().getName());</b>
+<b class="fc"><i>800</i>&nbsp;			obj.addProperty(&quot;minDisplay&quot;, info.getMinDisplay());</b>
+<b class="fc"><i>801</i>&nbsp;			obj.addProperty(&quot;maxDisplay&quot;, info.getMaxDisplay());</b>
+<b class="fc"><i>802</i>&nbsp;			obj.addProperty(&quot;color&quot;, info.getColor());</b>
+<b class="fc"><i>803</i>&nbsp;			obj.addProperty(&quot;selected&quot;, selectedChannels.contains(info));			</b>
+<b class="fc"><i>804</i>&nbsp;			array.add(obj);</b>
+<b class="fc"><i>805</i>&nbsp;		}</b>
+<b class="fc"><i>806</i>&nbsp;		if (prettyPrint) {</b>
+<b class="nc"><i>807</i>&nbsp;			Gson gson = new GsonBuilder().setPrettyPrinting().create();</b>
+<b class="nc"><i>808</i>&nbsp;			return gson.toJson(array);</b>
+<i>809</i>&nbsp;		} else
+<b class="fc"><i>810</i>&nbsp;			return array.toString();</b>
+<i>811</i>&nbsp;	}
+<i>812</i>&nbsp;	
+<i>813</i>&nbsp;	/**
+<i>814</i>&nbsp;	 * Update current display info based on deserializing a JSON String.
+<i>815</i>&nbsp;	 * 
+<i>816</i>&nbsp;	 * @param json
+<i>817</i>&nbsp;	 */
+<i>818</i>&nbsp;	void updateFromJSON(final String json) {
+<b class="nc"><i>819</i>&nbsp;		Gson gson = new Gson();</b>
+<b class="nc"><i>820</i>&nbsp;		Type type = new TypeToken&lt;List&lt;JsonHelperChannelInfo&gt;&gt;(){}.getType();</b>
+<b class="nc"><i>821</i>&nbsp;		List&lt;JsonHelperChannelInfo&gt; helperList = gson.fromJson(json, type);</b>
+<i>822</i>&nbsp;		// Try updating everything
+<b class="nc"><i>823</i>&nbsp;		for (JsonHelperChannelInfo helper : helperList) {</b>
+<b class="nc"><i>824</i>&nbsp;			for (ChannelDisplayInfo info : channelOptions) {</b>
+<b class="nc"><i>825</i>&nbsp;				if (helper.updateInfo(info)) {</b>
+<b class="nc"><i>826</i>&nbsp;					if (Boolean.TRUE.equals(helper.selected)) {</b>
+<b class="nc"><i>827</i>&nbsp;						if (!selectedChannels.contains(info))</b>
+<b class="nc"><i>828</i>&nbsp;							selectedChannels.add(info);</b>
+<i>829</i>&nbsp;					} else
+<b class="nc"><i>830</i>&nbsp;						selectedChannels.remove(info);</b>
+<b class="nc"><i>831</i>&nbsp;					break;</b>
+<i>832</i>&nbsp;				}
+<b class="nc"><i>833</i>&nbsp;			}</b>
+<b class="nc"><i>834</i>&nbsp;		}</b>
+<b class="nc"><i>835</i>&nbsp;	}</b>
+<i>836</i>&nbsp;	
+<i>837</i>&nbsp;	/**
+<i>838</i>&nbsp;	 * Class to help with deserializing JSON representation.
+<i>839</i>&nbsp;	 */
+<b class="nc"><i>840</i>&nbsp;	static class JsonHelperChannelInfo {</b>
+<i>841</i>&nbsp;		private String name;
+<i>842</i>&nbsp;		private Class&lt;?&gt; cls;
+<i>843</i>&nbsp;		private Float minDisplay;
+<i>844</i>&nbsp;		private Float maxDisplay;
+<i>845</i>&nbsp;		private Integer color;
+<i>846</i>&nbsp;		private Boolean selected;
+<i>847</i>&nbsp;		
+<i>848</i>&nbsp;		/**
+<i>849</i>&nbsp;		 * Check if we match the info.
+<i>850</i>&nbsp;		 * That means the names must be the same, and the classes must either match or 
+<i>851</i>&nbsp;		 * the class here needs to be &lt;code&gt;null&lt;/code&gt;.
+<i>852</i>&nbsp;		 * 
+<i>853</i>&nbsp;		 * @param info
+<i>854</i>&nbsp;		 * @return
+<i>855</i>&nbsp;		 */
+<i>856</i>&nbsp;		boolean matches(final ChannelDisplayInfo info) {
+<b class="nc"><i>857</i>&nbsp;			if (name == null)</b>
+<b class="nc"><i>858</i>&nbsp;				return false;</b>
+<b class="nc"><i>859</i>&nbsp;			return name.equals(info.getName()) &amp;&amp; (cls == null || cls.equals(info.getClass()));</b>
+<i>860</i>&nbsp;		}
+<i>861</i>&nbsp;		
+<i>862</i>&nbsp;		/**
+<i>863</i>&nbsp;		 * Check is this helper &lt;code&gt;matches&lt;/code&gt; the info, and set its properties if so.
+<i>864</i>&nbsp;		 * 
+<i>865</i>&nbsp;		 * @param info
+<i>866</i>&nbsp;		 * @return
+<i>867</i>&nbsp;		 */
+<i>868</i>&nbsp;		boolean updateInfo(final ChannelDisplayInfo info) {
+<b class="nc"><i>869</i>&nbsp;			if (!matches(info))</b>
+<b class="nc"><i>870</i>&nbsp;				return false;</b>
+<b class="nc"><i>871</i>&nbsp;			if (info instanceof ModifiableChannelDisplayInfo) {</b>
+<b class="nc"><i>872</i>&nbsp;				if (minDisplay != null)</b>
+<b class="nc"><i>873</i>&nbsp;					((ModifiableChannelDisplayInfo)info).setMinDisplay(minDisplay);</b>
+<b class="nc"><i>874</i>&nbsp;				if (maxDisplay != null)</b>
+<b class="nc"><i>875</i>&nbsp;					((ModifiableChannelDisplayInfo)info).setMaxDisplay(maxDisplay);				</b>
+<i>876</i>&nbsp;			}
+<b class="nc"><i>877</i>&nbsp;			if (color != null &amp;&amp; info instanceof DirectServerChannelInfo)</b>
+<b class="nc"><i>878</i>&nbsp;				((DirectServerChannelInfo)info).setLUTColor(color);</b>
+<b class="nc"><i>879</i>&nbsp;			return true;</b>
+<i>880</i>&nbsp;		}
+<i>881</i>&nbsp;	}
+<i>882</i>&nbsp;	
+<i>883</i>&nbsp;	
+<i>884</i>&nbsp;	
+<i>885</i>&nbsp;	static class HistogramManager {
+<i>886</i>&nbsp;		
+<b class="fc"><i>887</i>&nbsp;		private static int NUM_BINS = 1024;</b>
+<i>888</i>&nbsp;		
+<b class="fc"><i>889</i>&nbsp;		private Map&lt;String, Histogram&gt; map = Collections.synchronizedMap(new LinkedHashMap&lt;&gt;());</b>
+<i>890</i>&nbsp;		
+<i>891</i>&nbsp;		private long timestamp;
+<i>892</i>&nbsp;		
+<b class="fc"><i>893</i>&nbsp;		HistogramManager(long timestamp) {</b>
+<b class="fc"><i>894</i>&nbsp;			this.timestamp = timestamp;</b>
+<b class="fc"><i>895</i>&nbsp;		}</b>
+<i>896</i>&nbsp;		
+<i>897</i>&nbsp;		long getTimestamp() {
+<b class="nc"><i>898</i>&nbsp;			return timestamp;</b>
+<i>899</i>&nbsp;		}
+<i>900</i>&nbsp;		
+<i>901</i>&nbsp;		List&lt;BufferedImage&gt; getRequiredImages(final ImageServer&lt;BufferedImage&gt; server) {
+<i>902</i>&nbsp;			// Request default thumbnails (at lowest available resolution)
+<b class="fc"><i>903</i>&nbsp;			int nImages = server.nTimepoints() * server.nZSlices();</b>
+<b class="fc"><i>904</i>&nbsp;			return IntStream.range(0, nImages).parallel().mapToObj(i -&gt; {</b>
+<b class="fc"><i>905</i>&nbsp;				int z = i % server.nZSlices();</b>
+<b class="fc"><i>906</i>&nbsp;				int t = i / server.nZSlices();</b>
+<i>907</i>&nbsp;				try {
+<b class="fc"><i>908</i>&nbsp;					return server.getDefaultThumbnail(z, t);</b>
+<b class="nc"><i>909</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>910</i>&nbsp;					logger.error(&quot;Error requesting default thumbnail for {} (z={}, t={})&quot;, server.getPath(), z, t);</b>
+<b class="nc"><i>911</i>&nbsp;					return null;</b>
+<i>912</i>&nbsp;				}
+<b class="fc"><i>913</i>&nbsp;			}).filter(img -&gt; img != null).collect(Collectors.toList());</b>
+<i>914</i>&nbsp;		}
+<i>915</i>&nbsp;		
+<i>916</i>&nbsp;		String getKey(final ChannelDisplayInfo channel) {
+<b class="fc"><i>917</i>&nbsp;			return channel.getClass().getName() + &quot;::&quot; + channel.getName();</b>
+<i>918</i>&nbsp;		}
+<i>919</i>&nbsp;		
+<i>920</i>&nbsp;		void ensureChannels(final ImageServer&lt;BufferedImage&gt; server, final List&lt;ChannelDisplayInfo&gt; channels) {
+<i>921</i>&nbsp;//			if (timestamp != server.getLastChangeTimestamp()) {
+<i>922</i>&nbsp;//				logger.warn(&quot;Timestamp changed for server!  Histograms will be rebuilt for {}&quot;, server.getPath());
+<i>923</i>&nbsp;//				map.clear();
+<i>924</i>&nbsp;//			}
+<i>925</i>&nbsp;			// Check what we might need to process
+<b class="fc"><i>926</i>&nbsp;			List&lt;SingleChannelDisplayInfo&gt; channelsToProcess = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>927</i>&nbsp;			float serverMin = server.getMetadata().getMinValue().floatValue();</b>
+<b class="fc"><i>928</i>&nbsp;			float serverMax = server.getMetadata().getMaxValue().floatValue();</b>
+<i>929</i>&nbsp;			
+<b class="fc"><i>930</i>&nbsp;			for (ChannelDisplayInfo channel : channels) {</b>
+<b class="fc"><i>931</i>&nbsp;				Histogram histogram = map.get(getKey(channel));</b>
+<b class="fc"><i>932</i>&nbsp;				if (histogram != null) {</b>
+<b class="fc"><i>933</i>&nbsp;					if (channel instanceof ModifiableChannelDisplayInfo) {</b>
+<b class="fc"><i>934</i>&nbsp;						((ModifiableChannelDisplayInfo)channel).setMinMaxAllowed(</b>
+<b class="fc"><i>935</i>&nbsp;								(float)Math.min(0, histogram.getMinValue()), (float)histogram.getMaxValue());</b>
+<i>936</i>&nbsp;					}
+<i>937</i>&nbsp;					continue;
+<b class="fc"><i>938</i>&nbsp;				} else if (channel instanceof SingleChannelDisplayInfo) {</b>
+<b class="fc"><i>939</i>&nbsp;					channelsToProcess.add((SingleChannelDisplayInfo)channel);</b>
+<b class="fc"><i>940</i>&nbsp;					if (channel instanceof ModifiableChannelDisplayInfo) {</b>
+<b class="fc"><i>941</i>&nbsp;						((ModifiableChannelDisplayInfo)channel).setMinMaxAllowed(serverMin, serverMax);</b>
+<i>942</i>&nbsp;					}
+<i>943</i>&nbsp;				} else
+<b class="nc"><i>944</i>&nbsp;					map.put(getKey(channel), null);</b>
+<b class="fc"><i>945</i>&nbsp;			}</b>
+<b class="fc"><i>946</i>&nbsp;			if (channelsToProcess.isEmpty())</b>
+<b class="fc"><i>947</i>&nbsp;				return;</b>
+<i>948</i>&nbsp;			
+<b class="fc"><i>949</i>&nbsp;			logger.debug(&quot;Building {} histograms for {}&quot;, channelsToProcess.size(), server.getPath());</b>
+<b class="fc"><i>950</i>&nbsp;			long startTime = System.currentTimeMillis();</b>
+<i>951</i>&nbsp;
+<i>952</i>&nbsp;			// Request appropriate images to use for histogram
+<b class="fc"><i>953</i>&nbsp;			List&lt;BufferedImage&gt; imgList = getRequiredImages(server);</b>
+<i>954</i>&nbsp;			
+<i>955</i>&nbsp;			// Count number of pixels &amp; estimate downsample factor
+<i>956</i>&nbsp;			int imgWidth, imgHeight;
+<b class="fc"><i>957</i>&nbsp;			long nPixels = 0;</b>
+<b class="fc"><i>958</i>&nbsp;			double approxDownsample = 1;</b>
+<b class="fc"><i>959</i>&nbsp;			for (var img : imgList) {</b>
+<b class="fc"><i>960</i>&nbsp;				imgWidth = img.getWidth();</b>
+<b class="fc"><i>961</i>&nbsp;				imgHeight = img.getHeight();</b>
+<b class="fc"><i>962</i>&nbsp;				approxDownsample = (double)server.getWidth() / imgWidth;</b>
+<b class="fc"><i>963</i>&nbsp;				nPixels += ((long)imgWidth * (long)imgHeight);</b>
+<b class="fc"><i>964</i>&nbsp;			}</b>
+<i>965</i>&nbsp;			
+<b class="fc"><i>966</i>&nbsp;			if (nPixels &gt; Integer.MAX_VALUE) {</b>
+<b class="nc"><i>967</i>&nbsp;				logger.warn(&quot;Too many pixels required for histogram ({})!  Will truncate to the first {} values&quot;, nPixels, Integer.MAX_VALUE);</b>
+<b class="nc"><i>968</i>&nbsp;				nPixels = Integer.MAX_VALUE;</b>
+<i>969</i>&nbsp;			}
+<b class="fc"><i>970</i>&nbsp;			float[] values = null; // Array needed for values for a particular channel</b>
+<b class="fc"><i>971</i>&nbsp;			float[] pixels = null; // Array needed for all values if there are multiple thumbnails</b>
+<b class="fc"><i>972</i>&nbsp;			if (imgList.isEmpty())</b>
+<b class="nc"><i>973</i>&nbsp;				values = new float[0];</b>
+<b class="fc"><i>974</i>&nbsp;			else if (imgList.size() &gt; 1)</b>
+<b class="nc"><i>975</i>&nbsp;				pixels = new float[(int)nPixels];</b>
+<b class="fc"><i>976</i>&nbsp;			for (SingleChannelDisplayInfo channel : channelsToProcess) {</b>
+<b class="fc"><i>977</i>&nbsp;				int counter = 0;</b>
+<b class="fc"><i>978</i>&nbsp;				for (BufferedImage img : imgList) {</b>
+<b class="fc"><i>979</i>&nbsp;					values = channel.getValues(img, 0, 0, img.getWidth(), img.getHeight(), values);</b>
+<b class="fc"><i>980</i>&nbsp;					if (pixels != null) {</b>
+<b class="nc"><i>981</i>&nbsp;						System.arraycopy(values, 0, pixels, counter, Math.min(values.length, Integer.MAX_VALUE-counter));</b>
+<i>982</i>&nbsp;					}
+<b class="fc"><i>983</i>&nbsp;					counter += values.length;</b>
+<b class="fc"><i>984</i>&nbsp;					if (counter &gt;= Integer.MAX_VALUE)</b>
+<b class="nc"><i>985</i>&nbsp;						break;</b>
+<b class="fc"><i>986</i>&nbsp;				}</b>
+<b class="fc"><i>987</i>&nbsp;				Histogram histogram = new Histogram(pixels == null ? values : pixels, NUM_BINS);</b>
+<i>988</i>&nbsp;				
+<i>989</i>&nbsp;				// If we have more than an 8-bit image, set the display range according to actual values - with additional scaling if we downsampled
+<b class="fc"><i>990</i>&nbsp;				if (channel instanceof ModifiableChannelDisplayInfo) {</b>
+<b class="fc"><i>991</i>&nbsp;					float scale = approxDownsample &lt; 2 ? 1 : 1.5f;</b>
+<b class="fc"><i>992</i>&nbsp;					if (!histogram.isInteger() || Math.max(Math.abs(channel.getMaxAllowed()), Math.abs(channel.getMinAllowed())) &gt; 4096) {</b>
+<b class="fc"><i>993</i>&nbsp;						((ModifiableChannelDisplayInfo)channel).setMinMaxAllowed(</b>
+<b class="fc"><i>994</i>&nbsp;								(float)Math.min(0, histogram.getMinValue()) * scale, (float)Math.max(0, histogram.getMaxValue()) * scale);</b>
+<i>995</i>&nbsp;					}
+<i>996</i>&nbsp;				}
+<i>997</i>&nbsp;				
+<b class="fc"><i>998</i>&nbsp;				map.put(getKey(channel), histogram);</b>
+<b class="fc"><i>999</i>&nbsp;			}</b>
+<b class="fc"><i>1000</i>&nbsp;			long endTime = System.currentTimeMillis();</b>
+<b class="fc"><i>1001</i>&nbsp;			logger.debug(&quot;Histograms built in {} ms&quot;, (endTime - startTime));</b>
+<b class="fc"><i>1002</i>&nbsp;		}</b>
+<i>1003</i>&nbsp;		
+<i>1004</i>&nbsp;		Histogram getHistogram(final ImageServer&lt;BufferedImage&gt; server, final ChannelDisplayInfo channel) {
+<b class="fc"><i>1005</i>&nbsp;			if (channel instanceof SingleChannelDisplayInfo) {</b>
+<i>1006</i>&nbsp;				// Always recompute histogram for mutable channels
+<b class="fc"><i>1007</i>&nbsp;				if (((SingleChannelDisplayInfo)channel).isMutable()) {</b>
+<b class="nc"><i>1008</i>&nbsp;					map.remove(getKey(channel));</b>
+<i>1009</i>&nbsp;				}
+<i>1010</i>&nbsp;			}
+<b class="fc"><i>1011</i>&nbsp;			ensureChannels(server, Collections.singletonList(channel));</b>
+<b class="fc"><i>1012</i>&nbsp;			return map.get(getKey(channel));</b>
+<i>1013</i>&nbsp;		}
+<i>1014</i>&nbsp;		
+<i>1015</i>&nbsp;	}
+<i>1016</i>&nbsp;	
+<i>1017</i>&nbsp;
+<i>1018</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

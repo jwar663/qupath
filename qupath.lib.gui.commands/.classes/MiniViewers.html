@@ -1,0 +1,880 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MiniViewers</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MiniViewers (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MiniViewers</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 57)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MiniViewers$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 104)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager$ImageDisplaySingleChannelRenderer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">MiniViewers$MiniViewerManager$MiniViewer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 88)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 269)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.AlphaComposite;
+<i>27</i>&nbsp;import java.awt.Graphics2D;
+<i>28</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>29</i>&nbsp;import java.awt.geom.Point2D;
+<i>30</i>&nbsp;import java.awt.image.BufferedImage;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Arrays;
+<i>33</i>&nbsp;import java.util.Collections;
+<i>34</i>&nbsp;import java.util.List;
+<i>35</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>36</i>&nbsp;import java.util.concurrent.Executors;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.controlsfx.control.action.Action;
+<i>39</i>&nbsp;import org.controlsfx.control.action.ActionUtils;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javafx.application.Platform;
+<i>42</i>&nbsp;import javafx.beans.InvalidationListener;
+<i>43</i>&nbsp;import javafx.beans.Observable;
+<i>44</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>45</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>46</i>&nbsp;import javafx.beans.property.DoubleProperty;
+<i>47</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>48</i>&nbsp;import javafx.beans.property.SimpleDoubleProperty;
+<i>49</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>50</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>51</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>52</i>&nbsp;import javafx.beans.value.ObservableStringValue;
+<i>53</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>54</i>&nbsp;import javafx.collections.ListChangeListener;
+<i>55</i>&nbsp;import javafx.collections.ObservableList;
+<i>56</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>57</i>&nbsp;import javafx.event.EventHandler;
+<i>58</i>&nbsp;import javafx.geometry.HPos;
+<i>59</i>&nbsp;import javafx.geometry.Pos;
+<i>60</i>&nbsp;import javafx.geometry.VPos;
+<i>61</i>&nbsp;import javafx.scene.Node;
+<i>62</i>&nbsp;import javafx.scene.Scene;
+<i>63</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>64</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>65</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>66</i>&nbsp;import javafx.scene.control.Label;
+<i>67</i>&nbsp;import javafx.scene.control.Menu;
+<i>68</i>&nbsp;import javafx.scene.control.RadioMenuItem;
+<i>69</i>&nbsp;import javafx.scene.control.SeparatorMenuItem;
+<i>70</i>&nbsp;import javafx.scene.control.ToggleGroup;
+<i>71</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>72</i>&nbsp;import javafx.scene.image.Image;
+<i>73</i>&nbsp;import javafx.scene.image.WritableImage;
+<i>74</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>75</i>&nbsp;import javafx.scene.layout.AnchorPane;
+<i>76</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>77</i>&nbsp;import javafx.scene.layout.Pane;
+<i>78</i>&nbsp;import javafx.scene.layout.Priority;
+<i>79</i>&nbsp;import javafx.stage.Stage;
+<i>80</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>81</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>82</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>83</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>84</i>&nbsp;import qupath.lib.display.ChannelDisplayInfo;
+<i>85</i>&nbsp;import qupath.lib.display.ImageDisplay;
+<i>86</i>&nbsp;import qupath.lib.gui.ActionTools;
+<i>87</i>&nbsp;import qupath.lib.gui.images.stores.AbstractImageRenderer;
+<i>88</i>&nbsp;import qupath.lib.gui.images.stores.ImageRenderer;
+<i>89</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>90</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>91</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;/**
+<i>94</i>&nbsp; * Command to open a small viewer window, which displays a detail from 
+<i>95</i>&nbsp; * the current image depending on where the cursor is over the image.
+<i>96</i>&nbsp; * &lt;p&gt;
+<i>97</i>&nbsp; * In QuPath &amp;lt;= v0.1.2, this gave a single {@link QuPathViewer} that updated its display 
+<i>98</i>&nbsp; * based on a main viewer.  Now, it has been rewritten to provide a more efficient paintable 
+<i>99</i>&nbsp; * canvas (not a full QuPathViewer) and is capable of showing separated color channels.
+<i>100</i>&nbsp; * 
+<i>101</i>&nbsp; * @author Pete Bankhead
+<i>102</i>&nbsp; *
+<i>103</i>&nbsp; */
+<b class="nc"><i>104</i>&nbsp;public class MiniViewers {</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;	/**
+<i>107</i>&nbsp;	 * Style binding to use the same background color as the main viewer.
+<i>108</i>&nbsp;	 */
+<b class="nc"><i>109</i>&nbsp;	private static ObservableStringValue style = Bindings.createStringBinding(() -&gt; {</b>
+<b class="nc"><i>110</i>&nbsp;		int rgb = PathPrefs.viewerBackgroundColorProperty().get();</b>
+<b class="nc"><i>111</i>&nbsp;		return String.format(&quot;-fx-background-color: rgb(%d, %d, %d)&quot;, ColorTools.red(rgb), ColorTools.green(rgb), ColorTools.blue(rgb));</b>
+<b class="nc"><i>112</i>&nbsp;	}, PathPrefs.viewerBackgroundColorProperty());</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;	static Stage createDialog(QuPathViewer viewer, boolean channelViewer) {
+<b class="nc"><i>115</i>&nbsp;		final Stage dialog = new Stage();</b>
+<b class="nc"><i>116</i>&nbsp;		dialog.initOwner(viewer.getView().getScene().getWindow());</b>
+<i>117</i>&nbsp;		
+<b class="nc"><i>118</i>&nbsp;		ObservableList&lt;ChannelDisplayInfo&gt; channels = viewer.getImageDisplay().availableChannels();</b>
+<b class="nc"><i>119</i>&nbsp;		MiniViewerManager manager = new MiniViewerManager(viewer, channelViewer ? channels.size() : 0);</b>
+<b class="nc"><i>120</i>&nbsp;		manager.getPane().styleProperty().bind(style);</b>
+<b class="nc"><i>121</i>&nbsp;		if (channelViewer) {</b>
+<b class="nc"><i>122</i>&nbsp;			dialog.setTitle(&quot;Channel viewer&quot;);</b>
+<b class="nc"><i>123</i>&nbsp;			Scene scene = new Scene(manager.getPane(), 400, 400);</b>
+<b class="nc"><i>124</i>&nbsp;			ListChangeListener&lt;ChannelDisplayInfo&gt; listChangeListener = new ListChangeListener&lt;ChannelDisplayInfo&gt;() {</b>
+<i>125</i>&nbsp;				@Override
+<i>126</i>&nbsp;				public void onChanged(Change&lt;? extends ChannelDisplayInfo&gt; c) {
+<b class="nc"><i>127</i>&nbsp;					if (c.getList().size() != manager.nChannels()) {</b>
+<b class="nc"><i>128</i>&nbsp;						manager.setChannels(channels.size());</b>
+<b class="nc"><i>129</i>&nbsp;						scene.setRoot(manager.getPane());</b>
+<i>130</i>&nbsp;					}
+<i>131</i>&nbsp;				}
+<i>132</i>&nbsp;			};
+<b class="nc"><i>133</i>&nbsp;			channels.addListener(listChangeListener);</b>
+<b class="nc"><i>134</i>&nbsp;			dialog.setOnHiding(e -&gt; {</b>
+<b class="nc"><i>135</i>&nbsp;				channels.removeListener(listChangeListener);</b>
+<b class="nc"><i>136</i>&nbsp;				manager.close();</b>
+<b class="nc"><i>137</i>&nbsp;				manager.getPane().styleProperty().unbind();</b>
+<i>138</i>&nbsp;			});
+<b class="nc"><i>139</i>&nbsp;			dialog.setScene(scene);</b>
+<b class="nc"><i>140</i>&nbsp;		} else {</b>
+<b class="nc"><i>141</i>&nbsp;			dialog.setTitle(&quot;Mini viewer&quot;);</b>
+<b class="nc"><i>142</i>&nbsp;			Scene scene = new Scene(manager.getPane(), 400, 400); </b>
+<b class="nc"><i>143</i>&nbsp;			dialog.setScene(scene);</b>
+<b class="nc"><i>144</i>&nbsp;			dialog.setOnHiding(e -&gt; {</b>
+<b class="nc"><i>145</i>&nbsp;				manager.close();</b>
+<b class="nc"><i>146</i>&nbsp;				manager.getPane().styleProperty().unbind();</b>
+<i>147</i>&nbsp;			});
+<i>148</i>&nbsp;		}
+<b class="nc"><i>149</i>&nbsp;		createPopup(manager);</b>
+<b class="nc"><i>150</i>&nbsp;		return dialog;</b>
+<i>151</i>&nbsp;	}
+<i>152</i>&nbsp;	
+<i>153</i>&nbsp;	/**
+<i>154</i>&nbsp;	 * Create and install a popup menu in a MiniViewerManager.
+<i>155</i>&nbsp;	 * 
+<i>156</i>&nbsp;	 * @param manager
+<i>157</i>&nbsp;	 * @return
+<i>158</i>&nbsp;	 */
+<i>159</i>&nbsp;	static ContextMenu createPopup(final MiniViewerManager manager) {
+<i>160</i>&nbsp;		
+<b class="nc"><i>161</i>&nbsp;		List&lt;RadioMenuItem&gt; radioItems = Arrays.asList(</b>
+<b class="nc"><i>162</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;400 %&quot;, manager.downsample, 0.25)),</b>
+<b class="nc"><i>163</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;200 %&quot;, manager.downsample, 0.5)),</b>
+<b class="nc"><i>164</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;100 %&quot;, manager.downsample, 1)),	</b>
+<b class="nc"><i>165</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;50 %&quot;, manager.downsample, 2)),		</b>
+<b class="nc"><i>166</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;25 %&quot;, manager.downsample, 4)),		</b>
+<b class="nc"><i>167</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;20 %&quot;, manager.downsample, 5)),		</b>
+<b class="nc"><i>168</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;10 %&quot;, manager.downsample, 10)),		</b>
+<b class="nc"><i>169</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;5 %&quot;, manager.downsample, 20)),		</b>
+<b class="nc"><i>170</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;2 %&quot;, manager.downsample, 50)),		</b>
+<b class="nc"><i>171</i>&nbsp;				ActionUtils.createRadioMenuItem(createDownsampleAction(&quot;1 %&quot;, manager.downsample, 100))</b>
+<i>172</i>&nbsp;		);
+<i>173</i>&nbsp;
+<b class="nc"><i>174</i>&nbsp;		ToggleGroup group = new ToggleGroup();</b>
+<b class="nc"><i>175</i>&nbsp;		for (RadioMenuItem item : radioItems)</b>
+<b class="nc"><i>176</i>&nbsp;			item.setToggleGroup(group);</b>
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;		Menu menuZoom = new Menu(&quot;Zoom...&quot;);</b>
+<b class="nc"><i>179</i>&nbsp;		menuZoom.getItems().addAll(radioItems);</b>
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;		ContextMenu popup = new ContextMenu();</b>
+<b class="nc"><i>182</i>&nbsp;		popup.getItems().addAll(</b>
+<b class="nc"><i>183</i>&nbsp;				ActionUtils.createCheckMenuItem(ActionTools.createSelectableAction(manager.synchronizeToMainViewer, &quot;Synchronize to main viewer&quot;)),</b>
+<i>184</i>&nbsp;				menuZoom,
+<i>185</i>&nbsp;				new SeparatorMenuItem(),
+<b class="nc"><i>186</i>&nbsp;				ActionUtils.createCheckMenuItem(ActionTools.createSelectableAction(manager.showCursor, &quot;Show cursor&quot;)),</b>
+<b class="nc"><i>187</i>&nbsp;				ActionUtils.createCheckMenuItem(ActionTools.createSelectableAction(manager.showChannelNames, &quot;Show channel names&quot;)),</b>
+<b class="nc"><i>188</i>&nbsp;				ActionUtils.createCheckMenuItem(ActionTools.createSelectableAction(manager.showOverlays, &quot;Show overlays&quot;))</b>
+<i>189</i>&nbsp;				);
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;		group.selectToggle(radioItems.get(2));</b>
+<i>192</i>&nbsp;		
+<b class="nc"><i>193</i>&nbsp;		Pane pane = manager.getPane();</b>
+<b class="nc"><i>194</i>&nbsp;		pane.setOnContextMenuRequested(e -&gt; {</b>
+<b class="nc"><i>195</i>&nbsp;			popup.show(pane, e.getScreenX(), e.getScreenY());</b>
+<i>196</i>&nbsp;		});
+<i>197</i>&nbsp;
+<b class="nc"><i>198</i>&nbsp;		return popup;</b>
+<i>199</i>&nbsp;	}
+<i>200</i>&nbsp;	
+<i>201</i>&nbsp;	
+<i>202</i>&nbsp;	/**
+<i>203</i>&nbsp;	 * Create Action to set a downsample value.
+<i>204</i>&nbsp;	 * 
+<i>205</i>&nbsp;	 * @param text
+<i>206</i>&nbsp;	 * @param downsampleValue
+<i>207</i>&nbsp;	 * @param downsample
+<i>208</i>&nbsp;	 * @return
+<i>209</i>&nbsp;	 */
+<i>210</i>&nbsp;	static Action createDownsampleAction(final String text, final DoubleProperty downsampleValue, final double downsample) {
+<b class="nc"><i>211</i>&nbsp;		return new Action(text, e -&gt; downsampleValue.set(downsample));</b>
+<i>212</i>&nbsp;	}
+<i>213</i>&nbsp;	
+<i>214</i>&nbsp;	
+<i>215</i>&nbsp;	
+<i>216</i>&nbsp;	/**
+<i>217</i>&nbsp;	 * A manager for one or more mini-viewers, where the &#39;more&#39; means a separate viewer per channel.
+<i>218</i>&nbsp;	 */
+<i>219</i>&nbsp;	public static class MiniViewerManager implements EventHandler&lt;MouseEvent&gt; {
+<i>220</i>&nbsp;		
+<b class="nc"><i>221</i>&nbsp;		private GridPane pane = new GridPane();</b>
+<i>222</i>&nbsp;		
+<b class="nc"><i>223</i>&nbsp;		private List&lt;MiniViewer&gt; miniViewers = new ArrayList&lt;&gt;();</b>
+<i>224</i>&nbsp;		
+<b class="nc"><i>225</i>&nbsp;		private BooleanProperty showChannelNames = new SimpleBooleanProperty(true);</b>
+<b class="nc"><i>226</i>&nbsp;		private BooleanProperty showCursor = new SimpleBooleanProperty(true);</b>
+<b class="nc"><i>227</i>&nbsp;		private BooleanProperty showOverlays = new SimpleBooleanProperty(true);</b>
+<b class="nc"><i>228</i>&nbsp;		private BooleanProperty synchronizeToMainViewer = new SimpleBooleanProperty(true);</b>
+<i>229</i>&nbsp;		
+<i>230</i>&nbsp;		/**
+<i>231</i>&nbsp;		 * Track if the shift button is pressed; temporarily suspend synchronization if so.
+<i>232</i>&nbsp;		 */
+<b class="nc"><i>233</i>&nbsp;		private BooleanProperty shiftDown = new SimpleBooleanProperty(false);</b>
+<i>234</i>&nbsp;		
+<b class="nc"><i>235</i>&nbsp;		private DoubleProperty downsample = new SimpleDoubleProperty(1.0);</b>
+<i>236</i>&nbsp;		
+<b class="nc"><i>237</i>&nbsp;		private boolean requestUpdate = false;</b>
+<i>238</i>&nbsp;		
+<i>239</i>&nbsp;		private QuPathViewer mainViewer;
+<i>240</i>&nbsp;		private int nChannels;
+<i>241</i>&nbsp;		
+<b class="nc"><i>242</i>&nbsp;		private Point2D centerPosition = new Point2D.Double();</b>
+<i>243</i>&nbsp;		private Point2D mousePosition;
+<i>244</i>&nbsp;		
+<b class="nc"><i>245</i>&nbsp;		private ExecutorService pool = Executors.newSingleThreadExecutor(ThreadTools.createThreadFactory(&quot;mini-viewer&quot;, true));</b>
+<i>246</i>&nbsp;		
+<b class="nc"><i>247</i>&nbsp;		private ChangeListener&lt;Number&gt; changeListener = new ChangeListener&lt;Number&gt;() {</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;			@Override
+<i>250</i>&nbsp;			public void changed(ObservableValue&lt;? extends Number&gt; observable, Number oldValue, Number newValue) {
+<b class="nc"><i>251</i>&nbsp;				pool.submit(() -&gt; requestFullUpdate());</b>
+<i>252</i>&nbsp;			}
+<i>253</i>&nbsp;			
+<i>254</i>&nbsp;		};
+<i>255</i>&nbsp;		
+<b class="nc"><i>256</i>&nbsp;		private ChangeListener&lt;Number&gt; fastChangeListener = new ChangeListener&lt;Number&gt;() {</b>
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;			@Override
+<i>259</i>&nbsp;			public void changed(ObservableValue&lt;? extends Number&gt; observable, Number oldValue, Number newValue) {
+<b class="nc"><i>260</i>&nbsp;				pool.submit(() -&gt; requestUpdate());</b>
+<i>261</i>&nbsp;			}
+<i>262</i>&nbsp;			
+<i>263</i>&nbsp;		};
+<i>264</i>&nbsp;		
+<b class="nc"><i>265</i>&nbsp;		private InvalidationListener invalidationListener = new InvalidationListener() {</b>
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;			@Override
+<i>268</i>&nbsp;			public void invalidated(Observable observable) {
+<b class="nc"><i>269</i>&nbsp;				pool.submit(() -&gt; requestUpdate());</b>
+<i>270</i>&nbsp;			}
+<i>271</i>&nbsp;			
+<i>272</i>&nbsp;		};
+<i>273</i>&nbsp;		
+<i>274</i>&nbsp;		
+<i>275</i>&nbsp;		private int nChannels() {
+<b class="nc"><i>276</i>&nbsp;			return nChannels;</b>
+<i>277</i>&nbsp;		}
+<i>278</i>&nbsp;		
+<i>279</i>&nbsp;		/**
+<i>280</i>&nbsp;		 * Constructor specifying a primary viewer and number of channels.
+<i>281</i>&nbsp;		 * @param mainViewer the viewer that the mini viewers relate to (i.e. tracking the cursor location)
+<i>282</i>&nbsp;		 * @param nChannels the number of channels to include
+<i>283</i>&nbsp;		 */
+<b class="nc"><i>284</i>&nbsp;		public MiniViewerManager(final QuPathViewer mainViewer, final int nChannels) {</b>
+<b class="nc"><i>285</i>&nbsp;			this.mainViewer = mainViewer;</b>
+<b class="nc"><i>286</i>&nbsp;			setChannels(nChannels);</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;			mainViewer.zPositionProperty().addListener(changeListener);</b>
+<b class="nc"><i>289</i>&nbsp;			mainViewer.tPositionProperty().addListener(changeListener);</b>
+<b class="nc"><i>290</i>&nbsp;			mainViewer.repaintTimestamp().addListener(fastChangeListener);</b>
+<b class="nc"><i>291</i>&nbsp;			mainViewer.getImageDisplay().changeTimestampProperty().addListener(changeListener);</b>
+<b class="nc"><i>292</i>&nbsp;			showCursor.addListener(invalidationListener);</b>
+<b class="nc"><i>293</i>&nbsp;			showOverlays.addListener(invalidationListener);</b>
+<b class="nc"><i>294</i>&nbsp;			showChannelNames.addListener(invalidationListener);</b>
+<b class="nc"><i>295</i>&nbsp;			synchronizeToMainViewer.addListener(invalidationListener);</b>
+<b class="nc"><i>296</i>&nbsp;			downsample.addListener(invalidationListener);</b>
+<b class="nc"><i>297</i>&nbsp;			mainViewer.getView().addEventFilter(MouseEvent.MOUSE_MOVED, this);</b>
+<i>298</i>&nbsp;			
+<b class="nc"><i>299</i>&nbsp;			requestFullUpdate();</b>
+<i>300</i>&nbsp;		}
+<i>301</i>&nbsp;		
+<i>302</i>&nbsp;		void close() {
+<b class="nc"><i>303</i>&nbsp;			mainViewer.zPositionProperty().removeListener(changeListener);</b>
+<b class="nc"><i>304</i>&nbsp;			mainViewer.tPositionProperty().removeListener(changeListener);</b>
+<b class="nc"><i>305</i>&nbsp;			mainViewer.repaintTimestamp().removeListener(fastChangeListener);</b>
+<b class="nc"><i>306</i>&nbsp;			mainViewer.getImageDisplay().changeTimestampProperty().removeListener(changeListener);</b>
+<b class="nc"><i>307</i>&nbsp;			showCursor.removeListener(invalidationListener);</b>
+<b class="nc"><i>308</i>&nbsp;			showOverlays.removeListener(invalidationListener);</b>
+<b class="nc"><i>309</i>&nbsp;			showChannelNames.removeListener(invalidationListener);</b>
+<b class="nc"><i>310</i>&nbsp;			synchronizeToMainViewer.removeListener(invalidationListener);</b>
+<b class="nc"><i>311</i>&nbsp;			downsample.removeListener(invalidationListener);</b>
+<b class="nc"><i>312</i>&nbsp;			mainViewer.getView().removeEventFilter(MouseEvent.MOUSE_MOVED, this);</b>
+<i>313</i>&nbsp;		}
+<i>314</i>&nbsp;		
+<i>315</i>&nbsp;		void setChannels(int nChannels) {
+<i>316</i>&nbsp;			
+<b class="nc"><i>317</i>&nbsp;			miniViewers.stream().forEach(v -&gt; v.close());</b>
+<b class="nc"><i>318</i>&nbsp;			miniViewers.clear();</b>
+<i>319</i>&nbsp;			
+<b class="nc"><i>320</i>&nbsp;			int nCols = (int)Math.ceil(Math.sqrt(nChannels + 1));</b>
+<b class="nc"><i>321</i>&nbsp;			int nRows = (int)Math.ceil((nChannels + 1) / (double)nCols);</b>
+<i>322</i>&nbsp;			
+<b class="nc"><i>323</i>&nbsp;			this.nChannels = nChannels;</b>
+<b class="nc"><i>324</i>&nbsp;			List&lt;Node&gt; nodes = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>325</i>&nbsp;			for (int c = 0; c &lt; nChannels; c++) {</b>
+<b class="nc"><i>326</i>&nbsp;				MiniViewer canvas = new MiniViewer(new ImageDisplaySingleChannelRenderer(c));</b>
+<b class="nc"><i>327</i>&nbsp;				miniViewers.add(canvas);</b>
+<b class="nc"><i>328</i>&nbsp;				nodes.add(createPane(canvas, c % nCols, c / nCols, 1, 1));</b>
+<i>329</i>&nbsp;			}
+<b class="nc"><i>330</i>&nbsp;			MiniViewer mainCanvas = new MiniViewer(mainViewer.getImageDisplay());</b>
+<b class="nc"><i>331</i>&nbsp;			miniViewers.add(mainCanvas);</b>
+<b class="nc"><i>332</i>&nbsp;			nodes.add(createPane(mainCanvas,</b>
+<i>333</i>&nbsp;					nChannels % nCols, nChannels / nCols,
+<i>334</i>&nbsp;					nRows * nCols - nChannels, 1));
+<i>335</i>&nbsp;			
+<b class="nc"><i>336</i>&nbsp;			pane.setVgap(5);</b>
+<b class="nc"><i>337</i>&nbsp;			pane.setHgap(5);</b>
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;			pane.getChildren().setAll(nodes);</b>
+<i>340</i>&nbsp;			
+<i>341</i>&nbsp;		}
+<i>342</i>&nbsp;		
+<i>343</i>&nbsp;		Pane createPane(MiniViewer canvas, int col, int row, int colSpan, int rowSpan) {
+<b class="nc"><i>344</i>&nbsp;			AnchorPane tempPane = new AnchorPane();</b>
+<b class="nc"><i>345</i>&nbsp;			tempPane.setMinSize(0, 0);</b>
+<b class="nc"><i>346</i>&nbsp;			tempPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);</b>
+<b class="nc"><i>347</i>&nbsp;			tempPane.getChildren().add(canvas);</b>
+<b class="nc"><i>348</i>&nbsp;			canvas.widthProperty().bind(tempPane.widthProperty());</b>
+<b class="nc"><i>349</i>&nbsp;			canvas.heightProperty().bind(tempPane.heightProperty());</b>
+<b class="nc"><i>350</i>&nbsp;			GridPane.setConstraints(tempPane,</b>
+<i>351</i>&nbsp;					col, row,
+<i>352</i>&nbsp;					colSpan, rowSpan, 
+<i>353</i>&nbsp;					HPos.CENTER, VPos.CENTER, 
+<i>354</i>&nbsp;					Priority.ALWAYS, Priority.ALWAYS);
+<b class="nc"><i>355</i>&nbsp;			GridPane.setFillHeight(tempPane, Boolean.TRUE);</b>
+<b class="nc"><i>356</i>&nbsp;			GridPane.setFillWidth(tempPane, Boolean.TRUE);</b>
+<i>357</i>&nbsp;			
+<i>358</i>&nbsp;			
+<b class="nc"><i>359</i>&nbsp;			Label label = new Label();</b>
+<b class="nc"><i>360</i>&nbsp;			label.textProperty().bind(canvas.nameBinding);</b>
+<b class="nc"><i>361</i>&nbsp;			label.setStyle(&quot;-fx-background-color: rgba(0, 0, 0, 0.6)&quot;);</b>
+<b class="nc"><i>362</i>&nbsp;			label.setTextFill(javafx.scene.paint.Color.WHITE);</b>
+<b class="nc"><i>363</i>&nbsp;			label.setAlignment(Pos.CENTER);</b>
+<b class="nc"><i>364</i>&nbsp;			double height = 50;</b>
+<b class="nc"><i>365</i>&nbsp;			label.setPrefHeight(height);</b>
+<b class="nc"><i>366</i>&nbsp;			label.setMinWidth(0);</b>
+<b class="nc"><i>367</i>&nbsp;			label.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>368</i>&nbsp;			AnchorPane.setBottomAnchor(label, 0.0);</b>
+<b class="nc"><i>369</i>&nbsp;			AnchorPane.setLeftAnchor(label, 0.0);</b>
+<b class="nc"><i>370</i>&nbsp;			AnchorPane.setRightAnchor(label, 0.0);</b>
+<b class="nc"><i>371</i>&nbsp;			label.prefWidthProperty().bind(pane.prefWidthProperty());</b>
+<b class="nc"><i>372</i>&nbsp;			label.visibleProperty().bind(canvas.heightProperty().greaterThan(height * 1.2).and(label.textProperty().isNotEmpty()).and(showChannelNames));</b>
+<b class="nc"><i>373</i>&nbsp;			tempPane.getChildren().add(label);</b>
+<i>374</i>&nbsp;
+<b class="nc"><i>375</i>&nbsp;			Tooltip tooltip = new Tooltip();</b>
+<b class="nc"><i>376</i>&nbsp;			tooltip.textProperty().bind(canvas.nameBinding);</b>
+<b class="nc"><i>377</i>&nbsp;			Tooltip.install(canvas, tooltip);</b>
+<i>378</i>&nbsp;			
+<b class="nc"><i>379</i>&nbsp;			return tempPane;</b>
+<i>380</i>&nbsp;		}
+<i>381</i>&nbsp;		
+<i>382</i>&nbsp;		/**
+<i>383</i>&nbsp;		 * Get the downsample used within the mini viewers.
+<i>384</i>&nbsp;		 * @return
+<i>385</i>&nbsp;		 */
+<i>386</i>&nbsp;		public double getDownsample() {
+<b class="nc"><i>387</i>&nbsp;			return downsample.get();</b>
+<i>388</i>&nbsp;		}
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;		/**
+<i>391</i>&nbsp;		 * Set the downsample to use within the mini viewers.
+<i>392</i>&nbsp;		 * @param downsample
+<i>393</i>&nbsp;		 */
+<i>394</i>&nbsp;		public void setDownsample(final double downsample) {
+<b class="nc"><i>395</i>&nbsp;			this.downsample.set(downsample);</b>
+<i>396</i>&nbsp;		}
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;		/**
+<i>399</i>&nbsp;		 * Get the pane containing all mini viewers, which can be added to a scene for display.
+<i>400</i>&nbsp;		 * @return
+<i>401</i>&nbsp;		 */
+<i>402</i>&nbsp;		public GridPane getPane() {
+<b class="nc"><i>403</i>&nbsp;			return pane;</b>
+<i>404</i>&nbsp;		}
+<i>405</i>&nbsp;		
+<i>406</i>&nbsp;		void requestFullUpdate() {
+<b class="nc"><i>407</i>&nbsp;			for (MiniViewer viewer : miniViewers) {</b>
+<b class="nc"><i>408</i>&nbsp;				if (Thread.interrupted())</b>
+<i>409</i>&nbsp;					return;
+<b class="nc"><i>410</i>&nbsp;				viewer.updateThumbnail();</b>
+<b class="nc"><i>411</i>&nbsp;			}</b>
+<b class="nc"><i>412</i>&nbsp;			requestUpdate();</b>
+<i>413</i>&nbsp;		}
+<i>414</i>&nbsp;		
+<i>415</i>&nbsp;		void requestUpdate() {
+<i>416</i>&nbsp;//			if (requestUpdate)
+<i>417</i>&nbsp;//				return;
+<i>418</i>&nbsp;			// TODO: Look to improve the performance of this &amp; discard requests appropriately
+<b class="nc"><i>419</i>&nbsp;			requestUpdate = true;</b>
+<b class="nc"><i>420</i>&nbsp;			updateViewers();</b>
+<i>421</i>&nbsp;		}
+<i>422</i>&nbsp;		
+<i>423</i>&nbsp;		void updateViewers() {
+<b class="nc"><i>424</i>&nbsp;			if (!requestUpdate)</b>
+<i>425</i>&nbsp;				return;
+<i>426</i>&nbsp;//			if (!Platform.isFxApplicationThread()) {
+<i>427</i>&nbsp;//				Platform.runLater(() -&gt; updateViewers());
+<i>428</i>&nbsp;//				return;
+<i>429</i>&nbsp;//			}
+<i>430</i>&nbsp;			// Update mouse position if we are synchronizing
+<b class="nc"><i>431</i>&nbsp;			mousePosition = mainViewer.getMousePosition();</b>
+<b class="nc"><i>432</i>&nbsp;			if (mousePosition != null) {</b>
+<b class="nc"><i>433</i>&nbsp;				mainViewer.componentPointToImagePoint(mousePosition, mousePosition, false);</b>
+<b class="nc"><i>434</i>&nbsp;				if (synchronizeToMainViewer.get() &amp;&amp; !shiftDown.get())</b>
+<b class="nc"><i>435</i>&nbsp;					centerPosition.setLocation(mousePosition);</b>
+<i>436</i>&nbsp;			}
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;			// Repaint all viewers
+<b class="nc"><i>439</i>&nbsp;			for (MiniViewer viewer : miniViewers)</b>
+<b class="nc"><i>440</i>&nbsp;				viewer.repaint();</b>
+<b class="nc"><i>441</i>&nbsp;			requestUpdate = false;</b>
+<i>442</i>&nbsp;		}
+<i>443</i>&nbsp;		
+<i>444</i>&nbsp;		
+<i>445</i>&nbsp;		@Override
+<i>446</i>&nbsp;		public void handle(MouseEvent event) {
+<b class="nc"><i>447</i>&nbsp;			shiftDown.set(event.isShiftDown());</b>
+<b class="nc"><i>448</i>&nbsp;			requestUpdate();</b>
+<i>449</i>&nbsp;		}
+<i>450</i>&nbsp;		
+<i>451</i>&nbsp;		
+<i>452</i>&nbsp;		
+<i>453</i>&nbsp;		class MiniViewer extends Canvas {
+<i>454</i>&nbsp;			
+<i>455</i>&nbsp;			private ImageRenderer renderer;
+<i>456</i>&nbsp;						
+<b class="nc"><i>457</i>&nbsp;			private StringProperty nameBinding = new SimpleStringProperty();</b>
+<i>458</i>&nbsp;			private BufferedImage imgRGB;
+<i>459</i>&nbsp;			private BufferedImage img;
+<i>460</i>&nbsp;			private WritableImage imgFX;
+<i>461</i>&nbsp;			
+<b class="nc"><i>462</i>&nbsp;			private Point2D localCursorPosition = null;</b>
+<b class="nc"><i>463</i>&nbsp;			private AffineTransform transform = new AffineTransform();</b>
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;			
+<b class="nc"><i>466</i>&nbsp;			public MiniViewer(ImageRenderer renderer) {</b>
+<b class="nc"><i>467</i>&nbsp;				this.renderer = renderer;</b>
+<i>468</i>&nbsp;				
+<b class="nc"><i>469</i>&nbsp;				this.widthProperty().addListener(v -&gt; repaint());</b>
+<b class="nc"><i>470</i>&nbsp;				this.heightProperty().addListener(v -&gt; repaint());</b>
+<i>471</i>&nbsp;				
+<i>472</i>&nbsp;				// Create binding to indicate the current channel name
+<b class="nc"><i>473</i>&nbsp;				nameBinding.bind(Bindings.createStringBinding(() -&gt; {</b>
+<b class="nc"><i>474</i>&nbsp;						if (renderer instanceof ImageDisplaySingleChannelRenderer) {</b>
+<b class="nc"><i>475</i>&nbsp;							ImageDisplaySingleChannelRenderer channelRenderer = (ImageDisplaySingleChannelRenderer)renderer;</b>
+<b class="nc"><i>476</i>&nbsp;							int channel = channelRenderer.channel;</b>
+<b class="nc"><i>477</i>&nbsp;							List&lt;ChannelDisplayInfo&gt; channels = mainViewer.getImageDisplay().availableChannels();</b>
+<b class="nc"><i>478</i>&nbsp;							if (channel &lt; 0 || channel &gt;= channels.size())</b>
+<b class="nc"><i>479</i>&nbsp;								return null;</b>
+<b class="nc"><i>480</i>&nbsp;							return channels.get(channel).getName();</b>
+<i>481</i>&nbsp;						}
+<b class="nc"><i>482</i>&nbsp;						return null;</b>
+<i>483</i>&nbsp;						},
+<b class="nc"><i>484</i>&nbsp;						mainViewer.imageDataProperty(), mainViewer.getImageDisplay().changeTimestampProperty()));</b>
+<i>485</i>&nbsp;			}
+<i>486</i>&nbsp;			
+<i>487</i>&nbsp;			void close() {
+<b class="nc"><i>488</i>&nbsp;				this.nameBinding.unbind();</b>
+<b class="nc"><i>489</i>&nbsp;				imgRGB = null;</b>
+<b class="nc"><i>490</i>&nbsp;				img = null;</b>
+<b class="nc"><i>491</i>&nbsp;				imgFX = null;</b>
+<i>492</i>&nbsp;			}
+<i>493</i>&nbsp;			
+<i>494</i>&nbsp;			@Override
+<i>495</i>&nbsp;			public boolean isResizable() {
+<b class="nc"><i>496</i>&nbsp;				return true;</b>
+<i>497</i>&nbsp;			}
+<i>498</i>&nbsp;			
+<i>499</i>&nbsp;			@Override
+<i>500</i>&nbsp;			public double prefHeight(double height) {
+<b class="nc"><i>501</i>&nbsp;				return height;</b>
+<i>502</i>&nbsp;			}
+<i>503</i>&nbsp;
+<i>504</i>&nbsp;			@Override
+<i>505</i>&nbsp;			public double prefWidth(double width) {
+<b class="nc"><i>506</i>&nbsp;				return width;</b>
+<i>507</i>&nbsp;			}
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;			double getDownsampleFactor() {
+<b class="nc"><i>510</i>&nbsp;				return downsample.get();</b>
+<i>511</i>&nbsp;			}
+<i>512</i>&nbsp;			
+<i>513</i>&nbsp;			void updateThumbnail() {
+<b class="nc"><i>514</i>&nbsp;				if (renderer == null)</b>
+<b class="nc"><i>515</i>&nbsp;					imgRGB = mainViewer.getRGBThumbnail();</b>
+<i>516</i>&nbsp;				else {
+<b class="nc"><i>517</i>&nbsp;					var imgThumbnail = mainViewer.getThumbnail();</b>
+<b class="nc"><i>518</i>&nbsp;					if (imgThumbnail == null)</b>
+<b class="nc"><i>519</i>&nbsp;						imgRGB = null;</b>
+<i>520</i>&nbsp;					else
+<b class="nc"><i>521</i>&nbsp;						imgRGB = renderer.applyTransforms(mainViewer.getThumbnail(), imgRGB);</b>
+<i>522</i>&nbsp;				}
+<i>523</i>&nbsp;			}
+<i>524</i>&nbsp;			
+<i>525</i>&nbsp;			void repaint() {
+<b class="nc"><i>526</i>&nbsp;				int w = (int)Math.ceil(getWidth());</b>
+<b class="nc"><i>527</i>&nbsp;				int h = (int)Math.ceil(getHeight());</b>
+<b class="nc"><i>528</i>&nbsp;				if (w &lt;= 0 || h &lt;= 0)</b>
+<i>529</i>&nbsp;					return;
+<b class="nc"><i>530</i>&nbsp;				if (img == null || img.getWidth() != w || img.getHeight() != h) {</b>
+<b class="nc"><i>531</i>&nbsp;					img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);</b>
+<i>532</i>&nbsp;				}
+<i>533</i>&nbsp;				
+<b class="nc"><i>534</i>&nbsp;				Graphics2D g2d = img.createGraphics();</b>
+<i>535</i>&nbsp;				// Fill background
+<b class="nc"><i>536</i>&nbsp;				g2d.setColor(ColorToolsAwt.getCachedColor(PathPrefs.viewerBackgroundColorProperty().get()));</b>
+<b class="nc"><i>537</i>&nbsp;				g2d.fillRect(0, 0, w, h);</b>
+<i>538</i>&nbsp;				
+<b class="nc"><i>539</i>&nbsp;				g2d.setClip(0, 0, w, h);</b>
+<i>540</i>&nbsp;				
+<i>541</i>&nbsp;				
+<i>542</i>&nbsp;				
+<b class="nc"><i>543</i>&nbsp;				transform.setToIdentity();</b>
+<b class="nc"><i>544</i>&nbsp;				transform.translate(getWidth()*.5, getHeight()*.5);</b>
+<b class="nc"><i>545</i>&nbsp;				double downsample = getDownsampleFactor();</b>
+<b class="nc"><i>546</i>&nbsp;				transform.scale(1.0/downsample, 1.0/downsample);</b>
+<b class="nc"><i>547</i>&nbsp;				transform.translate(-centerPosition.getX(), -centerPosition.getY());</b>
+<b class="nc"><i>548</i>&nbsp;				double rotation = mainViewer.getRotation();</b>
+<b class="nc"><i>549</i>&nbsp;				if (rotation != 0)</b>
+<b class="nc"><i>550</i>&nbsp;					transform.rotate(rotation, centerPosition.getX(), centerPosition.getY());</b>
+<i>551</i>&nbsp;				
+<b class="nc"><i>552</i>&nbsp;				g2d.transform(transform);</b>
+<i>553</i>&nbsp;				
+<b class="nc"><i>554</i>&nbsp;				if (mousePosition == null)</b>
+<b class="nc"><i>555</i>&nbsp;					localCursorPosition = null;</b>
+<i>556</i>&nbsp;				else
+<b class="nc"><i>557</i>&nbsp;					localCursorPosition = transform.transform(mousePosition, localCursorPosition);</b>
+<i>558</i>&nbsp;				
+<i>559</i>&nbsp;				// Paint viewer
+<b class="nc"><i>560</i>&nbsp;				mainViewer.getImageRegionStore().paintRegion(</b>
+<b class="nc"><i>561</i>&nbsp;						mainViewer.getServer(),</b>
+<i>562</i>&nbsp;						g2d,
+<b class="nc"><i>563</i>&nbsp;						g2d.getClip(),</b>
+<b class="nc"><i>564</i>&nbsp;						mainViewer.getZPosition(),</b>
+<b class="nc"><i>565</i>&nbsp;						mainViewer.getTPosition(),</b>
+<i>566</i>&nbsp;						downsample,
+<b class="nc"><i>567</i>&nbsp;						mainViewer.getThumbnail(),</b>
+<i>568</i>&nbsp;//						imgRGB,
+<i>569</i>&nbsp;						null,
+<i>570</i>&nbsp;						renderer);
+<i>571</i>&nbsp;				
+<b class="nc"><i>572</i>&nbsp;				float opacity = mainViewer.getOverlayOptions().getOpacity();</b>
+<b class="nc"><i>573</i>&nbsp;				if (showOverlays.get() &amp;&amp; opacity &gt; 0) {</b>
+<b class="nc"><i>574</i>&nbsp;					if (opacity &lt; 1f)</b>
+<b class="nc"><i>575</i>&nbsp;						g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, opacity));</b>
+<b class="nc"><i>576</i>&nbsp;					ImageRegion region = AwtTools.getImageRegion(g2d.getClipBounds(), mainViewer.getZPosition(), mainViewer.getTPosition());				</b>
+<b class="nc"><i>577</i>&nbsp;					mainViewer.getOverlayLayers().stream().forEach(o -&gt; {</b>
+<b class="nc"><i>578</i>&nbsp;						o.paintOverlay(g2d, region, downsample, mainViewer.getImageData(), false);</b>
+<i>579</i>&nbsp;					});
+<i>580</i>&nbsp;				}
+<i>581</i>&nbsp;				
+<b class="nc"><i>582</i>&nbsp;				g2d.dispose();</b>
+<i>583</i>&nbsp;				
+<b class="nc"><i>584</i>&nbsp;				if (imgFX == null || img.getWidth() != imgFX.getWidth() || img.getHeight() != imgFX.getHeight())</b>
+<b class="nc"><i>585</i>&nbsp;					imgFX = SwingFXUtils.toFXImage(img, null);</b>
+<i>586</i>&nbsp;				else
+<b class="nc"><i>587</i>&nbsp;					imgFX = SwingFXUtils.toFXImage(img, imgFX);</b>
+<i>588</i>&nbsp;				
+<b class="nc"><i>589</i>&nbsp;				blitter(imgFX);</b>
+<i>590</i>&nbsp;			}
+<i>591</i>&nbsp;			
+<i>592</i>&nbsp;			/**
+<i>593</i>&nbsp;			 * Update the canvas by painting the specified image.
+<i>594</i>&nbsp;			 * 
+<i>595</i>&nbsp;			 * @param imgFX
+<i>596</i>&nbsp;			 */
+<i>597</i>&nbsp;			void blitter(Image imgFX) {
+<b class="nc"><i>598</i>&nbsp;				if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>599</i>&nbsp;					Platform.runLater(() -&gt; blitter(imgFX));</b>
+<i>600</i>&nbsp;					return;
+<i>601</i>&nbsp;				}
+<b class="nc"><i>602</i>&nbsp;				GraphicsContext context = getGraphicsContext2D();</b>
+<b class="nc"><i>603</i>&nbsp;				context.clearRect(0, 0, getWidth(), getHeight());</b>
+<b class="nc"><i>604</i>&nbsp;				if (imgFX != null)</b>
+<b class="nc"><i>605</i>&nbsp;					context.drawImage(imgFX, 0, 0);</b>
+<i>606</i>&nbsp;				
+<b class="nc"><i>607</i>&nbsp;				if (showCursor.get() &amp;&amp; localCursorPosition != null) {</b>
+<b class="nc"><i>608</i>&nbsp;					context.setLineWidth(4);</b>
+<b class="nc"><i>609</i>&nbsp;					context.setStroke(javafx.scene.paint.Color.BLACK);</b>
+<b class="nc"><i>610</i>&nbsp;					double len = 4.0;</b>
+<b class="nc"><i>611</i>&nbsp;					double x = localCursorPosition.getX();</b>
+<b class="nc"><i>612</i>&nbsp;					double y = localCursorPosition.getY();</b>
+<b class="nc"><i>613</i>&nbsp;					context.strokeLine(x, y-len, x, y+len);</b>
+<b class="nc"><i>614</i>&nbsp;					context.strokeLine(x-len, y, x+len, y);</b>
+<b class="nc"><i>615</i>&nbsp;					context.setLineWidth(2);</b>
+<b class="nc"><i>616</i>&nbsp;					context.setStroke(javafx.scene.paint.Color.WHITE);</b>
+<b class="nc"><i>617</i>&nbsp;					context.strokeLine(x, y-len, x, y+len);</b>
+<b class="nc"><i>618</i>&nbsp;					context.strokeLine(x-len, y, x+len, y);</b>
+<i>619</i>&nbsp;				}
+<i>620</i>&nbsp;			}
+<i>621</i>&nbsp;			
+<i>622</i>&nbsp;		}
+<i>623</i>&nbsp;		
+<i>624</i>&nbsp;		/**
+<i>625</i>&nbsp;		 * Renderer that extracts a single channel from an {@link ImageDisplay}.
+<i>626</i>&nbsp;		 */
+<i>627</i>&nbsp;		class ImageDisplaySingleChannelRenderer extends AbstractImageRenderer {
+<i>628</i>&nbsp;			
+<i>629</i>&nbsp;			private int channel;
+<i>630</i>&nbsp;			
+<b class="nc"><i>631</i>&nbsp;			ImageDisplaySingleChannelRenderer(int channel) {</b>
+<b class="nc"><i>632</i>&nbsp;				super();</b>
+<b class="nc"><i>633</i>&nbsp;				this.channel = channel;</b>
+<i>634</i>&nbsp;			}
+<i>635</i>&nbsp;			
+<i>636</i>&nbsp;			@Override
+<i>637</i>&nbsp;			public long getLastChangeTimestamp() {
+<b class="nc"><i>638</i>&nbsp;				return mainViewer.getImageDisplay().getLastChangeTimestamp();</b>
+<i>639</i>&nbsp;			}
+<i>640</i>&nbsp;
+<i>641</i>&nbsp;			@Override
+<i>642</i>&nbsp;			public BufferedImage applyTransforms(BufferedImage imgInput, BufferedImage imgOutput) {
+<b class="nc"><i>643</i>&nbsp;				ImageDisplay imageDisplay = mainViewer.getImageDisplay();</b>
+<b class="nc"><i>644</i>&nbsp;				if (channel &gt;= 0) {</b>
+<b class="nc"><i>645</i>&nbsp;					List&lt;ChannelDisplayInfo&gt; channels = imageDisplay.availableChannels();</b>
+<b class="nc"><i>646</i>&nbsp;					if (channel &lt; channels.size()) {</b>
+<b class="nc"><i>647</i>&nbsp;						return ImageDisplay.applyTransforms(imgInput, imgOutput, Collections.singletonList(channels.get(channel)), imageDisplay.useGrayscaleLuts());</b>
+<i>648</i>&nbsp;					}
+<i>649</i>&nbsp;				}
+<b class="nc"><i>650</i>&nbsp;				return imageDisplay.applyTransforms(imgInput, imgOutput);</b>
+<i>651</i>&nbsp;			}
+<i>652</i>&nbsp;			
+<i>653</i>&nbsp;		}
+<i>654</i>&nbsp;
+<i>655</i>&nbsp;	}
+<i>656</i>&nbsp;	
+<i>657</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

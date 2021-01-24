@@ -1,0 +1,3233 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: QP</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.scripting</a> ]
+</div>
+
+<h1>Coverage Summary for Class: QP (qupath.lib.scripting)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QP</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    1.4%
+  </span>
+  <span class="absValue">
+    (3/ 211)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2%
+  </span>
+  <span class="absValue">
+    (19/ 951)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.scripting;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.File;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.lang.reflect.Constructor;
+<i>30</i>&nbsp;import java.lang.reflect.Field;
+<i>31</i>&nbsp;import java.lang.reflect.Member;
+<i>32</i>&nbsp;import java.lang.reflect.Method;
+<i>33</i>&nbsp;import java.lang.reflect.Modifier;
+<i>34</i>&nbsp;import java.nio.file.Files;
+<i>35</i>&nbsp;import java.nio.file.Paths;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Arrays;
+<i>38</i>&nbsp;import java.util.Collection;
+<i>39</i>&nbsp;import java.util.Collections;
+<i>40</i>&nbsp;import java.util.Comparator;
+<i>41</i>&nbsp;import java.util.HashMap;
+<i>42</i>&nbsp;import java.util.HashSet;
+<i>43</i>&nbsp;import java.util.List;
+<i>44</i>&nbsp;import java.util.Map;
+<i>45</i>&nbsp;import java.util.NoSuchElementException;
+<i>46</i>&nbsp;import java.util.Scanner;
+<i>47</i>&nbsp;import java.util.Set;
+<i>48</i>&nbsp;import java.util.WeakHashMap;
+<i>49</i>&nbsp;import java.util.function.Predicate;
+<i>50</i>&nbsp;import java.util.regex.Pattern;
+<i>51</i>&nbsp;import java.util.stream.Collectors;
+<i>52</i>&nbsp;import java.util.stream.Stream;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>55</i>&nbsp;import org.slf4j.Logger;
+<i>56</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>59</i>&nbsp;import qupath.lib.analysis.DelaunayTools;
+<i>60</i>&nbsp;import qupath.lib.analysis.DistanceTools;
+<i>61</i>&nbsp;import qupath.lib.analysis.features.ObjectMeasurements;
+<i>62</i>&nbsp;import qupath.lib.analysis.features.ObjectMeasurements.ShapeFeatures;
+<i>63</i>&nbsp;import qupath.lib.awt.common.BufferedImageTools;
+<i>64</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>65</i>&nbsp;import qupath.lib.classifiers.PathObjectClassifier;
+<i>66</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifier;
+<i>67</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifiers;
+<i>68</i>&nbsp;import qupath.lib.classifiers.pixel.PixelClassifier;
+<i>69</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>70</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>71</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>72</i>&nbsp;import qupath.lib.images.ImageData;
+<i>73</i>&nbsp;import qupath.lib.images.ImageData.ImageType;
+<i>74</i>&nbsp;import qupath.lib.images.servers.ColorTransforms;
+<i>75</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>76</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>77</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>78</i>&nbsp;import qupath.lib.images.servers.ImageServerProvider;
+<i>79</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>80</i>&nbsp;import qupath.lib.images.writers.ImageWriterTools;
+<i>81</i>&nbsp;import qupath.lib.images.writers.TileExporter;
+<i>82</i>&nbsp;import qupath.lib.io.GsonTools;
+<i>83</i>&nbsp;import qupath.lib.io.PathIO;
+<i>84</i>&nbsp;import qupath.lib.io.PointIO;
+<i>85</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>86</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>87</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>88</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>89</i>&nbsp;import qupath.lib.objects.CellTools;
+<i>90</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>91</i>&nbsp;import qupath.lib.objects.PathCellObject;
+<i>92</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>93</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>94</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>95</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>96</i>&nbsp;import qupath.lib.objects.classes.PathClassTools;
+<i>97</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>98</i>&nbsp;import qupath.lib.objects.hierarchy.TMAGrid;
+<i>99</i>&nbsp;import qupath.lib.plugins.CommandLinePluginRunner;
+<i>100</i>&nbsp;import qupath.lib.plugins.PathPlugin;
+<i>101</i>&nbsp;import qupath.lib.plugins.workflow.RunSavedClassifierWorkflowStep;
+<i>102</i>&nbsp;import qupath.lib.projects.Project;
+<i>103</i>&nbsp;import qupath.lib.projects.ProjectIO;
+<i>104</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>105</i>&nbsp;import qupath.lib.projects.Projects;
+<i>106</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>107</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>108</i>&nbsp;import qupath.lib.regions.Padding;
+<i>109</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>110</i>&nbsp;import qupath.lib.roi.GeometryTools;
+<i>111</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>112</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>113</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>114</i>&nbsp;import qupath.opencv.ml.objects.OpenCVMLClassifier;
+<i>115</i>&nbsp;import qupath.opencv.ml.objects.features.FeatureExtractors;
+<i>116</i>&nbsp;import qupath.opencv.ml.pixel.PixelClassifierTools;
+<i>117</i>&nbsp;import qupath.opencv.ml.pixel.PixelClassifierTools.CreateObjectOptions;
+<i>118</i>&nbsp;import qupath.opencv.ml.pixel.PixelClassifiers;
+<i>119</i>&nbsp;import qupath.opencv.ops.ImageOps;
+<i>120</i>&nbsp;import qupath.opencv.tools.OpenCVTools;
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;/**
+<i>123</i>&nbsp; * Collection of static methods that are useful for scripting.
+<i>124</i>&nbsp; * &lt;p&gt;
+<i>125</i>&nbsp; * Prior to running a script, the {@code ImageData} should be set so that the script can make use of it.
+<i>126</i>&nbsp; * &lt;p&gt;
+<i>127</i>&nbsp; * A different {@code ImageData} may be stored for different threads.
+<i>128</i>&nbsp; * &lt;p&gt;
+<i>129</i>&nbsp; * Note: This design may change in the future, to enable a non-static class to encapsulate 
+<i>130</i>&nbsp; * the context for a running script.  The limited ability to subclass a class containing static methods 
+<i>131</i>&nbsp; * makes this design a bit problematic, while its package location means it cannot have access to GUI features 
+<i>132</i>&nbsp; * (which it shouldn&#39;t have, because of the need to run headless... but sometimes the GUI is needed, e.g. to 
+<i>133</i>&nbsp; * export images with markup).
+<i>134</i>&nbsp; * 
+<i>135</i>&nbsp; * @author Pete Bankhead
+<i>136</i>&nbsp; *
+<i>137</i>&nbsp; */
+<b class="fc"><i>138</i>&nbsp;public class QP {</b>
+<i>139</i>&nbsp;	
+<b class="fc"><i>140</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(QP.class);</b>
+<i>141</i>&nbsp;	
+<i>142</i>&nbsp;	/**
+<i>143</i>&nbsp;	 * Brightfield image type with hematoxylin and DAB staining
+<i>144</i>&nbsp;	 */
+<b class="fc"><i>145</i>&nbsp;	final public static ImageData.ImageType BRIGHTFIELD_H_DAB = ImageData.ImageType.BRIGHTFIELD_H_DAB;</b>
+<i>146</i>&nbsp;	
+<i>147</i>&nbsp;	/**
+<i>148</i>&nbsp;	 * Brightfield image type with hematoxylin and eosin staining
+<i>149</i>&nbsp;	 */
+<b class="fc"><i>150</i>&nbsp;	final public static ImageData.ImageType BRIGHTFIELD_H_E = ImageData.ImageType.BRIGHTFIELD_H_E;</b>
+<i>151</i>&nbsp;	
+<i>152</i>&nbsp;	/**
+<i>153</i>&nbsp;	 * Brightfield image type
+<i>154</i>&nbsp;	 */
+<b class="fc"><i>155</i>&nbsp;	final public static ImageData.ImageType BRIGHTFIELD_OTHER = ImageData.ImageType.BRIGHTFIELD_OTHER;</b>
+<i>156</i>&nbsp;	
+<i>157</i>&nbsp;	/**
+<i>158</i>&nbsp;	 * Fluorescence image type
+<i>159</i>&nbsp;	 */
+<b class="fc"><i>160</i>&nbsp;	final public static ImageData.ImageType FLUORESCENCE = ImageData.ImageType.FLUORESCENCE;</b>
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Any other image type (neither brightfield nor fluorescence)
+<i>164</i>&nbsp;	 */
+<b class="fc"><i>165</i>&nbsp;	final public static ImageData.ImageType OTHER = ImageData.ImageType.OTHER;</b>
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * Store ImageData accessible to the script thread
+<i>169</i>&nbsp;	 */
+<b class="fc"><i>170</i>&nbsp;	private static Map&lt;Thread, ImageData&lt;BufferedImage&gt;&gt; batchImageData = new WeakHashMap&lt;&gt;();</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;	/**
+<i>173</i>&nbsp;	 * Store Project accessible to the script thread
+<i>174</i>&nbsp;	 */
+<b class="fc"><i>175</i>&nbsp;	private static Map&lt;Thread, Project&lt;BufferedImage&gt;&gt; batchProject = new WeakHashMap&lt;&gt;();</b>
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;	/**
+<i>178</i>&nbsp;	 * Placeholder for the path to the current project.
+<i>179</i>&nbsp;	 * May be used as follows:
+<i>180</i>&nbsp;	 * &lt;pre&gt;
+<i>181</i>&nbsp;	 *   var path = buildFilePath(PROJECT_BASE_DIR, &#39;subdir&#39;, &#39;name.txt&#39;)
+<i>182</i>&nbsp;	 * &lt;/pre&gt;
+<i>183</i>&nbsp;	 */
+<i>184</i>&nbsp;	final public static String PROJECT_BASE_DIR = &quot;{%PROJECT}&quot;;
+<i>185</i>&nbsp;	
+<i>186</i>&nbsp;	
+<i>187</i>&nbsp;	/**
+<i>188</i>&nbsp;	 * TODO: Figure out where this should go...
+<i>189</i>&nbsp;	 * Its purpose is to prompt essential type adapters to be registered so that they function 
+<i>190</i>&nbsp;	 * within scripts. See https://github.com/qupath/qupath/issues/514
+<i>191</i>&nbsp;	 */
+<i>192</i>&nbsp;	static {
+<b class="fc"><i>193</i>&nbsp;		logger.info(&quot;Initializing type adapters&quot;);</b>
+<b class="fc"><i>194</i>&nbsp;		ObjectClassifiers.ObjectClassifierTypeAdapterFactory.registerSubtype(OpenCVMLClassifier.class);</b>
+<i>195</i>&nbsp;		
+<b class="fc"><i>196</i>&nbsp;		GsonTools.getDefaultBuilder()</b>
+<b class="fc"><i>197</i>&nbsp;			.registerTypeAdapterFactory(PixelClassifiers.getTypeAdapterFactory())</b>
+<b class="fc"><i>198</i>&nbsp;			.registerTypeAdapterFactory(FeatureExtractors.getTypeAdapterFactory())</b>
+<b class="fc"><i>199</i>&nbsp;			.registerTypeAdapterFactory(ObjectClassifiers.getTypeAdapterFactory())</b>
+<b class="fc"><i>200</i>&nbsp;			.registerTypeAdapter(ColorTransforms.ColorTransform.class, new ColorTransforms.ColorTransformTypeAdapter());</b>
+<i>201</i>&nbsp;		
+<i>202</i>&nbsp;		// Currently, the type adapters are registered within the class
+<i>203</i>&nbsp;		@SuppressWarnings(&quot;unused&quot;)
+<b class="fc"><i>204</i>&nbsp;		var init = new ImageOps();</b>
+<i>205</i>&nbsp;	}
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;	
+<b class="fc"><i>208</i>&nbsp;	private final static List&lt;Class&lt;?&gt;&gt; CORE_CLASSES = Collections.unmodifiableList(Arrays.asList(</b>
+<i>209</i>&nbsp;			// Core datastructures
+<i>210</i>&nbsp;			ImageData.class,
+<i>211</i>&nbsp;			ImageServer.class,
+<i>212</i>&nbsp;			PathObject.class,
+<i>213</i>&nbsp;			PathObjectHierarchy.class,
+<i>214</i>&nbsp;			PathClass.class,
+<i>215</i>&nbsp;			
+<i>216</i>&nbsp;			ImageRegion.class,
+<i>217</i>&nbsp;			RegionRequest.class,
+<i>218</i>&nbsp;			ImagePlane.class,
+<i>219</i>&nbsp;			Padding.class,
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;			// Static constructors
+<i>222</i>&nbsp;			PathObjects.class,
+<i>223</i>&nbsp;			ROIs.class,
+<i>224</i>&nbsp;			PathClassFactory.class,
+<i>225</i>&nbsp;			Projects.class,
+<i>226</i>&nbsp;			
+<i>227</i>&nbsp;			// Tools and static classes
+<i>228</i>&nbsp;			PathObjectTools.class,
+<i>229</i>&nbsp;			RoiTools.class,
+<i>230</i>&nbsp;			GsonTools.class,
+<i>231</i>&nbsp;			BufferedImageTools.class,
+<i>232</i>&nbsp;			PathClassifierTools.class,
+<i>233</i>&nbsp;			ColorTools.class,
+<i>234</i>&nbsp;			GeneralTools.class,
+<i>235</i>&nbsp;			DistanceTools.class,
+<i>236</i>&nbsp;//			ImageWriter.class,
+<i>237</i>&nbsp;			ImageWriterTools.class,
+<i>238</i>&nbsp;			PathClassTools.class,
+<i>239</i>&nbsp;			GeometryTools.class,
+<i>240</i>&nbsp;			IJTools.class,
+<i>241</i>&nbsp;			OpenCVTools.class,
+<i>242</i>&nbsp;			TileExporter.class,
+<i>243</i>&nbsp;			ServerTools.class,
+<i>244</i>&nbsp;			PixelClassifierTools.class,
+<i>245</i>&nbsp;			
+<i>246</i>&nbsp;			ImageOps.class,
+<i>247</i>&nbsp;			DelaunayTools.class,
+<i>248</i>&nbsp;			CellTools.class,
+<i>249</i>&nbsp;			
+<i>250</i>&nbsp;			// IO classes
+<i>251</i>&nbsp;			PointIO.class,
+<i>252</i>&nbsp;			ProjectIO.class,
+<i>253</i>&nbsp;			
+<i>254</i>&nbsp;			// External classes
+<i>255</i>&nbsp;			BufferedImage.class
+<i>256</i>&nbsp;			));
+<i>257</i>&nbsp;	
+<i>258</i>&nbsp;	/**
+<i>259</i>&nbsp;	 * List the fields and methods of a specified object.
+<i>260</i>&nbsp;	 * @param o
+<i>261</i>&nbsp;	 * @return
+<i>262</i>&nbsp;	 */
+<i>263</i>&nbsp;	public static String describe(Object o) {
+<b class="nc"><i>264</i>&nbsp;		return describe(o instanceof Class ? (Class&lt;?&gt;)o : o.getClass());</b>
+<i>265</i>&nbsp;	}
+<i>266</i>&nbsp;	
+<i>267</i>&nbsp;	/**
+<i>268</i>&nbsp;	 * List the fields and methods of a specified class.
+<i>269</i>&nbsp;	 * @param cls
+<i>270</i>&nbsp;	 * @return
+<i>271</i>&nbsp;	 */
+<i>272</i>&nbsp;	public static String describe(Class&lt;?&gt; cls) {
+<b class="nc"><i>273</i>&nbsp;		var sb = new StringBuilder(cls.getName());</b>
+<b class="nc"><i>274</i>&nbsp;		var fields = getPublicFields(cls);</b>
+<b class="nc"><i>275</i>&nbsp;		if (!fields.isEmpty()) {</b>
+<b class="nc"><i>276</i>&nbsp;			sb.append(&quot;\n&quot;).append(&quot;  Fields:&quot;);</b>
+<b class="nc"><i>277</i>&nbsp;			for (var f : fields)</b>
+<b class="nc"><i>278</i>&nbsp;				sb.append(&quot;\n&quot;).append(&quot;    &quot;).append(getString(f));</b>
+<i>279</i>&nbsp;		}
+<i>280</i>&nbsp;		
+<b class="nc"><i>281</i>&nbsp;		var methods = getPublicMethods(cls);</b>
+<b class="nc"><i>282</i>&nbsp;		if (!methods.isEmpty()) {</b>
+<b class="nc"><i>283</i>&nbsp;			sb.append(&quot;\n&quot;).append(&quot;  Methods:&quot;);</b>
+<b class="nc"><i>284</i>&nbsp;			for (var m : methods)</b>
+<b class="nc"><i>285</i>&nbsp;				sb.append(&quot;\n&quot;).append(&quot;    &quot;).append(getString(m));</b>
+<i>286</i>&nbsp;		}
+<b class="nc"><i>287</i>&nbsp;		return sb.toString();</b>
+<i>288</i>&nbsp;	}
+<i>289</i>&nbsp;	
+<i>290</i>&nbsp;	
+<i>291</i>&nbsp;	private static List&lt;Method&gt; getPublicMethods(Object o) {
+<b class="nc"><i>292</i>&nbsp;		Class&lt;?&gt; cls = o instanceof Class ? (Class&lt;?&gt;)o : o.getClass();</b>
+<b class="nc"><i>293</i>&nbsp;		return Arrays.stream(cls.getMethods())</b>
+<b class="nc"><i>294</i>&nbsp;				.filter(m -&gt; {</b>
+<b class="nc"><i>295</i>&nbsp;					return !Object.class.equals(m.getDeclaringClass()) &amp;&amp; isPublic(m) &amp;&amp; m.getAnnotation(Deprecated.class) == null;</b>
+<i>296</i>&nbsp;					})
+<b class="nc"><i>297</i>&nbsp;				.sorted((m1, m2) -&gt; m1.getName().compareTo(m2.getName()))</b>
+<b class="nc"><i>298</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>299</i>&nbsp;	}
+<i>300</i>&nbsp;	
+<i>301</i>&nbsp;	private static List&lt;Field&gt; getPublicFields(Object o) {
+<b class="nc"><i>302</i>&nbsp;		Class&lt;?&gt; cls = o instanceof Class ? (Class&lt;?&gt;)o : o.getClass();</b>
+<b class="nc"><i>303</i>&nbsp;		return Arrays.stream(cls.getFields())</b>
+<b class="nc"><i>304</i>&nbsp;				.filter(f -&gt; {</b>
+<b class="nc"><i>305</i>&nbsp;					return !Object.class.equals(f.getDeclaringClass()) &amp;&amp; isPublic(f) &amp;&amp; f.getAnnotation(Deprecated.class) == null;</b>
+<i>306</i>&nbsp;					})
+<b class="nc"><i>307</i>&nbsp;				.sorted((m1, m2) -&gt; m1.getName().compareTo(m2.getName()))</b>
+<b class="nc"><i>308</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>309</i>&nbsp;	}
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;	private static boolean isPublic(Member m) {
+<b class="nc"><i>312</i>&nbsp;		return Modifier.isPublic(m.getModifiers());</b>
+<i>313</i>&nbsp;	}
+<i>314</i>&nbsp;	
+<i>315</i>&nbsp;	private static String getString(Method m) {
+<b class="nc"><i>316</i>&nbsp;		var sb = new StringBuilder();</b>
+<b class="nc"><i>317</i>&nbsp;		if (Modifier.isStatic(m.getModifiers()))</b>
+<b class="nc"><i>318</i>&nbsp;			sb.append(&quot;static &quot;);</b>
+<b class="nc"><i>319</i>&nbsp;		sb.append(m.getReturnType().getSimpleName());</b>
+<b class="nc"><i>320</i>&nbsp;		sb.append(&quot; &quot;);</b>
+<b class="nc"><i>321</i>&nbsp;		sb.append(m.getName());</b>
+<b class="nc"><i>322</i>&nbsp;		sb.append(&#39;(&#39;);</b>
+<b class="nc"><i>323</i>&nbsp;		sb.append(Stream.of(m.getParameterTypes()).map(t -&gt; t.getSimpleName()).</b>
+<b class="nc"><i>324</i>&nbsp;				collect(Collectors.joining(&quot;, &quot;)));</b>
+<b class="nc"><i>325</i>&nbsp;		sb.append(&#39;)&#39;);</b>
+<b class="nc"><i>326</i>&nbsp;		var exceptions = m.getExceptionTypes();</b>
+<b class="nc"><i>327</i>&nbsp;		if (exceptions.length &gt; 0) {</b>
+<b class="nc"><i>328</i>&nbsp;			sb.append(Stream.of(exceptions).map(t -&gt; t.getSimpleName()).</b>
+<b class="nc"><i>329</i>&nbsp;					collect(Collectors.joining(&quot;, &quot;, &quot; throws &quot;, &quot;&quot;)));</b>
+<i>330</i>&nbsp;		}
+<b class="nc"><i>331</i>&nbsp;		return sb.toString();</b>
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;		//		return m.toString();
+<i>334</i>&nbsp;		//			sb.append(&quot;\n&quot;).append(&quot;  &quot;)
+<i>335</i>&nbsp;		//				.append(m.getReturnType().getSimpleName())
+<i>336</i>&nbsp;		//				.append(&quot; &quot;)
+<i>337</i>&nbsp;		//				.append(m.getName())
+<i>338</i>&nbsp;		//				.append(&quot;(&quot;)
+<i>339</i>&nbsp;		//				.append(m.toString())
+<i>340</i>&nbsp;		//				.append(&quot;)&quot;);
+<i>341</i>&nbsp;	}
+<i>342</i>&nbsp;	
+<i>343</i>&nbsp;	private static String getString(Field f) {
+<b class="nc"><i>344</i>&nbsp;		return f.toString();</b>
+<i>345</i>&nbsp;	}
+<i>346</i>&nbsp;	
+<i>347</i>&nbsp;	
+<i>348</i>&nbsp;	/**
+<i>349</i>&nbsp;	 * Get a list of core classes that are likely to be useful for scripting.
+<i>350</i>&nbsp;	 * The purpose of this is to allow users to find classes they are likely to need, 
+<i>351</i>&nbsp;	 * or to import these automatically at the beginning of scripts.
+<i>352</i>&nbsp;	 * @return
+<i>353</i>&nbsp;	 */
+<i>354</i>&nbsp;	public static List&lt;Class&lt;?&gt;&gt; getCoreClasses() {
+<b class="fc"><i>355</i>&nbsp;		return CORE_CLASSES;</b>
+<i>356</i>&nbsp;	}
+<i>357</i>&nbsp;	
+<i>358</i>&nbsp;	
+<i>359</i>&nbsp;	/**
+<i>360</i>&nbsp;	 * Set the {@link Project} and {@link ImageData} to use for batch processing for the current thread.
+<i>361</i>&nbsp;	 * @param project
+<i>362</i>&nbsp;	 * @param imageData
+<i>363</i>&nbsp;	 */
+<i>364</i>&nbsp;	public static void setBatchProjectAndImage(final Project&lt;BufferedImage&gt; project, final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>365</i>&nbsp;		setBatchProject(project);</b>
+<b class="nc"><i>366</i>&nbsp;		setBatchImageData(imageData);</b>
+<b class="nc"><i>367</i>&nbsp;	}</b>
+<i>368</i>&nbsp;	
+<i>369</i>&nbsp;	/**
+<i>370</i>&nbsp;	 * Reset the {@link Project} and {@link ImageData} used for batch processing for the current thread.
+<i>371</i>&nbsp;	 */
+<i>372</i>&nbsp;	public static void resetBatchProjectAndImage() {
+<b class="nc"><i>373</i>&nbsp;		setBatchProject(null);</b>
+<b class="nc"><i>374</i>&nbsp;		setBatchImageData(null);</b>
+<b class="nc"><i>375</i>&nbsp;	}</b>
+<i>376</i>&nbsp;	
+<i>377</i>&nbsp;	/**
+<i>378</i>&nbsp;	 * Set the ImageData to use for batch processing.  This will be local for the current thread.
+<i>379</i>&nbsp;	 * @param imageData
+<i>380</i>&nbsp;	 * @return
+<i>381</i>&nbsp;	 */
+<i>382</i>&nbsp;	static ImageData&lt;BufferedImage&gt; setBatchImageData(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>383</i>&nbsp;		Thread thread = Thread.currentThread();</b>
+<b class="nc"><i>384</i>&nbsp;		logger.trace(&quot;Setting image data for {} to {}&quot;, thread, imageData);</b>
+<b class="nc"><i>385</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>386</i>&nbsp;			return batchImageData.remove(thread);</b>
+<b class="nc"><i>387</i>&nbsp;		return batchImageData.put(thread, imageData);</b>
+<i>388</i>&nbsp;	}
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;	
+<i>391</i>&nbsp;	/**
+<i>392</i>&nbsp;	 * Set the ImageData to use for batch processing.  This will be local for the current thread.
+<i>393</i>&nbsp;	 * &lt;p&gt;
+<i>394</i>&nbsp;	 * @return The ImageData set with setBatchImageData, or null if no ImageData has been set for the current thread.
+<i>395</i>&nbsp;	 */
+<i>396</i>&nbsp;	static ImageData&lt;BufferedImage&gt; getBatchImageData() {
+<b class="nc"><i>397</i>&nbsp;		return batchImageData.get(Thread.currentThread());</b>
+<i>398</i>&nbsp;	}
+<i>399</i>&nbsp;	
+<i>400</i>&nbsp;	/**
+<i>401</i>&nbsp;	 * Set the Project to use for batch processing.  This will be local for the current thread.
+<i>402</i>&nbsp;	 * @param project
+<i>403</i>&nbsp;	 * @return
+<i>404</i>&nbsp;	 */
+<i>405</i>&nbsp;	static Project&lt;BufferedImage&gt; setBatchProject(final Project&lt;BufferedImage&gt; project) {
+<b class="nc"><i>406</i>&nbsp;		Thread thread = Thread.currentThread();</b>
+<b class="nc"><i>407</i>&nbsp;		logger.trace(&quot;Setting project for {} to {}&quot;, thread, project);</b>
+<b class="nc"><i>408</i>&nbsp;		if (project == null)</b>
+<b class="nc"><i>409</i>&nbsp;			return batchProject.remove(thread);</b>
+<b class="nc"><i>410</i>&nbsp;		return batchProject.put(thread, project);</b>
+<i>411</i>&nbsp;	}
+<i>412</i>&nbsp;	
+<i>413</i>&nbsp;	
+<i>414</i>&nbsp;	/**
+<i>415</i>&nbsp;	 * Set the ImageData to use for batch processing.  This will be local for the current thread.
+<i>416</i>&nbsp;	 * &lt;p&gt;
+<i>417</i>&nbsp;	 * @return The ImageData set with setBatchImageData, or null if no ImageData has been set for the current thread.
+<i>418</i>&nbsp;	 */
+<i>419</i>&nbsp;	static Project&lt;BufferedImage&gt; getBatchProject() {
+<b class="nc"><i>420</i>&nbsp;		return batchProject.get(Thread.currentThread());</b>
+<i>421</i>&nbsp;	}
+<i>422</i>&nbsp;	
+<i>423</i>&nbsp;	
+<i>424</i>&nbsp;	
+<i>425</i>&nbsp;	/**
+<i>426</i>&nbsp;	 * Load ImageData from a file.
+<i>427</i>&nbsp;	 * 
+<i>428</i>&nbsp;	 * @param path path to the file containing ImageData.
+<i>429</i>&nbsp;	 * @param setBatchData if true, the &lt;code&gt;setBatchImageData(ImageData)&lt;/code&gt; will be called if the loading is successful.
+<i>430</i>&nbsp;	 * @return
+<i>431</i>&nbsp;	 * @throws IOException 
+<i>432</i>&nbsp;	 * 
+<i>433</i>&nbsp;	 * @see #setBatchImageData
+<i>434</i>&nbsp;	 */
+<i>435</i>&nbsp;	@Deprecated
+<i>436</i>&nbsp;	public static ImageData&lt;BufferedImage&gt; loadImageData(final String path, final boolean setBatchData) throws IOException {
+<b class="nc"><i>437</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageData = PathIO.readImageData(new File(resolvePath(path)), null, null, BufferedImage.class);</b>
+<b class="nc"><i>438</i>&nbsp;		if (setBatchData &amp;&amp; imageData != null)</b>
+<b class="nc"><i>439</i>&nbsp;			setBatchImageData(imageData);</b>
+<b class="nc"><i>440</i>&nbsp;		return imageData;</b>
+<i>441</i>&nbsp;	}
+<i>442</i>&nbsp;	
+<i>443</i>&nbsp;	
+<i>444</i>&nbsp;//	public static ImageData&lt;?&gt; getCurrentImageData() {
+<i>445</i>&nbsp;//		// Try the batch image data first
+<i>446</i>&nbsp;//		ImageData&lt;?&gt; imageData = getBatchImageData();
+<i>447</i>&nbsp;//		if (imageData != null)
+<i>448</i>&nbsp;//			return imageData;
+<i>449</i>&nbsp;//		QuPathGUI instance = getInstance();
+<i>450</i>&nbsp;//		if (instance == null)
+<i>451</i>&nbsp;//			return null;
+<i>452</i>&nbsp;//		return instance.getImageData();
+<i>453</i>&nbsp;//	}
+<i>454</i>&nbsp;	
+<i>455</i>&nbsp;	
+<i>456</i>&nbsp;	/**
+<i>457</i>&nbsp;	 * Trigger an update for the current hierarchy.
+<i>458</i>&nbsp;	 * &lt;p&gt;
+<i>459</i>&nbsp;	 * This should be called after any (non-standard) modifications are made to the hierarchy 
+<i>460</i>&nbsp;	 * to ensure that all listeners are notified (including for any GUI).
+<i>461</i>&nbsp;	 * &lt;p&gt;
+<i>462</i>&nbsp;	 * It is common to call it at the end of any script that does any direct modification of objects 
+<i>463</i>&nbsp;	 * (e.g. adding/removing measurements, setting classifications).
+<i>464</i>&nbsp;	 */
+<i>465</i>&nbsp;	public static void fireHierarchyUpdate() {
+<b class="nc"><i>466</i>&nbsp;		fireHierarchyUpdate(getCurrentHierarchy());</b>
+<b class="nc"><i>467</i>&nbsp;	}</b>
+<i>468</i>&nbsp;
+<i>469</i>&nbsp;	/**
+<i>470</i>&nbsp;	 * Trigger an update for the specified hierarchy.
+<i>471</i>&nbsp;	 * &lt;p&gt;
+<i>472</i>&nbsp;	 * This should be called after any (non-standard) modifications are made to the hierarchy 
+<i>473</i>&nbsp;	 * to ensure that all listeners are notified (including for any GUI).
+<i>474</i>&nbsp;	 * &lt;p&gt;
+<i>475</i>&nbsp;	 * It is common to call it at the end of any script that does any direct modification of objects 
+<i>476</i>&nbsp;	 * (e.g. adding/removing measurements, setting classifications).
+<i>477</i>&nbsp;	 * 
+<i>478</i>&nbsp;	 * @param hierarchy
+<i>479</i>&nbsp;	 */
+<i>480</i>&nbsp;	public static void fireHierarchyUpdate(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>481</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>482</i>&nbsp;			hierarchy.fireHierarchyChangedEvent(QP.class);</b>
+<b class="nc"><i>483</i>&nbsp;	}</b>
+<i>484</i>&nbsp;	
+<i>485</i>&nbsp;	
+<i>486</i>&nbsp;	/**
+<i>487</i>&nbsp;	 * Create a new packed-int representation of an RGB color.
+<i>488</i>&nbsp;	 * &lt;p&gt;
+<i>489</i>&nbsp;	 * @param v A value between 0 and 255.  If a single value is give, the result will be
+<i>490</i>&nbsp;	 * a shade of gray (RGB all with that value).  Otherwise, 3 or 4 values may be given to generate 
+<i>491</i>&nbsp;	 * either an RGB or RGBA color.  Note: values are expected in order RGBA, but Java&#39;s packed ints are really ARGB.
+<i>492</i>&nbsp;	 * @return
+<i>493</i>&nbsp;	 */
+<i>494</i>&nbsp;	public static Integer getColorRGB(final int... v) {
+<b class="nc"><i>495</i>&nbsp;		if (v.length == 1)</b>
+<b class="nc"><i>496</i>&nbsp;			return ColorTools.makeRGB(v[0], v[0], v[0]);</b>
+<b class="nc"><i>497</i>&nbsp;		if (v.length == 3)</b>
+<b class="nc"><i>498</i>&nbsp;			return ColorTools.makeRGB(v[0], v[1], v[2]);</b>
+<b class="nc"><i>499</i>&nbsp;		if (v.length == 4)</b>
+<b class="nc"><i>500</i>&nbsp;			return ColorTools.makeRGBA(v[0], v[1], v[2], v[3]);</b>
+<b class="nc"><i>501</i>&nbsp;		throw new IllegalArgumentException(&quot;Input to getColorRGB must be either 1, 3 or 4 integer values, between 0 and 255!&quot;);</b>
+<i>502</i>&nbsp;	}
+<i>503</i>&nbsp;	
+<i>504</i>&nbsp;	/**
+<i>505</i>&nbsp;	 * Get the path to the {@code ImageServer} of the current {@code ImageData}.
+<i>506</i>&nbsp;	 * @return
+<i>507</i>&nbsp;	 * 
+<i>508</i>&nbsp;	 * @see #getCurrentImageData()
+<i>509</i>&nbsp;	 */
+<i>510</i>&nbsp;	public static String getCurrentServerPath() {
+<b class="nc"><i>511</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>512</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>513</i>&nbsp;			return null;</b>
+<b class="nc"><i>514</i>&nbsp;		return imageData.getServerPath();</b>
+<i>515</i>&nbsp;	}
+<i>516</i>&nbsp;	
+<i>517</i>&nbsp;	/**
+<i>518</i>&nbsp;	 * Get the path to the current {@code ImageData}.
+<i>519</i>&nbsp;	 * &lt;p&gt;
+<i>520</i>&nbsp;	 * In this implementation, it is the same as calling {@link #getBatchImageData()}.
+<i>521</i>&nbsp;	 * 
+<i>522</i>&nbsp;	 * @return
+<i>523</i>&nbsp;	 * 
+<i>524</i>&nbsp;	 * @see #getBatchImageData()
+<i>525</i>&nbsp;	 */
+<i>526</i>&nbsp;	public static ImageData&lt;BufferedImage&gt; getCurrentImageData() {
+<b class="nc"><i>527</i>&nbsp;		return getBatchImageData();</b>
+<i>528</i>&nbsp;	}
+<i>529</i>&nbsp;	
+<i>530</i>&nbsp;	
+<i>531</i>&nbsp;	/**
+<i>532</i>&nbsp;	 * Get the current project.
+<i>533</i>&nbsp;	 * &lt;p&gt;
+<i>534</i>&nbsp;	 * In this implementation, it is the same as calling {@link #getBatchProject()}.
+<i>535</i>&nbsp;	 * 
+<i>536</i>&nbsp;	 * @return
+<i>537</i>&nbsp;	 * 
+<i>538</i>&nbsp;	 * @see #getBatchProject()
+<i>539</i>&nbsp;	 */
+<i>540</i>&nbsp;	public static Project&lt;BufferedImage&gt; getProject() {
+<b class="nc"><i>541</i>&nbsp;		return getBatchProject();</b>
+<i>542</i>&nbsp;	}
+<i>543</i>&nbsp;	
+<i>544</i>&nbsp;	/**
+<i>545</i>&nbsp;	 * Resolve a path, replacing any placeholders. Currently, this means only {@link #PROJECT_BASE_DIR}.
+<i>546</i>&nbsp;	 * @param path
+<i>547</i>&nbsp;	 * @return
+<i>548</i>&nbsp;	 */
+<i>549</i>&nbsp;	public static String resolvePath(final String path) {
+<b class="nc"><i>550</i>&nbsp;		String base = getProjectBaseDirectory();</b>
+<b class="nc"><i>551</i>&nbsp;		if (base != null)</b>
+<b class="nc"><i>552</i>&nbsp;			return path.replace(PROJECT_BASE_DIR, base);</b>
+<b class="nc"><i>553</i>&nbsp;		else if (path.contains(PROJECT_BASE_DIR))</b>
+<b class="nc"><i>554</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot resolve path &#39;&quot; + path + &quot;&#39; - no project base directory available&quot;);</b>
+<b class="nc"><i>555</i>&nbsp;		return</b>
+<i>556</i>&nbsp;			path;
+<i>557</i>&nbsp;	}
+<i>558</i>&nbsp;	
+<i>559</i>&nbsp;	/**
+<i>560</i>&nbsp;	 * Build a file path from multiple components.
+<i>561</i>&nbsp;	 * A common use of this is
+<i>562</i>&nbsp;	 * &lt;pre&gt;
+<i>563</i>&nbsp;	 *   String path = buildFilePath(PROJECT_BASE_DIR, &quot;export&quot;)
+<i>564</i>&nbsp;	 * &lt;/pre&gt;
+<i>565</i>&nbsp;	 * @param path
+<i>566</i>&nbsp;	 * @return
+<i>567</i>&nbsp;	 */
+<i>568</i>&nbsp;	public static String buildFilePath(String...path) {
+<b class="nc"><i>569</i>&nbsp;		File file = new File(resolvePath(path[0]));</b>
+<b class="nc"><i>570</i>&nbsp;		for (int i = 1; i &lt; path.length; i++)</b>
+<b class="nc"><i>571</i>&nbsp;			file = new File(file, path[i]);</b>
+<b class="nc"><i>572</i>&nbsp;		return file.getAbsolutePath();</b>
+<i>573</i>&nbsp;	}
+<i>574</i>&nbsp;	
+<i>575</i>&nbsp;	/**
+<i>576</i>&nbsp;	 * Ensure directories exist for the specified path, calling {@code file.mkdirs()} if not.
+<i>577</i>&nbsp;	 * @param path the directory path
+<i>578</i>&nbsp;	 * @return true if a directory was created, false otherwise
+<i>579</i>&nbsp;	 */
+<i>580</i>&nbsp;	public static boolean mkdirs(String path) {
+<b class="nc"><i>581</i>&nbsp;		File file = new File(resolvePath(path));</b>
+<b class="nc"><i>582</i>&nbsp;		if (!file.exists())</b>
+<b class="nc"><i>583</i>&nbsp;			return file.mkdirs();</b>
+<b class="nc"><i>584</i>&nbsp;		return false;</b>
+<i>585</i>&nbsp;	}
+<i>586</i>&nbsp;	
+<i>587</i>&nbsp;	/**
+<i>588</i>&nbsp;	 * Query if a file exists.
+<i>589</i>&nbsp;	 * @param path full file path
+<i>590</i>&nbsp;	 * @return true if the file exists, false otherwise
+<i>591</i>&nbsp;	 */
+<i>592</i>&nbsp;	public static boolean fileExists(String path) {
+<b class="nc"><i>593</i>&nbsp;		return new File(resolvePath(path)).exists();</b>
+<i>594</i>&nbsp;	}
+<i>595</i>&nbsp;
+<i>596</i>&nbsp;	/**
+<i>597</i>&nbsp;	 * Query if a file path corresponds to a directory.
+<i>598</i>&nbsp;	 * @param path full file path
+<i>599</i>&nbsp;	 * @return true if the file exists and is a directory, false otherwise
+<i>600</i>&nbsp;	 */
+<i>601</i>&nbsp;	public static boolean isDirectory(String path) {
+<b class="nc"><i>602</i>&nbsp;		return new File(resolvePath(path)).isDirectory();</b>
+<i>603</i>&nbsp;	}
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;	
+<i>606</i>&nbsp;	/**
+<i>607</i>&nbsp;	 * Get the base directory for the currently-open project, or null if no project is open.
+<i>608</i>&nbsp;	 * 
+<i>609</i>&nbsp;	 * This can be useful for setting e.g. save directories relative to the current project.
+<i>610</i>&nbsp;	 * 
+<i>611</i>&nbsp;	 * @return
+<i>612</i>&nbsp;	 */
+<i>613</i>&nbsp;	private static String getProjectBaseDirectory() {
+<b class="nc"><i>614</i>&nbsp;		File dir = Projects.getBaseDirectory(getProject());</b>
+<b class="nc"><i>615</i>&nbsp;		return dir == null ? null : dir.getAbsolutePath();</b>
+<i>616</i>&nbsp;	}
+<i>617</i>&nbsp;	
+<i>618</i>&nbsp;	/**
+<i>619</i>&nbsp;	 * Get the project entry for the currently-open image within the current project, 
+<i>620</i>&nbsp;	 * or null if no project/image is open.
+<i>621</i>&nbsp;	 * 
+<i>622</i>&nbsp;	 * @return
+<i>623</i>&nbsp;	 */
+<i>624</i>&nbsp;	public static ProjectImageEntry&lt;BufferedImage&gt; getProjectEntry() {
+<b class="nc"><i>625</i>&nbsp;		Project&lt;BufferedImage&gt; project = getProject();</b>
+<b class="nc"><i>626</i>&nbsp;		var imageData = getCurrentImageData();</b>
+<b class="nc"><i>627</i>&nbsp;		if (project == null || imageData == null)</b>
+<b class="nc"><i>628</i>&nbsp;			return null;</b>
+<b class="nc"><i>629</i>&nbsp;		return project.getEntry(imageData);</b>
+<i>630</i>&nbsp;	}
+<i>631</i>&nbsp;	
+<i>632</i>&nbsp;	
+<i>633</i>&nbsp;	/**
+<i>634</i>&nbsp;	 * Get the metadata value from the current project entry for the specified key, 
+<i>635</i>&nbsp;	 * or null if no such metadata value exists (or no project entry is open).
+<i>636</i>&nbsp;	 * 
+<i>637</i>&nbsp;	 * @param key
+<i>638</i>&nbsp;	 * @return
+<i>639</i>&nbsp;	 */
+<i>640</i>&nbsp;	public static String getProjectEntryMetadataValue(final String key) {
+<b class="nc"><i>641</i>&nbsp;		ProjectImageEntry&lt;BufferedImage&gt; entry = getProjectEntry();</b>
+<b class="nc"><i>642</i>&nbsp;		if (entry == null)</b>
+<b class="nc"><i>643</i>&nbsp;			return null;</b>
+<b class="nc"><i>644</i>&nbsp;		return entry.getMetadataValue(key);</b>
+<i>645</i>&nbsp;	}
+<i>646</i>&nbsp;	
+<i>647</i>&nbsp;	
+<i>648</i>&nbsp;	/**
+<i>649</i>&nbsp;	 * Get the {@code PathObjectHierarchy} of the current {@code ImageData}.
+<i>650</i>&nbsp;	 * 
+<i>651</i>&nbsp;	 * @return
+<i>652</i>&nbsp;	 * 
+<i>653</i>&nbsp;	 * @see #getCurrentImageData()
+<i>654</i>&nbsp;	 */
+<i>655</i>&nbsp;	public static PathObjectHierarchy getCurrentHierarchy() {
+<b class="nc"><i>656</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>657</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>658</i>&nbsp;			return null;</b>
+<b class="nc"><i>659</i>&nbsp;		return imageData.getHierarchy();</b>
+<i>660</i>&nbsp;	}
+<i>661</i>&nbsp;	
+<i>662</i>&nbsp;	/**
+<i>663</i>&nbsp;	 * Get the {@code ImageServer} of the current {@code ImageData}.
+<i>664</i>&nbsp;	 * 
+<i>665</i>&nbsp;	 * @return
+<i>666</i>&nbsp;	 * 
+<i>667</i>&nbsp;	 * @see #getCurrentImageData()
+<i>668</i>&nbsp;	 */
+<i>669</i>&nbsp;	public static ImageServer&lt;?&gt; getCurrentServer() {
+<b class="nc"><i>670</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>671</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>672</i>&nbsp;			return null;</b>
+<b class="nc"><i>673</i>&nbsp;		return imageData.getServer();</b>
+<i>674</i>&nbsp;	}
+<i>675</i>&nbsp;	
+<i>676</i>&nbsp;	/**
+<i>677</i>&nbsp;	 * Get the selected objects within the current {@code PathObjectHierarchy}.
+<i>678</i>&nbsp;	 * &lt;p&gt;
+<i>679</i>&nbsp;	 * Note: this implementation returns the selected objects directly.  The returned collection 
+<i>680</i>&nbsp;	 * may not be modifiable.
+<i>681</i>&nbsp;	 * 
+<i>682</i>&nbsp;	 * @return
+<i>683</i>&nbsp;	 * 
+<i>684</i>&nbsp;	 * @see #getCurrentHierarchy()
+<i>685</i>&nbsp;	 */
+<i>686</i>&nbsp;	public static Collection&lt;PathObject&gt; getSelectedObjects() {
+<b class="nc"><i>687</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>688</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>689</i>&nbsp;			return null;</b>
+<b class="nc"><i>690</i>&nbsp;		return hierarchy.getSelectionModel().getSelectedObjects();</b>
+<i>691</i>&nbsp;	}
+<i>692</i>&nbsp;	
+<i>693</i>&nbsp;	/**
+<i>694</i>&nbsp;	 * Get the primary selected object within the current {@code PathObjectHierarchy}.
+<i>695</i>&nbsp;	 * 
+<i>696</i>&nbsp;	 * @return
+<i>697</i>&nbsp;	 * 
+<i>698</i>&nbsp;	 * @see #getCurrentHierarchy()
+<i>699</i>&nbsp;	 * @see #getSelectedObjects()
+<i>700</i>&nbsp;	 */
+<i>701</i>&nbsp;	public static PathObject getSelectedObject() {
+<b class="nc"><i>702</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>703</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>704</i>&nbsp;			return null;</b>
+<b class="nc"><i>705</i>&nbsp;		return hierarchy.getSelectionModel().getSelectedObject();</b>
+<i>706</i>&nbsp;	}
+<i>707</i>&nbsp;	
+<i>708</i>&nbsp;	/**
+<i>709</i>&nbsp;	 * Get the {@code ROI} for the primary selected object within the current {@code PathObjectHierarchy}.
+<i>710</i>&nbsp;	 * &lt;p&gt;
+<i>711</i>&nbsp;	 * This is really a convenience method where the selection indicates (for example) a region that should be extracted.
+<i>712</i>&nbsp;	 * 
+<i>713</i>&nbsp;	 * @return
+<i>714</i>&nbsp;	 * 
+<i>715</i>&nbsp;	 * @see #getCurrentHierarchy()
+<i>716</i>&nbsp;	 * @see #getSelectedObject()
+<i>717</i>&nbsp;	 */
+<i>718</i>&nbsp;	public static ROI getSelectedROI() {
+<b class="nc"><i>719</i>&nbsp;		PathObject pathObject = getSelectedObject();</b>
+<b class="nc"><i>720</i>&nbsp;		if (pathObject != null)</b>
+<b class="nc"><i>721</i>&nbsp;			return pathObject.getROI();</b>
+<b class="nc"><i>722</i>&nbsp;		return null;</b>
+<i>723</i>&nbsp;	}
+<i>724</i>&nbsp;	
+<i>725</i>&nbsp;	/**
+<i>726</i>&nbsp;	 * Clear the selected objects for the current {@code PathObjectHierarchy}.
+<i>727</i>&nbsp;	 */
+<i>728</i>&nbsp;	public static void resetSelection() {
+<b class="nc"><i>729</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>730</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>731</i>&nbsp;			return;		</b>
+<b class="nc"><i>732</i>&nbsp;		hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>733</i>&nbsp;	}</b>
+<i>734</i>&nbsp;	
+<i>735</i>&nbsp;	/**
+<i>736</i>&nbsp;	 * Set the selected object for the current {@code PathObjectHierarchy}.
+<i>737</i>&nbsp;	 * 
+<i>738</i>&nbsp;	 * @param pathObject the object to select.
+<i>739</i>&nbsp;	 * @return
+<i>740</i>&nbsp;	 * 
+<i>741</i>&nbsp;	 * @see qupath.lib.objects.hierarchy.events.PathObjectSelectionModel#setSelectedObject
+<i>742</i>&nbsp;	 */
+<i>743</i>&nbsp;	public static boolean setSelectedObject(PathObject pathObject) {
+<b class="nc"><i>744</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>745</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>746</i>&nbsp;			return false;</b>
+<b class="nc"><i>747</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObject(pathObject);</b>
+<b class="nc"><i>748</i>&nbsp;		return true;</b>
+<i>749</i>&nbsp;	}
+<i>750</i>&nbsp;	
+<i>751</i>&nbsp;	/**
+<i>752</i>&nbsp;	 * Add the specified object to the current {@code PathObjectHierarchy}.
+<i>753</i>&nbsp;	 * &lt;p&gt;
+<i>754</i>&nbsp;	 * This will trigger a hierarchy changed event.
+<i>755</i>&nbsp;	 * 
+<i>756</i>&nbsp;	 * @param pathObject
+<i>757</i>&nbsp;	 */
+<i>758</i>&nbsp;	public static void addObject(PathObject pathObject) {
+<b class="nc"><i>759</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>760</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>761</i>&nbsp;			return;</b>
+<b class="nc"><i>762</i>&nbsp;		hierarchy.addPathObject(pathObject);</b>
+<b class="nc"><i>763</i>&nbsp;	}</b>
+<i>764</i>&nbsp;	
+<i>765</i>&nbsp;	/**
+<i>766</i>&nbsp;	 * Add the specified array of objects to the current {@code PathObjectHierarchy}.
+<i>767</i>&nbsp;	 * &lt;p&gt;
+<i>768</i>&nbsp;	 * This will trigger a hierarchy changed event.
+<i>769</i>&nbsp;	 * 
+<i>770</i>&nbsp;	 * @param pathObjects
+<i>771</i>&nbsp;	 */
+<i>772</i>&nbsp;	public static void addObjects(PathObject[] pathObjects) {
+<b class="nc"><i>773</i>&nbsp;		addObjects(Arrays.asList(pathObjects));</b>
+<b class="nc"><i>774</i>&nbsp;	}</b>
+<i>775</i>&nbsp;	
+<i>776</i>&nbsp;	
+<i>777</i>&nbsp;	/**
+<i>778</i>&nbsp;	 * Add the specified collection of objects to the current {@code PathObjectHierarchy}.
+<i>779</i>&nbsp;	 * &lt;p&gt;
+<i>780</i>&nbsp;	 * This will trigger a hierarchy changed event.
+<i>781</i>&nbsp;	 * 
+<i>782</i>&nbsp;	 * @param pathObjects
+<i>783</i>&nbsp;	 */
+<i>784</i>&nbsp;	public static void addObjects(Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>785</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>786</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>787</i>&nbsp;			return;</b>
+<b class="nc"><i>788</i>&nbsp;		hierarchy.addPathObjects(pathObjects);</b>
+<b class="nc"><i>789</i>&nbsp;	}</b>
+<i>790</i>&nbsp;	
+<i>791</i>&nbsp;	/**
+<i>792</i>&nbsp;	 * Remove the specified object from the current {@code PathObjectHierarchy}, 
+<i>793</i>&nbsp;	 * optionally keeping or removing descendant objects.
+<i>794</i>&nbsp;	 * 
+<i>795</i>&nbsp;	 * @param pathObject
+<i>796</i>&nbsp;	 * @param keepChildren
+<i>797</i>&nbsp;	 */
+<i>798</i>&nbsp;	public static void removeObject(PathObject pathObject, boolean keepChildren) {
+<b class="nc"><i>799</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>800</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>801</i>&nbsp;			return;</b>
+<b class="nc"><i>802</i>&nbsp;		hierarchy.removeObject(pathObject, keepChildren);</b>
+<b class="nc"><i>803</i>&nbsp;	}</b>
+<i>804</i>&nbsp;	
+<i>805</i>&nbsp;	/**
+<i>806</i>&nbsp;	 * Remove the specified array of objects from the current {@code PathObjectHierarchy}, 
+<i>807</i>&nbsp;	 * optionally keeping or removing descendant objects.
+<i>808</i>&nbsp;	 * 
+<i>809</i>&nbsp;	 * @param pathObjects
+<i>810</i>&nbsp;	 * @param keepChildren
+<i>811</i>&nbsp;	 */
+<i>812</i>&nbsp;	public static void removeObjects(PathObject[] pathObjects, boolean keepChildren) {
+<b class="nc"><i>813</i>&nbsp;		removeObjects(Arrays.asList(pathObjects), keepChildren);</b>
+<b class="nc"><i>814</i>&nbsp;	}</b>
+<i>815</i>&nbsp;	
+<i>816</i>&nbsp;	/**
+<i>817</i>&nbsp;	 * Get a count of the total number of objects in the current hierarchy.
+<i>818</i>&nbsp;	 * 
+<i>819</i>&nbsp;	 * @return
+<i>820</i>&nbsp;	 * 
+<i>821</i>&nbsp;	 * @see qupath.lib.objects.hierarchy.PathObjectHierarchy#nObjects
+<i>822</i>&nbsp;	 */
+<i>823</i>&nbsp;	public static int nObjects() {
+<b class="nc"><i>824</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>825</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>826</i>&nbsp;			return 0;</b>
+<b class="nc"><i>827</i>&nbsp;		return hierarchy.nObjects();</b>
+<i>828</i>&nbsp;	}
+<i>829</i>&nbsp;	
+<i>830</i>&nbsp;	/**
+<i>831</i>&nbsp;	 * Remove the specified collection of objects from the current {@code PathObjectHierarchy}, 
+<i>832</i>&nbsp;	 * optionally keeping or removing descendant objects.
+<i>833</i>&nbsp;	 * 
+<i>834</i>&nbsp;	 * @param pathObjects
+<i>835</i>&nbsp;	 * @param keepChildren
+<i>836</i>&nbsp;	 */
+<i>837</i>&nbsp;	public static void removeObjects(Collection&lt;PathObject&gt; pathObjects, boolean keepChildren) {
+<b class="nc"><i>838</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>839</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>840</i>&nbsp;			return;</b>
+<b class="nc"><i>841</i>&nbsp;		hierarchy.removeObjects(pathObjects, keepChildren);</b>
+<b class="nc"><i>842</i>&nbsp;	}</b>
+<i>843</i>&nbsp;	
+<i>844</i>&nbsp;	
+<i>845</i>&nbsp;	/**
+<i>846</i>&nbsp;	 * Returns {@code true} if TMA cores are available.
+<i>847</i>&nbsp;	 * 
+<i>848</i>&nbsp;	 * @return
+<i>849</i>&nbsp;	 */
+<i>850</i>&nbsp;	public static boolean isTMADearrayed() {
+<b class="nc"><i>851</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>852</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>853</i>&nbsp;			return false;</b>
+<b class="nc"><i>854</i>&nbsp;		return imageData.getHierarchy().getTMAGrid() != null &amp;&amp; imageData.getHierarchy().getTMAGrid().nCores() &gt; 0;</b>
+<i>855</i>&nbsp;	}
+<i>856</i>&nbsp;	
+<i>857</i>&nbsp;	
+<i>858</i>&nbsp;	/**
+<i>859</i>&nbsp;	 * Remove all the objects in the current {@code PathObjectHierarchy}, and clear the selection.
+<i>860</i>&nbsp;	 * 
+<i>861</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>862</i>&nbsp;	 */
+<i>863</i>&nbsp;	public static void clearAllObjects() {
+<b class="nc"><i>864</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>865</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>866</i>&nbsp;			return;</b>
+<b class="nc"><i>867</i>&nbsp;		hierarchy.clearAll();</b>
+<b class="nc"><i>868</i>&nbsp;		hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>869</i>&nbsp;	}</b>
+<i>870</i>&nbsp;	
+<i>871</i>&nbsp;	/**
+<i>872</i>&nbsp;	 * Remove all the objects of a specified Java class.
+<i>873</i>&nbsp;	 * 
+<i>874</i>&nbsp;	 * @param cls the class, e.g. {@code PathAnnotationObject.class}, {@code PathDetectionObject.class}, or
+<i>875</i>&nbsp;	 * 			  {@code null} if all objects should be removed.
+<i>876</i>&nbsp;	 * 
+<i>877</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>878</i>&nbsp;	 * @see qupath.lib.objects.hierarchy.PathObjectHierarchy#getObjects
+<i>879</i>&nbsp;	 */
+<i>880</i>&nbsp;	public static void clearAllObjects(final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>881</i>&nbsp;		if (cls == null) {</b>
+<b class="nc"><i>882</i>&nbsp;			clearAllObjects();</b>
+<b class="nc"><i>883</i>&nbsp;			return;</b>
+<i>884</i>&nbsp;		}
+<b class="nc"><i>885</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>886</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>887</i>&nbsp;			return;</b>
+<b class="nc"><i>888</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = hierarchy.getObjects(null, cls);</b>
+<b class="nc"><i>889</i>&nbsp;		hierarchy.removeObjects(pathObjects, true);</b>
+<i>890</i>&nbsp;		
+<b class="nc"><i>891</i>&nbsp;		PathObject selected = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>892</i>&nbsp;		if (selected != null &amp;&amp; selected.getClass().isAssignableFrom(cls))</b>
+<b class="nc"><i>893</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObject(null);</b>
+<b class="nc"><i>894</i>&nbsp;	}</b>
+<i>895</i>&nbsp;	
+<i>896</i>&nbsp;	/**
+<i>897</i>&nbsp;	 * Remove all the annotation objects from the current {@code PathObjectHierarchy}.
+<i>898</i>&nbsp;	 * 
+<i>899</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>900</i>&nbsp;	 * @see #clearAllObjects
+<i>901</i>&nbsp;	 */
+<i>902</i>&nbsp;	public static void clearAnnotations() {
+<b class="nc"><i>903</i>&nbsp;		clearAllObjects(PathAnnotationObject.class);</b>
+<b class="nc"><i>904</i>&nbsp;	}</b>
+<i>905</i>&nbsp;	
+<i>906</i>&nbsp;	/**
+<i>907</i>&nbsp;	 * Remove all the detection objects from the current {@code PathObjectHierarchy}.
+<i>908</i>&nbsp;	 * 
+<i>909</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>910</i>&nbsp;	 * @see #clearAllObjects
+<i>911</i>&nbsp;	 */
+<i>912</i>&nbsp;	public static void clearDetections() {
+<b class="nc"><i>913</i>&nbsp;		clearAllObjects(PathDetectionObject.class);</b>
+<b class="nc"><i>914</i>&nbsp;	}</b>
+<i>915</i>&nbsp;	
+<i>916</i>&nbsp;	/**
+<i>917</i>&nbsp;	 * Remove the TMA grid from the current {@code PathObjectHierarchy}.
+<i>918</i>&nbsp;	 * 
+<i>919</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>920</i>&nbsp;	 */
+<i>921</i>&nbsp;	public static void clearTMAGrid() {
+<b class="nc"><i>922</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>923</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>924</i>&nbsp;			return;</b>
+<b class="nc"><i>925</i>&nbsp;		hierarchy.setTMAGrid(null);</b>
+<b class="nc"><i>926</i>&nbsp;		PathObject selected = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>927</i>&nbsp;		if (selected instanceof TMACoreObject)</b>
+<b class="nc"><i>928</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObject(null);</b>
+<b class="nc"><i>929</i>&nbsp;	}</b>
+<i>930</i>&nbsp;	
+<i>931</i>&nbsp;	/**
+<i>932</i>&nbsp;	 * Add the specified shape measurements to the current selected objects of the current image.
+<i>933</i>&nbsp;	 * If no features are specified, all will be added.
+<i>934</i>&nbsp;	 * @param features
+<i>935</i>&nbsp;	 */
+<i>936</i>&nbsp;	public static void addShapeMeasurements(String... features) {
+<b class="nc"><i>937</i>&nbsp;		var imageData = getCurrentImageData();</b>
+<b class="nc"><i>938</i>&nbsp;		Collection&lt;PathObject&gt; selected = imageData == null ? Collections.emptyList() : imageData.getHierarchy().getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>939</i>&nbsp;		if (selected.isEmpty()) {</b>
+<b class="nc"><i>940</i>&nbsp;			logger.debug(&quot;Cannot add shape measurements (no objects selected)&quot;);</b>
+<b class="nc"><i>941</i>&nbsp;			return;</b>
+<i>942</i>&nbsp;		}
+<b class="nc"><i>943</i>&nbsp;		addShapeMeasurements(imageData, new ArrayList&lt;&gt;(selected), features);</b>
+<b class="nc"><i>944</i>&nbsp;	}</b>
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;	/**
+<i>947</i>&nbsp;	 * Add shape measurements to the specified objects.
+<i>948</i>&nbsp;	 * @param imageData the image to which the objects belong. This is used to determine pixel calibration and to fire an update event. May be null.
+<i>949</i>&nbsp;	 * @param pathObjects the objects that should be measured
+<i>950</i>&nbsp;	 * @param features optional array of Strings specifying the features to add. If none are specified, all available features will be added.
+<i>951</i>&nbsp;	 */
+<i>952</i>&nbsp;	public static void addShapeMeasurements(ImageData&lt;?&gt; imageData, Collection&lt;? extends PathObject&gt; pathObjects, String... features) {
+<b class="nc"><i>953</i>&nbsp;		addShapeMeasurements(imageData, pathObjects, parseFeatures(features));</b>
+<b class="nc"><i>954</i>&nbsp;	}</b>
+<i>955</i>&nbsp;	
+<i>956</i>&nbsp;	/**
+<i>957</i>&nbsp;	 * Add shape measurements to the specified objects.
+<i>958</i>&nbsp;	 * @param imageData the image to which the objects belong. This is used to determine pixel calibration and to fire an update event. May be null.
+<i>959</i>&nbsp;	 * @param pathObjects the objects that should be measured
+<i>960</i>&nbsp;	 * @param features the specific features to add. If none are specified, all available features will be added.
+<i>961</i>&nbsp;	 */
+<i>962</i>&nbsp;	public static void addShapeMeasurements(ImageData&lt;?&gt; imageData, Collection&lt;? extends PathObject&gt; pathObjects, ShapeFeatures... features) {
+<b class="nc"><i>963</i>&nbsp;		if (pathObjects.isEmpty())</b>
+<b class="nc"><i>964</i>&nbsp;			return;</b>
+<b class="nc"><i>965</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>966</i>&nbsp;			ObjectMeasurements.addShapeMeasurements(pathObjects, null, features);</b>
+<i>967</i>&nbsp;		} else {
+<b class="nc"><i>968</i>&nbsp;			var hierarchy = imageData.getHierarchy();</b>
+<b class="nc"><i>969</i>&nbsp;			ObjectMeasurements.addShapeMeasurements(pathObjects, imageData.getServer().getPixelCalibration(), features);</b>
+<b class="nc"><i>970</i>&nbsp;			hierarchy.fireObjectMeasurementsChangedEvent(hierarchy, pathObjects);			</b>
+<i>971</i>&nbsp;		}
+<b class="nc"><i>972</i>&nbsp;	}</b>
+<i>973</i>&nbsp;	
+<i>974</i>&nbsp;	private static ShapeFeatures[] parseFeatures(String... names) {
+<b class="nc"><i>975</i>&nbsp;		if (names == null || names.length == 0)</b>
+<b class="nc"><i>976</i>&nbsp;			return new ShapeFeatures[0];</b>
+<b class="nc"><i>977</i>&nbsp;		var objectOptions = new HashSet&lt;ShapeFeatures&gt;();</b>
+<b class="nc"><i>978</i>&nbsp;		for (var optionName : names) {</b>
+<i>979</i>&nbsp;			try {
+<b class="nc"><i>980</i>&nbsp;				var option = ShapeFeatures.valueOf(optionName);</b>
+<b class="nc"><i>981</i>&nbsp;				objectOptions.add(option);</b>
+<b class="nc"><i>982</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>983</i>&nbsp;				logger.warn(&quot;Could not parse option {}&quot;, optionName);</b>
+<b class="nc"><i>984</i>&nbsp;			}</b>
+<i>985</i>&nbsp;		}
+<b class="nc"><i>986</i>&nbsp;		return objectOptions.toArray(ShapeFeatures[]::new);</b>
+<i>987</i>&nbsp;	}
+<i>988</i>&nbsp;	
+<i>989</i>&nbsp;	
+<i>990</i>&nbsp;	/**
+<i>991</i>&nbsp;	 * Set the channel names for the current ImageData.
+<i>992</i>&nbsp;	 * 
+<i>993</i>&nbsp;	 * @param names
+<i>994</i>&nbsp;	 * @see #setChannelNames(ImageData, String...)
+<i>995</i>&nbsp;	 */
+<i>996</i>&nbsp;	public static void setChannelNames(String... names) {
+<b class="nc"><i>997</i>&nbsp;		setChannelNames(getCurrentImageData(), names);</b>
+<b class="nc"><i>998</i>&nbsp;	}</b>
+<i>999</i>&nbsp;	
+<i>1000</i>&nbsp;	/**
+<i>1001</i>&nbsp;	 * Set the channel names for the specified ImageData.
+<i>1002</i>&nbsp;	 * It is not essential to pass names for all channels: 
+<i>1003</i>&nbsp;	 * by passing n values, the first n channel names will be set.
+<i>1004</i>&nbsp;	 * Any name that is null will be left unchanged.
+<i>1005</i>&nbsp;	 * 
+<i>1006</i>&nbsp;	 * @param imageData
+<i>1007</i>&nbsp;	 * @param names
+<i>1008</i>&nbsp;	 */
+<i>1009</i>&nbsp;	public static void setChannelNames(ImageData&lt;?&gt; imageData, String... names) {
+<b class="nc"><i>1010</i>&nbsp;		List&lt;ImageChannel&gt; oldChannels = imageData.getServer().getMetadata().getChannels();</b>
+<b class="nc"><i>1011</i>&nbsp;		List&lt;ImageChannel&gt; newChannels = new ArrayList&lt;&gt;(oldChannels);</b>
+<b class="nc"><i>1012</i>&nbsp;		for (int i = 0; i &lt; names.length; i++) {</b>
+<b class="nc"><i>1013</i>&nbsp;			String name = names[i];</b>
+<b class="nc"><i>1014</i>&nbsp;			if (name == null)</b>
+<b class="nc"><i>1015</i>&nbsp;				continue;</b>
+<b class="nc"><i>1016</i>&nbsp;			newChannels.set(i, ImageChannel.getInstance(name, newChannels.get(i).getColor()));</b>
+<b class="nc"><i>1017</i>&nbsp;			if (i &gt;= newChannels.size()) {</b>
+<b class="nc"><i>1018</i>&nbsp;				logger.warn(&quot;Too many channel names specified, only {} of {} will be used&quot;, newChannels.size(), names.length);</b>
+<b class="nc"><i>1019</i>&nbsp;				break;</b>
+<i>1020</i>&nbsp;			}
+<i>1021</i>&nbsp;		}
+<b class="nc"><i>1022</i>&nbsp;		setChannels(imageData, newChannels.toArray(ImageChannel[]::new));</b>
+<b class="nc"><i>1023</i>&nbsp;	}</b>
+<i>1024</i>&nbsp;	
+<i>1025</i>&nbsp;	/**
+<i>1026</i>&nbsp;	 * Set the channel colors for the current ImageData.
+<i>1027</i>&nbsp;	 * 
+<i>1028</i>&nbsp;	 * @param colors
+<i>1029</i>&nbsp;	 * @see #setChannelColors(ImageData, Integer...)
+<i>1030</i>&nbsp;	 * @see #setChannelNames(ImageData, String...)
+<i>1031</i>&nbsp;	 */
+<i>1032</i>&nbsp;	public static void setChannelColors(Integer... colors) {
+<b class="nc"><i>1033</i>&nbsp;		setChannelColors(getCurrentImageData(), colors);</b>
+<b class="nc"><i>1034</i>&nbsp;	}</b>
+<i>1035</i>&nbsp;	
+<i>1036</i>&nbsp;	/**
+<i>1037</i>&nbsp;	 * Set the channel colors for the specified ImageData.
+<i>1038</i>&nbsp;	 * It is not essential to pass names for all channels: 
+<i>1039</i>&nbsp;	 * by passing n values, the first n channel names will be set.
+<i>1040</i>&nbsp;	 * Any name that is null will be left unchanged.
+<i>1041</i>&nbsp;	 * 
+<i>1042</i>&nbsp;	 * @param imageData
+<i>1043</i>&nbsp;	 * @param colors
+<i>1044</i>&nbsp;	 * @see #setChannelNames(ImageData, String...)
+<i>1045</i>&nbsp;	 */
+<i>1046</i>&nbsp;	public static void setChannelColors(ImageData&lt;?&gt; imageData, Integer... colors) {
+<b class="nc"><i>1047</i>&nbsp;		List&lt;ImageChannel&gt; oldChannels = imageData.getServer().getMetadata().getChannels();</b>
+<b class="nc"><i>1048</i>&nbsp;		List&lt;ImageChannel&gt; newChannels = new ArrayList&lt;&gt;(oldChannels);</b>
+<b class="nc"><i>1049</i>&nbsp;		for (int i = 0; i &lt; colors.length; i++) {</b>
+<b class="nc"><i>1050</i>&nbsp;			Integer color = colors[i];</b>
+<b class="nc"><i>1051</i>&nbsp;			if (color == null)</b>
+<b class="nc"><i>1052</i>&nbsp;				continue;</b>
+<b class="nc"><i>1053</i>&nbsp;			newChannels.set(i, ImageChannel.getInstance(newChannels.get(i).getName(), color));</b>
+<b class="nc"><i>1054</i>&nbsp;			if (i &gt;= newChannels.size()) {</b>
+<b class="nc"><i>1055</i>&nbsp;				logger.warn(&quot;Too many channel colors specified, only {} of {} will be used&quot;, newChannels.size(), colors.length);</b>
+<b class="nc"><i>1056</i>&nbsp;				break;</b>
+<i>1057</i>&nbsp;			}
+<i>1058</i>&nbsp;		}
+<b class="nc"><i>1059</i>&nbsp;		setChannels(imageData, newChannels.toArray(ImageChannel[]::new));</b>
+<b class="nc"><i>1060</i>&nbsp;	}</b>
+<i>1061</i>&nbsp;	
+<i>1062</i>&nbsp;	/**
+<i>1063</i>&nbsp;	 * Set the channels for the current ImageData.
+<i>1064</i>&nbsp;	 * 
+<i>1065</i>&nbsp;	 * @param channels
+<i>1066</i>&nbsp;	 * @see #setChannels(ImageData, ImageChannel...)
+<i>1067</i>&nbsp;	 */
+<i>1068</i>&nbsp;	public static void setChannels(ImageChannel... channels) {
+<b class="nc"><i>1069</i>&nbsp;		setChannels(getCurrentImageData(), channels);</b>
+<b class="nc"><i>1070</i>&nbsp;	}</b>
+<i>1071</i>&nbsp;	
+<i>1072</i>&nbsp;	/**
+<i>1073</i>&nbsp;	 * Set the channels for the specified ImageData.
+<i>1074</i>&nbsp;	 * Note that number of channels provided must match the number of channels of the current image.
+<i>1075</i>&nbsp;	 * &lt;p&gt;
+<i>1076</i>&nbsp;	 * Also, currently it is not possible to set channels for RGB images - attempting to do so 
+<i>1077</i>&nbsp;	 * will throw an IllegalArgumentException.
+<i>1078</i>&nbsp;	 * 
+<i>1079</i>&nbsp;	 * @param imageData 
+<i>1080</i>&nbsp;	 * @param channels
+<i>1081</i>&nbsp;	 * @see #setChannelNames(ImageData, String...)
+<i>1082</i>&nbsp;	 * @see #setChannelColors(ImageData, Integer...)
+<i>1083</i>&nbsp;	 */
+<i>1084</i>&nbsp;	public static void setChannels(ImageData&lt;?&gt; imageData, ImageChannel... channels) {
+<b class="nc"><i>1085</i>&nbsp;		ImageServer&lt;?&gt; server = imageData.getServer();</b>
+<b class="nc"><i>1086</i>&nbsp;		if (server.isRGB()) {</b>
+<b class="nc"><i>1087</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot set channels for RGB images&quot;);</b>
+<i>1088</i>&nbsp;		}
+<b class="nc"><i>1089</i>&nbsp;		List&lt;ImageChannel&gt; oldChannels = server.getMetadata().getChannels();</b>
+<b class="nc"><i>1090</i>&nbsp;		List&lt;ImageChannel&gt; newChannels = Arrays.asList(channels);</b>
+<b class="nc"><i>1091</i>&nbsp;		if (oldChannels.equals(newChannels)) {</b>
+<b class="nc"><i>1092</i>&nbsp;			logger.trace(&quot;Setting channels to the same values (no changes)&quot;);</b>
+<b class="nc"><i>1093</i>&nbsp;			return;</b>
+<i>1094</i>&nbsp;		}
+<b class="nc"><i>1095</i>&nbsp;		if (oldChannels.size() != newChannels.size())</b>
+<b class="nc"><i>1096</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot set channels - require &quot; + oldChannels.size() + &quot; channels but you provided &quot; + channels.length);</b>
+<i>1097</i>&nbsp;		
+<i>1098</i>&nbsp;		// Set the metadata
+<b class="nc"><i>1099</i>&nbsp;		var metadata = server.getMetadata();</b>
+<b class="nc"><i>1100</i>&nbsp;		var metadata2 = new ImageServerMetadata.Builder(metadata)</b>
+<b class="nc"><i>1101</i>&nbsp;				.channels(newChannels)</b>
+<b class="nc"><i>1102</i>&nbsp;				.build();</b>
+<b class="nc"><i>1103</i>&nbsp;		imageData.updateServerMetadata(metadata2);</b>
+<b class="nc"><i>1104</i>&nbsp;	}</b>
+<i>1105</i>&nbsp;	
+<i>1106</i>&nbsp;	
+<i>1107</i>&nbsp;	/**
+<i>1108</i>&nbsp;	 * Run the specified plugin on the current {@code ImageData}.
+<i>1109</i>&nbsp;	 * 
+<i>1110</i>&nbsp;	 * @param className
+<i>1111</i>&nbsp;	 * @param args
+<i>1112</i>&nbsp;	 * @return
+<i>1113</i>&nbsp;	 * @throws InterruptedException
+<i>1114</i>&nbsp;	 * 
+<i>1115</i>&nbsp;	 * @see #getCurrentImageData
+<i>1116</i>&nbsp;	 */
+<i>1117</i>&nbsp;	public static boolean runPlugin(String className, String args)  throws InterruptedException {
+<b class="nc"><i>1118</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>1119</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1120</i>&nbsp;			return false;</b>
+<b class="nc"><i>1121</i>&nbsp;		return runPlugin(className, imageData, args);</b>
+<i>1122</i>&nbsp;	}
+<i>1123</i>&nbsp;	
+<i>1124</i>&nbsp;	
+<i>1125</i>&nbsp;	/**
+<i>1126</i>&nbsp;	 * Run the specified plugin on the specified {@code ImageData}.
+<i>1127</i>&nbsp;	 * 
+<i>1128</i>&nbsp;	 * @param className
+<i>1129</i>&nbsp;	 * @param imageData
+<i>1130</i>&nbsp;	 * @param args
+<i>1131</i>&nbsp;	 * @return
+<i>1132</i>&nbsp;	 * @throws InterruptedException
+<i>1133</i>&nbsp;	 */
+<i>1134</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>1135</i>&nbsp;	public static boolean runPlugin(final String className, final ImageData&lt;?&gt; imageData, final String args) throws InterruptedException {
+<b class="nc"><i>1136</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1137</i>&nbsp;			return false;</b>
+<i>1138</i>&nbsp;		
+<i>1139</i>&nbsp;		try {
+<b class="nc"><i>1140</i>&nbsp;			Class&lt;?&gt; cPlugin = QP.class.getClassLoader().loadClass(className);</b>
+<b class="nc"><i>1141</i>&nbsp;			Constructor&lt;?&gt; cons = cPlugin.getConstructor();</b>
+<b class="nc"><i>1142</i>&nbsp;			final PathPlugin plugin = (PathPlugin)cons.newInstance();</b>
+<b class="nc"><i>1143</i>&nbsp;			return plugin.runPlugin(new CommandLinePluginRunner&lt;&gt;(imageData), args);</b>
+<b class="nc"><i>1144</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>1145</i>&nbsp;			logger.error(&quot;Unable to run plugin &quot; + className, e);</b>
+<b class="nc"><i>1146</i>&nbsp;			return false;</b>
+<i>1147</i>&nbsp;		}
+<i>1148</i>&nbsp;	}
+<i>1149</i>&nbsp;	
+<i>1150</i>&nbsp;	
+<i>1151</i>&nbsp;	/**
+<i>1152</i>&nbsp;	 * Get the list of TMA core objects for the current hierarchy.
+<i>1153</i>&nbsp;	 * 
+<i>1154</i>&nbsp;	 * @return the list of {@code TMACoreObject}s, or an empty list if there is no TMA grid present.
+<i>1155</i>&nbsp;	 * 
+<i>1156</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>1157</i>&nbsp;	 */
+<i>1158</i>&nbsp;	public static List&lt;TMACoreObject&gt; getTMACoreList() {
+<b class="nc"><i>1159</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1160</i>&nbsp;		if (hierarchy == null || hierarchy.getTMAGrid() == null)</b>
+<b class="nc"><i>1161</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>1162</i>&nbsp;		return hierarchy.getTMAGrid().getTMACoreList();</b>
+<i>1163</i>&nbsp;	}
+<i>1164</i>&nbsp;
+<i>1165</i>&nbsp;	/**
+<i>1166</i>&nbsp;	 * Get a array of the current annotation objects.
+<i>1167</i>&nbsp;	 * &lt;p&gt;
+<i>1168</i>&nbsp;	 * This has been deprecated, because Groovy gives ways to quickly switch between arrays and lists 
+<i>1169</i>&nbsp;	 * using {@code as}, so in most scripts it should not really be needed as a separate method.
+<i>1170</i>&nbsp;	 * 
+<i>1171</i>&nbsp;	 * @return
+<i>1172</i>&nbsp;	 */
+<i>1173</i>&nbsp;	@Deprecated
+<i>1174</i>&nbsp;	public static PathObject[] getAnnotationObjectsAsArray() {
+<b class="nc"><i>1175</i>&nbsp;		return getAnnotationObjects().toArray(new PathObject[0]);</b>
+<i>1176</i>&nbsp;	}
+<i>1177</i>&nbsp;	
+<i>1178</i>&nbsp;	/**
+<i>1179</i>&nbsp;	 * Get a list of the current annotation objects.
+<i>1180</i>&nbsp;	 * 
+<i>1181</i>&nbsp;	 * @return
+<i>1182</i>&nbsp;	 * 
+<i>1183</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>1184</i>&nbsp;	 */
+<i>1185</i>&nbsp;	public static Collection&lt;PathObject&gt; getAnnotationObjects() {
+<b class="nc"><i>1186</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1187</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1188</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>1189</i>&nbsp;		return hierarchy.getObjects(null, PathAnnotationObject.class);</b>
+<i>1190</i>&nbsp;	}
+<i>1191</i>&nbsp;
+<i>1192</i>&nbsp;	/**
+<i>1193</i>&nbsp;	 * Get a array of the current detection objects.
+<i>1194</i>&nbsp;	 * &lt;p&gt;
+<i>1195</i>&nbsp;	 * This has been deprecated, because Groovy gives ways to quickly switch between arrays and lists 
+<i>1196</i>&nbsp;	 * using {@code as}, so in most scripts it should not really be needed as a separate method.
+<i>1197</i>&nbsp;	 * 
+<i>1198</i>&nbsp;	 * @return
+<i>1199</i>&nbsp;	 */
+<i>1200</i>&nbsp;	@Deprecated
+<i>1201</i>&nbsp;	public static PathObject[] getDetectionObjectsAsArray() {
+<b class="nc"><i>1202</i>&nbsp;		return getDetectionObjects().toArray(new PathObject[0]);</b>
+<i>1203</i>&nbsp;	}
+<i>1204</i>&nbsp;	
+<i>1205</i>&nbsp;	/**
+<i>1206</i>&nbsp;	 * Get a list of the current detection objects.
+<i>1207</i>&nbsp;	 * 
+<i>1208</i>&nbsp;	 * @return
+<i>1209</i>&nbsp;	 * 
+<i>1210</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>1211</i>&nbsp;	 */
+<i>1212</i>&nbsp;	public static Collection&lt;PathObject&gt; getDetectionObjects() {
+<b class="nc"><i>1213</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1214</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1215</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>1216</i>&nbsp;		return hierarchy.getObjects(null, PathDetectionObject.class);</b>
+<i>1217</i>&nbsp;	}
+<i>1218</i>&nbsp;	
+<i>1219</i>&nbsp;	/**
+<i>1220</i>&nbsp;	 * Get a list of the current cell objects.
+<i>1221</i>&nbsp;	 * 
+<i>1222</i>&nbsp;	 * @return
+<i>1223</i>&nbsp;	 * 
+<i>1224</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>1225</i>&nbsp;	 */
+<i>1226</i>&nbsp;	public static Collection&lt;PathObject&gt; getCellObjects() {
+<b class="nc"><i>1227</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1228</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1229</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>1230</i>&nbsp;		return hierarchy.getObjects(null, PathCellObject.class);</b>
+<i>1231</i>&nbsp;	}
+<i>1232</i>&nbsp;
+<i>1233</i>&nbsp;	/**
+<i>1234</i>&nbsp;	 * Get an array of all objects in the current hierarchy.
+<i>1235</i>&nbsp;	 * 
+<i>1236</i>&nbsp;	 * @return
+<i>1237</i>&nbsp;	 * 
+<i>1238</i>&nbsp;	 * @see #getCurrentHierarchy
+<i>1239</i>&nbsp;	 */
+<i>1240</i>&nbsp;	public static PathObject[] getAllObjects() {
+<b class="nc"><i>1241</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1242</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1243</i>&nbsp;			return new PathObject[0];</b>
+<b class="nc"><i>1244</i>&nbsp;		return hierarchy.getFlattenedObjectList(null).toArray(new PathObject[0]);</b>
+<i>1245</i>&nbsp;	}
+<i>1246</i>&nbsp;	
+<i>1247</i>&nbsp;	/**
+<i>1248</i>&nbsp;	 * Set the image type for the current image data, using a String to represent the enum {@link ImageType}
+<i>1249</i>&nbsp;	 * @param typeName
+<i>1250</i>&nbsp;	 * @return
+<i>1251</i>&nbsp;	 */
+<i>1252</i>&nbsp;	public static boolean setImageType(final String typeName) {
+<b class="nc"><i>1253</i>&nbsp;		if (typeName == null)</b>
+<b class="nc"><i>1254</i>&nbsp;			return setImageType(ImageData.ImageType.UNSET);</b>
+<b class="nc"><i>1255</i>&nbsp;		for (ImageData.ImageType typeTemp : ImageData.ImageType.values()) {</b>
+<b class="nc"><i>1256</i>&nbsp;			if (typeTemp.toString().equalsIgnoreCase(typeName) || typeTemp.name().equalsIgnoreCase(typeName))</b>
+<b class="nc"><i>1257</i>&nbsp;				return setImageType(typeTemp);</b>
+<i>1258</i>&nbsp;		}
+<b class="nc"><i>1259</i>&nbsp;		logger.error(&quot;Image type could not be parsed from {}&quot;, typeName);</b>
+<b class="nc"><i>1260</i>&nbsp;		return false;</b>
+<i>1261</i>&nbsp;	}
+<i>1262</i>&nbsp;
+<i>1263</i>&nbsp;	/**
+<i>1264</i>&nbsp;	 * Set the image type for the current image data
+<i>1265</i>&nbsp;	 * @param type
+<i>1266</i>&nbsp;	 * @return
+<i>1267</i>&nbsp;	 */
+<i>1268</i>&nbsp;	public static boolean setImageType(final ImageData.ImageType type) {
+<b class="nc"><i>1269</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>1270</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1271</i>&nbsp;			return false;</b>
+<b class="nc"><i>1272</i>&nbsp;		if (type == null)</b>
+<b class="nc"><i>1273</i>&nbsp;			imageData.setImageType(ImageData.ImageType.UNSET);</b>
+<i>1274</i>&nbsp;		else
+<b class="nc"><i>1275</i>&nbsp;			imageData.setImageType(type);</b>
+<b class="nc"><i>1276</i>&nbsp;		return true;</b>
+<i>1277</i>&nbsp;	}
+<i>1278</i>&nbsp;	
+<i>1279</i>&nbsp;	
+<i>1280</i>&nbsp;	/**
+<i>1281</i>&nbsp;	 * Set the color deconvolution stains for hte current image data using a (JSON) String representation
+<i>1282</i>&nbsp;	 * 
+<i>1283</i>&nbsp;	 * @param arg
+<i>1284</i>&nbsp;	 * @return
+<i>1285</i>&nbsp;	 */
+<i>1286</i>&nbsp;	public static boolean setColorDeconvolutionStains(final String arg) {
+<b class="nc"><i>1287</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>1288</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1289</i>&nbsp;			return false;</b>
+<b class="nc"><i>1290</i>&nbsp;		ColorDeconvolutionStains stains = ColorDeconvolutionStains.parseColorDeconvolutionStainsArg(arg);</b>
+<b class="nc"><i>1291</i>&nbsp;		imageData.setColorDeconvolutionStains(stains);</b>
+<b class="nc"><i>1292</i>&nbsp;		return true;</b>
+<i>1293</i>&nbsp;	}
+<i>1294</i>&nbsp;	
+<i>1295</i>&nbsp;	
+<i>1296</i>&nbsp;	/**
+<i>1297</i>&nbsp;	 * Run an detection object classifier for the specified image data
+<i>1298</i>&nbsp;	 * @param imageData
+<i>1299</i>&nbsp;	 * @param classifier
+<i>1300</i>&nbsp;	 */
+<i>1301</i>&nbsp;	@Deprecated
+<i>1302</i>&nbsp;	public static void runClassifier(final ImageData&lt;?&gt; imageData, final PathObjectClassifier classifier) {
+<b class="nc"><i>1303</i>&nbsp;		if (imageData != null)</b>
+<b class="nc"><i>1304</i>&nbsp;			runClassifier(imageData.getHierarchy(), classifier);</b>
+<b class="nc"><i>1305</i>&nbsp;	}</b>
+<i>1306</i>&nbsp;	
+<i>1307</i>&nbsp;	/**
+<i>1308</i>&nbsp;	 * Run a detection object classifier for the specified image hierarchy
+<i>1309</i>&nbsp;	 * @param hierarchy
+<i>1310</i>&nbsp;	 * @param classifier
+<i>1311</i>&nbsp;	 */
+<i>1312</i>&nbsp;	@Deprecated
+<i>1313</i>&nbsp;	public static void runClassifier(final PathObjectHierarchy hierarchy, final PathObjectClassifier classifier) {
+<b class="nc"><i>1314</i>&nbsp;		logger.warn(&quot;runClassifier() is a legacy command for &#39;old&#39; detection classifiers in QuPath v0.1.2 and earlier, and may be removed in a future version&quot;);</b>
+<b class="nc"><i>1315</i>&nbsp;		PathClassifierTools.runClassifier(hierarchy, classifier);</b>
+<b class="nc"><i>1316</i>&nbsp;	}</b>
+<i>1317</i>&nbsp;	
+<i>1318</i>&nbsp;	/**
+<i>1319</i>&nbsp;	 * Run a detection object classifier for the current image data, reading the classifier from a specified path
+<i>1320</i>&nbsp;	 * @param path
+<i>1321</i>&nbsp;	 */
+<i>1322</i>&nbsp;	@Deprecated
+<i>1323</i>&nbsp;	public static void runClassifier(final String path) {
+<b class="nc"><i>1324</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>1325</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1326</i>&nbsp;			return;</b>
+<b class="nc"><i>1327</i>&nbsp;		PathObjectClassifier classifier = PathClassifierTools.loadClassifier(new File(path));</b>
+<b class="nc"><i>1328</i>&nbsp;		if (classifier == null) {</b>
+<b class="nc"><i>1329</i>&nbsp;			logger.error(&quot;Could not load classifier from {}&quot;, path);</b>
+<b class="nc"><i>1330</i>&nbsp;			return;</b>
+<i>1331</i>&nbsp;		}
+<b class="nc"><i>1332</i>&nbsp;		runClassifier(imageData, classifier);</b>
+<i>1333</i>&nbsp;		
+<i>1334</i>&nbsp;		// Log the step
+<b class="nc"><i>1335</i>&nbsp;		imageData.getHistoryWorkflow().addStep(new RunSavedClassifierWorkflowStep(path));</b>
+<b class="nc"><i>1336</i>&nbsp;	}</b>
+<i>1337</i>&nbsp;	
+<i>1338</i>&nbsp;	
+<i>1339</i>&nbsp;//	public static void classifyDetection(final Predicate&lt;PathObject&gt; p, final String className) {
+<i>1340</i>&nbsp;//		PathObjectHierarchy hierarchy = getCurrentHierarchy();
+<i>1341</i>&nbsp;//		if (hierarchy == null)
+<i>1342</i>&nbsp;//			return;
+<i>1343</i>&nbsp;//		List&lt;PathObject&gt; reclassified = new ArrayList&lt;&gt;();
+<i>1344</i>&nbsp;//		PathClass pathClass = PathClassFactory.getPathClass(className);
+<i>1345</i>&nbsp;//		for (PathObject pathObject : hierarchy.getObjects(null, PathDetectionObject.class)) {
+<i>1346</i>&nbsp;//			if (p.test(pathObject) &amp;&amp; pathObject.getPathClass() != pathClass) {
+<i>1347</i>&nbsp;//				pathObject.setPathClass(pathClass);
+<i>1348</i>&nbsp;//				reclassified.add(pathObject);
+<i>1349</i>&nbsp;//			}
+<i>1350</i>&nbsp;//		}
+<i>1351</i>&nbsp;//		if (!reclassified.isEmpty())
+<i>1352</i>&nbsp;//			hierarchy.fireObjectClassificationsChangedEvent(QP.class, reclassified);
+<i>1353</i>&nbsp;//	}
+<i>1354</i>&nbsp;	
+<i>1355</i>&nbsp;	/**
+<i>1356</i>&nbsp;	 * Create an annotation for the entire width and height of the current image data, on the default plane (z-slice, time point).
+<i>1357</i>&nbsp;	 * 
+<i>1358</i>&nbsp;	 * @param setSelected if true, select the object that was created after it is added to the hierarchy
+<i>1359</i>&nbsp;	 */
+<i>1360</i>&nbsp;	public static void createSelectAllObject(final boolean setSelected) {
+<b class="nc"><i>1361</i>&nbsp;		createSelectAllObject(setSelected, 0, 0);</b>
+<b class="nc"><i>1362</i>&nbsp;	}</b>
+<i>1363</i>&nbsp;
+<i>1364</i>&nbsp;	/**
+<i>1365</i>&nbsp;	 * Build an {@link ImageServer} with the class {@link BufferedImage}.
+<i>1366</i>&nbsp;	 * 
+<i>1367</i>&nbsp;	 * @param path image path (usually a file path or URI)
+<i>1368</i>&nbsp;	 * @param args optional arguments
+<i>1369</i>&nbsp;	 * @param cls generic type for the server (usually BufferedImage)
+<i>1370</i>&nbsp;	 * @return an {@link ImageServer}, if one could be build from the supplied arguments
+<i>1371</i>&nbsp;	 * 
+<i>1372</i>&nbsp;	 * @throws IOException if unable to build the server
+<i>1373</i>&nbsp;	 */
+<i>1374</i>&nbsp;	public static &lt;T&gt; ImageServer&lt;T&gt; buildServer(String path, Class&lt;T&gt; cls, String... args) throws IOException {
+<b class="nc"><i>1375</i>&nbsp;		return ImageServerProvider.buildServer(path, cls, args);</b>
+<i>1376</i>&nbsp;	}
+<i>1377</i>&nbsp;	
+<i>1378</i>&nbsp;	/**
+<i>1379</i>&nbsp;	 * Build an {@link ImageServer} with the class {@link BufferedImage}.
+<i>1380</i>&nbsp;	 * 
+<i>1381</i>&nbsp;	 * @param path image path (usually a file path or URI)
+<i>1382</i>&nbsp;	 * @param args optional arguments
+<i>1383</i>&nbsp;	 * @return an {@link ImageServer}, if one could be build from the supplied arguments
+<i>1384</i>&nbsp;	 * 
+<i>1385</i>&nbsp;	 * @throws IOException if unable to build the server
+<i>1386</i>&nbsp;	 */
+<i>1387</i>&nbsp;	public static ImageServer&lt;BufferedImage&gt; buildServer(String path, String... args) throws IOException {
+<b class="nc"><i>1388</i>&nbsp;		return buildServer(path, BufferedImage.class, args);</b>
+<i>1389</i>&nbsp;	}
+<i>1390</i>&nbsp;	
+<i>1391</i>&nbsp;	
+<i>1392</i>&nbsp;	/**
+<i>1393</i>&nbsp;	 * Create an annotation for the entire width and height of the current image data, on the default plane (z-slice, time point).
+<i>1394</i>&nbsp;	 * 
+<i>1395</i>&nbsp;	 * @param setSelected if true, select the object that was created after it is added to the hierarchy
+<i>1396</i>&nbsp;	 * @param z z-slice index for the annotation
+<i>1397</i>&nbsp;	 * @param t timepoint index for the annotation
+<i>1398</i>&nbsp;	 */
+<i>1399</i>&nbsp;	public static void createSelectAllObject(final boolean setSelected, int z, int t) {
+<b class="nc"><i>1400</i>&nbsp;		ImageData&lt;?&gt; imageData = getCurrentImageData();</b>
+<b class="nc"><i>1401</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>1402</i>&nbsp;			return;</b>
+<b class="nc"><i>1403</i>&nbsp;		ImageServer&lt;?&gt; server = imageData.getServer();</b>
+<b class="nc"><i>1404</i>&nbsp;		PathObject pathObject = PathObjects.createAnnotationObject(</b>
+<b class="nc"><i>1405</i>&nbsp;				ROIs.createRectangleROI(0, 0, server.getWidth(), server.getHeight(), ImagePlane.getPlane(z, t))</b>
+<i>1406</i>&nbsp;				);
+<b class="nc"><i>1407</i>&nbsp;		imageData.getHierarchy().addPathObject(pathObject);</b>
+<b class="nc"><i>1408</i>&nbsp;		if (setSelected)</b>
+<b class="nc"><i>1409</i>&nbsp;			imageData.getHierarchy().getSelectionModel().setSelectedObject(pathObject);</b>
+<b class="nc"><i>1410</i>&nbsp;	}</b>
+<i>1411</i>&nbsp;
+<i>1412</i>&nbsp;	/**
+<i>1413</i>&nbsp;	 * Remove all TMA metadata from the current TMA grid.
+<i>1414</i>&nbsp;	 * @param includeMeasurements remove measurements in addition to textual metadata
+<i>1415</i>&nbsp;	 */
+<i>1416</i>&nbsp;	public static void resetTMAMetadata(final boolean includeMeasurements) {
+<b class="nc"><i>1417</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1418</i>&nbsp;		resetTMAMetadata(hierarchy, includeMeasurements);</b>
+<b class="nc"><i>1419</i>&nbsp;	}</b>
+<i>1420</i>&nbsp;
+<i>1421</i>&nbsp;	/**
+<i>1422</i>&nbsp;	 * Remove all TMA metadata from the TMA grid of the specified hierarchy.
+<i>1423</i>&nbsp;	 * @param hierarchy
+<i>1424</i>&nbsp;	 * @param includeMeasurements remove measurements in addition to textual metadata
+<i>1425</i>&nbsp;	 */
+<i>1426</i>&nbsp;	public static void resetTMAMetadata(final PathObjectHierarchy hierarchy, final boolean includeMeasurements) {
+<b class="nc"><i>1427</i>&nbsp;		if (hierarchy == null || hierarchy.getTMAGrid() == null)</b>
+<b class="nc"><i>1428</i>&nbsp;			return;</b>
+<b class="nc"><i>1429</i>&nbsp;		for (TMACoreObject core : hierarchy.getTMAGrid().getTMACoreList()) {</b>
+<b class="nc"><i>1430</i>&nbsp;			core.clearMetadata();</b>
+<b class="nc"><i>1431</i>&nbsp;			if (includeMeasurements) {</b>
+<b class="nc"><i>1432</i>&nbsp;				core.getMeasurementList().clear();</b>
+<i>1433</i>&nbsp;			}
+<b class="nc"><i>1434</i>&nbsp;		}</b>
+<b class="nc"><i>1435</i>&nbsp;		hierarchy.fireObjectsChangedEvent(QP.class, hierarchy.getTMAGrid().getTMACoreList());</b>
+<b class="nc"><i>1436</i>&nbsp;	}</b>
+<i>1437</i>&nbsp;	
+<i>1438</i>&nbsp;	
+<i>1439</i>&nbsp;	/**
+<i>1440</i>&nbsp;	 * Relabel a TMA grid.  This will only be effective if enough labels are supplied for the full grid - otherwise no changes will be made.
+<i>1441</i>&nbsp;	 * &lt;p&gt;
+<i>1442</i>&nbsp;	 * For a TMA core at column c and row r, the label format will be &#39;Hc-Vr&#39; or &#39;Hc-Vr&#39;, where H is the horizontal label and V the vertical label, 
+<i>1443</i>&nbsp;	 * depending upon the status of the &#39;rowFirst&#39; flag.
+<i>1444</i>&nbsp;	 * &lt;p&gt;
+<i>1445</i>&nbsp;	 * An examples of label would be &#39;A-1&#39;, &#39;A-2&#39;, &#39;B-1&#39;, &#39;B-2&#39; etc.
+<i>1446</i>&nbsp;	 * 
+<i>1447</i>&nbsp;	 * @param hierarchy The hierarchy containing the TMA grid to be relabelled.
+<i>1448</i>&nbsp;	 * @param labelsHorizontal A String containing labels for each TMA column, separated by spaces, or a numeric or alphabetic range (e.g. 1-10, or A-G)
+<i>1449</i>&nbsp;	 * @param labelsVertical A String containing labels for each TMA row, separated by spaces, or a numeric or alphabetic range (e.g. 1-10, or A-G)
+<i>1450</i>&nbsp;	 * @param rowFirst TRUE if the horizontal label should be added before the vertical label, FALSE otherwise
+<i>1451</i>&nbsp;	 * @return TRUE if there were sufficient horizontal and vertical labels to label the entire grid, FALSE otherwise.
+<i>1452</i>&nbsp;	 */
+<i>1453</i>&nbsp;	public static boolean relabelTMAGrid(final PathObjectHierarchy hierarchy, final String labelsHorizontal, final String labelsVertical, final boolean rowFirst) {
+<b class="nc"><i>1454</i>&nbsp;		if (hierarchy == null || hierarchy.getTMAGrid() == null) {</b>
+<b class="nc"><i>1455</i>&nbsp;			logger.error(&quot;Cannot relabel TMA grid - no grid found!&quot;);</b>
+<b class="nc"><i>1456</i>&nbsp;			return false;</b>
+<i>1457</i>&nbsp;		}
+<i>1458</i>&nbsp;		
+<b class="nc"><i>1459</i>&nbsp;		TMAGrid grid = hierarchy.getTMAGrid();</b>
+<b class="nc"><i>1460</i>&nbsp;		String[] columnLabels = PathObjectTools.parseTMALabelString(labelsHorizontal);</b>
+<b class="nc"><i>1461</i>&nbsp;		String[] rowLabels = PathObjectTools.parseTMALabelString(labelsVertical);</b>
+<b class="nc"><i>1462</i>&nbsp;		if (columnLabels.length &lt; grid.getGridWidth()) {</b>
+<b class="nc"><i>1463</i>&nbsp;			logger.error(&quot;Cannot relabel full TMA grid - not enough column labels specified!&quot;);</b>
+<b class="nc"><i>1464</i>&nbsp;			return false;			</b>
+<i>1465</i>&nbsp;		}
+<b class="nc"><i>1466</i>&nbsp;		if (rowLabels.length &lt; grid.getGridHeight()) {</b>
+<b class="nc"><i>1467</i>&nbsp;			logger.error(&quot;Cannot relabel full TMA grid - not enough row labels specified!&quot;);</b>
+<b class="nc"><i>1468</i>&nbsp;			return false;			</b>
+<i>1469</i>&nbsp;		}
+<i>1470</i>&nbsp;		
+<b class="nc"><i>1471</i>&nbsp;		for (int r = 0; r &lt; grid.getGridHeight(); r++) {</b>
+<b class="nc"><i>1472</i>&nbsp;			for (int c = 0; c &lt; grid.getGridWidth(); c++) {</b>
+<i>1473</i>&nbsp;				String name;
+<b class="nc"><i>1474</i>&nbsp;				if (rowFirst)</b>
+<b class="nc"><i>1475</i>&nbsp;					name = rowLabels[r] + &quot;-&quot; + columnLabels[c];</b>
+<i>1476</i>&nbsp;				else
+<b class="nc"><i>1477</i>&nbsp;					name = columnLabels[c] + &quot;-&quot; + rowLabels[r];</b>
+<b class="nc"><i>1478</i>&nbsp;				grid.getTMACore(r, c).setName(name);</b>
+<i>1479</i>&nbsp;			}			
+<i>1480</i>&nbsp;		}
+<b class="nc"><i>1481</i>&nbsp;		hierarchy.fireObjectsChangedEvent(null, new ArrayList&lt;&gt;(grid.getTMACoreList()));</b>
+<b class="nc"><i>1482</i>&nbsp;		return true;</b>
+<i>1483</i>&nbsp;	}
+<i>1484</i>&nbsp;	
+<i>1485</i>&nbsp;	/**
+<i>1486</i>&nbsp;	 * Relabel the current TMA grid. See {@link #relabelTMAGrid(PathObjectHierarchy, String, String, boolean)}
+<i>1487</i>&nbsp;	 * @param labelsHorizontal
+<i>1488</i>&nbsp;	 * @param labelsVertical
+<i>1489</i>&nbsp;	 * @param rowFirst
+<i>1490</i>&nbsp;	 * @return
+<i>1491</i>&nbsp;	 */
+<i>1492</i>&nbsp;	public static boolean relabelTMAGrid(final String labelsHorizontal, final String labelsVertical, final boolean rowFirst) {
+<b class="nc"><i>1493</i>&nbsp;		return relabelTMAGrid(getCurrentHierarchy(), labelsHorizontal, labelsVertical, rowFirst);</b>
+<i>1494</i>&nbsp;	}
+<i>1495</i>&nbsp;	
+<i>1496</i>&nbsp;	
+<i>1497</i>&nbsp;	/**
+<i>1498</i>&nbsp;	 * Reset the PathClass for all objects of the specified type in the current hierarchy.
+<i>1499</i>&nbsp;	 * 
+<i>1500</i>&nbsp;	 * @param cls
+<i>1501</i>&nbsp;	 */
+<i>1502</i>&nbsp;	public static void resetClassifications(final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>1503</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1504</i>&nbsp;		resetClassifications(hierarchy, cls);</b>
+<b class="nc"><i>1505</i>&nbsp;	}</b>
+<i>1506</i>&nbsp;	
+<i>1507</i>&nbsp;	/**
+<i>1508</i>&nbsp;	 * Reset the PathClass for all objects of the specified type in the specified hierarchy.
+<i>1509</i>&nbsp;	 * 
+<i>1510</i>&nbsp;	 * @param hierarchy
+<i>1511</i>&nbsp;	 * @param cls
+<i>1512</i>&nbsp;	 */
+<i>1513</i>&nbsp;	public static void resetClassifications(final PathObjectHierarchy hierarchy, final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>1514</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1515</i>&nbsp;			return;</b>
+<b class="nc"><i>1516</i>&nbsp;		Collection&lt;PathObject&gt; objects = hierarchy.getObjects(null, cls);</b>
+<b class="nc"><i>1517</i>&nbsp;		if (objects.isEmpty()) {</b>
+<b class="nc"><i>1518</i>&nbsp;			logger.warn(&quot;No objects to reset classifications!&quot;);</b>
+<b class="nc"><i>1519</i>&nbsp;			return;</b>
+<i>1520</i>&nbsp;		}
+<b class="nc"><i>1521</i>&nbsp;		for (PathObject pathObject : objects) {</b>
+<b class="nc"><i>1522</i>&nbsp;			if (pathObject.getPathClass() != null)</b>
+<b class="nc"><i>1523</i>&nbsp;				pathObject.setPathClass(null);</b>
+<b class="nc"><i>1524</i>&nbsp;		}</b>
+<b class="nc"><i>1525</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(QP.class, objects);</b>
+<b class="nc"><i>1526</i>&nbsp;	}</b>
+<i>1527</i>&nbsp;	
+<i>1528</i>&nbsp;	/**
+<i>1529</i>&nbsp;	 * Reset the PathClass for all detection objects in the current hierarchy.
+<i>1530</i>&nbsp;	 */
+<i>1531</i>&nbsp;	public static void resetDetectionClassifications() {
+<i>1532</i>&nbsp;//		resetClassifications(PathAnnotationObject.class);
+<b class="nc"><i>1533</i>&nbsp;		resetClassifications(PathDetectionObject.class);</b>
+<b class="nc"><i>1534</i>&nbsp;	}</b>
+<i>1535</i>&nbsp;	
+<i>1536</i>&nbsp;	/**
+<i>1537</i>&nbsp;	 * Test whether a PathObject has a specified measurement in its measurement list.
+<i>1538</i>&nbsp;	 * 
+<i>1539</i>&nbsp;	 * @param pathObject
+<i>1540</i>&nbsp;	 * @param measurementName
+<i>1541</i>&nbsp;	 * @return
+<i>1542</i>&nbsp;	 */
+<i>1543</i>&nbsp;	public static boolean hasMeasurement(final PathObject pathObject, final String measurementName) {
+<b class="nc"><i>1544</i>&nbsp;		return pathObject != null &amp;&amp; pathObject.getMeasurementList().containsNamedMeasurement(measurementName);</b>
+<i>1545</i>&nbsp;	}
+<i>1546</i>&nbsp;
+<i>1547</i>&nbsp;	/**
+<i>1548</i>&nbsp;	 * Extract the specified measurement from a PathObject.
+<i>1549</i>&nbsp;	 * 
+<i>1550</i>&nbsp;	 * @param pathObject
+<i>1551</i>&nbsp;	 * @param measurementName
+<i>1552</i>&nbsp;	 * @return
+<i>1553</i>&nbsp;	 */
+<i>1554</i>&nbsp;	public static double measurement(final PathObject pathObject, final String measurementName) {
+<b class="nc"><i>1555</i>&nbsp;		return pathObject == null ? Double.NaN : pathObject.getMeasurementList().getMeasurementValue(measurementName);</b>
+<i>1556</i>&nbsp;	}
+<i>1557</i>&nbsp;
+<i>1558</i>&nbsp;	
+<i>1559</i>&nbsp;	/**
+<i>1560</i>&nbsp;	 * Clear selected objects, but keep child (descendant) objects.
+<i>1561</i>&nbsp;	 */
+<i>1562</i>&nbsp;	public static void clearSelectedObjects() {
+<b class="nc"><i>1563</i>&nbsp;		clearSelectedObjects(true);</b>
+<b class="nc"><i>1564</i>&nbsp;	}</b>
+<i>1565</i>&nbsp;	
+<i>1566</i>&nbsp;	
+<i>1567</i>&nbsp;	/**
+<i>1568</i>&nbsp;	 * Delete the selected objects from the current hierarchy, optionally keeping their child (descendant) objects.
+<i>1569</i>&nbsp;	 * 
+<i>1570</i>&nbsp;	 * @param keepChildren
+<i>1571</i>&nbsp;	 */
+<i>1572</i>&nbsp;	public static void clearSelectedObjects(boolean keepChildren) {
+<b class="nc"><i>1573</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1574</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>1575</i>&nbsp;			return;</b>
+<b class="nc"><i>1576</i>&nbsp;		Collection&lt;PathObject&gt; selectedRaw = hierarchy.getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>1577</i>&nbsp;		List&lt;PathObject&gt; selected = selectedRaw.stream().filter(p -&gt; !(p instanceof TMACoreObject)).collect(Collectors.toList());</b>
+<b class="nc"><i>1578</i>&nbsp;		hierarchy.removeObjects(selected, keepChildren);</b>
+<b class="nc"><i>1579</i>&nbsp;		hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>1580</i>&nbsp;	}</b>
+<i>1581</i>&nbsp;	
+<i>1582</i>&nbsp;	/**
+<i>1583</i>&nbsp;	 * Get a list of all objects in the current hierarchy according to a specified predicate.
+<i>1584</i>&nbsp;	 * 
+<i>1585</i>&nbsp;	 * @param predicate
+<i>1586</i>&nbsp;	 * @return
+<i>1587</i>&nbsp;	 */
+<i>1588</i>&nbsp;	public static List&lt;PathObject&gt; getObjects(final Predicate&lt;PathObject&gt; predicate) {
+<b class="nc"><i>1589</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1590</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1591</i>&nbsp;			return hierarchy.getFlattenedObjectList(null).stream().filter(predicate).collect(Collectors.toList());</b>
+<b class="nc"><i>1592</i>&nbsp;		return Collections.emptyList();</b>
+<i>1593</i>&nbsp;	}
+<i>1594</i>&nbsp;
+<i>1595</i>&nbsp;	/**
+<i>1596</i>&nbsp;	 * Set selected objects to contain (only) all objects in the current hierarchy according to a specified predicate.
+<i>1597</i>&nbsp;	 * 
+<i>1598</i>&nbsp;	 * @param predicate
+<i>1599</i>&nbsp;	 */
+<i>1600</i>&nbsp;	public static void selectObjects(final Predicate&lt;PathObject&gt; predicate) {
+<b class="nc"><i>1601</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1602</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1603</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObjects(getObjects(hierarchy, predicate), null);</b>
+<b class="nc"><i>1604</i>&nbsp;	}</b>
+<i>1605</i>&nbsp;	
+<i>1606</i>&nbsp;	/**
+<i>1607</i>&nbsp;	 * Set all objects in a collection to be selected, without any being chosen as the main object.
+<i>1608</i>&nbsp;	 * @param pathObjects
+<i>1609</i>&nbsp;	 */
+<i>1610</i>&nbsp;	public static void selectObjects(final Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>1611</i>&nbsp;		selectObjects(pathObjects, null);</b>
+<b class="nc"><i>1612</i>&nbsp;	}</b>
+<i>1613</i>&nbsp;	
+<i>1614</i>&nbsp;	/**
+<i>1615</i>&nbsp;	 * Set all objects in a collection to be selected, including a specified main selected object.
+<i>1616</i>&nbsp;	 * @param pathObjects
+<i>1617</i>&nbsp;	 * @param mainSelection
+<i>1618</i>&nbsp;	 */
+<i>1619</i>&nbsp;	public static void selectObjects(final Collection&lt;PathObject&gt; pathObjects, PathObject mainSelection) {
+<b class="nc"><i>1620</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1621</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1622</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObjects(pathObjects, mainSelection);</b>
+<b class="nc"><i>1623</i>&nbsp;	}</b>
+<i>1624</i>&nbsp;	
+<i>1625</i>&nbsp;	/**
+<i>1626</i>&nbsp;	 * Set one or more objects to be selected within the specified hierarchy.
+<i>1627</i>&nbsp;	 * @param hierarchy
+<i>1628</i>&nbsp;	 * @param pathObjects
+<i>1629</i>&nbsp;	 */
+<i>1630</i>&nbsp;	public static void selectObjects(final PathObjectHierarchy hierarchy, final PathObject... pathObjects) {
+<b class="nc"><i>1631</i>&nbsp;		if (pathObjects.length == 0)</b>
+<b class="nc"><i>1632</i>&nbsp;			return;</b>
+<b class="nc"><i>1633</i>&nbsp;		if (pathObjects.length == 1)</b>
+<b class="nc"><i>1634</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObject(pathObjects[0]);</b>
+<i>1635</i>&nbsp;		else
+<b class="nc"><i>1636</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObjects(Arrays.asList(pathObjects), null);</b>
+<b class="nc"><i>1637</i>&nbsp;	}</b>
+<i>1638</i>&nbsp;	
+<i>1639</i>&nbsp;	/**
+<i>1640</i>&nbsp;	 * Set one or more objects to be selected within the current hierarchy.
+<i>1641</i>&nbsp;	 * @param pathObjects
+<i>1642</i>&nbsp;	 */
+<i>1643</i>&nbsp;	public static void selectObjects(final PathObject... pathObjects) {
+<b class="nc"><i>1644</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1645</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1646</i>&nbsp;			selectObjects(hierarchy, pathObjects);</b>
+<b class="nc"><i>1647</i>&nbsp;	}</b>
+<i>1648</i>&nbsp;
+<i>1649</i>&nbsp;	/**
+<i>1650</i>&nbsp;	 * Get a list of all objects in the specified hierarchy according to a specified predicate.
+<i>1651</i>&nbsp;	 * @param hierarchy 
+<i>1652</i>&nbsp;	 * @param predicate
+<i>1653</i>&nbsp;	 * @return
+<i>1654</i>&nbsp;	 */
+<i>1655</i>&nbsp;	public static List&lt;PathObject&gt; getObjects(final PathObjectHierarchy hierarchy, final Predicate&lt;PathObject&gt; predicate) {
+<b class="nc"><i>1656</i>&nbsp;		return hierarchy.getFlattenedObjectList(null).stream().filter(predicate).collect(Collectors.toList());</b>
+<i>1657</i>&nbsp;	}
+<i>1658</i>&nbsp;
+<i>1659</i>&nbsp;	/**
+<i>1660</i>&nbsp;	 * Set selected objects to contain (only) all objects in the specified hierarchy according to a specified predicate.
+<i>1661</i>&nbsp;	 * @param hierarchy 
+<i>1662</i>&nbsp;	 * @param predicate
+<i>1663</i>&nbsp;	 */
+<i>1664</i>&nbsp;	public static void selectObjects(final PathObjectHierarchy hierarchy, final Predicate&lt;PathObject&gt; predicate) {
+<b class="nc"><i>1665</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObjects(getObjects(hierarchy, predicate), null);</b>
+<b class="nc"><i>1666</i>&nbsp;	}</b>
+<i>1667</i>&nbsp;	
+<i>1668</i>&nbsp;	/**
+<i>1669</i>&nbsp;	 * Set objects that are a subclass of a specified class.
+<i>1670</i>&nbsp;	 * Not to be confused with {@link #selectObjectsByPathClass(PathClass...)} and {@link #selectObjectsByClassification(String...)}.
+<i>1671</i>&nbsp;	 * 
+<i>1672</i>&nbsp;	 * @param cls
+<i>1673</i>&nbsp;	 */
+<i>1674</i>&nbsp;	public static void selectObjectsByClass(final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>1675</i>&nbsp;		selectObjects(p -&gt; cls.isInstance(p));</b>
+<b class="nc"><i>1676</i>&nbsp;	}</b>
+<i>1677</i>&nbsp;	
+<i>1678</i>&nbsp;	/**
+<i>1679</i>&nbsp;	 * Set objects that are a subclass of a specified class.
+<i>1680</i>&nbsp;	 * Not to be confused with {@link #selectObjectsByPathClass(PathObjectHierarchy, PathClass...)} and {@link #selectObjectsByClassification(PathObjectHierarchy, String...)}.
+<i>1681</i>&nbsp;	 * 
+<i>1682</i>&nbsp;	 * @param hierarchy 
+<i>1683</i>&nbsp;	 * @param cls
+<i>1684</i>&nbsp;	 */
+<i>1685</i>&nbsp;	public static void selectObjectsByClass(final PathObjectHierarchy hierarchy, final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>1686</i>&nbsp;		selectObjects(hierarchy, p -&gt; cls.isInstance(p));</b>
+<b class="nc"><i>1687</i>&nbsp;	}</b>
+<i>1688</i>&nbsp;	
+<i>1689</i>&nbsp;	/**
+<i>1690</i>&nbsp;	 * Select all annotation objects in the specified hierarchy.
+<i>1691</i>&nbsp;	 * @param hierarchy
+<i>1692</i>&nbsp;	 */
+<i>1693</i>&nbsp;	public static void selectAnnotations(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1694</i>&nbsp;		selectObjectsByClass(hierarchy, PathAnnotationObject.class);</b>
+<b class="nc"><i>1695</i>&nbsp;	}</b>
+<i>1696</i>&nbsp;	
+<i>1697</i>&nbsp;	/**
+<i>1698</i>&nbsp;	 * Select all TMA core objects in the specified hierarchy, excluding missing cores.
+<i>1699</i>&nbsp;	 * @param hierarchy
+<i>1700</i>&nbsp;	 */
+<i>1701</i>&nbsp;	public static void selectTMACores(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1702</i>&nbsp;		selectTMACores(hierarchy, false);</b>
+<b class="nc"><i>1703</i>&nbsp;	}</b>
+<i>1704</i>&nbsp;	
+<i>1705</i>&nbsp;	/**
+<i>1706</i>&nbsp;	 * Select all TMA core objects in the specified hierarchy, optionally including missing cores.
+<i>1707</i>&nbsp;	 * @param hierarchy
+<i>1708</i>&nbsp;	 * @param includeMissing 
+<i>1709</i>&nbsp;	 */
+<i>1710</i>&nbsp;	public static void selectTMACores(final PathObjectHierarchy hierarchy, final boolean includeMissing) {
+<b class="nc"><i>1711</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObjects(PathObjectTools.getTMACoreObjects(hierarchy, includeMissing), null);</b>
+<b class="nc"><i>1712</i>&nbsp;	}</b>
+<i>1713</i>&nbsp;
+<i>1714</i>&nbsp;	/**
+<i>1715</i>&nbsp;	 * Select all detection objects in the specified hierarchy.
+<i>1716</i>&nbsp;	 * @param hierarchy
+<i>1717</i>&nbsp;	 */
+<i>1718</i>&nbsp;	public static void selectDetections(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1719</i>&nbsp;		selectObjectsByClass(hierarchy, PathDetectionObject.class);</b>
+<b class="nc"><i>1720</i>&nbsp;	}</b>
+<i>1721</i>&nbsp;	
+<i>1722</i>&nbsp;	/**
+<i>1723</i>&nbsp;	 * Select all cell objects in the specified hierarchy.
+<i>1724</i>&nbsp;	 * @param hierarchy
+<i>1725</i>&nbsp;	 */
+<i>1726</i>&nbsp;	public static void selectCells(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1727</i>&nbsp;		selectObjectsByClass(hierarchy, PathCellObject.class);</b>
+<b class="nc"><i>1728</i>&nbsp;	}</b>
+<i>1729</i>&nbsp;	
+<i>1730</i>&nbsp;	/**
+<i>1731</i>&nbsp;	 * Select all annotation objects in the current hierarchy.
+<i>1732</i>&nbsp;	 */
+<i>1733</i>&nbsp;	public static void selectAnnotations() {
+<b class="nc"><i>1734</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1735</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1736</i>&nbsp;			selectAnnotations(hierarchy);</b>
+<b class="nc"><i>1737</i>&nbsp;	}</b>
+<i>1738</i>&nbsp;	
+<i>1739</i>&nbsp;	/**
+<i>1740</i>&nbsp;	 * Select all TMA core objects in the current hierarchy, excluding missing cores.
+<i>1741</i>&nbsp;	 */
+<i>1742</i>&nbsp;	public static void selectTMACores() {
+<b class="nc"><i>1743</i>&nbsp;		selectTMACores(false);</b>
+<b class="nc"><i>1744</i>&nbsp;	}</b>
+<i>1745</i>&nbsp;	
+<i>1746</i>&nbsp;	/**
+<i>1747</i>&nbsp;	 * Select all TMA core objects in the current hierarchy, optionally including missing cores.
+<i>1748</i>&nbsp;	 * @param includeMissing 
+<i>1749</i>&nbsp;	 */
+<i>1750</i>&nbsp;	public static void selectTMACores(final boolean includeMissing) {
+<b class="nc"><i>1751</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1752</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1753</i>&nbsp;			selectTMACores(hierarchy, includeMissing);</b>
+<b class="nc"><i>1754</i>&nbsp;	}</b>
+<i>1755</i>&nbsp;
+<i>1756</i>&nbsp;	/**
+<i>1757</i>&nbsp;	 * Select all detection objects in the current hierarchy.
+<i>1758</i>&nbsp;	 */
+<i>1759</i>&nbsp;	public static void selectDetections() {
+<b class="nc"><i>1760</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1761</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1762</i>&nbsp;			selectDetections(hierarchy);</b>
+<b class="nc"><i>1763</i>&nbsp;	}</b>
+<i>1764</i>&nbsp;	
+<i>1765</i>&nbsp;	/**
+<i>1766</i>&nbsp;	 * Select all cell objects in the current hierarchy.
+<i>1767</i>&nbsp;	 */
+<i>1768</i>&nbsp;	public static void selectCells() {
+<b class="nc"><i>1769</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1770</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1771</i>&nbsp;			selectCells(hierarchy);</b>
+<b class="nc"><i>1772</i>&nbsp;	}</b>
+<i>1773</i>&nbsp;	
+<i>1774</i>&nbsp;	/**
+<i>1775</i>&nbsp;	 * Select all tile objects in the specified hierarchy.
+<i>1776</i>&nbsp;	 * @param hierarchy
+<i>1777</i>&nbsp;	 */
+<i>1778</i>&nbsp;	public static void selectTiles(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1779</i>&nbsp;		selectObjectsByClass(hierarchy, PathTileObject.class);</b>
+<b class="nc"><i>1780</i>&nbsp;	}</b>
+<i>1781</i>&nbsp;
+<i>1782</i>&nbsp;	/**
+<i>1783</i>&nbsp;	 * Select all tile objects in the current hierarchy.
+<i>1784</i>&nbsp;	 */
+<i>1785</i>&nbsp;	public static void selectTiles() {
+<b class="nc"><i>1786</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1787</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1788</i>&nbsp;			selectTiles(hierarchy);</b>
+<b class="nc"><i>1789</i>&nbsp;	}</b>
+<i>1790</i>&nbsp;	
+<i>1791</i>&nbsp;	/**
+<i>1792</i>&nbsp;	 * Select objects for the current hierarchy that have one of the specified classifications.
+<i>1793</i>&nbsp;	 * @param pathClassNames one or more classification names, which may be converted to a {@link PathClass} with {@link #getPathClass(String)}
+<i>1794</i>&nbsp;	 */
+<i>1795</i>&nbsp;	public static void selectObjectsByClassification(final String... pathClassNames) {
+<b class="nc"><i>1796</i>&nbsp;		var hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1797</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1798</i>&nbsp;			selectObjectsByClassification(hierarchy, pathClassNames);</b>
+<b class="nc"><i>1799</i>&nbsp;	}</b>
+<i>1800</i>&nbsp;	
+<i>1801</i>&nbsp;	/**
+<i>1802</i>&nbsp;	 * Select objects for the current hierarchy that have one of the specified {@link PathClass} classifications assigned.
+<i>1803</i>&nbsp;	 * @param pathClasses one or more classifications
+<i>1804</i>&nbsp;	 * 
+<i>1805</i>&nbsp;	 * @see #selectObjectsByPathClass(PathClass...)
+<i>1806</i>&nbsp;	 */
+<i>1807</i>&nbsp;	public static void selectObjectsByPathClass(final PathClass... pathClasses) {
+<b class="nc"><i>1808</i>&nbsp;		var hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1809</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1810</i>&nbsp;			selectObjectsByPathClass(hierarchy, pathClasses);</b>
+<b class="nc"><i>1811</i>&nbsp;	}</b>
+<i>1812</i>&nbsp;
+<i>1813</i>&nbsp;	/**
+<i>1814</i>&nbsp;	 * Select objects for the specified hierarchy that have one of the specified classifications.
+<i>1815</i>&nbsp;	 * @param hierarchy the hierarchy containing objects that may be selected
+<i>1816</i>&nbsp;	 * @param pathClassNames one or more classification names, which may be converted to a {@link PathClass} with {@link #getPathClass(String)}
+<i>1817</i>&nbsp;	 * 
+<i>1818</i>&nbsp;	 * @see #selectObjectsByPathClass(PathObjectHierarchy, PathClass...)
+<i>1819</i>&nbsp;	 */
+<i>1820</i>&nbsp;	public static void selectObjectsByClassification(final PathObjectHierarchy hierarchy, final String... pathClassNames) {
+<i>1821</i>&nbsp;		PathClass[] pathClasses;
+<b class="nc"><i>1822</i>&nbsp;		if (pathClassNames == null)</b>
+<b class="nc"><i>1823</i>&nbsp;			pathClasses = new PathClass[1];</b>
+<i>1824</i>&nbsp;		else
+<b class="nc"><i>1825</i>&nbsp;			pathClasses = Arrays.stream(pathClassNames).map(s -&gt; getPathClass(s)).toArray(PathClass[]::new);</b>
+<b class="nc"><i>1826</i>&nbsp;		selectObjectsByPathClass(hierarchy, pathClasses);</b>
+<b class="nc"><i>1827</i>&nbsp;	}</b>
+<i>1828</i>&nbsp;	
+<i>1829</i>&nbsp;	/**
+<i>1830</i>&nbsp;	 * Select objects for the specified hierarchy that have one of the specified {@link PathClass} classifications assigned.
+<i>1831</i>&nbsp;	 * @param hierarchy the hierarchy containing objects that may be selected
+<i>1832</i>&nbsp;	 * @param pathClasses one or more classifications
+<i>1833</i>&nbsp;	 */
+<i>1834</i>&nbsp;	public static void selectObjectsByPathClass(final PathObjectHierarchy hierarchy, final PathClass... pathClasses) {
+<i>1835</i>&nbsp;		Set&lt;PathClass&gt; pathClassSet;
+<b class="nc"><i>1836</i>&nbsp;		if (pathClasses == null)</b>
+<b class="nc"><i>1837</i>&nbsp;			pathClassSet = Set.of((PathClass)null);</b>
+<i>1838</i>&nbsp;		else
+<b class="nc"><i>1839</i>&nbsp;			pathClassSet = Arrays.stream(pathClasses).map(p -&gt; p == PathClassFactory.getPathClassUnclassified() ? null : p).collect(Collectors.toCollection(HashSet::new));</b>
+<b class="nc"><i>1840</i>&nbsp;		selectObjects(hierarchy, p -&gt; pathClassSet.contains(p.getPathClass()));</b>
+<b class="nc"><i>1841</i>&nbsp;	}</b>
+<i>1842</i>&nbsp;
+<i>1843</i>&nbsp;	
+<i>1844</i>&nbsp;	// TODO: Update parsePredicate to something more modern... a proper DSL
+<i>1845</i>&nbsp;	@Deprecated
+<i>1846</i>&nbsp;	private static Predicate&lt;PathObject&gt; parsePredicate(final String command) throws NoSuchElementException {
+<b class="nc"><i>1847</i>&nbsp;		String s = command.trim();</b>
+<b class="nc"><i>1848</i>&nbsp;		if (s.length() == 0)</b>
+<b class="nc"><i>1849</i>&nbsp;			throw new NoSuchElementException(&quot;No command provided!&quot;);</b>
+<b class="nc"><i>1850</i>&nbsp;		Scanner scanner = new Scanner(s);</b>
+<i>1851</i>&nbsp;
+<i>1852</i>&nbsp;		try {
+<b class="nc"><i>1853</i>&nbsp;			Map&lt;String, Predicate&lt;Integer&gt;&gt; mapComparison = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>1854</i>&nbsp;			mapComparison.put(&quot;&gt;=&quot;, v -&gt; v &gt;= 0);</b>
+<b class="nc"><i>1855</i>&nbsp;			mapComparison.put(&quot;&lt;=&quot;, v -&gt; v &lt;= 0);</b>
+<b class="nc"><i>1856</i>&nbsp;			mapComparison.put(&quot;&gt;&quot;, v -&gt; v &gt; 0);</b>
+<b class="nc"><i>1857</i>&nbsp;			mapComparison.put(&quot;&lt;&quot;, v -&gt; v &lt; 0);</b>
+<b class="nc"><i>1858</i>&nbsp;			mapComparison.put(&quot;=&quot;, v -&gt; v == 0);</b>
+<b class="nc"><i>1859</i>&nbsp;			mapComparison.put(&quot;==&quot;, v -&gt; v == 0);</b>
+<b class="nc"><i>1860</i>&nbsp;			mapComparison.put(&quot;!=&quot;, v -&gt; v != 0);</b>
+<b class="nc"><i>1861</i>&nbsp;			mapComparison.put(&quot;~=&quot;, v -&gt; v != 0);</b>
+<i>1862</i>&nbsp;
+<b class="nc"><i>1863</i>&nbsp;			Predicate&lt;PathObject&gt; predicate = null;</b>
+<b class="nc"><i>1864</i>&nbsp;			Pattern comparePattern = Pattern.compile(&quot;&gt;=|&lt;=|==|!=|~=|=|&gt;|&lt;&quot;);</b>
+<b class="nc"><i>1865</i>&nbsp;			Pattern combinePattern = Pattern.compile(&quot;and|AND|or|OR&quot;);</b>
+<b class="nc"><i>1866</i>&nbsp;			Pattern notPattern = Pattern.compile(&quot;not|NOT&quot;);</b>
+<b class="nc"><i>1867</i>&nbsp;			while (scanner.hasNext()) {</b>
+<b class="nc"><i>1868</i>&nbsp;				String combine = null;</b>
+<b class="nc"><i>1869</i>&nbsp;				scanner.reset();</b>
+<b class="nc"><i>1870</i>&nbsp;				if (predicate != null) {</b>
+<b class="nc"><i>1871</i>&nbsp;					if (scanner.hasNext(combinePattern))</b>
+<b class="nc"><i>1872</i>&nbsp;						combine = scanner.next(combinePattern).trim().toUpperCase();</b>
+<i>1873</i>&nbsp;					else
+<b class="nc"><i>1874</i>&nbsp;						throw new NoSuchElementException(&quot;Missing combiner (AND, OR) between comparisons!&quot;);</b>
+<i>1875</i>&nbsp;				}
+<i>1876</i>&nbsp;
+<b class="nc"><i>1877</i>&nbsp;				boolean negate = false;</b>
+<b class="nc"><i>1878</i>&nbsp;				if (scanner.hasNext(notPattern)) {</b>
+<b class="nc"><i>1879</i>&nbsp;					negate = true;</b>
+<b class="nc"><i>1880</i>&nbsp;					scanner.next(notPattern);</b>
+<i>1881</i>&nbsp;				}
+<i>1882</i>&nbsp;
+<b class="nc"><i>1883</i>&nbsp;				scanner.useDelimiter(comparePattern);</b>
+<b class="nc"><i>1884</i>&nbsp;				String measurement = scanner.next().trim();</b>
+<b class="nc"><i>1885</i>&nbsp;				scanner.reset();</b>
+<b class="nc"><i>1886</i>&nbsp;				if (!scanner.hasNext(comparePattern))</b>
+<b class="nc"><i>1887</i>&nbsp;					throw new NoSuchElementException(&quot;Missing comparison operator (&lt;, &gt;, &lt;=, &gt;=, ==) for measurement \&quot;&quot; + measurement + &quot;\&quot;&quot;);</b>
+<b class="nc"><i>1888</i>&nbsp;				String comparison = scanner.next(comparePattern).trim();</b>
+<i>1889</i>&nbsp;				
+<b class="nc"><i>1890</i>&nbsp;				if (!scanner.hasNextDouble())</b>
+<b class="nc"><i>1891</i>&nbsp;					throw new NoSuchElementException(&quot;Missing comparison value after \&quot;&quot; + measurement + &quot; &quot; + comparison + &quot;\&quot;&quot;);</b>
+<b class="nc"><i>1892</i>&nbsp;				double value = scanner.nextDouble();</b>
+<i>1893</i>&nbsp;
+<b class="nc"><i>1894</i>&nbsp;				Predicate&lt;PathObject&gt; predicateNew = p -&gt; {</b>
+<b class="nc"><i>1895</i>&nbsp;					double v = p.getMeasurementList().getMeasurementValue(measurement);</b>
+<b class="nc"><i>1896</i>&nbsp;					return !Double.isNaN(v) &amp;&amp; mapComparison.get(comparison).test(Double.compare(p.getMeasurementList().getMeasurementValue(measurement), value));</b>
+<i>1897</i>&nbsp;				};
+<b class="nc"><i>1898</i>&nbsp;				if (negate)</b>
+<b class="nc"><i>1899</i>&nbsp;					predicateNew = predicateNew.negate();</b>
+<i>1900</i>&nbsp;
+<b class="nc"><i>1901</i>&nbsp;				if (predicate == null) {</b>
+<b class="nc"><i>1902</i>&nbsp;					predicate = predicateNew;</b>
+<i>1903</i>&nbsp;				} else {
+<b class="nc"><i>1904</i>&nbsp;					if (&quot;AND&quot;.equals(combine))</b>
+<b class="nc"><i>1905</i>&nbsp;						predicate = predicate.and(predicateNew);</b>
+<b class="nc"><i>1906</i>&nbsp;					else if (&quot;OR&quot;.equals(combine))</b>
+<b class="nc"><i>1907</i>&nbsp;						predicate = predicate.or(predicateNew);</b>
+<i>1908</i>&nbsp;					else
+<b class="nc"><i>1909</i>&nbsp;						throw new NoSuchElementException(&quot;Unrecognised combination of predicates: &quot; + combine);</b>
+<i>1910</i>&nbsp;				}
+<b class="nc"><i>1911</i>&nbsp;			}</b>
+<i>1912</i>&nbsp;
+<b class="nc"><i>1913</i>&nbsp;			return predicate;</b>
+<i>1914</i>&nbsp;		} finally {
+<b class="nc"><i>1915</i>&nbsp;			scanner.close();</b>
+<b class="nc"><i>1916</i>&nbsp;		}</b>
+<i>1917</i>&nbsp;	}
+<i>1918</i>&nbsp;
+<i>1919</i>&nbsp;	/**
+<i>1920</i>&nbsp;	 * Select objects based on a specified measurement.
+<i>1921</i>&nbsp;	 * 
+<i>1922</i>&nbsp;	 * @param imageData
+<i>1923</i>&nbsp;	 * @param command
+<i>1924</i>&nbsp;	 */
+<i>1925</i>&nbsp;	@Deprecated
+<i>1926</i>&nbsp;	public static void selectObjectsByMeasurement(final ImageData&lt;?&gt; imageData, final String command) {
+<b class="nc"><i>1927</i>&nbsp;		selectObjects(imageData.getHierarchy(), parsePredicate(command));</b>
+<b class="nc"><i>1928</i>&nbsp;	}</b>
+<i>1929</i>&nbsp;	
+<i>1930</i>&nbsp;	@Deprecated
+<i>1931</i>&nbsp;	private static void selectObjectsByMeasurement(final String command) {
+<b class="nc"><i>1932</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1933</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1934</i>&nbsp;			selectObjects(hierarchy, parsePredicate(command));</b>
+<b class="nc"><i>1935</i>&nbsp;	}</b>
+<i>1936</i>&nbsp;	
+<i>1937</i>&nbsp;	/**
+<i>1938</i>&nbsp;	 * Set the classification of the selected objects in the current hierarchy.
+<i>1939</i>&nbsp;	 * 
+<i>1940</i>&nbsp;	 * @param pathClassName
+<i>1941</i>&nbsp;	 */
+<i>1942</i>&nbsp;	public static void classifySelected(final String pathClassName) {
+<b class="nc"><i>1943</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1944</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1945</i>&nbsp;			classifySelected(hierarchy, pathClassName);</b>
+<b class="nc"><i>1946</i>&nbsp;	}</b>
+<i>1947</i>&nbsp;	
+<i>1948</i>&nbsp;	/**
+<i>1949</i>&nbsp;	 * Set the classification of the selected objects.
+<i>1950</i>&nbsp;	 * 
+<i>1951</i>&nbsp;	 * @param hierarchy
+<i>1952</i>&nbsp;	 * @param pathClassName
+<i>1953</i>&nbsp;	 */
+<i>1954</i>&nbsp;	public static void classifySelected(final PathObjectHierarchy hierarchy, final String pathClassName) {
+<b class="nc"><i>1955</i>&nbsp;		PathClass pathClass = PathClassFactory.getPathClass(pathClassName);</b>
+<b class="nc"><i>1956</i>&nbsp;		Collection&lt;PathObject&gt; selected = hierarchy.getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>1957</i>&nbsp;		if (selected.isEmpty()) {</b>
+<b class="nc"><i>1958</i>&nbsp;			logger.info(&quot;No objects selected&quot;);</b>
+<b class="nc"><i>1959</i>&nbsp;			return;</b>
+<i>1960</i>&nbsp;		}
+<b class="nc"><i>1961</i>&nbsp;		for (PathObject pathObject : selected) {</b>
+<b class="nc"><i>1962</i>&nbsp;			pathObject.setPathClass(pathClass);</b>
+<b class="nc"><i>1963</i>&nbsp;		}</b>
+<b class="nc"><i>1964</i>&nbsp;		if (selected.size() == 1)</b>
+<b class="nc"><i>1965</i>&nbsp;			logger.info(&quot;{} object classified as {}&quot;, selected.size(), pathClassName);</b>
+<i>1966</i>&nbsp;		else
+<b class="nc"><i>1967</i>&nbsp;			logger.info(&quot;{} objects classified as {}&quot;, selected.size(), pathClassName);</b>
+<b class="nc"><i>1968</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(null, selected);</b>
+<b class="nc"><i>1969</i>&nbsp;	}</b>
+<i>1970</i>&nbsp;
+<i>1971</i>&nbsp;	
+<i>1972</i>&nbsp;	/**
+<i>1973</i>&nbsp;	 * Clear the selection for the current hierarchy, so that no objects of any kind are selected.
+<i>1974</i>&nbsp;	 * 
+<i>1975</i>&nbsp;	 */
+<i>1976</i>&nbsp;	public static void deselectAll() {
+<b class="nc"><i>1977</i>&nbsp;		PathObjectHierarchy hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>1978</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>1979</i>&nbsp;			deselectAll(hierarchy);</b>
+<b class="nc"><i>1980</i>&nbsp;	}</b>
+<i>1981</i>&nbsp;	
+<i>1982</i>&nbsp;	/**
+<i>1983</i>&nbsp;	 * Clear the selection, so that no objects of any kind are selected.
+<i>1984</i>&nbsp;	 * 
+<i>1985</i>&nbsp;	 * @param hierarchy
+<i>1986</i>&nbsp;	 */
+<i>1987</i>&nbsp;	public static void deselectAll(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1988</i>&nbsp;		hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>1989</i>&nbsp;	}</b>
+<i>1990</i>&nbsp;
+<i>1991</i>&nbsp;	
+<i>1992</i>&nbsp;	/**
+<i>1993</i>&nbsp;	 * Get a PathClass with the specified name.
+<i>1994</i>&nbsp;	 * 
+<i>1995</i>&nbsp;	 * @param name
+<i>1996</i>&nbsp;	 * @return
+<i>1997</i>&nbsp;	 */
+<i>1998</i>&nbsp;	public static PathClass getPathClass(final String name) {
+<b class="nc"><i>1999</i>&nbsp;		return PathClassFactory.getPathClass(name);</b>
+<i>2000</i>&nbsp;	}
+<i>2001</i>&nbsp;
+<i>2002</i>&nbsp;	/**
+<i>2003</i>&nbsp;	 * Get a PathClass with the specified name and color.
+<i>2004</i>&nbsp;	 * 
+<i>2005</i>&nbsp;	 * Note that only one instance of any PathClass can exist at any time, therefore any existing 
+<i>2006</i>&nbsp;	 * PathClass with the same description will always be returned instead of creating a new one.
+<i>2007</i>&nbsp;	 * In this case, the color attribute of the existing PathClass will not be changed.
+<i>2008</i>&nbsp;	 * Therefore the color only has an effect when a new PathClass is created.
+<i>2009</i>&nbsp;	 * 
+<i>2010</i>&nbsp;	 * @param name
+<i>2011</i>&nbsp;	 * @param rgb
+<i>2012</i>&nbsp;	 * @return
+<i>2013</i>&nbsp;	 * 
+<i>2014</i>&nbsp;	 * @see ColorTools#makeRGB
+<i>2015</i>&nbsp;	 */
+<i>2016</i>&nbsp;	public static PathClass getPathClass(final String name, final Integer rgb) {
+<b class="nc"><i>2017</i>&nbsp;		return PathClassFactory.getPathClass(name, rgb);</b>
+<i>2018</i>&nbsp;	}
+<i>2019</i>&nbsp;
+<i>2020</i>&nbsp;	/**
+<i>2021</i>&nbsp;	 * Get a PathClass with the specified name, derived from another PathClass.
+<i>2022</i>&nbsp;	 * 
+<i>2023</i>&nbsp;	 * An example would be a &#39;positive&#39; class derived from a &#39;Tumor&#39; class, e.g.
+<i>2024</i>&nbsp;	 * &lt;code&gt;getDerivedPathClass(getPathClass(&quot;Tumor&quot;), &quot;Positive&quot;)&lt;/code&gt;
+<i>2025</i>&nbsp;	 * 
+<i>2026</i>&nbsp;	 * @param baseClass
+<i>2027</i>&nbsp;	 * @param name
+<i>2028</i>&nbsp;	 * @return
+<i>2029</i>&nbsp;	 */
+<i>2030</i>&nbsp;	public static PathClass getDerivedPathClass(final PathClass baseClass, final String name) {
+<b class="nc"><i>2031</i>&nbsp;		return getDerivedPathClass(baseClass, name, null);</b>
+<i>2032</i>&nbsp;	}
+<i>2033</i>&nbsp;	
+<i>2034</i>&nbsp;	/**
+<i>2035</i>&nbsp;	 * Get a PathClass with the specified name, derived from another PathClass.
+<i>2036</i>&nbsp;	 * 
+<i>2037</i>&nbsp;	 * An example would be a &#39;positive&#39; class derived from a &#39;Tumor&#39; class, e.g.
+<i>2038</i>&nbsp;	 * &lt;code&gt;getDerivedPathClass(getPathClass(&quot;Tumor&quot;), &quot;Positive&quot;, getColorRGB(255, 0, 0))&lt;/code&gt;
+<i>2039</i>&nbsp;	 * 
+<i>2040</i>&nbsp;	 * Note that only one instance of any PathClass can exist at any time, therefore any existing 
+<i>2041</i>&nbsp;	 * PathClass with the same description will always be returned instead of creating a new one.
+<i>2042</i>&nbsp;	 * In this case, the color attribute of the existing PathClass will not be changed.
+<i>2043</i>&nbsp;	 * Therefore the color only has an effect when a new PathClass is created.
+<i>2044</i>&nbsp;	 * 
+<i>2045</i>&nbsp;	 * @param baseClass
+<i>2046</i>&nbsp;	 * @param name
+<i>2047</i>&nbsp;	 * @param rgb
+<i>2048</i>&nbsp;	 * @return
+<i>2049</i>&nbsp;	 */
+<i>2050</i>&nbsp;	public static PathClass getDerivedPathClass(final PathClass baseClass, final String name, final Integer rgb) {
+<b class="nc"><i>2051</i>&nbsp;		return PathClassFactory.getDerivedPathClass(baseClass, name, rgb);</b>
+<i>2052</i>&nbsp;	}
+<i>2053</i>&nbsp;
+<i>2054</i>&nbsp;	/**
+<i>2055</i>&nbsp;	 * Remove measurements from objects of a specific class for the current image data.
+<i>2056</i>&nbsp;	 * @param cls
+<i>2057</i>&nbsp;	 * @param measurementNames
+<i>2058</i>&nbsp;	 */
+<i>2059</i>&nbsp;	public static void removeMeasurements(final Class&lt;? extends PathObject&gt; cls, final String... measurementNames) {
+<b class="nc"><i>2060</i>&nbsp;		removeMeasurements(getCurrentHierarchy(), cls, measurementNames);</b>
+<b class="nc"><i>2061</i>&nbsp;	}</b>
+<i>2062</i>&nbsp;
+<i>2063</i>&nbsp;	/**
+<i>2064</i>&nbsp;	 * Remove measurements from objects of a specific class for the specified hierarchy.
+<i>2065</i>&nbsp;	 * @param hierarchy
+<i>2066</i>&nbsp;	 * @param cls
+<i>2067</i>&nbsp;	 * @param measurementNames
+<i>2068</i>&nbsp;	 */
+<i>2069</i>&nbsp;	public static void removeMeasurements(final PathObjectHierarchy hierarchy, final Class&lt;? extends PathObject&gt; cls, final String... measurementNames) {
+<b class="nc"><i>2070</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>2071</i>&nbsp;			return;</b>
+<b class="nc"><i>2072</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = hierarchy.getObjects(null, cls);</b>
+<b class="nc"><i>2073</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<i>2074</i>&nbsp;			// A little check, to handle possible subclasses being returned
+<b class="nc"><i>2075</i>&nbsp;			if (pathObject.getClass() != cls)</b>
+<b class="nc"><i>2076</i>&nbsp;				continue;</b>
+<i>2077</i>&nbsp;			// Remove the measurements
+<b class="nc"><i>2078</i>&nbsp;			pathObject.getMeasurementList().removeMeasurements(measurementNames);</b>
+<b class="nc"><i>2079</i>&nbsp;			pathObject.getMeasurementList().close();</b>
+<b class="nc"><i>2080</i>&nbsp;		}</b>
+<b class="nc"><i>2081</i>&nbsp;		hierarchy.fireObjectMeasurementsChangedEvent(null, pathObjects);</b>
+<b class="nc"><i>2082</i>&nbsp;	}</b>
+<i>2083</i>&nbsp;	
+<i>2084</i>&nbsp;	
+<i>2085</i>&nbsp;	
+<i>2086</i>&nbsp;	/**
+<i>2087</i>&nbsp;	 * Clear the measurement lists for specified objects within a hierarchy.
+<i>2088</i>&nbsp;	 * @param hierarchy used to fire a hierarchy update, if specified (may be null if no update should be fired)
+<i>2089</i>&nbsp;	 * @param pathObjects collection of objects that should have their measurement lists cleared
+<i>2090</i>&nbsp;	 */
+<i>2091</i>&nbsp;	public static void clearMeasurements(final PathObjectHierarchy hierarchy, final PathObject... pathObjects) {
+<b class="nc"><i>2092</i>&nbsp;		clearMeasurements(hierarchy, Arrays.asList(pathObjects));</b>
+<b class="nc"><i>2093</i>&nbsp;	}</b>
+<i>2094</i>&nbsp;	
+<i>2095</i>&nbsp;	/**
+<i>2096</i>&nbsp;	 * Clear the measurement lists for specified objects within a hierarchy.
+<i>2097</i>&nbsp;	 * @param hierarchy used to fire a hierarchy update, if specified (may be null if no update should be fired)
+<i>2098</i>&nbsp;	 * @param pathObjects collection of objects that should have their measurement lists cleared
+<i>2099</i>&nbsp;	 */
+<i>2100</i>&nbsp;	public static void clearMeasurements(final PathObjectHierarchy hierarchy, final Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>2101</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<i>2102</i>&nbsp;			// Remove all measurements
+<b class="nc"><i>2103</i>&nbsp;			pathObject.getMeasurementList().clear();</b>
+<b class="nc"><i>2104</i>&nbsp;			pathObject.getMeasurementList().close();</b>
+<b class="nc"><i>2105</i>&nbsp;		}</b>
+<b class="nc"><i>2106</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2107</i>&nbsp;			hierarchy.fireObjectMeasurementsChangedEvent(null, pathObjects);</b>
+<b class="nc"><i>2108</i>&nbsp;	}</b>
+<i>2109</i>&nbsp;	
+<i>2110</i>&nbsp;	/**
+<i>2111</i>&nbsp;	 * Clear the measurement lists for all annotations in a hierarchy.
+<i>2112</i>&nbsp;	 * @param hierarchy
+<i>2113</i>&nbsp;	 */
+<i>2114</i>&nbsp;	public static void clearAnnotationMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2115</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2116</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getAnnotationObjects());</b>
+<b class="nc"><i>2117</i>&nbsp;	}</b>
+<i>2118</i>&nbsp;	
+<i>2119</i>&nbsp;	/**
+<i>2120</i>&nbsp;	 * Clear the measurement lists for all annotations in the current hierarchy.
+<i>2121</i>&nbsp;	 */
+<i>2122</i>&nbsp;	public static void clearAnnotationMeasurements() {
+<b class="nc"><i>2123</i>&nbsp;		clearAnnotationMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2124</i>&nbsp;	}</b>
+<i>2125</i>&nbsp;	
+<i>2126</i>&nbsp;	/**
+<i>2127</i>&nbsp;	 * Clear the measurement lists for all detections in a hierarchy (including sub-classes of detections).
+<i>2128</i>&nbsp;	 * @param hierarchy
+<i>2129</i>&nbsp;	 */
+<i>2130</i>&nbsp;	public static void clearDetectionMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2131</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2132</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getDetectionObjects());</b>
+<b class="nc"><i>2133</i>&nbsp;	}</b>
+<i>2134</i>&nbsp;	
+<i>2135</i>&nbsp;	/**
+<i>2136</i>&nbsp;	 * Clear the measurement lists for all detections in the current hierarchy.
+<i>2137</i>&nbsp;	 */
+<i>2138</i>&nbsp;	public static void clearDetectionMeasurements() {
+<b class="nc"><i>2139</i>&nbsp;		clearDetectionMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2140</i>&nbsp;	}</b>
+<i>2141</i>&nbsp;	
+<i>2142</i>&nbsp;	/**
+<i>2143</i>&nbsp;	 * Clear the measurement lists for all TMA core objects in a hierarchy.
+<i>2144</i>&nbsp;	 * @param hierarchy
+<i>2145</i>&nbsp;	 */
+<i>2146</i>&nbsp;	public static void clearTMACoreMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2147</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2148</i>&nbsp;			clearMeasurements(hierarchy, TMACoreObject.class);</b>
+<b class="nc"><i>2149</i>&nbsp;	}</b>
+<i>2150</i>&nbsp;	
+<i>2151</i>&nbsp;	/**
+<i>2152</i>&nbsp;	 * Clear the measurement lists for all TMA core objects in the current hierarchy.
+<i>2153</i>&nbsp;	 */
+<i>2154</i>&nbsp;	public static void clearTMACoreMeasurements() {
+<b class="nc"><i>2155</i>&nbsp;		clearTMACoreMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2156</i>&nbsp;	}</b>
+<i>2157</i>&nbsp;	
+<i>2158</i>&nbsp;	/**
+<i>2159</i>&nbsp;	 * Clear the measurement lists for objects of a specific class in a hierarchy (subclasses are not included!).
+<i>2160</i>&nbsp;	 * @param hierarchy
+<i>2161</i>&nbsp;	 * @param cls 
+<i>2162</i>&nbsp;	 */
+<i>2163</i>&nbsp;	public static void clearMeasurements(PathObjectHierarchy hierarchy, Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>2164</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2165</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getObjects(null, null).stream().filter(p -&gt; p.getClass().equals(cls)).toArray(PathObject[]::new));</b>
+<b class="nc"><i>2166</i>&nbsp;	}</b>
+<i>2167</i>&nbsp;	
+<i>2168</i>&nbsp;	/**
+<i>2169</i>&nbsp;	 * Clear the measurement lists for objects of a specific class in the current hierarchy (subclasses are not included!).
+<i>2170</i>&nbsp;	 * @param cls 
+<i>2171</i>&nbsp;	 */
+<i>2172</i>&nbsp;	public static void clearMeasurements(Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>2173</i>&nbsp;		clearMeasurements(getCurrentHierarchy(), cls);</b>
+<b class="nc"><i>2174</i>&nbsp;	}</b>
+<i>2175</i>&nbsp;	
+<i>2176</i>&nbsp;	/**
+<i>2177</i>&nbsp;	 * Clear the measurement lists for all detections in the current hierarchy.
+<i>2178</i>&nbsp;	 */
+<i>2179</i>&nbsp;	public static void clearMeasurements() {
+<b class="nc"><i>2180</i>&nbsp;		clearDetectionMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2181</i>&nbsp;	}</b>
+<i>2182</i>&nbsp;	
+<i>2183</i>&nbsp;	/**
+<i>2184</i>&nbsp;	 * Clear the measurement lists for all cells in a hierarchy.
+<i>2185</i>&nbsp;	 * @param hierarchy
+<i>2186</i>&nbsp;	 */
+<i>2187</i>&nbsp;	public static void clearCellMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2188</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2189</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getCellObjects());</b>
+<b class="nc"><i>2190</i>&nbsp;	}</b>
+<i>2191</i>&nbsp;	
+<i>2192</i>&nbsp;	/**
+<i>2193</i>&nbsp;	 * Clear the measurement lists for all cells in the current hierarchy.
+<i>2194</i>&nbsp;	 */
+<i>2195</i>&nbsp;	public static void clearCellMeasurements() {
+<b class="nc"><i>2196</i>&nbsp;		clearCellMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2197</i>&nbsp;	}</b>
+<i>2198</i>&nbsp;	
+<i>2199</i>&nbsp;	/**
+<i>2200</i>&nbsp;	 * Clear the measurement lists for all tiles in a hierarchy.
+<i>2201</i>&nbsp;	 * @param hierarchy
+<i>2202</i>&nbsp;	 */
+<i>2203</i>&nbsp;	public static void clearTileMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2204</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2205</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getTileObjects());</b>
+<b class="nc"><i>2206</i>&nbsp;	}</b>
+<i>2207</i>&nbsp;	
+<i>2208</i>&nbsp;	/**
+<i>2209</i>&nbsp;	 * Clear the measurement lists for all tiles in the current hierarchy.
+<i>2210</i>&nbsp;	 */
+<i>2211</i>&nbsp;	public static void clearTileMeasurements() {
+<b class="nc"><i>2212</i>&nbsp;		clearTileMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2213</i>&nbsp;	}</b>
+<i>2214</i>&nbsp;	
+<i>2215</i>&nbsp;	/**
+<i>2216</i>&nbsp;	 * Clear the measurement lists for the root object.
+<i>2217</i>&nbsp;	 * @param hierarchy
+<i>2218</i>&nbsp;	 */
+<i>2219</i>&nbsp;	public static void clearRootMeasurements(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2220</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2221</i>&nbsp;			clearMeasurements(hierarchy, hierarchy.getRootObject());</b>
+<b class="nc"><i>2222</i>&nbsp;	}</b>
+<i>2223</i>&nbsp;	
+<i>2224</i>&nbsp;	/**
+<i>2225</i>&nbsp;	 * Clear the measurement lists for the root object.
+<i>2226</i>&nbsp;	 */
+<i>2227</i>&nbsp;	public static void clearRootMeasurements() {
+<b class="nc"><i>2228</i>&nbsp;		clearRootMeasurements(getCurrentHierarchy());</b>
+<b class="nc"><i>2229</i>&nbsp;	}</b>
+<i>2230</i>&nbsp;	
+<i>2231</i>&nbsp;	
+<i>2232</i>&nbsp;	
+<i>2233</i>&nbsp;	
+<i>2234</i>&nbsp;	
+<i>2235</i>&nbsp;	/**
+<i>2236</i>&nbsp;	 * Get a base class - which is either a valid PathClass which is *not* an intensity class, or else null.
+<i>2237</i>&nbsp;	 * 
+<i>2238</i>&nbsp;	 * This will be null if {@code pathObject.getPathClass() == null}.
+<i>2239</i>&nbsp;	 * 
+<i>2240</i>&nbsp;	 * Otherwise, it will be {@code pathObject.getPathClass().getBaseClass()} assuming the result isn&#39;t an intensity class - or null otherwise.
+<i>2241</i>&nbsp;	 * 
+<i>2242</i>&nbsp;	 * @param pathObject
+<i>2243</i>&nbsp;	 * @return
+<i>2244</i>&nbsp;	 */
+<i>2245</i>&nbsp;	public static PathClass getBasePathClass(final PathObject pathObject) {
+<b class="nc"><i>2246</i>&nbsp;		PathClass baseClass = pathObject.getPathClass();</b>
+<b class="nc"><i>2247</i>&nbsp;		if (baseClass != null) {</b>
+<b class="nc"><i>2248</i>&nbsp;			baseClass = baseClass.getBaseClass();</b>
+<i>2249</i>&nbsp;			// Check our base isn&#39;t an intensity class
+<b class="nc"><i>2250</i>&nbsp;			if (PathClassTools.isPositiveOrGradedIntensityClass(baseClass) || PathClassTools.isNegativeClass(baseClass))</b>
+<b class="nc"><i>2251</i>&nbsp;				baseClass = null;</b>
+<i>2252</i>&nbsp;		}
+<b class="nc"><i>2253</i>&nbsp;		return baseClass;</b>
+<i>2254</i>&nbsp;	}
+<i>2255</i>&nbsp;
+<i>2256</i>&nbsp;	
+<i>2257</i>&nbsp;	/**
+<i>2258</i>&nbsp;	 * Get the first ancestor class of pathObject.getPathClass() that is not an intensity class (i.e. not negative, positive, 1+, 2+ or 3+).
+<i>2259</i>&nbsp;	 * 
+<i>2260</i>&nbsp;	 * This will return null if pathClass is null, or if no non-intensity classes are found.
+<i>2261</i>&nbsp;	 * 
+<i>2262</i>&nbsp;	 * @param pathObject
+<i>2263</i>&nbsp;	 * @return
+<i>2264</i>&nbsp;	 */
+<i>2265</i>&nbsp;	public static PathClass getNonIntensityAncestorPathClass(final PathObject pathObject) {
+<b class="nc"><i>2266</i>&nbsp;		return PathClassTools.getNonIntensityAncestorClass(pathObject.getPathClass());</b>
+<i>2267</i>&nbsp;	}
+<i>2268</i>&nbsp;	
+<i>2269</i>&nbsp;	
+<i>2270</i>&nbsp;	/**
+<i>2271</i>&nbsp;	 * Set the intensity classifications for the specified objects.
+<i>2272</i>&nbsp;	 * 
+<i>2273</i>&nbsp;	 * @param pathObjects
+<i>2274</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2275</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2276</i>&nbsp;	 */
+<i>2277</i>&nbsp;	public static void setIntensityClassifications(final Collection&lt;? extends PathObject&gt; pathObjects, final String measurementName, final double... thresholds) {
+<b class="nc"><i>2278</i>&nbsp;		PathClassifierTools.setIntensityClassifications(pathObjects, measurementName, thresholds);</b>
+<b class="nc"><i>2279</i>&nbsp;	}</b>
+<i>2280</i>&nbsp;	
+<i>2281</i>&nbsp;	/**
+<i>2282</i>&nbsp;	 * Set intensity classifications for all selected (detection) objects in the specified hierarchy.
+<i>2283</i>&nbsp;	 * 
+<i>2284</i>&nbsp;	 * @param hierarchy
+<i>2285</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2286</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2287</i>&nbsp;	 */
+<i>2288</i>&nbsp;	public static void setIntensityClassificationsForSelected(final PathObjectHierarchy hierarchy, final String measurementName, final double... thresholds) {
+<i>2289</i>&nbsp;		// Get all selected detections
+<b class="nc"><i>2290</i>&nbsp;		List&lt;PathObject&gt; pathObjects = hierarchy.getSelectionModel().getSelectedObjects()</b>
+<b class="nc"><i>2291</i>&nbsp;				.stream().filter(p -&gt; p.isDetection()).collect(Collectors.toList());</b>
+<b class="nc"><i>2292</i>&nbsp;		setIntensityClassifications(pathObjects, measurementName, thresholds);</b>
+<b class="nc"><i>2293</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(QP.class, pathObjects);</b>
+<b class="nc"><i>2294</i>&nbsp;	}</b>
+<i>2295</i>&nbsp;	
+<i>2296</i>&nbsp;	/**
+<i>2297</i>&nbsp;	 * Set the intensity classifications for objects of the specified class in the specified hierarchy.
+<i>2298</i>&nbsp;	 * 
+<i>2299</i>&nbsp;	 * @param hierarchy
+<i>2300</i>&nbsp;	 * @param cls
+<i>2301</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2302</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2303</i>&nbsp;	 */
+<i>2304</i>&nbsp;	public static void setIntensityClassifications(final PathObjectHierarchy hierarchy, final Class&lt;? extends PathObject&gt; cls, final String measurementName, final double... thresholds) {
+<b class="nc"><i>2305</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = hierarchy.getObjects(null, cls);</b>
+<b class="nc"><i>2306</i>&nbsp;		setIntensityClassifications(pathObjects, measurementName, thresholds);</b>
+<b class="nc"><i>2307</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(QP.class, pathObjects);</b>
+<b class="nc"><i>2308</i>&nbsp;	}</b>
+<i>2309</i>&nbsp;	
+<i>2310</i>&nbsp;	/**
+<i>2311</i>&nbsp;	 * Set the intensity classifications for objects of the specified class in the current hierarchy.
+<i>2312</i>&nbsp;	 * 
+<i>2313</i>&nbsp;	 * @param cls
+<i>2314</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2315</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2316</i>&nbsp;	 */
+<i>2317</i>&nbsp;	public static void setIntensityClassifications(final Class&lt;? extends PathObject&gt; cls, final String measurementName, final double... thresholds) {
+<b class="nc"><i>2318</i>&nbsp;		setIntensityClassifications(getCurrentHierarchy(), cls, measurementName, thresholds);</b>
+<b class="nc"><i>2319</i>&nbsp;	}</b>
+<i>2320</i>&nbsp;	
+<i>2321</i>&nbsp;	/**
+<i>2322</i>&nbsp;	 * Set the intensity classifications for detections in the specified hierarchy.
+<i>2323</i>&nbsp;	 * @param hierarchy 
+<i>2324</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2325</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2326</i>&nbsp;	 */
+<i>2327</i>&nbsp;	public static void setDetectionIntensityClassifications(final PathObjectHierarchy hierarchy, final String measurementName, final double... thresholds) {
+<b class="nc"><i>2328</i>&nbsp;		setIntensityClassifications(hierarchy, PathDetectionObject.class, measurementName, thresholds);</b>
+<b class="nc"><i>2329</i>&nbsp;	}</b>
+<i>2330</i>&nbsp;	
+<i>2331</i>&nbsp;	/**
+<i>2332</i>&nbsp;	 * Set the intensity classifications for detections in the current hierarchy.
+<i>2333</i>&nbsp;	 * 
+<i>2334</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2335</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2336</i>&nbsp;	 */
+<i>2337</i>&nbsp;	public static void setDetectionIntensityClassifications(final String measurementName, final double... thresholds) {
+<b class="nc"><i>2338</i>&nbsp;		setDetectionIntensityClassifications(getCurrentHierarchy(), measurementName, thresholds);</b>
+<b class="nc"><i>2339</i>&nbsp;	}</b>
+<i>2340</i>&nbsp;	
+<i>2341</i>&nbsp;	/**
+<i>2342</i>&nbsp;	 * Set the intensity classifications for cells in the current hierarchy.
+<i>2343</i>&nbsp;	 * 
+<i>2344</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2345</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2346</i>&nbsp;	 */
+<i>2347</i>&nbsp;	public static void setCellIntensityClassifications(final String measurementName, final double... thresholds) {
+<b class="nc"><i>2348</i>&nbsp;		setCellIntensityClassifications(getCurrentHierarchy(), measurementName, thresholds);</b>
+<b class="nc"><i>2349</i>&nbsp;	}</b>
+<i>2350</i>&nbsp;	
+<i>2351</i>&nbsp;	/**
+<i>2352</i>&nbsp;	 * 
+<i>2353</i>&nbsp;	 * @param hierarchy
+<i>2354</i>&nbsp;	 * @param measurementName measurement to threshold
+<i>2355</i>&nbsp;	 * @param thresholds either 1 or 3 thresholds, depending upon whether objects should be classified as Positive/Negative or Negative/1+/2+/3+
+<i>2356</i>&nbsp;	 */
+<i>2357</i>&nbsp;	public static void setCellIntensityClassifications(final PathObjectHierarchy hierarchy, final String measurementName, final double... thresholds) {
+<b class="nc"><i>2358</i>&nbsp;		setIntensityClassifications(hierarchy, PathCellObject.class, measurementName, thresholds);</b>
+<b class="nc"><i>2359</i>&nbsp;	}	</b>
+<i>2360</i>&nbsp;	
+<i>2361</i>&nbsp;	
+<i>2362</i>&nbsp;	/**
+<i>2363</i>&nbsp;	 * Reset the intensity classifications for all specified objects.
+<i>2364</i>&nbsp;	 * 
+<i>2365</i>&nbsp;	 * This means setting the classification to the result of &lt;code&gt;getNonIntensityAncestorPathClass(pathObject)&lt;/code&gt;
+<i>2366</i>&nbsp;	 * 
+<i>2367</i>&nbsp;	 * @param pathObjects
+<i>2368</i>&nbsp;	 */
+<i>2369</i>&nbsp;	public static void resetIntensityClassifications(final Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>2370</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>2371</i>&nbsp;			PathClass currentClass = pathObject.getPathClass();</b>
+<b class="nc"><i>2372</i>&nbsp;			if (PathClassTools.isPositiveOrGradedIntensityClass(currentClass) || PathClassTools.isNegativeClass(currentClass))</b>
+<b class="nc"><i>2373</i>&nbsp;				pathObject.setPathClass(getNonIntensityAncestorPathClass(pathObject));</b>
+<b class="nc"><i>2374</i>&nbsp;		}</b>
+<b class="nc"><i>2375</i>&nbsp;	}</b>
+<i>2376</i>&nbsp;	
+<i>2377</i>&nbsp;	/**
+<i>2378</i>&nbsp;	 * Reset the intensity classifications for all detections in the specified hierarchy.
+<i>2379</i>&nbsp;	 * 
+<i>2380</i>&nbsp;	 * This means setting the classification to the result of &lt;code&gt;getNonIntensityAncestorPathClass(pathObject)&lt;/code&gt;
+<i>2381</i>&nbsp;	 * 
+<i>2382</i>&nbsp;	 * @param hierarchy
+<i>2383</i>&nbsp;	 */
+<i>2384</i>&nbsp;	public static void resetIntensityClassifications(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2385</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = hierarchy.getObjects(null, PathDetectionObject.class);</b>
+<b class="nc"><i>2386</i>&nbsp;		resetIntensityClassifications(pathObjects);</b>
+<b class="nc"><i>2387</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(QP.class, pathObjects);</b>
+<b class="nc"><i>2388</i>&nbsp;	}</b>
+<i>2389</i>&nbsp;
+<i>2390</i>&nbsp;	/**
+<i>2391</i>&nbsp;	 * Reset the intensity classifications for all detections in the current hierarchy.
+<i>2392</i>&nbsp;	 * 
+<i>2393</i>&nbsp;	 * This means setting the classification to the result of &lt;code&gt;getNonIntensityAncestorPathClass(pathObject)&lt;/code&gt;
+<i>2394</i>&nbsp;	 * 
+<i>2395</i>&nbsp;	 */
+<i>2396</i>&nbsp;	public static void resetIntensityClassifications() {
+<b class="nc"><i>2397</i>&nbsp;		resetIntensityClassifications(getCurrentHierarchy());</b>
+<b class="nc"><i>2398</i>&nbsp;	}</b>
+<i>2399</i>&nbsp;	
+<i>2400</i>&nbsp;	
+<i>2401</i>&nbsp;	/**
+<i>2402</i>&nbsp;	 * Write an image region image to the specified path. The writer will be determined based on the file extension.
+<i>2403</i>&nbsp;	 * @param server
+<i>2404</i>&nbsp;	 * @param request
+<i>2405</i>&nbsp;	 * @param path
+<i>2406</i>&nbsp;	 * @throws IOException
+<i>2407</i>&nbsp;	 */
+<i>2408</i>&nbsp;	public static void writeImageRegion(ImageServer&lt;BufferedImage&gt; server, RegionRequest request, String path) throws IOException {
+<b class="nc"><i>2409</i>&nbsp;		ImageWriterTools.writeImageRegion(server, request, path);</b>
+<b class="nc"><i>2410</i>&nbsp;	}</b>
+<i>2411</i>&nbsp;	
+<i>2412</i>&nbsp;	/**
+<i>2413</i>&nbsp;	 * Write the output of applying a pixel classifier to an image. The writer will be determined based on the file extension.
+<i>2414</i>&nbsp;	 * @param imageData image to which the classifier should be applied
+<i>2415</i>&nbsp;	 * @param classifier pixel classifier
+<i>2416</i>&nbsp;	 * @param path output file path
+<i>2417</i>&nbsp;	 * @throws IOException
+<i>2418</i>&nbsp;	 */
+<i>2419</i>&nbsp;	public static void writePredictionImage(ImageData&lt;BufferedImage&gt; imageData, PixelClassifier classifier, String path) throws IOException {
+<b class="nc"><i>2420</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>2421</i>&nbsp;			imageData = getCurrentImageData();</b>
+<b class="nc"><i>2422</i>&nbsp;		var server = PixelClassifierTools.createPixelClassificationServer(imageData, classifier);</b>
+<b class="nc"><i>2423</i>&nbsp;		ImageWriterTools.writeImage(server, path);</b>
+<b class="nc"><i>2424</i>&nbsp;	}</b>
+<i>2425</i>&nbsp;	
+<i>2426</i>&nbsp;	/**
+<i>2427</i>&nbsp;	 * Write the output of applying a pixel classifier to the current image image.
+<i>2428</i>&nbsp;	 * @param classifierName name of the classifier, see {@link #loadPixelClassifier(String)}
+<i>2429</i>&nbsp;	 * @param path output file path
+<i>2430</i>&nbsp;	 * @throws IOException
+<i>2431</i>&nbsp;	 */
+<i>2432</i>&nbsp;	public static void writePredictionImage(String classifierName, String path) throws IOException {
+<b class="nc"><i>2433</i>&nbsp;		writePredictionImage(getCurrentImageData(), loadPixelClassifier(classifierName), path);</b>
+<b class="nc"><i>2434</i>&nbsp;	}</b>
+<i>2435</i>&nbsp;	
+<i>2436</i>&nbsp;	/**
+<i>2437</i>&nbsp;	 * Write a full image to the specified path. The writer will be determined based on the file extension.
+<i>2438</i>&nbsp;	 * @param server
+<i>2439</i>&nbsp;	 * @param path
+<i>2440</i>&nbsp;	 * @throws IOException
+<i>2441</i>&nbsp;	 */
+<i>2442</i>&nbsp;	public static void writeImage(ImageServer&lt;BufferedImage&gt; server, String path) throws IOException {
+<b class="nc"><i>2443</i>&nbsp;		ImageWriterTools.writeImage(server, path);</b>
+<b class="nc"><i>2444</i>&nbsp;	}</b>
+<i>2445</i>&nbsp;	
+<i>2446</i>&nbsp;	/**
+<i>2447</i>&nbsp;	 * Write an image to the specified path. The writer will be determined based on the file extension.
+<i>2448</i>&nbsp;	 * @param img
+<i>2449</i>&nbsp;	 * @param path
+<i>2450</i>&nbsp;	 * @throws IOException
+<i>2451</i>&nbsp;	 */
+<i>2452</i>&nbsp;	public static void writeImage(BufferedImage img, String path) throws IOException {
+<b class="nc"><i>2453</i>&nbsp;		ImageWriterTools.writeImage(img, path);</b>
+<b class="nc"><i>2454</i>&nbsp;	}</b>
+<i>2455</i>&nbsp;	
+<i>2456</i>&nbsp;	
+<i>2457</i>&nbsp;	/**
+<i>2458</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest detection with each valid, not-ignored classification and add 
+<i>2459</i>&nbsp;	 * the result to the detection measurement list.
+<i>2460</i>&nbsp;	 * @param imageData
+<i>2461</i>&nbsp;	 * @param splitClassNames 
+<i>2462</i>&nbsp;	 * @see DistanceTools#detectionCentroidDistances(ImageData, boolean)
+<i>2463</i>&nbsp;	 */
+<i>2464</i>&nbsp;	public static void detectionCentroidDistances(ImageData&lt;?&gt; imageData, boolean splitClassNames) {
+<b class="nc"><i>2465</i>&nbsp;		DistanceTools.detectionCentroidDistances(imageData, splitClassNames);</b>
+<b class="nc"><i>2466</i>&nbsp;	}</b>
+<i>2467</i>&nbsp;	
+<i>2468</i>&nbsp;	/**
+<i>2469</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest detection with each valid, not-ignored classification and add 
+<i>2470</i>&nbsp;	 * the result to the detection measurement list for the current ImageData - without splitting class names.
+<i>2471</i>&nbsp;	 * 
+<i>2472</i>&nbsp;	 * @deprecated retained only for compatibility of v0.2.0 milestone releases; use instead #detectionCentroidDistances(boolean)
+<i>2473</i>&nbsp;	 * 
+<i>2474</i>&nbsp;	 * @see DistanceTools#detectionCentroidDistances(ImageData, boolean)
+<i>2475</i>&nbsp;	 */
+<i>2476</i>&nbsp;	@Deprecated
+<i>2477</i>&nbsp;	public static void detectionCentroidDistances() {
+<b class="nc"><i>2478</i>&nbsp;		detectionCentroidDistances(false);</b>
+<b class="nc"><i>2479</i>&nbsp;	}</b>
+<i>2480</i>&nbsp;	
+<i>2481</i>&nbsp;	/**
+<i>2482</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest detection with each valid, not-ignored classification and add 
+<i>2483</i>&nbsp;	 * the result to the detection measurement list for the current ImageData.
+<i>2484</i>&nbsp;	 * @param splitClassNames 
+<i>2485</i>&nbsp;	 * @see DistanceTools#detectionCentroidDistances(ImageData, boolean)
+<i>2486</i>&nbsp;	 */
+<i>2487</i>&nbsp;	public static void detectionCentroidDistances(boolean splitClassNames) {
+<b class="nc"><i>2488</i>&nbsp;		detectionCentroidDistances(getCurrentImageData(), splitClassNames);</b>
+<b class="nc"><i>2489</i>&nbsp;	}</b>
+<i>2490</i>&nbsp;	
+<i>2491</i>&nbsp;	/**
+<i>2492</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest annotation with each valid, not-ignored classification and add 
+<i>2493</i>&nbsp;	 * the result to the detection measurement list.
+<i>2494</i>&nbsp;	 * @param imageData
+<i>2495</i>&nbsp;	 * @param splitClassNames 
+<i>2496</i>&nbsp;	 * @see DistanceTools#detectionToAnnotationDistances(ImageData, boolean)
+<i>2497</i>&nbsp;	 */
+<i>2498</i>&nbsp;	public static void detectionToAnnotationDistances(ImageData&lt;?&gt; imageData, boolean splitClassNames) {
+<b class="nc"><i>2499</i>&nbsp;		DistanceTools.detectionToAnnotationDistances(imageData, splitClassNames);</b>
+<b class="nc"><i>2500</i>&nbsp;	}</b>
+<i>2501</i>&nbsp;	
+<i>2502</i>&nbsp;	/**
+<i>2503</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest annotation with each valid, not-ignored classification and add 
+<i>2504</i>&nbsp;	 * the result to the detection measurement list for the current ImageData - without splitting class names.
+<i>2505</i>&nbsp;	 * 
+<i>2506</i>&nbsp;	 * @deprecated retained only for compatibility of v0.2.0 milestone releases; use instead #detectionToAnnotationDistances(boolean)
+<i>2507</i>&nbsp;	 * 
+<i>2508</i>&nbsp;	 */
+<i>2509</i>&nbsp;	@Deprecated
+<i>2510</i>&nbsp;	public static void detectionToAnnotationDistances() {
+<b class="nc"><i>2511</i>&nbsp;		detectionToAnnotationDistances(false);</b>
+<b class="nc"><i>2512</i>&nbsp;	}</b>
+<i>2513</i>&nbsp;	
+<i>2514</i>&nbsp;	/**
+<i>2515</i>&nbsp;	 * Compute the distance for all detection object centroids to the closest annotation with each valid, not-ignored classification and add 
+<i>2516</i>&nbsp;	 * the result to the detection measurement list for the current ImageData.
+<i>2517</i>&nbsp;	 * @param splitClassNames 
+<i>2518</i>&nbsp;	 * @see DistanceTools#detectionToAnnotationDistances(ImageData, boolean)
+<i>2519</i>&nbsp;	 */
+<i>2520</i>&nbsp;	public static void detectionToAnnotationDistances(boolean splitClassNames) {
+<b class="nc"><i>2521</i>&nbsp;		detectionToAnnotationDistances(getCurrentImageData(), splitClassNames);</b>
+<b class="nc"><i>2522</i>&nbsp;	}</b>
+<i>2523</i>&nbsp;
+<i>2524</i>&nbsp;	/**
+<i>2525</i>&nbsp;	 * Set the metadata for an ImageServer to have the required pixel sizes and z-spacing.
+<i>2526</i>&nbsp;	 * &lt;p&gt;
+<i>2527</i>&nbsp;	 * Returns true if changes were made, false otherwise.
+<i>2528</i>&nbsp;	 * 
+<i>2529</i>&nbsp;	 * @param imageData
+<i>2530</i>&nbsp;	 * @param pixelWidthMicrons
+<i>2531</i>&nbsp;	 * @param pixelHeightMicrons
+<i>2532</i>&nbsp;	 * @param zSpacingMicrons
+<i>2533</i>&nbsp;	 * @return true if the size was set, false otherwise
+<i>2534</i>&nbsp;	 */
+<i>2535</i>&nbsp;	public static boolean setPixelSizeMicrons(ImageData&lt;?&gt; imageData, Number pixelWidthMicrons, Number pixelHeightMicrons, Number zSpacingMicrons) {
+<b class="nc"><i>2536</i>&nbsp;		var server = imageData.getServer();</b>
+<b class="nc"><i>2537</i>&nbsp;		if (isFinite(pixelWidthMicrons) &amp;&amp; !isFinite(pixelHeightMicrons))</b>
+<b class="nc"><i>2538</i>&nbsp;			pixelHeightMicrons = pixelWidthMicrons;</b>
+<b class="nc"><i>2539</i>&nbsp;		else if (isFinite(pixelHeightMicrons) &amp;&amp; !isFinite(pixelWidthMicrons))</b>
+<b class="nc"><i>2540</i>&nbsp;			pixelWidthMicrons = pixelHeightMicrons;</b>
+<i>2541</i>&nbsp;		
+<b class="nc"><i>2542</i>&nbsp;		var metadataNew = new ImageServerMetadata.Builder(server.getMetadata())</b>
+<b class="nc"><i>2543</i>&nbsp;			.pixelSizeMicrons(pixelWidthMicrons, pixelHeightMicrons)</b>
+<b class="nc"><i>2544</i>&nbsp;			.zSpacingMicrons(zSpacingMicrons)</b>
+<b class="nc"><i>2545</i>&nbsp;			.build();</b>
+<b class="nc"><i>2546</i>&nbsp;		if (server.getMetadata().equals(metadataNew))</b>
+<b class="nc"><i>2547</i>&nbsp;			return false;</b>
+<b class="nc"><i>2548</i>&nbsp;		imageData.updateServerMetadata(metadataNew);</b>
+<b class="nc"><i>2549</i>&nbsp;		return true;</b>
+<i>2550</i>&nbsp;	}
+<i>2551</i>&nbsp;	
+<i>2552</i>&nbsp;	/**
+<i>2553</i>&nbsp;	 * Set the metadata for the current ImageData to have the required pixel sizes and z-spacing.
+<i>2554</i>&nbsp;	 * &lt;p&gt;
+<i>2555</i>&nbsp;	 * Returns true if changes were made, false otherwise.
+<i>2556</i>&nbsp;	 * 
+<i>2557</i>&nbsp;	 * @param pixelWidthMicrons
+<i>2558</i>&nbsp;	 * @param pixelHeightMicrons
+<i>2559</i>&nbsp;	 * @param zSpacingMicrons
+<i>2560</i>&nbsp;	 * @return true if the size was set, false otherwise
+<i>2561</i>&nbsp;	 */
+<i>2562</i>&nbsp;	public static boolean setPixelSizeMicrons(Number pixelWidthMicrons, Number pixelHeightMicrons, Number zSpacingMicrons) {
+<b class="nc"><i>2563</i>&nbsp;		return setPixelSizeMicrons(getCurrentImageData(), pixelWidthMicrons, pixelHeightMicrons, zSpacingMicrons);</b>
+<i>2564</i>&nbsp;	}
+<i>2565</i>&nbsp;
+<i>2566</i>&nbsp;	/**
+<i>2567</i>&nbsp;	 * Set the metadata for the current ImageData to have the required pixel sizes.
+<i>2568</i>&nbsp;	 * &lt;p&gt;
+<i>2569</i>&nbsp;	 * Returns true if changes were made, false otherwise.
+<i>2570</i>&nbsp;	 * 
+<i>2571</i>&nbsp;	 * @param pixelWidthMicrons
+<i>2572</i>&nbsp;	 * @param pixelHeightMicrons
+<i>2573</i>&nbsp;	 * @return true if the size was set, false otherwise
+<i>2574</i>&nbsp;	 */
+<i>2575</i>&nbsp;	public static boolean setPixelSizeMicrons(Number pixelWidthMicrons, Number pixelHeightMicrons) {
+<b class="nc"><i>2576</i>&nbsp;		return setPixelSizeMicrons(pixelWidthMicrons, pixelHeightMicrons, null);</b>
+<i>2577</i>&nbsp;	}
+<i>2578</i>&nbsp;	
+<i>2579</i>&nbsp;
+<i>2580</i>&nbsp;	/**
+<i>2581</i>&nbsp;	 * Apply a new classification to all objects in the current hierarchy with a specified classification.
+<i>2582</i>&nbsp;	 * @param originalClassName name of the original classification
+<i>2583</i>&nbsp;	 * @param newClassName name of the new classification
+<i>2584</i>&nbsp;	 */
+<i>2585</i>&nbsp;	public static void replaceClassification(String originalClassName, String newClassName) {
+<b class="nc"><i>2586</i>&nbsp;		replaceClassification(getCurrentHierarchy(), getPathClass(originalClassName), getPathClass(newClassName));</b>
+<b class="nc"><i>2587</i>&nbsp;	}</b>
+<i>2588</i>&nbsp;	
+<i>2589</i>&nbsp;	/**
+<i>2590</i>&nbsp;	 * Apply a new classification to all objects in the current hierarchy with a specified original classification.
+<i>2591</i>&nbsp;	 * @param originalClass the original classification
+<i>2592</i>&nbsp;	 * @param newClass the new classification
+<i>2593</i>&nbsp;	 */
+<i>2594</i>&nbsp;	public static void replaceClassification(PathClass originalClass, PathClass newClass) {
+<b class="nc"><i>2595</i>&nbsp;		replaceClassification(getCurrentHierarchy(), originalClass, newClass);</b>
+<b class="nc"><i>2596</i>&nbsp;	}</b>
+<i>2597</i>&nbsp;
+<i>2598</i>&nbsp;	/**
+<i>2599</i>&nbsp;	 * Apply a new classification to all objects with a specified original classification in the provided hierarchy.
+<i>2600</i>&nbsp;	 * @param hierarchy the hierarchy containing the objects
+<i>2601</i>&nbsp;	 * @param originalClass the original classification
+<i>2602</i>&nbsp;	 * @param newClass the new classification
+<i>2603</i>&nbsp;	 */
+<i>2604</i>&nbsp;	public static void replaceClassification(PathObjectHierarchy hierarchy, PathClass originalClass, PathClass newClass) {
+<b class="nc"><i>2605</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>2606</i>&nbsp;			return;</b>
+<b class="nc"><i>2607</i>&nbsp;		var pathObjects = hierarchy.getObjects(null, null);</b>
+<b class="nc"><i>2608</i>&nbsp;		if (pathObjects.isEmpty())</b>
+<b class="nc"><i>2609</i>&nbsp;			return;</b>
+<b class="nc"><i>2610</i>&nbsp;		replaceClassification(pathObjects, originalClass, newClass);</b>
+<b class="nc"><i>2611</i>&nbsp;		hierarchy.fireObjectClassificationsChangedEvent(QP.class, pathObjects);</b>
+<b class="nc"><i>2612</i>&nbsp;	}</b>
+<i>2613</i>&nbsp;	
+<i>2614</i>&nbsp;	/**
+<i>2615</i>&nbsp;	 * Apply a new classification to all objects with a specified original classification in an object collection.
+<i>2616</i>&nbsp;	 * @param pathObjects
+<i>2617</i>&nbsp;	 * @param originalClass
+<i>2618</i>&nbsp;	 * @param newClass
+<i>2619</i>&nbsp;	 */
+<i>2620</i>&nbsp;	public static void replaceClassification(Collection&lt;PathObject&gt; pathObjects, PathClass originalClass, PathClass newClass) {
+<b class="nc"><i>2621</i>&nbsp;		if (PathClassFactory.getPathClassUnclassified() == originalClass)</b>
+<b class="nc"><i>2622</i>&nbsp;			originalClass = null;</b>
+<b class="nc"><i>2623</i>&nbsp;		if (PathClassFactory.getPathClassUnclassified() == newClass)</b>
+<b class="nc"><i>2624</i>&nbsp;			newClass = null;</b>
+<b class="nc"><i>2625</i>&nbsp;		for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>2626</i>&nbsp;			if (pathObject.getPathClass() == originalClass)</b>
+<b class="nc"><i>2627</i>&nbsp;				pathObject.setPathClass(newClass);</b>
+<b class="nc"><i>2628</i>&nbsp;		}</b>
+<b class="nc"><i>2629</i>&nbsp;	}</b>
+<i>2630</i>&nbsp;	
+<i>2631</i>&nbsp;	
+<i>2632</i>&nbsp;	/**
+<i>2633</i>&nbsp;	 * Resolve the location of annotations in the current hierarchy by setting parent/child relationships.
+<i>2634</i>&nbsp;	 */
+<i>2635</i>&nbsp;	public static void resolveHierarchy() {
+<b class="nc"><i>2636</i>&nbsp;		resolveHierarchy(getCurrentHierarchy());</b>
+<b class="nc"><i>2637</i>&nbsp;	}</b>
+<i>2638</i>&nbsp;	
+<i>2639</i>&nbsp;	/**
+<i>2640</i>&nbsp;	 * Resolve the location of annotations in the specified hierarchy by setting parent/child relationships.
+<i>2641</i>&nbsp;	 * 
+<i>2642</i>&nbsp;	 * @param hierarchy
+<i>2643</i>&nbsp;	 */
+<i>2644</i>&nbsp;	public static void resolveHierarchy(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2645</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>2646</i>&nbsp;			return;</b>
+<b class="nc"><i>2647</i>&nbsp;		hierarchy.resolveHierarchy();</b>
+<b class="nc"><i>2648</i>&nbsp;	}</b>
+<i>2649</i>&nbsp;	
+<i>2650</i>&nbsp;	/**
+<i>2651</i>&nbsp;	 * Insert objects into the hierarchy, resolving their location and setting parent/child relationships.
+<i>2652</i>&nbsp;	 * 
+<i>2653</i>&nbsp;	 * @param pathObjects
+<i>2654</i>&nbsp;	 */
+<i>2655</i>&nbsp;	public static void insertObjects(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>2656</i>&nbsp;		var hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>2657</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2658</i>&nbsp;			hierarchy.insertPathObjects(pathObjects);</b>
+<b class="nc"><i>2659</i>&nbsp;	}	</b>
+<i>2660</i>&nbsp;	
+<i>2661</i>&nbsp;	/**
+<i>2662</i>&nbsp;	 * Insert object into the hierarchy, resolving its location and setting parent/child relationships.
+<i>2663</i>&nbsp;	 * 
+<i>2664</i>&nbsp;	 * @param pathObject
+<i>2665</i>&nbsp;	 */
+<i>2666</i>&nbsp;	public static void insertObjects(PathObject pathObject) {
+<b class="nc"><i>2667</i>&nbsp;		var hierarchy = getCurrentHierarchy();</b>
+<b class="nc"><i>2668</i>&nbsp;		if (hierarchy != null)</b>
+<b class="nc"><i>2669</i>&nbsp;			hierarchy.insertPathObject(pathObject, true);</b>
+<b class="nc"><i>2670</i>&nbsp;	}	</b>
+<i>2671</i>&nbsp;	
+<i>2672</i>&nbsp;	private static boolean isFinite(Number val) {
+<b class="nc"><i>2673</i>&nbsp;		return val != null &amp;&amp; Double.isFinite(val.doubleValue());</b>
+<i>2674</i>&nbsp;	}
+<i>2675</i>&nbsp;	
+<i>2676</i>&nbsp;	/**
+<i>2677</i>&nbsp;	 * Merge point annotations sharing the same {@link PathClass} and {@link ImagePlane} as the selected annotations
+<i>2678</i>&nbsp;	 * of the current hierarchy, creating multi-point annotations for all matching points and removing the (previously-separated) annotations.
+<i>2679</i>&nbsp;	 * 
+<i>2680</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>2681</i>&nbsp;	 */
+<i>2682</i>&nbsp;	public static boolean mergePointsForAllClasses() {
+<b class="nc"><i>2683</i>&nbsp;		return PathObjectTools.mergePointsForAllClasses(getCurrentHierarchy());</b>
+<i>2684</i>&nbsp;	}
+<i>2685</i>&nbsp;	
+<i>2686</i>&nbsp;	/**
+<i>2687</i>&nbsp;	 * Merge point annotations sharing the same {@link PathClass} and {@link ImagePlane} for the current hierarchy, 
+<i>2688</i>&nbsp;	 * creating multi-point annotations for all matching points and removing the (previously-separated) annotations.
+<i>2689</i>&nbsp;	 * 
+<i>2690</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>2691</i>&nbsp;	 */
+<i>2692</i>&nbsp;	public static boolean mergePointsForSelectedObjectClasses() {
+<b class="nc"><i>2693</i>&nbsp;		return PathObjectTools.mergePointsForSelectedObjectClasses(getCurrentHierarchy());</b>
+<i>2694</i>&nbsp;	}
+<i>2695</i>&nbsp;	
+<i>2696</i>&nbsp;	/**
+<i>2697</i>&nbsp;	 * Duplicate the selected annotations in the current hierarchy.
+<i>2698</i>&nbsp;	 * 
+<i>2699</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>2700</i>&nbsp;	 */
+<i>2701</i>&nbsp;	public static boolean duplicateSelectedAnnotations() {
+<b class="nc"><i>2702</i>&nbsp;		return PathObjectTools.duplicateSelectedAnnotations(getCurrentHierarchy());</b>
+<i>2703</i>&nbsp;	}
+<i>2704</i>&nbsp;	
+<i>2705</i>&nbsp;	/**
+<i>2706</i>&nbsp;	 * Merge annotations for the current hierarchy.
+<i>2707</i>&nbsp;	 * @param annotations the annotations to merge
+<i>2708</i>&nbsp;	 * @return true if changes were made the hierarchy, false otherwise
+<i>2709</i>&nbsp;	 */
+<i>2710</i>&nbsp;	public static boolean mergeAnnotations(final Collection&lt;PathObject&gt; annotations) {
+<b class="nc"><i>2711</i>&nbsp;		return mergeAnnotations(getCurrentHierarchy(), annotations);</b>
+<i>2712</i>&nbsp;	}
+<i>2713</i>&nbsp;	
+<i>2714</i>&nbsp;	/**
+<i>2715</i>&nbsp;	 * Merge the currently-selected annotations of the current hierarchy to create a new annotation containing the union of their ROIs.
+<i>2716</i>&nbsp;	 * &lt;p&gt;
+<i>2717</i>&nbsp;	 * Note:
+<i>2718</i>&nbsp;	 * &lt;ul&gt;
+<i>2719</i>&nbsp;	 * &lt;li&gt;The existing annotations will be removed from the hierarchy if possible, therefore should be duplicated first 
+<i>2720</i>&nbsp;	 * if this is not desired.&lt;/li&gt;
+<i>2721</i>&nbsp;	 * &lt;li&gt;The new object will be set to be the selected object in the hierarchy (which can be used to retrieve it if needed).&lt;/li&gt;
+<i>2722</i>&nbsp;	 * &lt;/ul&gt;
+<i>2723</i>&nbsp;	 * 
+<i>2724</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>2725</i>&nbsp;	 */
+<i>2726</i>&nbsp;	public static boolean mergeSelectedAnnotations() {
+<b class="nc"><i>2727</i>&nbsp;		return mergeSelectedAnnotations(getCurrentHierarchy());</b>
+<i>2728</i>&nbsp;	}
+<i>2729</i>&nbsp;	
+<i>2730</i>&nbsp;	/**
+<i>2731</i>&nbsp;	 * Merge the specified annotations to create a new annotation containing the union of their ROIs.
+<i>2732</i>&nbsp;	 * &lt;p&gt;
+<i>2733</i>&nbsp;	 * Note:
+<i>2734</i>&nbsp;	 * &lt;ul&gt;
+<i>2735</i>&nbsp;	 * &lt;li&gt;The existing annotations will be removed from the hierarchy if possible, therefore should be duplicated first 
+<i>2736</i>&nbsp;	 * if this is not desired.&lt;/li&gt;
+<i>2737</i>&nbsp;	 * &lt;li&gt;The new object will be set to be the selected object in the hierarchy (which can be used to retrieve it if needed).&lt;/li&gt;
+<i>2738</i>&nbsp;	 * &lt;/ul&gt;
+<i>2739</i>&nbsp;	 * 
+<i>2740</i>&nbsp;	 * @param hierarchy
+<i>2741</i>&nbsp;	 * @param annotations
+<i>2742</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>2743</i>&nbsp;	 */
+<i>2744</i>&nbsp;	public static boolean mergeAnnotations(final PathObjectHierarchy hierarchy, final Collection&lt;PathObject&gt; annotations) {
+<b class="nc"><i>2745</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>2746</i>&nbsp;			return false;</b>
+<i>2747</i>&nbsp;		
+<i>2748</i>&nbsp;		// Get all the selected annotations with area
+<b class="nc"><i>2749</i>&nbsp;		ROI shapeNew = null;</b>
+<b class="nc"><i>2750</i>&nbsp;		List&lt;PathObject&gt; merged = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>2751</i>&nbsp;		Set&lt;PathClass&gt; pathClasses = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>2752</i>&nbsp;		for (PathObject annotation : annotations) {</b>
+<b class="nc"><i>2753</i>&nbsp;			if (annotation.isAnnotation() &amp;&amp; annotation.hasROI() &amp;&amp; (annotation.getROI().isArea() || annotation.getROI().isPoint())) {</b>
+<b class="nc"><i>2754</i>&nbsp;				if (shapeNew == null)</b>
+<b class="nc"><i>2755</i>&nbsp;					shapeNew = annotation.getROI();//.duplicate();</b>
+<b class="nc"><i>2756</i>&nbsp;				else if (shapeNew.getImagePlane().equals(annotation.getROI().getImagePlane()))</b>
+<b class="nc"><i>2757</i>&nbsp;					shapeNew = RoiTools.combineROIs(shapeNew, annotation.getROI(), RoiTools.CombineOp.ADD);</b>
+<i>2758</i>&nbsp;				else {
+<b class="nc"><i>2759</i>&nbsp;					logger.warn(&quot;Cannot merge ROIs across different image planes!&quot;);</b>
+<b class="nc"><i>2760</i>&nbsp;					return false;</b>
+<i>2761</i>&nbsp;				}
+<b class="nc"><i>2762</i>&nbsp;				if (annotation.getPathClass() != null)</b>
+<b class="nc"><i>2763</i>&nbsp;					pathClasses.add(annotation.getPathClass());</b>
+<b class="nc"><i>2764</i>&nbsp;				merged.add(annotation);</b>
+<i>2765</i>&nbsp;			}
+<b class="nc"><i>2766</i>&nbsp;		}</b>
+<i>2767</i>&nbsp;		// Check if we actually merged anything
+<b class="nc"><i>2768</i>&nbsp;		if (merged.isEmpty() || merged.size() == 1)</b>
+<b class="nc"><i>2769</i>&nbsp;			return false;</b>
+<i>2770</i>&nbsp;	
+<i>2771</i>&nbsp;		// Create and add the new object, removing the old ones
+<b class="nc"><i>2772</i>&nbsp;		PathObject pathObjectNew = PathObjects.createAnnotationObject(shapeNew);</b>
+<b class="nc"><i>2773</i>&nbsp;		if (pathClasses.size() == 1)</b>
+<b class="nc"><i>2774</i>&nbsp;			pathObjectNew.setPathClass(pathClasses.iterator().next());</b>
+<i>2775</i>&nbsp;		else
+<b class="nc"><i>2776</i>&nbsp;			logger.warn(&quot;Cannot assign class unambiguously - &quot; + pathClasses.size() + &quot; classes represented in selection&quot;);</b>
+<b class="nc"><i>2777</i>&nbsp;		hierarchy.removeObjects(merged, true);</b>
+<b class="nc"><i>2778</i>&nbsp;		hierarchy.addPathObject(pathObjectNew);</b>
+<b class="nc"><i>2779</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObject(pathObjectNew);</b>
+<i>2780</i>&nbsp;		//				pathObject.removePathObjects(children);
+<i>2781</i>&nbsp;		//				pathObject.addPathObject(pathObjectNew);
+<i>2782</i>&nbsp;		//				hierarchy.fireHierarchyChangedEvent(pathObject);
+<b class="nc"><i>2783</i>&nbsp;		return true;</b>
+<i>2784</i>&nbsp;	}
+<i>2785</i>&nbsp;
+<i>2786</i>&nbsp;	/**
+<i>2787</i>&nbsp;	 * Merge the currently-selected annotations to create a new annotation containing the union of their ROIs.
+<i>2788</i>&nbsp;	 * &lt;p&gt;
+<i>2789</i>&nbsp;	 * Note:
+<i>2790</i>&nbsp;	 * &lt;ul&gt;
+<i>2791</i>&nbsp;	 * &lt;li&gt;The existing annotations will be removed from the hierarchy if possible, therefore should be duplicated first 
+<i>2792</i>&nbsp;	 * if this is not desired.&lt;/li&gt;
+<i>2793</i>&nbsp;	 * &lt;li&gt;The new object will be set to be the selected object in the hierarchy (which can be used to retrieve it if needed).&lt;/li&gt;
+<i>2794</i>&nbsp;	 * &lt;/ul&gt;
+<i>2795</i>&nbsp;	 * 
+<i>2796</i>&nbsp;	 * @param hierarchy
+<i>2797</i>&nbsp;	 * @return
+<i>2798</i>&nbsp;	 */	public static boolean mergeSelectedAnnotations(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>2799</i>&nbsp;		return hierarchy == null ? null : mergeAnnotations(hierarchy, hierarchy.getSelectionModel().getSelectedObjects());</b>
+<i>2800</i>&nbsp;	}
+<i>2801</i>&nbsp;	
+<i>2802</i>&nbsp;	/**
+<i>2803</i>&nbsp;	 * Make an annotation for the current {@link ImageData}, for which the ROI is obtained by subtracting 
+<i>2804</i>&nbsp;	 * the existing ROI from the ROI of its parent object (or entire image if no suitable parent object is available).
+<i>2805</i>&nbsp;	 * 
+<i>2806</i>&nbsp;	 * @param pathObject the existing object defining the ROI to invert
+<i>2807</i>&nbsp;	 * @return true if an inverted annotation is added to the hierarchy, false otherwise
+<i>2808</i>&nbsp;	 */
+<i>2809</i>&nbsp;	public static boolean makeInverseAnnotation(final PathObject pathObject) {
+<b class="nc"><i>2810</i>&nbsp;		return makeInverseAnnotation(getCurrentImageData(), pathObject);</b>
+<i>2811</i>&nbsp;	}
+<i>2812</i>&nbsp;	
+<i>2813</i>&nbsp;
+<i>2814</i>&nbsp;	/**
+<i>2815</i>&nbsp;	 * Make an annotation for the specified {@link ImageData}, for which the ROI is obtained by subtracting 
+<i>2816</i>&nbsp;	 * the existing ROI from the ROI of its parent object (or entire image if no suitable parent object is available).
+<i>2817</i>&nbsp;	 * 
+<i>2818</i>&nbsp;	 * @param imageData the imageData for which an inverted annotation should be created
+<i>2819</i>&nbsp;	 * @param pathObject the existing object defining the ROI to invert
+<i>2820</i>&nbsp;	 * @return true if an inverted annotation is added to the hierarchy, false otherwise
+<i>2821</i>&nbsp;	 */
+<i>2822</i>&nbsp;	public static boolean makeInverseAnnotation(final ImageData&lt;?&gt; imageData, final PathObject pathObject) {
+<b class="nc"><i>2823</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>2824</i>&nbsp;			return false;</b>
+<b class="nc"><i>2825</i>&nbsp;		return makeInverseAnnotation(imageData, Collections.singletonList(pathObject));</b>
+<i>2826</i>&nbsp;	}
+<i>2827</i>&nbsp;	
+<i>2828</i>&nbsp;	/**
+<i>2829</i>&nbsp;	 * Make an inverse annotation using the current {@link ImageData} and its current selected objects.
+<i>2830</i>&nbsp;	 * @return true if an inverted annotation is added to the hierarchy, false otherwise
+<i>2831</i>&nbsp;	 */
+<i>2832</i>&nbsp;	public static boolean makeInverseAnnotation() {
+<b class="nc"><i>2833</i>&nbsp;		return makeInverseAnnotation(getCurrentImageData());</b>
+<i>2834</i>&nbsp;	}
+<i>2835</i>&nbsp;
+<i>2836</i>&nbsp;	/**
+<i>2837</i>&nbsp;	 * Make an inverse annotation using the specified {@link ImageData} and current selected objects.
+<i>2838</i>&nbsp;	 * @param imageData the imageData for which an inverted annotation should be created
+<i>2839</i>&nbsp;	 * @return true if an inverted annotation is added to the hierarchy, false otherwise
+<i>2840</i>&nbsp;	 */
+<i>2841</i>&nbsp;	public static boolean makeInverseAnnotation(final ImageData&lt;?&gt; imageData) {
+<b class="nc"><i>2842</i>&nbsp;		return makeInverseAnnotation(imageData, imageData.getHierarchy().getSelectionModel().getSelectedObjects());</b>
+<i>2843</i>&nbsp;	}
+<i>2844</i>&nbsp;	
+<i>2845</i>&nbsp;	/**
+<i>2846</i>&nbsp;	 * Make an annotation, for which the ROI is obtained by subtracting the ROIs of the specified objects from the closest 
+<i>2847</i>&nbsp;	 * common ancestor ROI (or entire image if the closest ancestor is the root).
+<i>2848</i>&nbsp;	 * &lt;p&gt;
+<i>2849</i>&nbsp;	 * In an inverted annotation can be created, it is added to the hierarchy and set as selected.
+<i>2850</i>&nbsp;	 * 
+<i>2851</i>&nbsp;	 * @param imageData the image containing the annotation
+<i>2852</i>&nbsp;	 * @param pathObjects the annotation to invert
+<i>2853</i>&nbsp;	 * @return true if an inverted annotation is added to the hierarchy, false otherwise.
+<i>2854</i>&nbsp;	 */
+<i>2855</i>&nbsp;	public static boolean makeInverseAnnotation(final ImageData&lt;?&gt; imageData, Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>2856</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>2857</i>&nbsp;			return false;</b>
+<i>2858</i>&nbsp;		
+<b class="nc"><i>2859</i>&nbsp;		var map = pathObjects.stream().filter(p -&gt; p.hasROI() &amp;&amp; p.getROI().isArea())</b>
+<b class="nc"><i>2860</i>&nbsp;				.collect(Collectors.groupingBy(p -&gt; p.getROI().getImagePlane()));</b>
+<b class="nc"><i>2861</i>&nbsp;		if (map.isEmpty()) {</b>
+<b class="nc"><i>2862</i>&nbsp;			logger.warn(&quot;No area annotations available - cannot created inverse ROI!&quot;);</b>
+<b class="nc"><i>2863</i>&nbsp;			return false;</b>
+<i>2864</i>&nbsp;		}
+<b class="nc"><i>2865</i>&nbsp;		if (map.size() &gt; 1) {</b>
+<b class="nc"><i>2866</i>&nbsp;			logger.error(&quot;Cannot merge annotations from different image planes!&quot;);</b>
+<b class="nc"><i>2867</i>&nbsp;			return false;</b>
+<i>2868</i>&nbsp;		}
+<b class="nc"><i>2869</i>&nbsp;		ImagePlane plane = map.keySet().iterator().next();</b>
+<b class="nc"><i>2870</i>&nbsp;		List&lt;PathObject&gt; pathObjectList = map.get(plane);</b>
+<i>2871</i>&nbsp;				
+<b class="nc"><i>2872</i>&nbsp;		PathObjectHierarchy hierarchy = imageData.getHierarchy();</b>
+<i>2873</i>&nbsp;		
+<i>2874</i>&nbsp;		// Try to get the best candidate parent
+<b class="nc"><i>2875</i>&nbsp;		Collection&lt;PathObject&gt; parentSet = pathObjectList.stream().map(p -&gt; p.getParent()).collect(Collectors.toCollection(HashSet::new));</b>
+<i>2876</i>&nbsp;		PathObject parent;
+<b class="nc"><i>2877</i>&nbsp;		if (parentSet.size() &gt; 1) {</b>
+<b class="nc"><i>2878</i>&nbsp;			parentSet.clear();</b>
+<b class="nc"><i>2879</i>&nbsp;			boolean firstTime = true;</b>
+<b class="nc"><i>2880</i>&nbsp;			for (PathObject temp : pathObjectList) {</b>
+<b class="nc"><i>2881</i>&nbsp;				if (firstTime)</b>
+<b class="nc"><i>2882</i>&nbsp;					parentSet.addAll(PathObjectTools.getAncestorList(temp));</b>
+<i>2883</i>&nbsp;				else
+<b class="nc"><i>2884</i>&nbsp;					parentSet.retainAll(PathObjectTools.getAncestorList(temp));</b>
+<b class="nc"><i>2885</i>&nbsp;				firstTime = false;</b>
+<b class="nc"><i>2886</i>&nbsp;			}</b>
+<b class="nc"><i>2887</i>&nbsp;			List&lt;PathObject&gt; parents = new ArrayList&lt;&gt;(parentSet);</b>
+<b class="nc"><i>2888</i>&nbsp;			Collections.sort(parents, Comparator.comparingInt(PathObject::getLevel).reversed()</b>
+<b class="nc"><i>2889</i>&nbsp;					.thenComparingDouble(p -&gt; p.hasROI() ? p.getROI().getArea() : Double.MAX_VALUE));</b>
+<b class="nc"><i>2890</i>&nbsp;			parent = parents.get(0);</b>
+<b class="nc"><i>2891</i>&nbsp;		} else</b>
+<b class="nc"><i>2892</i>&nbsp;			parent = parentSet.iterator().next();			</b>
+<i>2893</i>&nbsp;		
+<i>2894</i>&nbsp;		// Get the parent area
+<i>2895</i>&nbsp;		Geometry geometryParent;
+<b class="nc"><i>2896</i>&nbsp;		if (parent == null || parent.isRootObject() || !parent.hasROI())</b>
+<b class="nc"><i>2897</i>&nbsp;			geometryParent = GeometryTools.createRectangle(0, 0, imageData.getServer().getWidth(), imageData.getServer().getHeight());</b>
+<i>2898</i>&nbsp;		else
+<b class="nc"><i>2899</i>&nbsp;			geometryParent = parent.getROI().getGeometry();</b>
+<i>2900</i>&nbsp;
+<i>2901</i>&nbsp;		// Get the parent area to use
+<b class="nc"><i>2902</i>&nbsp;		var union = GeometryTools.union(pathObjectList.stream().map(p -&gt; p.getROI().getGeometry()).collect(Collectors.toList()));</b>
+<b class="nc"><i>2903</i>&nbsp;		var geometry = geometryParent.difference(union);</b>
+<i>2904</i>&nbsp;
+<i>2905</i>&nbsp;		// Create the new ROI
+<b class="nc"><i>2906</i>&nbsp;		ROI shapeNew = GeometryTools.geometryToROI(geometry, plane);</b>
+<b class="nc"><i>2907</i>&nbsp;		PathObject pathObjectNew = PathObjects.createAnnotationObject(shapeNew);</b>
+<b class="nc"><i>2908</i>&nbsp;		parent.addPathObject(pathObjectNew);</b>
+<b class="nc"><i>2909</i>&nbsp;		hierarchy.fireHierarchyChangedEvent(parent);	</b>
+<b class="nc"><i>2910</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObject(pathObjectNew);</b>
+<b class="nc"><i>2911</i>&nbsp;		return true;</b>
+<i>2912</i>&nbsp;	}
+<i>2913</i>&nbsp;	
+<i>2914</i>&nbsp;	
+<i>2915</i>&nbsp;	
+<i>2916</i>&nbsp;	
+<i>2917</i>&nbsp;	/**
+<i>2918</i>&nbsp;	 * Apply an object classifier to the current {@link ImageData}.
+<i>2919</i>&nbsp;	 * This method throws an {@link IllegalArgumentException} if the classifier cannot be found.
+<i>2920</i>&nbsp;	 * @param names the name of the classifier within the current project, or file path to a classifier to load from disk.
+<i>2921</i>&nbsp;	 * 				If more than one name is provided, a composite classifier is created.
+<i>2922</i>&nbsp;	 * @throws IllegalArgumentException if the classifier cannot be found
+<i>2923</i>&nbsp;	 */
+<i>2924</i>&nbsp;	public static void runObjectClassifier(String... names) throws IllegalArgumentException {
+<b class="nc"><i>2925</i>&nbsp;		runObjectClassifier(getCurrentImageData(), names);</b>
+<b class="nc"><i>2926</i>&nbsp;	}</b>
+<i>2927</i>&nbsp;	
+<i>2928</i>&nbsp;	/**
+<i>2929</i>&nbsp;	 * Apply an object classifier to the specified {@link ImageData}.
+<i>2930</i>&nbsp;	 * This method throws an {@link IllegalArgumentException} if the classifier cannot be found.
+<i>2931</i>&nbsp;	 * @param imageData 
+<i>2932</i>&nbsp;	 * @param names the name of the classifier within the current project, or file path to a classifier to load from disk.
+<i>2933</i>&nbsp;	 * 				If more than one name is provided, a composite classifier is created.
+<i>2934</i>&nbsp;	 * @throws IllegalArgumentException if the classifier cannot be found
+<i>2935</i>&nbsp;	 */
+<i>2936</i>&nbsp;	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+<i>2937</i>&nbsp;	public static void runObjectClassifier(ImageData imageData, String... names) throws IllegalArgumentException {
+<b class="nc"><i>2938</i>&nbsp;		if (names.length == 0) {</b>
+<b class="nc"><i>2939</i>&nbsp;			logger.warn(&quot;Cannot run object classifier - no names provided!&quot;);</b>
+<b class="nc"><i>2940</i>&nbsp;			return;			</b>
+<i>2941</i>&nbsp;		}
+<b class="nc"><i>2942</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>2943</i>&nbsp;			logger.warn(&quot;Cannot run object classifier - no ImageData available!&quot;);</b>
+<b class="nc"><i>2944</i>&nbsp;			return;</b>
+<i>2945</i>&nbsp;		}
+<b class="nc"><i>2946</i>&nbsp;		ObjectClassifier classifier = loadObjectClassifier(names);</b>
+<i>2947</i>&nbsp;		
+<b class="nc"><i>2948</i>&nbsp;		var pathObjects = classifier.getCompatibleObjects(imageData);</b>
+<b class="nc"><i>2949</i>&nbsp;		if (classifier.classifyObjects(imageData, pathObjects, true) &gt; 0)</b>
+<b class="nc"><i>2950</i>&nbsp;			imageData.getHierarchy().fireObjectClassificationsChangedEvent(classifier, pathObjects);</b>
+<b class="nc"><i>2951</i>&nbsp;	}</b>
+<i>2952</i>&nbsp;	
+<i>2953</i>&nbsp;	/**
+<i>2954</i>&nbsp;	 * Load an object classifier for a project or file path.
+<i>2955</i>&nbsp;	 * 
+<i>2956</i>&nbsp;	 * @param names the names of the classifier within the current project, or file paths to a classifier to load from disk.
+<i>2957</i>&nbsp;	 * 				If more than one name is provided, a composite classifier is created (applying each classifier in sequence).
+<i>2958</i>&nbsp;	 * @return the requested {@link ObjectClassifier}
+<i>2959</i>&nbsp;	 * @throws IllegalArgumentException if the classifier cannot be found
+<i>2960</i>&nbsp;	 */
+<i>2961</i>&nbsp;	public static ObjectClassifier&lt;BufferedImage&gt; loadObjectClassifier(String... names) throws IllegalArgumentException {
+<b class="nc"><i>2962</i>&nbsp;		var project = getProject();</b>
+<b class="nc"><i>2963</i>&nbsp;		List&lt;ObjectClassifier&lt;BufferedImage&gt;&gt; classifiers = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>2964</i>&nbsp;		for (String name : names) {</b>
+<b class="nc"><i>2965</i>&nbsp;			ObjectClassifier&lt;BufferedImage&gt; classifier = null;</b>
+<b class="nc"><i>2966</i>&nbsp;			Exception exception = null;</b>
+<b class="nc"><i>2967</i>&nbsp;			if (project != null) {</b>
+<i>2968</i>&nbsp;				try {
+<b class="nc"><i>2969</i>&nbsp;					var objectClassifiers = project.getObjectClassifiers();</b>
+<b class="nc"><i>2970</i>&nbsp;					if (objectClassifiers.contains(name))</b>
+<b class="nc"><i>2971</i>&nbsp;						classifier = objectClassifiers.get(name);</b>
+<b class="nc"><i>2972</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>2973</i>&nbsp;					exception = e;</b>
+<b class="nc"><i>2974</i>&nbsp;					logger.debug(&quot;Object classifier &#39;{}&#39; not found in project&quot;, name);</b>
+<b class="nc"><i>2975</i>&nbsp;				}</b>
+<i>2976</i>&nbsp;			}
+<b class="nc"><i>2977</i>&nbsp;			if (classifier == null) {</b>
+<i>2978</i>&nbsp;				try {
+<b class="nc"><i>2979</i>&nbsp;					var path = Paths.get(name);</b>
+<b class="nc"><i>2980</i>&nbsp;					if (Files.exists(path))</b>
+<b class="nc"><i>2981</i>&nbsp;						classifier = ObjectClassifiers.readClassifier(path);</b>
+<b class="nc"><i>2982</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>2983</i>&nbsp;					exception = e;</b>
+<b class="nc"><i>2984</i>&nbsp;					logger.debug(&quot;Object classifier &#39;{}&#39; cannot be read from file&quot;, name);</b>
+<b class="nc"><i>2985</i>&nbsp;				}</b>
+<i>2986</i>&nbsp;			}
+<b class="nc"><i>2987</i>&nbsp;			if (classifier == null) {</b>
+<b class="nc"><i>2988</i>&nbsp;				throw new IllegalArgumentException(&quot;Unable to find object classifier &quot; + name, exception);</b>
+<b class="nc"><i>2989</i>&nbsp;			} else if (names.length == 1)</b>
+<b class="nc"><i>2990</i>&nbsp;				return classifier;</b>
+<i>2991</i>&nbsp;			else
+<b class="nc"><i>2992</i>&nbsp;				classifiers.add(classifier);</b>
+<i>2993</i>&nbsp;		}
+<b class="nc"><i>2994</i>&nbsp;		return ObjectClassifiers.createCompositeClassifier(classifiers);</b>
+<i>2995</i>&nbsp;	}
+<i>2996</i>&nbsp;	
+<i>2997</i>&nbsp;	
+<i>2998</i>&nbsp;	
+<i>2999</i>&nbsp;	
+<i>3000</i>&nbsp;	/**
+<i>3001</i>&nbsp;	 * Load a pixel classifier for a project or file path.
+<i>3002</i>&nbsp;	 * 
+<i>3003</i>&nbsp;	 * @param name the name of the classifier within the current project, or file path to a classifier to load from disk.
+<i>3004</i>&nbsp;	 * @return the requested {@link PixelClassifier}
+<i>3005</i>&nbsp;	 * @throws IllegalArgumentException if the classifier cannot be found
+<i>3006</i>&nbsp;	 */
+<i>3007</i>&nbsp;	public static PixelClassifier loadPixelClassifier(String name) throws IllegalArgumentException {
+<b class="nc"><i>3008</i>&nbsp;		var project = getProject();</b>
+<b class="nc"><i>3009</i>&nbsp;		Exception exception = null;</b>
+<b class="nc"><i>3010</i>&nbsp;		if (project != null) {</b>
+<i>3011</i>&nbsp;			try {
+<b class="nc"><i>3012</i>&nbsp;				var pixelClassifiers = project.getPixelClassifiers();</b>
+<b class="nc"><i>3013</i>&nbsp;				if (pixelClassifiers.contains(name))</b>
+<b class="nc"><i>3014</i>&nbsp;					return pixelClassifiers.get(name);</b>
+<b class="nc"><i>3015</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>3016</i>&nbsp;				exception = e;</b>
+<b class="nc"><i>3017</i>&nbsp;				logger.debug(&quot;Pixel classifier &#39;{}&#39; not found in project&quot;, name);</b>
+<b class="nc"><i>3018</i>&nbsp;			}</b>
+<i>3019</i>&nbsp;		}
+<i>3020</i>&nbsp;		try {
+<b class="nc"><i>3021</i>&nbsp;			var path = Paths.get(name);</b>
+<b class="nc"><i>3022</i>&nbsp;			if (Files.exists(path))</b>
+<b class="nc"><i>3023</i>&nbsp;				return PixelClassifiers.readClassifier(path);</b>
+<b class="nc"><i>3024</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>3025</i>&nbsp;			exception = e;</b>
+<b class="nc"><i>3026</i>&nbsp;			logger.debug(&quot;Pixel classifier &#39;{}&#39; cannot be read from file&quot;, name);</b>
+<b class="nc"><i>3027</i>&nbsp;		}</b>
+<b class="nc"><i>3028</i>&nbsp;		throw new IllegalArgumentException(&quot;Unable to find object classifier &quot; + name, exception);</b>
+<i>3029</i>&nbsp;	}
+<i>3030</i>&nbsp;	
+<i>3031</i>&nbsp;	
+<i>3032</i>&nbsp;	/**
+<i>3033</i>&nbsp;	 * Add measurements from pixel classification to the selected objects.
+<i>3034</i>&nbsp;	 * @param classifierName the pixel classifier name
+<i>3035</i>&nbsp;	 * @param measurementID
+<i>3036</i>&nbsp;	 * @see #loadPixelClassifier(String)
+<i>3037</i>&nbsp;	 */
+<i>3038</i>&nbsp;	public static void addPixelClassifierMeasurements(String classifierName, String measurementID) {
+<b class="nc"><i>3039</i>&nbsp;		addPixelClassifierMeasurements(loadPixelClassifier(classifierName), measurementID);</b>
+<b class="nc"><i>3040</i>&nbsp;	}</b>
+<i>3041</i>&nbsp;	
+<i>3042</i>&nbsp;	/**
+<i>3043</i>&nbsp;	 * Add measurements from pixel classification to the selected objects.
+<i>3044</i>&nbsp;	 * @param classifier the pixel classifier
+<i>3045</i>&nbsp;	 * @param measurementID
+<i>3046</i>&nbsp;	 */
+<i>3047</i>&nbsp;	public static void addPixelClassifierMeasurements(PixelClassifier classifier, String measurementID) {
+<b class="nc"><i>3048</i>&nbsp;		var imageData = (ImageData&lt;BufferedImage&gt;)getCurrentImageData();</b>
+<b class="nc"><i>3049</i>&nbsp;		PixelClassifierTools.addMeasurementsToSelectedObjects(imageData, classifier, measurementID);</b>
+<b class="nc"><i>3050</i>&nbsp;	}</b>
+<i>3051</i>&nbsp;	
+<i>3052</i>&nbsp;	/**
+<i>3053</i>&nbsp;	 * Create detection objects based upon the output of a pixel classifier, applied to selected objects.
+<i>3054</i>&nbsp;	 * If no objects are selected, objects are created across the entire image.
+<i>3055</i>&nbsp;	 * 
+<i>3056</i>&nbsp;	 * @param classifierName the name of the pixel classifier
+<i>3057</i>&nbsp;	 * @param minArea the minimum area of connected regions to retain
+<i>3058</i>&nbsp;	 * @param minHoleArea the minimum area of connected &#39;hole&#39; regions to retain
+<i>3059</i>&nbsp;     * @param options additional options to control how objects are created
+<i>3060</i>&nbsp;	 * @see #loadPixelClassifier(String)
+<i>3061</i>&nbsp;	 */
+<i>3062</i>&nbsp;	public static void createDetectionsFromPixelClassifier(
+<i>3063</i>&nbsp;			String classifierName, double minArea, double minHoleArea, String... options) {
+<b class="nc"><i>3064</i>&nbsp;		createDetectionsFromPixelClassifier(loadPixelClassifier(classifierName), minArea, minHoleArea, options);</b>
+<b class="nc"><i>3065</i>&nbsp;	}</b>
+<i>3066</i>&nbsp;
+<i>3067</i>&nbsp;	/**
+<i>3068</i>&nbsp;	 * Create detection objects based upon the output of a pixel classifier, applied to selected objects.
+<i>3069</i>&nbsp;	 * If no objects are selected, objects are created across the entire image.
+<i>3070</i>&nbsp;	 * 
+<i>3071</i>&nbsp;	 * @param classifier the pixel classifier
+<i>3072</i>&nbsp;	 * @param minArea the minimum area of connected regions to retain
+<i>3073</i>&nbsp;	 * @param minHoleArea the minimum area of connected &#39;hole&#39; regions to retain
+<i>3074</i>&nbsp;     * @param options additional options to control how objects are created
+<i>3075</i>&nbsp;	 */
+<i>3076</i>&nbsp;	public static void createDetectionsFromPixelClassifier(
+<i>3077</i>&nbsp;			PixelClassifier classifier, double minArea, double minHoleArea, String... options) {
+<b class="nc"><i>3078</i>&nbsp;		var imageData = (ImageData&lt;BufferedImage&gt;)getCurrentImageData();</b>
+<b class="nc"><i>3079</i>&nbsp;		PixelClassifierTools.createDetectionsFromPixelClassifier(imageData, classifier, minArea, minHoleArea, parseCreateObjectOptions(options));</b>
+<b class="nc"><i>3080</i>&nbsp;	}</b>
+<i>3081</i>&nbsp;	
+<i>3082</i>&nbsp;	private static CreateObjectOptions[] parseCreateObjectOptions(String... names) {
+<b class="nc"><i>3083</i>&nbsp;		if (names == null || names.length == 0)</b>
+<b class="nc"><i>3084</i>&nbsp;			return new CreateObjectOptions[0];</b>
+<b class="nc"><i>3085</i>&nbsp;		var objectOptions = new HashSet&lt;CreateObjectOptions&gt;();</b>
+<b class="nc"><i>3086</i>&nbsp;		for (var optionName : names) {</b>
+<i>3087</i>&nbsp;			try {
+<b class="nc"><i>3088</i>&nbsp;				var option = CreateObjectOptions.valueOf(optionName);</b>
+<b class="nc"><i>3089</i>&nbsp;				objectOptions.add(option);</b>
+<b class="nc"><i>3090</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>3091</i>&nbsp;				logger.warn(&quot;Could not parse option {}&quot;, optionName);</b>
+<b class="nc"><i>3092</i>&nbsp;			}</b>
+<i>3093</i>&nbsp;		}
+<b class="nc"><i>3094</i>&nbsp;		return objectOptions.toArray(CreateObjectOptions[]::new);</b>
+<i>3095</i>&nbsp;	}
+<i>3096</i>&nbsp;	 
+<i>3097</i>&nbsp;	
+<i>3098</i>&nbsp;	/**
+<i>3099</i>&nbsp;	 * Create annotation objects based upon the output of a pixel classifier, applied to selected objects.
+<i>3100</i>&nbsp;	 * If no objects are selected, objects are created across the entire image.
+<i>3101</i>&nbsp;	 * 
+<i>3102</i>&nbsp;	 * @param classifierName the name of the pixel classifier
+<i>3103</i>&nbsp;	 * @param minArea the minimum area of connected regions to retain
+<i>3104</i>&nbsp;	 * @param minHoleArea the minimum area of connected &#39;hole&#39; regions to retain
+<i>3105</i>&nbsp;     * @param options additional options to control how objects are created
+<i>3106</i>&nbsp;	 * @see #loadPixelClassifier(String)
+<i>3107</i>&nbsp;	 */
+<i>3108</i>&nbsp;	public static void createAnnotationsFromPixelClassifier(
+<i>3109</i>&nbsp;			String classifierName, double minArea, double minHoleArea, String... options) {
+<b class="nc"><i>3110</i>&nbsp;		createAnnotationsFromPixelClassifier(loadPixelClassifier(classifierName), minArea, minHoleArea, options);</b>
+<b class="nc"><i>3111</i>&nbsp;	}</b>
+<i>3112</i>&nbsp;
+<i>3113</i>&nbsp;	/**
+<i>3114</i>&nbsp;	 * Create annotation objects based upon the output of a pixel classifier, applied to selected objects.
+<i>3115</i>&nbsp;	 * If no objects are selected, objects are created across the entire image.
+<i>3116</i>&nbsp;	 * 
+<i>3117</i>&nbsp;	 * @param classifier the pixel classifier
+<i>3118</i>&nbsp;	 * @param minArea the minimum area of connected regions to retain
+<i>3119</i>&nbsp;	 * @param minHoleArea the minimum area of connected &#39;hole&#39; regions to retain
+<i>3120</i>&nbsp;     * @param options additional options to control how objects are created
+<i>3121</i>&nbsp;	 */
+<i>3122</i>&nbsp;	public static void createAnnotationsFromPixelClassifier(
+<i>3123</i>&nbsp;			PixelClassifier classifier, double minArea, double minHoleArea, String... options) {
+<b class="nc"><i>3124</i>&nbsp;		var imageData = (ImageData&lt;BufferedImage&gt;)getCurrentImageData();</b>
+<b class="nc"><i>3125</i>&nbsp;		PixelClassifierTools.createAnnotationsFromPixelClassifier(imageData, classifier, minArea, minHoleArea, parseCreateObjectOptions(options));</b>
+<b class="nc"><i>3126</i>&nbsp;	}</b>
+<i>3127</i>&nbsp;	
+<i>3128</i>&nbsp;	
+<i>3129</i>&nbsp;	/**
+<i>3130</i>&nbsp;	 * Classify detections according to the prediction of the pixel corresponding to the detection centroid using a {@link PixelClassifier}.
+<i>3131</i>&nbsp;	 * If the detections are cells, the nucleus ROI is used where possible.
+<i>3132</i>&nbsp;	 * 
+<i>3133</i>&nbsp;	 * @param classifier the pixel classifier
+<i>3134</i>&nbsp;	 */
+<i>3135</i>&nbsp;	public static void classifyDetectionsByCentroid(PixelClassifier classifier) {
+<b class="nc"><i>3136</i>&nbsp;		var imageData = (ImageData&lt;BufferedImage&gt;)getCurrentImageData();</b>
+<b class="nc"><i>3137</i>&nbsp;		PixelClassifierTools.classifyDetectionsByCentroid(imageData, classifier);</b>
+<b class="nc"><i>3138</i>&nbsp;	}</b>
+<i>3139</i>&nbsp;	
+<i>3140</i>&nbsp;	/**
+<i>3141</i>&nbsp;	 * Classify detections according to the prediction of the pixel corresponding to the detection centroid using a {@link PixelClassifier}.
+<i>3142</i>&nbsp;	 * If the detections are cells, the nucleus ROI is used where possible.
+<i>3143</i>&nbsp;	 * 
+<i>3144</i>&nbsp;	 * @param classifierName name of the pixel classifier
+<i>3145</i>&nbsp;	 */
+<i>3146</i>&nbsp;	public static void classifyDetectionsByCentroid(String classifierName) {
+<b class="nc"><i>3147</i>&nbsp;		classifyDetectionsByCentroid(loadPixelClassifier(classifierName));</b>
+<b class="nc"><i>3148</i>&nbsp;	}</b>
+<i>3149</i>&nbsp;	
+<i>3150</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

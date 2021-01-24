@@ -1,0 +1,564 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageJMacroRunner</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageJMacroRunner (qupath.imagej.gui)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageJMacroRunner</td>
+<td class="coverageStat">
+  <span class="percent">
+    14.3%
+  </span>
+  <span class="absValue">
+    (2/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3%
+  </span>
+  <span class="absValue">
+    (5/ 168)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageJMacroRunner$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    11.8%
+  </span>
+  <span class="absValue">
+    (2/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.8%
+  </span>
+  <span class="absValue">
+    (5/ 179)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.gui;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import ij.IJ;
+<i>27</i>&nbsp;import ij.ImagePlus;
+<i>28</i>&nbsp;import ij.WindowManager;
+<i>29</i>&nbsp;import ij.gui.Roi;
+<i>30</i>&nbsp;import ij.macro.Interpreter;
+<i>31</i>&nbsp;import javafx.application.Platform;
+<i>32</i>&nbsp;import javafx.geometry.Insets;
+<i>33</i>&nbsp;import javafx.scene.Scene;
+<i>34</i>&nbsp;import javafx.scene.control.Button;
+<i>35</i>&nbsp;import javafx.scene.control.TextArea;
+<i>36</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>37</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>38</i>&nbsp;import javafx.scene.text.Font;
+<i>39</i>&nbsp;import javafx.stage.Stage;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import java.awt.image.BufferedImage;
+<i>42</i>&nbsp;import java.io.IOException;
+<i>43</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>44</i>&nbsp;import java.util.ArrayList;
+<i>45</i>&nbsp;import java.util.Arrays;
+<i>46</i>&nbsp;import java.util.Collection;
+<i>47</i>&nbsp;import java.util.List;
+<i>48</i>&nbsp;import java.util.stream.Collectors;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import javax.swing.SwingUtilities;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import org.slf4j.Logger;
+<i>53</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>56</i>&nbsp;import qupath.lib.display.ImageDisplay;
+<i>57</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>58</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>59</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>60</i>&nbsp;import qupath.lib.gui.images.servers.ChannelDisplayTransformServer;
+<i>61</i>&nbsp;import qupath.lib.gui.plugins.ParameterDialogWrapper;
+<i>62</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>63</i>&nbsp;import qupath.lib.images.ImageData;
+<i>64</i>&nbsp;import qupath.lib.images.PathImage;
+<i>65</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>66</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>67</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>68</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>69</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>70</i>&nbsp;import qupath.lib.plugins.AbstractPlugin;
+<i>71</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>72</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>73</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>74</i>&nbsp;import qupath.lib.roi.LineROI;
+<i>75</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>76</i>&nbsp;import qupath.lib.roi.RoiTools.CombineOp;
+<i>77</i>&nbsp;import qupath.lib.roi.RectangleROI;
+<i>78</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>79</i>&nbsp;import qupathj.QuPath_Send_Overlay_to_QuPath;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;/**
+<i>82</i>&nbsp; * QuPath plugin for running ImageJ macros &amp;amp; returning detected regions.
+<i>83</i>&nbsp; * 
+<i>84</i>&nbsp; * TODO: Support script recording.
+<i>85</i>&nbsp; * 
+<i>86</i>&nbsp; * @author Pete Bankhead
+<i>87</i>&nbsp; *
+<i>88</i>&nbsp; */
+<i>89</i>&nbsp;public class ImageJMacroRunner extends AbstractPlugin&lt;BufferedImage&gt; {
+<i>90</i>&nbsp;
+<b class="fc"><i>91</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(ImageJMacroRunner.class);</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	private QuPathGUI qupath;
+<i>94</i>&nbsp;	private ParameterList params;
+<i>95</i>&nbsp;	
+<b class="fc"><i>96</i>&nbsp;	private String macroText = null;</b>
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;	transient private Stage dialog;
+<i>99</i>&nbsp;		
+<i>100</i>&nbsp;	/**
+<i>101</i>&nbsp;	 * Constructor.
+<i>102</i>&nbsp;	 * @param qupath QuPath instance where the command should be installed.
+<i>103</i>&nbsp;	 */
+<b class="fc"><i>104</i>&nbsp;	public ImageJMacroRunner(final QuPathGUI qupath) {</b>
+<b class="fc"><i>105</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>106</i>&nbsp;	}</b>
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	@Override
+<i>110</i>&nbsp;	public String getName() {
+<b class="nc"><i>111</i>&nbsp;		return &quot;ImageJ macro runner&quot;;</b>
+<i>112</i>&nbsp;	}
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;	@Override
+<i>115</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>116</i>&nbsp;		return &quot;Apply ImageJ macros to selected regions of interest&quot;;</b>
+<i>117</i>&nbsp;	}
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	@Override
+<i>120</i>&nbsp;	public boolean runPlugin(final PluginRunner&lt;BufferedImage&gt; runner, final String arg) {
+<b class="nc"><i>121</i>&nbsp;		if (!parseArgument(runner.getImageData(), arg))</b>
+<b class="nc"><i>122</i>&nbsp;			return false;</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;		if (dialog == null) {</b>
+<b class="nc"><i>125</i>&nbsp;			dialog = new Stage();</b>
+<b class="nc"><i>126</i>&nbsp;			dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>127</i>&nbsp;			dialog.setTitle(&quot;ImageJ macro runner&quot;);</b>
+<i>128</i>&nbsp;			
+<b class="nc"><i>129</i>&nbsp;			BorderPane pane = new BorderPane();</b>
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;			if (arg != null)</b>
+<b class="nc"><i>132</i>&nbsp;				macroText = arg;</b>
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;			// Create text area
+<b class="nc"><i>135</i>&nbsp;			final TextArea textArea = new TextArea();</b>
+<b class="nc"><i>136</i>&nbsp;			textArea.setPrefRowCount(12);</b>
+<b class="nc"><i>137</i>&nbsp;			textArea.setPrefSize(400, 400);</b>
+<b class="nc"><i>138</i>&nbsp;			textArea.setWrapText(true);</b>
+<b class="nc"><i>139</i>&nbsp;			textArea.setFont(Font.font(&quot;Courier&quot;));</b>
+<b class="nc"><i>140</i>&nbsp;			if (macroText != null)</b>
+<b class="nc"><i>141</i>&nbsp;				textArea.setText(macroText);</b>
+<b class="nc"><i>142</i>&nbsp;			BorderPane panelMacro = new BorderPane();</b>
+<i>143</i>&nbsp;//			panelMacro.setBorder(BorderFactory.createTitledBorder(&quot;Macro&quot;));
+<b class="nc"><i>144</i>&nbsp;			panelMacro.setCenter(textArea);</b>
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;
+<b class="nc"><i>147</i>&nbsp;			ParameterPanelFX parameterPanel = new ParameterPanelFX(getParameterList(runner.getImageData()));</b>
+<b class="nc"><i>148</i>&nbsp;			panelMacro.setBottom(parameterPanel.getPane());</b>
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;			// Create button panel
+<b class="nc"><i>152</i>&nbsp;			Button btnRun = new Button(&quot;Run&quot;);</b>
+<b class="nc"><i>153</i>&nbsp;			btnRun.setOnAction(e -&gt; {</b>
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;					macroText = textArea.getText().trim();</b>
+<b class="nc"><i>156</i>&nbsp;					if (macroText.length() == 0)</b>
+<b class="nc"><i>157</i>&nbsp;						return;</b>
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;					PathObjectHierarchy hierarchy = getHierarchy(runner);</b>
+<b class="nc"><i>160</i>&nbsp;					PathObject pathObject = hierarchy.getSelectionModel().singleSelection() ? hierarchy.getSelectionModel().getSelectedObject() : null;</b>
+<b class="nc"><i>161</i>&nbsp;					if (pathObject instanceof PathAnnotationObject || pathObject instanceof TMACoreObject) {</b>
+<b class="nc"><i>162</i>&nbsp;						SwingUtilities.invokeLater(() -&gt; {</b>
+<b class="nc"><i>163</i>&nbsp;							runMacro(params, </b>
+<b class="nc"><i>164</i>&nbsp;									qupath.getViewer().getImageData(),</b>
+<b class="nc"><i>165</i>&nbsp;									qupath.getViewer().getImageDisplay(), pathObject, macroText);</b>
+<b class="nc"><i>166</i>&nbsp;						});</b>
+<i>167</i>&nbsp;					} else {
+<i>168</i>&nbsp;						//						DisplayHelpers.showErrorMessage(getClass().getSimpleName(), &quot;Sorry, ImageJ macros can only be run for single selected images&quot;);
+<i>169</i>&nbsp;//						logger.warn(&quot;ImageJ macro being run in current thread&quot;);
+<i>170</i>&nbsp;//						runPlugin(runner, arg); // TODO: Consider running in a background thread?
+<i>171</i>&nbsp;						// Run in a background thread
+<b class="nc"><i>172</i>&nbsp;						Collection&lt;? extends PathObject&gt; parents = getParentObjects(runner);</b>
+<b class="nc"><i>173</i>&nbsp;						if (parents.isEmpty()) {</b>
+<b class="nc"><i>174</i>&nbsp;							Dialogs.showErrorMessage(&quot;ImageJ macro runner&quot;, &quot;No annotation or TMA core objects selected!&quot;);</b>
+<b class="nc"><i>175</i>&nbsp;							return;</b>
+<i>176</i>&nbsp;						}
+<i>177</i>&nbsp;						
+<b class="nc"><i>178</i>&nbsp;						List&lt;Runnable&gt; tasks = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>179</i>&nbsp;						for (PathObject parent : parents)</b>
+<b class="nc"><i>180</i>&nbsp;							addRunnableTasks(qupath.getViewer().getImageData(), parent, tasks);</b>
+<i>181</i>&nbsp;						
+<b class="nc"><i>182</i>&nbsp;						qupath.submitShortTask(() -&gt; runner.runTasks(tasks, true));</b>
+<i>183</i>&nbsp;//						runner.runTasks(tasks);
+<i>184</i>&nbsp;						
+<i>185</i>&nbsp;//						Runnable r = new Runnable() {
+<i>186</i>&nbsp;//							public void run() {
+<i>187</i>&nbsp;//								runPlugin(runner, arg);
+<i>188</i>&nbsp;//							}
+<i>189</i>&nbsp;//						};
+<i>190</i>&nbsp;//						new Thread(r).start();
+<i>191</i>&nbsp;					}
+<b class="nc"><i>192</i>&nbsp;			});</b>
+<b class="nc"><i>193</i>&nbsp;			Button btnClose = new Button(&quot;Close&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;			btnClose.setOnAction(e -&gt; dialog.hide());</b>
+<i>195</i>&nbsp;			
+<b class="nc"><i>196</i>&nbsp;			GridPane panelButtons = PaneTools.createRowGridControls(btnRun, btnClose);</b>
+<i>197</i>&nbsp;			
+<b class="nc"><i>198</i>&nbsp;			pane.setCenter(panelMacro);</b>
+<b class="nc"><i>199</i>&nbsp;			pane.setBottom(panelButtons);</b>
+<b class="nc"><i>200</i>&nbsp;			panelButtons.setPadding(new Insets(5, 0, 0, 0));</b>
+<i>201</i>&nbsp;			
+<b class="nc"><i>202</i>&nbsp;			pane.setPadding(new Insets(10, 10, 10, 10));</b>
+<b class="nc"><i>203</i>&nbsp;			dialog.setScene(new Scene(pane));</b>
+<i>204</i>&nbsp;		}
+<b class="nc"><i>205</i>&nbsp;		dialog.show();</b>
+<b class="nc"><i>206</i>&nbsp;		return true;</b>
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;	static void runMacro(final ParameterList params, final ImageData&lt;BufferedImage&gt; imageData, final ImageDisplay imageDisplay, final PathObject pathObject, final String macroText) {
+<i>212</i>&nbsp;//		if (!SwingUtilities.isEventDispatchThread()) {
+<i>213</i>&nbsp;//			SwingUtilities.invokeLater(() -&gt; runMacro(params, imageData, imageDisplay, pathObject, macroText));
+<i>214</i>&nbsp;//			return;
+<i>215</i>&nbsp;//		}
+<i>216</i>&nbsp;		
+<i>217</i>&nbsp;		// Don&#39;t try if interrupted
+<b class="nc"><i>218</i>&nbsp;		if (Thread.currentThread().isInterrupted()) {</b>
+<b class="nc"><i>219</i>&nbsp;			logger.warn(&quot;Skipping macro for {} - thread interrupted&quot;, pathObject);</b>
+<b class="nc"><i>220</i>&nbsp;			return;</b>
+<i>221</i>&nbsp;		}
+<i>222</i>&nbsp;		
+<i>223</i>&nbsp;		PathImage&lt;ImagePlus&gt; pathImage;
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;		// Extract parameters
+<b class="nc"><i>226</i>&nbsp;		double downsampleFactor = params.getDoubleParameterValue(&quot;downsampleFactor&quot;);</b>
+<b class="nc"><i>227</i>&nbsp;		boolean sendROI = params.getBooleanParameterValue(&quot;sendROI&quot;);</b>
+<b class="nc"><i>228</i>&nbsp;		boolean sendOverlay = params.getBooleanParameterValue(&quot;sendOverlay&quot;);</b>
+<b class="nc"><i>229</i>&nbsp;		ROI pathROI = pathObject.getROI();		</b>
+<b class="nc"><i>230</i>&nbsp;		ImageDisplay imageDisplay2 = params.containsKey(&quot;useTransform&quot;) &amp;&amp; Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;useTransform&quot;)) ? imageDisplay : null;</b>
+<i>231</i>&nbsp;		
+<b class="nc"><i>232</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = imageDisplay2 == null || imageDisplay2.availableChannels().isEmpty() ? imageData.getServer() : ChannelDisplayTransformServer.createColorTransformServer(imageData.getServer(), imageDisplay.availableChannels());</b>
+<i>233</i>&nbsp;		
+<b class="nc"><i>234</i>&nbsp;		RegionRequest region = RegionRequest.createInstance(imageData.getServer().getPath(), downsampleFactor, pathROI);</b>
+<i>235</i>&nbsp;		// Check the size of the region to extract - abort if it is too large of if ther isn&#39;t enough RAM
+<i>236</i>&nbsp;		try {
+<b class="nc"><i>237</i>&nbsp;			IJTools.isMemorySufficient(region, imageData);</b>
+<b class="nc"><i>238</i>&nbsp;		} catch (Exception e1) {</b>
+<b class="nc"><i>239</i>&nbsp;			Dialogs.showErrorMessage(&quot;ImageJ macro error&quot;, e1.getMessage());</b>
+<b class="nc"><i>240</i>&nbsp;			return;</b>
+<b class="nc"><i>241</i>&nbsp;		}</b>
+<i>242</i>&nbsp;		
+<i>243</i>&nbsp;		try {
+<b class="nc"><i>244</i>&nbsp;			if (sendOverlay)</b>
+<b class="nc"><i>245</i>&nbsp;				pathImage = IJExtension.extractROIWithOverlay(server, pathObject, imageData.getHierarchy(), region, sendROI, null);</b>
+<i>246</i>&nbsp;			else
+<b class="nc"><i>247</i>&nbsp;				pathImage = IJExtension.extractROI(server, pathObject, region, sendROI);</b>
+<b class="nc"><i>248</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>249</i>&nbsp;			logger.error(&quot;Unable to extract image region &quot; + region, e);</b>
+<b class="nc"><i>250</i>&nbsp;			return;</b>
+<b class="nc"><i>251</i>&nbsp;		}</b>
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;		//		IJHelpers.getImageJInstance();
+<i>255</i>&nbsp;		//		ImageJ ij = IJHelpers.getImageJInstance();
+<i>256</i>&nbsp;		//		if (ij != null &amp;&amp; WindowManager.getIDList() == null)
+<i>257</i>&nbsp;		//			ij.setVisible(false);
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;		// Determine a sensible argument to pass
+<i>260</i>&nbsp;		String argument;
+<b class="nc"><i>261</i>&nbsp;		if (pathObject instanceof TMACoreObject || !pathObject.hasROI())</b>
+<b class="nc"><i>262</i>&nbsp;			argument = pathObject.getDisplayedName();</b>
+<i>263</i>&nbsp;		else
+<b class="nc"><i>264</i>&nbsp;			argument = String.format(&quot;Region (%d, %d, %d, %d)&quot;, region.getX(), region.getY(), region.getWidth(), region.getHeight());</b>
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;		// Check if we have an image already - if so, we need to be more cautious so we don&#39;t accidentally use it...
+<i>267</i>&nbsp;//		boolean hasImage = WindowManager.getCurrentImage() != null;
+<i>268</i>&nbsp;
+<i>269</i>&nbsp;		// Actually run the macro
+<b class="nc"><i>270</i>&nbsp;		final ImagePlus imp = pathImage.getImage();</b>
+<b class="nc"><i>271</i>&nbsp;		imp.setProperty(&quot;QuPath region&quot;, argument);</b>
+<b class="nc"><i>272</i>&nbsp;		WindowManager.setTempCurrentImage(imp);</b>
+<b class="nc"><i>273</i>&nbsp;		IJExtension.getImageJInstance(); // Ensure we&#39;ve requested an instance, since this also loads any required extra plugins</b>
+<i>274</i>&nbsp;		
+<i>275</i>&nbsp;		// TODO: Pay attention to how threading should be done... I think Swing EDT ok?
+<i>276</i>&nbsp;		try {
+<i>277</i>&nbsp;//			SwingUtilities.invokeAndWait(() -&gt; {
+<b class="nc"><i>278</i>&nbsp;				boolean cancelled = false;</b>
+<b class="nc"><i>279</i>&nbsp;				ImagePlus impResult = null;</b>
+<i>280</i>&nbsp;				try {
+<b class="nc"><i>281</i>&nbsp;					IJ.redirectErrorMessages();</b>
+<b class="nc"><i>282</i>&nbsp;					Interpreter interpreter = new Interpreter();</b>
+<b class="nc"><i>283</i>&nbsp;					impResult = interpreter.runBatchMacro(macroText, imp);</b>
+<i>284</i>&nbsp;					
+<i>285</i>&nbsp;					// If we had an error, return
+<b class="nc"><i>286</i>&nbsp;					if (interpreter.wasError()) {</b>
+<b class="nc"><i>287</i>&nbsp;						Thread.currentThread().interrupt();</b>
+<b class="nc"><i>288</i>&nbsp;						return;</b>
+<i>289</i>&nbsp;					}
+<i>290</i>&nbsp;					
+<i>291</i>&nbsp;					// Get the resulting image, if available
+<b class="nc"><i>292</i>&nbsp;					if (impResult == null)</b>
+<b class="nc"><i>293</i>&nbsp;						impResult = WindowManager.getCurrentImage();</b>
+<b class="nc"><i>294</i>&nbsp;				} catch (RuntimeException e) {</b>
+<b class="nc"><i>295</i>&nbsp;					logger.error(e.getLocalizedMessage());</b>
+<i>296</i>&nbsp;					//			DisplayHelpers.showErrorMessage(&quot;ImageJ macro error&quot;, e.getLocalizedMessage());
+<b class="nc"><i>297</i>&nbsp;					Thread.currentThread().interrupt();</b>
+<b class="nc"><i>298</i>&nbsp;					cancelled = true;</b>
+<i>299</i>&nbsp;				} finally {
+<i>300</i>&nbsp;					//		IJ.runMacro(macroText, argument);
+<b class="nc"><i>301</i>&nbsp;					WindowManager.setTempCurrentImage(null);</b>
+<i>302</i>&nbsp;//					IJ.run(&quot;Close all&quot;);
+<b class="nc"><i>303</i>&nbsp;				}</b>
+<b class="nc"><i>304</i>&nbsp;				if (cancelled)</b>
+<b class="nc"><i>305</i>&nbsp;					return;</b>
+<i>306</i>&nbsp;				
+<i>307</i>&nbsp;				
+<i>308</i>&nbsp;				// Get the current image when the macro has finished - which may or may not be the same as the original
+<b class="nc"><i>309</i>&nbsp;				if (impResult == null)</b>
+<b class="nc"><i>310</i>&nbsp;					impResult = imp;</b>
+<i>311</i>&nbsp;				
+<i>312</i>&nbsp;				
+<b class="nc"><i>313</i>&nbsp;				boolean changes = false;</b>
+<b class="nc"><i>314</i>&nbsp;				if (params.getBooleanParameterValue(&quot;clearObjects&quot;) &amp;&amp; pathObject.hasChildren()) {</b>
+<b class="nc"><i>315</i>&nbsp;					pathObject.clearPathObjects();</b>
+<b class="nc"><i>316</i>&nbsp;					changes = true;</b>
+<i>317</i>&nbsp;				}
+<b class="nc"><i>318</i>&nbsp;				if (params.getBooleanParameterValue(&quot;getROI&quot;) &amp;&amp; impResult.getRoi() != null) {</b>
+<b class="nc"><i>319</i>&nbsp;					Roi roi = impResult.getRoi();</b>
+<b class="nc"><i>320</i>&nbsp;					PathObject pathObjectNew = roi == null ? null : IJTools.convertToAnnotation(impResult, imageData.getServer(), roi, downsampleFactor, region.getPlane());</b>
+<b class="nc"><i>321</i>&nbsp;					if (pathObjectNew != null) {</b>
+<i>322</i>&nbsp;						// If necessary, trim any returned annotation
+<b class="nc"><i>323</i>&nbsp;						if (pathROI != null &amp;&amp; !(pathROI instanceof RectangleROI) &amp;&amp; pathObjectNew.isAnnotation() &amp;&amp; RoiTools.isShapeROI(pathROI) &amp;&amp; RoiTools.isShapeROI(pathObjectNew.getROI())) {</b>
+<b class="nc"><i>324</i>&nbsp;							ROI roiNew = RoiTools.combineROIs(pathROI, pathObjectNew.getROI(), CombineOp.INTERSECT);</b>
+<b class="nc"><i>325</i>&nbsp;							((PathAnnotationObject)pathObjectNew).setROI(roiNew);</b>
+<i>326</i>&nbsp;						}
+<i>327</i>&nbsp;						// Only add if we have something
+<b class="nc"><i>328</i>&nbsp;						if (pathObjectNew.getROI() instanceof LineROI || !pathObjectNew.getROI().isEmpty()) {</b>
+<b class="nc"><i>329</i>&nbsp;							pathObject.addPathObject(pathObjectNew);</b>
+<i>330</i>&nbsp;							//			imageData.getHierarchy().addPathObject(IJHelpers.convertToPathObject(imp, imageData.getServer(), imp.getRoi(), downsampleFactor, false), true);
+<b class="nc"><i>331</i>&nbsp;							changes = true;</b>
+<i>332</i>&nbsp;						}
+<i>333</i>&nbsp;					}
+<i>334</i>&nbsp;				}
+<i>335</i>&nbsp;				
+<b class="nc"><i>336</i>&nbsp;				boolean exportAsDetection = ((String) params.getChoiceParameterValue(&quot;getOverlayAs&quot;)).equals(&quot;Detections&quot;) ? true : false;</b>
+<b class="nc"><i>337</i>&nbsp;				if (params.getBooleanParameterValue(&quot;getOverlay&quot;) &amp;&amp; impResult.getOverlay() != null) {</b>
+<b class="nc"><i>338</i>&nbsp;					List&lt;PathObject&gt; childObjects = QuPath_Send_Overlay_to_QuPath.createPathObjectsFromROIs(imp, impResult.getOverlay().toArray(), imageData.getServer(), downsampleFactor, exportAsDetection, true, region.getPlane());</b>
+<b class="nc"><i>339</i>&nbsp;					if (!childObjects.isEmpty()) {</b>
+<b class="nc"><i>340</i>&nbsp;						pathObject.addPathObjects(childObjects);</b>
+<b class="nc"><i>341</i>&nbsp;						changes = true;</b>
+<i>342</i>&nbsp;					}
+<i>343</i>&nbsp;//					for (Roi roi : impResult.getOverlay().toArray()) {
+<i>344</i>&nbsp;//						pathObject.addPathObject(IJTools.convertToPathObject(imp, imageData.getServer(), roi, downsampleFactor, true));
+<i>345</i>&nbsp;//						changes = true;
+<i>346</i>&nbsp;//					}
+<i>347</i>&nbsp;				}
+<i>348</i>&nbsp;				
+<b class="nc"><i>349</i>&nbsp;				if (changes) {</b>
+<b class="nc"><i>350</i>&nbsp;					Platform.runLater(() -&gt; imageData.getHierarchy().fireHierarchyChangedEvent(null));</b>
+<i>351</i>&nbsp;				}
+<i>352</i>&nbsp;				
+<i>353</i>&nbsp;//			});
+<b class="nc"><i>354</i>&nbsp;		} catch (Exception e) {</b>
+<i>355</i>&nbsp;			// TODO Auto-generated catch block
+<b class="nc"><i>356</i>&nbsp;			e.printStackTrace();</b>
+<b class="nc"><i>357</i>&nbsp;		}</b>
+<i>358</i>&nbsp;
+<b class="nc"><i>359</i>&nbsp;	}</b>
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;	@Override
+<i>364</i>&nbsp;	protected boolean parseArgument(ImageData&lt;BufferedImage&gt; imageData, String arg) {
+<b class="nc"><i>365</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>366</i>&nbsp;			return false;</b>
+<b class="nc"><i>367</i>&nbsp;		if (arg != null &amp;&amp; arg.length() &gt; 0)</b>
+<b class="nc"><i>368</i>&nbsp;			macroText = arg;</b>
+<b class="nc"><i>369</i>&nbsp;		return true;</b>
+<i>370</i>&nbsp;	}
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;	@Override
+<i>373</i>&nbsp;	public String getLastResultsDescription() {
+<i>374</i>&nbsp;		// TODO Auto-generated method stub
+<b class="nc"><i>375</i>&nbsp;		return null;</b>
+<i>376</i>&nbsp;	}
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;	ParameterList getParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>380</i>&nbsp;		if (params == null)</b>
+<b class="nc"><i>381</i>&nbsp;			params = new ParameterList()</b>
+<b class="nc"><i>382</i>&nbsp;				.addTitleParameter(&quot;Setup&quot;)</b>
+<b class="nc"><i>383</i>&nbsp;				.addDoubleParameter(&quot;downsampleFactor&quot;, &quot;Downsample factor&quot;, 1)</b>
+<i>384</i>&nbsp;				//			.addBooleanParameter(&quot;useTransform&quot;, &quot;Send color transformed image&quot;, true) // Not supported in batch mode, so disable option to avoid confusion
+<b class="nc"><i>385</i>&nbsp;				.addBooleanParameter(&quot;sendROI&quot;, &quot;Send ROI to ImageJ&quot;, true)</b>
+<b class="nc"><i>386</i>&nbsp;				.addBooleanParameter(&quot;sendOverlay&quot;, &quot;Send overlay to ImageJ&quot;, true)</b>
+<b class="nc"><i>387</i>&nbsp;				.addBooleanParameter(&quot;doParallel&quot;, &quot;Do parallel processing (experimental)&quot;, false)</b>
+<b class="nc"><i>388</i>&nbsp;				.addTitleParameter(&quot;Results&quot;)</b>
+<b class="nc"><i>389</i>&nbsp;				.addBooleanParameter(&quot;clearObjects&quot;, &quot;Clear current child objects&quot;, false)</b>
+<b class="nc"><i>390</i>&nbsp;				.addBooleanParameter(&quot;getROI&quot;, &quot;Create annotation from ImageJ ROI&quot;, false)</b>
+<b class="nc"><i>391</i>&nbsp;				.addBooleanParameter(&quot;getOverlay&quot;, &quot;Get objects from ImageJ overlay&quot;, false)</b>
+<b class="nc"><i>392</i>&nbsp;				.addChoiceParameter(&quot;getOverlayAs&quot;, &quot;Get objects as&quot;, &quot;Detections&quot;, Arrays.asList(&quot;Detections&quot;, &quot;Annotations&quot;), &quot;Return ROIs from the ImageJ overlay as QuPath detections or annotations&quot;)</b>
+<i>393</i>&nbsp;				;
+<b class="nc"><i>394</i>&nbsp;		return params;</b>
+<i>395</i>&nbsp;	}
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;	protected Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>399</i>&nbsp;		ArrayList&lt;Class&lt;? extends PathObject&gt;&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>400</i>&nbsp;		list.add(TMACoreObject.class);</b>
+<b class="nc"><i>401</i>&nbsp;		list.add(PathAnnotationObject.class);</b>
+<b class="nc"><i>402</i>&nbsp;		return list;</b>
+<i>403</i>&nbsp;	}
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;	@Override
+<i>406</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;BufferedImage&gt; imageData, final PathObject parentObject, final List&lt;Runnable&gt; tasks) {
+<b class="nc"><i>407</i>&nbsp;		final ParameterList params = getParameterList(imageData);</b>
+<b class="nc"><i>408</i>&nbsp;		boolean doParallel = Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;doParallel&quot;));</b>
+<b class="nc"><i>409</i>&nbsp;		tasks.add(new Runnable() {</b>
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;			@Override
+<i>412</i>&nbsp;			public void run() {
+<b class="nc"><i>413</i>&nbsp;				if (Thread.currentThread().isInterrupted()) {</b>
+<b class="nc"><i>414</i>&nbsp;					logger.warn(&quot;Execution interrupted - skipping {}&quot;, parentObject);</b>
+<i>415</i>&nbsp;					return;
+<i>416</i>&nbsp;				}
+<b class="nc"><i>417</i>&nbsp;				if (SwingUtilities.isEventDispatchThread() || doParallel)</b>
+<b class="nc"><i>418</i>&nbsp;					runMacro(params, imageData, null, parentObject, macroText); // TODO: Deal with logging macro text properly</b>
+<i>419</i>&nbsp;				else {
+<i>420</i>&nbsp;					try {
+<b class="nc"><i>421</i>&nbsp;						SwingUtilities.invokeAndWait(() -&gt; runMacro(params, imageData, null, parentObject, macroText));</b>
+<b class="nc"><i>422</i>&nbsp;					} catch (InvocationTargetException e) {</b>
+<i>423</i>&nbsp;						// TODO Auto-generated catch block
+<b class="nc"><i>424</i>&nbsp;						e.printStackTrace();</b>
+<b class="nc"><i>425</i>&nbsp;					} catch (InterruptedException e) {</b>
+<i>426</i>&nbsp;						// TODO Auto-generated catch block
+<b class="nc"><i>427</i>&nbsp;						e.printStackTrace();</b>
+<b class="nc"><i>428</i>&nbsp;					} // TODO: Deal with logging macro text properly</b>
+<i>429</i>&nbsp;				}
+<i>430</i>&nbsp;			}
+<i>431</i>&nbsp;
+<i>432</i>&nbsp;		});
+<b class="nc"><i>433</i>&nbsp;	}</b>
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;	@Override
+<i>436</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<i>437</i>&nbsp;		// Try to get currently-selected objects
+<b class="nc"><i>438</i>&nbsp;		PathObjectHierarchy hierarchy = getHierarchy(runner);</b>
+<b class="nc"><i>439</i>&nbsp;		List&lt;PathObject&gt; pathObjects = hierarchy.getSelectionModel().getSelectedObjects().stream()</b>
+<b class="nc"><i>440</i>&nbsp;				.filter(p -&gt; p.isAnnotation() || p.isTMACore()).collect(Collectors.toList());</b>
+<b class="nc"><i>441</i>&nbsp;		if (pathObjects.isEmpty()) {</b>
+<b class="nc"><i>442</i>&nbsp;			if (ParameterDialogWrapper.promptForParentObjects(runner, this, false, getSupportedParentObjectClasses()))</b>
+<b class="nc"><i>443</i>&nbsp;				pathObjects = new ArrayList&lt;&gt;(hierarchy.getSelectionModel().getSelectedObjects());</b>
+<i>444</i>&nbsp;		}
+<b class="nc"><i>445</i>&nbsp;		return pathObjects;</b>
+<i>446</i>&nbsp;		
+<i>447</i>&nbsp;//		// TODO: Give option to analyse annotations, even when TMA grid is present
+<i>448</i>&nbsp;//		ImageData&lt;BufferedImage&gt; imageData = runner.getImageData();
+<i>449</i>&nbsp;//		TMAGrid tmaGrid = imageData.getHierarchy().getTMAGrid();
+<i>450</i>&nbsp;//		if (tmaGrid != null &amp;&amp; tmaGrid.nCores() &gt; 0)
+<i>451</i>&nbsp;//			return PathObjectTools.getTMACoreObjects(imageData.getHierarchy(), false);
+<i>452</i>&nbsp;//		else
+<i>453</i>&nbsp;//			return imageData.getHierarchy().getObjects(null, PathAnnotationObject.class);
+<i>454</i>&nbsp;	}
+<i>455</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

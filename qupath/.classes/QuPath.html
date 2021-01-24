@@ -1,0 +1,503 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: QuPath</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath</a> ]
+</div>
+
+<h1>Coverage Summary for Class: QuPath (qupath)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QuPath</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (26/ 52)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">QuPath$VersionProvider</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/ 15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (4/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40.3%
+  </span>
+  <span class="absValue">
+    (27/ 67)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.File;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.io.PrintWriter;
+<i>30</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.ServiceLoader;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import javax.script.ScriptContext;
+<i>36</i>&nbsp;import javax.script.ScriptEngine;
+<i>37</i>&nbsp;import javax.script.ScriptEngineManager;
+<i>38</i>&nbsp;import javax.script.ScriptException;
+<i>39</i>&nbsp;import javax.script.SimpleScriptContext;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.slf4j.Logger;
+<i>42</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import picocli.AutoComplete.GenerateCompletion;
+<i>45</i>&nbsp;import picocli.CommandLine;
+<i>46</i>&nbsp;import picocli.CommandLine.Command;
+<i>47</i>&nbsp;import picocli.CommandLine.HelpCommand;
+<i>48</i>&nbsp;import picocli.CommandLine.IVersionProvider;
+<i>49</i>&nbsp;import picocli.CommandLine.Option;
+<i>50</i>&nbsp;import picocli.CommandLine.Parameters;
+<i>51</i>&nbsp;import picocli.CommandLine.ParseResult;
+<i>52</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>53</i>&nbsp;import qupath.lib.gui.BuildInfo;
+<i>54</i>&nbsp;import qupath.lib.gui.ExtensionClassLoader;
+<i>55</i>&nbsp;import qupath.lib.gui.QuPathApp;
+<i>56</i>&nbsp;import qupath.lib.gui.Version;
+<i>57</i>&nbsp;import qupath.lib.gui.extensions.Subcommand;
+<i>58</i>&nbsp;import qupath.lib.gui.images.stores.ImageRegionStoreFactory;
+<i>59</i>&nbsp;import qupath.lib.gui.logging.LogManager;
+<i>60</i>&nbsp;import qupath.lib.gui.logging.LogManager.LogLevel;
+<i>61</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>62</i>&nbsp;import qupath.lib.gui.scripting.DefaultScriptEditor;
+<i>63</i>&nbsp;import qupath.lib.gui.tma.QuPathTMAViewer;
+<i>64</i>&nbsp;import qupath.lib.images.ImageData;
+<i>65</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>66</i>&nbsp;import qupath.lib.images.servers.ImageServerProvider;
+<i>67</i>&nbsp;import qupath.lib.projects.Project;
+<i>68</i>&nbsp;import qupath.lib.projects.ProjectIO;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;/**
+<i>71</i>&nbsp; * Main QuPath launcher.
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * @author Pete Bankhead
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; */
+<i>76</i>&nbsp;@Command(name = &quot;QuPath&quot;, subcommands = {HelpCommand.class, ScriptCommand.class, GenerateCompletion.class},
+<i>77</i>&nbsp;	footer = {&quot;&quot;,
+<i>78</i>&nbsp;			&quot;Copyright(c) The Queen&#39;s University Belfast (2014-2016)&quot;,
+<i>79</i>&nbsp;			&quot;Copyright(c) QuPath developers (2017-2020)&quot;,
+<i>80</i>&nbsp;			&quot;Copyright(c) The University of Edinburgh (2018-2020)&quot;
+<i>81</i>&nbsp;			}, mixinStandardHelpOptions = true, versionProvider = QuPath.VersionProvider.class)
+<b class="fc"><i>82</i>&nbsp;public class QuPath {</b>
+<i>83</i>&nbsp;	
+<b class="fc"><i>84</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(QuPath.class);</b>
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	@Parameters(arity = &quot;0..1&quot;, description = {&quot;Path to image or project to open&quot;}, hidden = true)
+<i>87</i>&nbsp;	private String path;
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	@Option(names = {&quot;-r&quot;, &quot;--reset&quot;}, description = &quot;Reset all QuPath preferences.&quot;)
+<i>90</i>&nbsp;	private boolean reset;
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	@Option(names = {&quot;-q&quot;, &quot;--quiet&quot;}, description = &quot;Launch QuPath quietly, without setup dialogs, update checks or messages.&quot;)
+<i>93</i>&nbsp;	private boolean quiet;
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	@Option(names = {&quot;-p&quot;, &quot;--project&quot;}, description = &quot;Launch QuPath and open specified project.&quot;)
+<i>96</i>&nbsp;	private String project;
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	@Option(names = {&quot;-i&quot;, &quot;--image&quot;}, description = {&quot;Launch QuPath and open the specified image.&quot;,
+<i>99</i>&nbsp;											&quot;This should be the image name if a project is also specified, otherwise the full image path.&quot;})
+<i>100</i>&nbsp;	private String image;
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	@Option(names = {&quot;-t&quot;, &quot;--tma&quot;}, description = &quot;Launch standalone viewer for TMA summary results.&quot;)
+<i>103</i>&nbsp;	private boolean tma;
+<i>104</i>&nbsp;
+<b class="fc"><i>105</i>&nbsp;	@Option(names = {&quot;-l&quot;, &quot;--log&quot;}, description = {&quot;Log level (default = INFO).&quot;, &quot;Options: ${COMPLETION-CANDIDATES}&quot;} )</b>
+<i>106</i>&nbsp;	private LogLevel logLevel = LogLevel.INFO;
+<i>107</i>&nbsp;			
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	/**
+<i>110</i>&nbsp;	 * Main class to launch QuPath.
+<i>111</i>&nbsp;	 * 
+<i>112</i>&nbsp;	 * @param args
+<i>113</i>&nbsp;	 */
+<i>114</i>&nbsp;	public static void main(String[] args) {
+<i>115</i>&nbsp;		
+<b class="fc"><i>116</i>&nbsp;		QuPath qupath = new QuPath();</b>
+<b class="fc"><i>117</i>&nbsp;		CommandLine cmd = new CommandLine(qupath);</b>
+<b class="fc"><i>118</i>&nbsp;		cmd.setCaseInsensitiveEnumValuesAllowed(true);</b>
+<i>119</i>&nbsp;//		cmd.setUnmatchedArgumentsAllowed(false);
+<i>120</i>&nbsp;//		cmd.setStopAtPositional(true);
+<b class="fc"><i>121</i>&nbsp;		cmd.setExpandAtFiles(false);</b>
+<b class="fc"><i>122</i>&nbsp;		cmd.getSubcommands().get(&quot;generate-completion&quot;).getCommandSpec().usageMessage().hidden(true);</b>
+<i>123</i>&nbsp;		// Check for subcommands loaded in extensions
+<b class="fc"><i>124</i>&nbsp;		for (var subcommand : ServiceLoader.load(Subcommand.class)) {</b>
+<b class="fc"><i>125</i>&nbsp;			cmd.addSubcommand(subcommand);</b>
+<b class="fc"><i>126</i>&nbsp;		}</b>
+<i>127</i>&nbsp;		ParseResult pr;
+<i>128</i>&nbsp;		try {
+<b class="fc"><i>129</i>&nbsp;			pr = cmd.parseArgs(args);</b>
+<b class="nc"><i>130</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>131</i>&nbsp;			logger.error(&quot;An error has occurred, please type -h to display help message.\n&quot; + e.getLocalizedMessage());</b>
+<b class="nc"><i>132</i>&nbsp;			return;</b>
+<b class="fc"><i>133</i>&nbsp;		}</b>
+<i>134</i>&nbsp;		
+<i>135</i>&nbsp;		// Catch -h/--help and -V/--version
+<b class="fc"><i>136</i>&nbsp;		if (cmd.isUsageHelpRequested()) {</b>
+<b class="nc"><i>137</i>&nbsp;			   cmd.usage(System.out);</b>
+<b class="nc"><i>138</i>&nbsp;			   return;</b>
+<b class="fc"><i>139</i>&nbsp;			} else if (cmd.isVersionHelpRequested()) {</b>
+<b class="nc"><i>140</i>&nbsp;			   cmd.printVersionHelp(System.out);</b>
+<b class="nc"><i>141</i>&nbsp;			   return;</b>
+<i>142</i>&nbsp;			}
+<i>143</i>&nbsp;		
+<i>144</i>&nbsp;		// Catch -t/--tma
+<b class="fc"><i>145</i>&nbsp;		if (qupath.tma) {</b>
+<b class="nc"><i>146</i>&nbsp;			QuPathTMAViewer.launch(QuPathTMAViewer.class);</b>
+<b class="nc"><i>147</i>&nbsp;			return;</b>
+<i>148</i>&nbsp;		}
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		// Catch -r/--reset
+<b class="fc"><i>151</i>&nbsp;		if (qupath.reset) {</b>
+<b class="nc"><i>152</i>&nbsp;			PathPrefs.resetPreferences();</b>
+<i>153</i>&nbsp;		}
+<i>154</i>&nbsp;		
+<i>155</i>&nbsp;		// Set log level
+<b class="fc"><i>156</i>&nbsp;		if (qupath.logLevel != null)</b>
+<b class="fc"><i>157</i>&nbsp;			LogManager.setRootLogLevel(qupath.logLevel);</b>
+<i>158</i>&nbsp;				
+<i>159</i>&nbsp;		// Catch all possible Options, then launch QuPath
+<b class="fc"><i>160</i>&nbsp;		if (!pr.hasSubcommand()) {</b>
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;			// If no subcommand, parse the arguments and launch QuPathApp.
+<b class="fc"><i>163</i>&nbsp;			List&lt;String&gt; CLIArgs = new ArrayList&lt;String&gt;();</b>
+<i>164</i>&nbsp;			
+<b class="fc"><i>165</i>&nbsp;			if (qupath.path != null &amp;&amp; !qupath.path.isBlank()) {</b>
+<b class="nc"><i>166</i>&nbsp;				CLIArgs.add(getEncodedPath(qupath.path));</b>
+<i>167</i>&nbsp;			}
+<i>168</i>&nbsp;			
+<b class="fc"><i>169</i>&nbsp;			if (qupath.quiet)</b>
+<b class="nc"><i>170</i>&nbsp;				CLIArgs.add(&quot;--quiet=true&quot;);</b>
+<i>171</i>&nbsp;		
+<b class="fc"><i>172</i>&nbsp;			if (qupath.project != null &amp;&amp; !qupath.project.equals(&quot;&quot;) &amp;&amp; qupath.project.endsWith(ProjectIO.getProjectExtension()))</b>
+<b class="nc"><i>173</i>&nbsp;				CLIArgs.add(&quot;--project=&quot; + getEncodedPath(qupath.project));</b>
+<i>174</i>&nbsp;		
+<b class="fc"><i>175</i>&nbsp;			if (qupath.image != null &amp;&amp; !qupath.image.equals(&quot;&quot;))</b>
+<b class="nc"><i>176</i>&nbsp;				CLIArgs.add(&quot;--image=&quot; + getEncodedPath(qupath.image));</b>
+<i>177</i>&nbsp;			
+<b class="fc"><i>178</i>&nbsp;			QuPathApp.launch(QuPathApp.class, CLIArgs.toArray(new String[CLIArgs.size()]));</b>
+<i>179</i>&nbsp;			
+<b class="nc"><i>180</i>&nbsp;		} else {</b>
+<i>181</i>&nbsp;			// Parse and execute subcommand with args
+<b class="nc"><i>182</i>&nbsp;			int exitCode = cmd.execute(args);</b>
+<b class="nc"><i>183</i>&nbsp;			System.exit(exitCode);</b>
+<i>184</i>&nbsp;		}
+<i>185</i>&nbsp;	
+<b class="nc"><i>186</i>&nbsp;		return;</b>
+<i>187</i>&nbsp;	}
+<i>188</i>&nbsp;	
+<i>189</i>&nbsp;	
+<i>190</i>&nbsp;	/**
+<i>191</i>&nbsp;	 * Non-ASCII characters in paths can become mangled on Windows due to character encoding.
+<i>192</i>&nbsp;	 * Here, make a cautious attempt to correct these if necessary, or return the path unchanged.
+<i>193</i>&nbsp;	 * @param path
+<i>194</i>&nbsp;	 * @return
+<i>195</i>&nbsp;	 */
+<i>196</i>&nbsp;	static String getEncodedPath(String path) {
+<i>197</i>&nbsp;		// Don&#39;t do anything if we don&#39;t have a path, aren&#39;t using Windows, or have only ASCII characters
+<b class="nc"><i>198</i>&nbsp;		if (path == null || !GeneralTools.isWindows() || StandardCharsets.US_ASCII.newEncoder().canEncode(path))</b>
+<b class="nc"><i>199</i>&nbsp;			return path;</b>
+<i>200</i>&nbsp;		// Reencode as UTF-8 only if this means a non-existent file becomes available
+<b class="nc"><i>201</i>&nbsp;		if (!new File(path).exists()) {</b>
+<b class="nc"><i>202</i>&nbsp;			var pathUTF8 = new String(path.getBytes(), StandardCharsets.UTF_8);</b>
+<b class="nc"><i>203</i>&nbsp;			if (new File(pathUTF8).exists()) {</b>
+<b class="nc"><i>204</i>&nbsp;				logger.warn(&quot;Updated path encoding to UTF-8: {}&quot;, pathUTF8);</b>
+<b class="nc"><i>205</i>&nbsp;				return pathUTF8;</b>
+<i>206</i>&nbsp;			}
+<i>207</i>&nbsp;		}
+<b class="nc"><i>208</i>&nbsp;		return path;</b>
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;	
+<i>211</i>&nbsp;	
+<i>212</i>&nbsp;	
+<b class="fc"><i>213</i>&nbsp;	static class VersionProvider implements IVersionProvider {</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;		@Override
+<i>216</i>&nbsp;		public String[] getVersion() throws Exception {
+<b class="nc"><i>217</i>&nbsp;			var version = BuildInfo.getInstance().getVersion();</b>
+<b class="nc"><i>218</i>&nbsp;			var buildString = BuildInfo.getInstance().getBuildString();</b>
+<b class="nc"><i>219</i>&nbsp;			var strings = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>220</i>&nbsp;			if (version != null &amp;&amp; version != Version.UNKNOWN) {</b>
+<b class="nc"><i>221</i>&nbsp;				var temp = version.toString();</b>
+<b class="nc"><i>222</i>&nbsp;				if (!temp.startsWith(&quot;v&quot;))</b>
+<b class="nc"><i>223</i>&nbsp;					temp = &quot;v&quot; + temp;</b>
+<b class="nc"><i>224</i>&nbsp;				strings.add(&quot;QuPath &quot; + temp);</b>
+<i>225</i>&nbsp;			}
+<b class="nc"><i>226</i>&nbsp;			if (buildString != null)</b>
+<b class="nc"><i>227</i>&nbsp;				strings.add(buildString);</b>
+<b class="nc"><i>228</i>&nbsp;			if (strings.isEmpty())</b>
+<b class="nc"><i>229</i>&nbsp;				return new String[] {&quot;Unknown QuPath version!&quot;};</b>
+<i>230</i>&nbsp;			else {
+<b class="nc"><i>231</i>&nbsp;				strings.add(&quot;&quot;);</b>
+<b class="nc"><i>232</i>&nbsp;				return strings.toArray(String[]::new);</b>
+<i>233</i>&nbsp;			}
+<i>234</i>&nbsp;		}
+<i>235</i>&nbsp;		
+<i>236</i>&nbsp;		
+<i>237</i>&nbsp;		
+<i>238</i>&nbsp;	}
+<i>239</i>&nbsp;	
+<i>240</i>&nbsp;}
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;// TODO: should script only end with .groovy or can it end with something else?
+<i>244</i>&nbsp;@Command(name = &quot;script&quot;, description = {
+<i>245</i>&nbsp;		&quot;Runs script for a given image or project.&quot;,
+<i>246</i>&nbsp;		&quot;By default, this will not save changes to any data files.&quot;})
+<i>247</i>&nbsp;class ScriptCommand implements Runnable {
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ScriptCommand.class);
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	@Parameters(index = &quot;0&quot;, description = &quot;Path to the script file (.groovy).&quot;, arity = &quot;0..1&quot;, paramLabel = &quot;script&quot;)
+<i>252</i>&nbsp;	private String scriptFile;
+<i>253</i>&nbsp;	
+<i>254</i>&nbsp;	@Option(names = {&quot;-c&quot;, &quot;--cmd&quot;}, description = &quot;Groovy script passed a a string&quot;, paramLabel = &quot;command&quot;)
+<i>255</i>&nbsp;	private String scriptCommand;
+<i>256</i>&nbsp;	
+<i>257</i>&nbsp;	@Option(names = {&quot;-i&quot;, &quot;--image&quot;}, description = &quot;Path to an image file.&quot;, paramLabel = &quot;image&quot;)
+<i>258</i>&nbsp;	private String imagePath;
+<i>259</i>&nbsp;	
+<i>260</i>&nbsp;	@Option(names = {&quot;-p&quot;, &quot;--project&quot;}, description = &quot;Path to a project file (.qpproj).&quot;, paramLabel = &quot;project&quot;)
+<i>261</i>&nbsp;	private String projectPath;
+<i>262</i>&nbsp;	
+<i>263</i>&nbsp;	@Option(names = {&quot;-s&quot;, &quot;--save&quot;}, description = &quot;Request that data files are updated for each image in the project.&quot;, paramLabel = &quot;save&quot;)
+<i>264</i>&nbsp;	boolean save;
+<i>265</i>&nbsp;	
+<i>266</i>&nbsp;	@Option(names = {&quot;-h&quot;, &quot;--help&quot;}, usageHelp = true, description = &quot;Show this help message and exit.&quot;)
+<i>267</i>&nbsp;	boolean usageHelpRequested;
+<i>268</i>&nbsp;	
+<i>269</i>&nbsp;	@Override
+<i>270</i>&nbsp;	public void run() {
+<i>271</i>&nbsp;		try {
+<i>272</i>&nbsp;			if (projectPath != null &amp;&amp; !projectPath.toLowerCase().endsWith(ProjectIO.getProjectExtension()))
+<i>273</i>&nbsp;				throw new IOException(&quot;Project file must end with &#39;.qpproj&#39;&quot;);
+<i>274</i>&nbsp;			if (scriptCommand == null) {
+<i>275</i>&nbsp;				if (scriptFile == null || scriptFile.equals(&quot;&quot;) || !scriptFile.endsWith(&quot;.groovy&quot;))
+<i>276</i>&nbsp;					throw new IOException(&quot;File must be a valid script file (.groovy): &quot; + scriptFile);
+<i>277</i>&nbsp;			} else if (scriptFile != null) {
+<i>278</i>&nbsp;				throw new IllegalArgumentException(&quot;Either a script file or a script command may be provided, but not both!&quot;);
+<i>279</i>&nbsp;			}
+<i>280</i>&nbsp;			
+<i>281</i>&nbsp;			// Ensure we have a tile cache set
+<i>282</i>&nbsp;			createTileCache();
+<i>283</i>&nbsp;			
+<i>284</i>&nbsp;			ImageData&lt;BufferedImage&gt; imageData;
+<i>285</i>&nbsp;			
+<i>286</i>&nbsp;			if (projectPath != null &amp;&amp; !projectPath.equals(&quot;&quot;)) {
+<i>287</i>&nbsp;				String path = QuPath.getEncodedPath(projectPath);
+<i>288</i>&nbsp;				Project&lt;BufferedImage&gt; project = ProjectIO.loadProject(new File(path), BufferedImage.class);
+<i>289</i>&nbsp;				for (var entry: project.getImageList()) {
+<i>290</i>&nbsp;					if (imagePath != null &amp;&amp; !imagePath.equals(&quot;&quot;) &amp;&amp; !imagePath.equals(entry.getImageName()))
+<i>291</i>&nbsp;						continue;
+<i>292</i>&nbsp;					logger.info(&quot;Running script for {}&quot;, entry.getImageName());
+<i>293</i>&nbsp;					imageData = entry.readImageData();
+<i>294</i>&nbsp;					try {
+<i>295</i>&nbsp;						Object result = runScript(project, entry.readImageData());
+<i>296</i>&nbsp;						if (result != null)
+<i>297</i>&nbsp;							logger.info(&quot;Script result: {}&quot;, result);
+<i>298</i>&nbsp;						if (save)
+<i>299</i>&nbsp;							entry.saveImageData(imageData);
+<i>300</i>&nbsp;					} catch (Exception e) {
+<i>301</i>&nbsp;						logger.error(&quot;Error running script for image: &quot; + entry.getImageName(), e);
+<i>302</i>&nbsp;					}
+<i>303</i>&nbsp;					imageData.getServer().close();
+<i>304</i>&nbsp;				}
+<i>305</i>&nbsp;			} else if (imagePath != null &amp;&amp; !imagePath.equals(&quot;&quot;)) {
+<i>306</i>&nbsp;				String path = QuPath.getEncodedPath(imagePath);
+<i>307</i>&nbsp;				ImageServer&lt;BufferedImage&gt; server = ImageServerProvider.buildServer(path, BufferedImage.class);
+<i>308</i>&nbsp;				imageData = new ImageData&lt;&gt;(server);
+<i>309</i>&nbsp;				Object result = runScript(null, imageData);
+<i>310</i>&nbsp;				if (result != null)
+<i>311</i>&nbsp;					logger.info(&quot;Script result: {}&quot;, result);
+<i>312</i>&nbsp;				server.close();
+<i>313</i>&nbsp;			} else {
+<i>314</i>&nbsp;				Object result = runScript(null, null);
+<i>315</i>&nbsp;				if (result != null)
+<i>316</i>&nbsp;					logger.info(&quot;Script result: {}&quot;, result);
+<i>317</i>&nbsp;			}
+<i>318</i>&nbsp;			
+<i>319</i>&nbsp;		} catch (Exception e) {
+<i>320</i>&nbsp;			logger.error(e.getLocalizedMessage());
+<i>321</i>&nbsp;		}
+<i>322</i>&nbsp;	}
+<i>323</i>&nbsp;	
+<i>324</i>&nbsp;	
+<i>325</i>&nbsp;	/**
+<i>326</i>&nbsp;	 * The tile cache is usually set when initializing the GUI; here, we need to create one for performance
+<i>327</i>&nbsp;	 */
+<i>328</i>&nbsp;	private void createTileCache() {
+<i>329</i>&nbsp;		// TODO: Refactor this to avoid replicating logic from QuPathGUI private method
+<i>330</i>&nbsp;		Runtime rt = Runtime.getRuntime();
+<i>331</i>&nbsp;		long maxAvailable = rt.maxMemory(); // Max available memory
+<i>332</i>&nbsp;		if (maxAvailable == Long.MAX_VALUE) {
+<i>333</i>&nbsp;			logger.warn(&quot;No inherent maximum memory set - for caching purposes, will assume 64 GB&quot;);
+<i>334</i>&nbsp;			maxAvailable = 64L * 1024L * 1024L * 1024L;
+<i>335</i>&nbsp;		}
+<i>336</i>&nbsp;		double percentage = PathPrefs.tileCachePercentageProperty().get();
+<i>337</i>&nbsp;		if (percentage &lt; 10) {
+<i>338</i>&nbsp;			logger.warn(&quot;At least 10% of available memory needs to be used for tile caching (you requested {}%)&quot;, percentage);
+<i>339</i>&nbsp;			percentage = 10;
+<i>340</i>&nbsp;		} else if (percentage &gt; 90) {
+<i>341</i>&nbsp;			logger.warn(&quot;No more than 90% of available memory can be used for tile caching (you requested {}%)&quot;, percentage);
+<i>342</i>&nbsp;			percentage = 00;			
+<i>343</i>&nbsp;		}
+<i>344</i>&nbsp;		long tileCacheSize = Math.round(maxAvailable * (percentage / 100.0));
+<i>345</i>&nbsp;		logger.info(String.format(&quot;Setting tile cache size to %.2f MB (%.1f%% max memory)&quot;, tileCacheSize/(1024.*1024.), percentage));
+<i>346</i>&nbsp;		
+<i>347</i>&nbsp;		var imageRegionStore = ImageRegionStoreFactory.createImageRegionStore(tileCacheSize);
+<i>348</i>&nbsp;		ImageServerProvider.setCache(imageRegionStore.getCache(), BufferedImage.class);
+<i>349</i>&nbsp;	}
+<i>350</i>&nbsp;	
+<i>351</i>&nbsp;	
+<i>352</i>&nbsp;	private Object runScript(Project&lt;BufferedImage&gt; project, ImageData&lt;BufferedImage&gt; imageData) throws IOException, ScriptException {
+<i>353</i>&nbsp;		Object result = null;
+<i>354</i>&nbsp;		
+<i>355</i>&nbsp;		ClassLoader classLoader = new ExtensionClassLoader();
+<i>356</i>&nbsp;		ScriptEngineManager manager = new ScriptEngineManager(classLoader);
+<i>357</i>&nbsp;		
+<i>358</i>&nbsp;		String script = scriptCommand;
+<i>359</i>&nbsp;		ScriptEngine engine;
+<i>360</i>&nbsp;		if (script == null) {
+<i>361</i>&nbsp;			String ext = scriptFile.substring(scriptFile.lastIndexOf(&quot;.&quot;)+1);
+<i>362</i>&nbsp;			engine = manager.getEngineByExtension(ext);
+<i>363</i>&nbsp;			if (engine == null)
+<i>364</i>&nbsp;				throw new IllegalArgumentException(&quot;No script engine found for &quot; + scriptFile);
+<i>365</i>&nbsp;			
+<i>366</i>&nbsp;			// Try to run the script
+<i>367</i>&nbsp;			// Read script
+<i>368</i>&nbsp;			script = GeneralTools.readFileAsString(QuPath.getEncodedPath(scriptFile));
+<i>369</i>&nbsp;		} else {
+<i>370</i>&nbsp;			if (GeneralTools.isWindows() &amp;&amp; !StandardCharsets.US_ASCII.newEncoder().canEncode(script))
+<i>371</i>&nbsp;				logger.warn(&quot;Non-ASCII characters detected in the specified script! If you experience encoding issues, try passing a script file instead.&quot;);
+<i>372</i>&nbsp;			engine = manager.getEngineByExtension(&quot;groovy&quot;);
+<i>373</i>&nbsp;		}
+<i>374</i>&nbsp;		
+<i>375</i>&nbsp;		
+<i>376</i>&nbsp;		// Try to make sure that the standard outputs are used
+<i>377</i>&nbsp;		ScriptContext context = new SimpleScriptContext();
+<i>378</i>&nbsp;		PrintWriter outWriter = new PrintWriter(System.out, true);
+<i>379</i>&nbsp;		PrintWriter errWriter = new PrintWriter(System.err, true);
+<i>380</i>&nbsp;		context.setWriter(outWriter);
+<i>381</i>&nbsp;		context.setErrorWriter(errWriter);
+<i>382</i>&nbsp;		
+<i>383</i>&nbsp;		// Evaluate the script
+<i>384</i>&nbsp;		result = DefaultScriptEditor.executeScript(engine, script, project, imageData, true, context);
+<i>385</i>&nbsp;		
+<i>386</i>&nbsp;		// Ensure writers are flushed
+<i>387</i>&nbsp;		outWriter.flush();
+<i>388</i>&nbsp;		errWriter.flush();
+<i>389</i>&nbsp;		
+<i>390</i>&nbsp;		// return output, which may be null
+<i>391</i>&nbsp;		return result;
+<i>392</i>&nbsp;	}
+<i>393</i>&nbsp;	
+<i>394</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

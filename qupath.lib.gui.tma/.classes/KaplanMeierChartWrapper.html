@@ -1,0 +1,731 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KaplanMeierChartWrapper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tma</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KaplanMeierChartWrapper (qupath.lib.gui.tma)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KaplanMeierChartWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 184)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KaplanMeierChartWrapper$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KaplanMeierChartWrapper$KaplanMeierChart</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 217)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.tma;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.List;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import org.controlsfx.control.action.Action;
+<i>30</i>&nbsp;import org.controlsfx.control.action.ActionUtils;
+<i>31</i>&nbsp;import org.slf4j.Logger;
+<i>32</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>35</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>36</i>&nbsp;import javafx.collections.ListChangeListener.Change;
+<i>37</i>&nbsp;import javafx.geometry.Orientation;
+<i>38</i>&nbsp;import javafx.geometry.Side;
+<i>39</i>&nbsp;import javafx.print.PrinterJob;
+<i>40</i>&nbsp;import javafx.scene.Node;
+<i>41</i>&nbsp;import javafx.scene.SnapshotParameters;
+<i>42</i>&nbsp;import javafx.scene.chart.LineChart;
+<i>43</i>&nbsp;import javafx.scene.chart.NumberAxis;
+<i>44</i>&nbsp;import javafx.scene.chart.XYChart;
+<i>45</i>&nbsp;import javafx.scene.chart.XYChart.Series;
+<i>46</i>&nbsp;import javafx.scene.chart.Axis;
+<i>47</i>&nbsp;import javafx.scene.chart.Axis.TickMark;
+<i>48</i>&nbsp;import javafx.scene.control.ContentDisplay;
+<i>49</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>50</i>&nbsp;import javafx.scene.control.Label;
+<i>51</i>&nbsp;import javafx.scene.control.Menu;
+<i>52</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>53</i>&nbsp;import javafx.scene.control.RadioMenuItem;
+<i>54</i>&nbsp;import javafx.scene.control.ToggleGroup;
+<i>55</i>&nbsp;import javafx.scene.image.WritableImage;
+<i>56</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>57</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>58</i>&nbsp;import javafx.scene.layout.Pane;
+<i>59</i>&nbsp;import javafx.scene.layout.Region;
+<i>60</i>&nbsp;import javafx.scene.layout.StackPane;
+<i>61</i>&nbsp;import javafx.scene.layout.TilePane;
+<i>62</i>&nbsp;import javafx.scene.text.Text;
+<i>63</i>&nbsp;import javafx.scene.text.TextAlignment;
+<i>64</i>&nbsp;import javafx.scene.transform.Transform;
+<i>65</i>&nbsp;import javafx.util.StringConverter;
+<i>66</i>&nbsp;import qupath.lib.analysis.stats.survival.KaplanMeierData;
+<i>67</i>&nbsp;import qupath.lib.analysis.stats.survival.LogRankTest;
+<i>68</i>&nbsp;import qupath.lib.analysis.stats.survival.LogRankTest.LogRankResult;
+<i>69</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>70</i>&nbsp;import qupath.lib.gui.charts.ChartTools;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;/**
+<i>73</i>&nbsp; * Wrapper class for custom chart used to show Kaplan Meier survival curves.
+<i>74</i>&nbsp; * 
+<i>75</i>&nbsp; * @author Pete Bankhead
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; */
+<i>78</i>&nbsp;class KaplanMeierChartWrapper {
+<i>79</i>&nbsp;	
+<b class="nc"><i>80</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(KaplanMeierChartWrapper.class);</b>
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;	private List&lt;KaplanMeierData&gt; kmList = new ArrayList&lt;&gt;();</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;	private NumberAxis xAxis = new NumberAxis();</b>
+<b class="nc"><i>85</i>&nbsp;	private NumberAxis yAxis = new NumberAxis();</b>
+<i>86</i>&nbsp;	
+<b class="nc"><i>87</i>&nbsp;	private KaplanMeierChart chart = new KaplanMeierChart(xAxis, yAxis);</b>
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	static class KaplanMeierChart extends LineChart&lt;Number, Number&gt; {
+<i>91</i>&nbsp;		
+<i>92</i>&nbsp;		public KaplanMeierChart(Axis&lt;Number&gt; xAxis, Axis&lt;Number&gt; yAxis) {
+<b class="nc"><i>93</i>&nbsp;			super(xAxis, yAxis);</b>
+<i>94</i>&nbsp;		}
+<i>95</i>&nbsp;		
+<i>96</i>&nbsp;		@Override
+<i>97</i>&nbsp;		protected void updateLegend() {
+<b class="nc"><i>98</i>&nbsp;			super.updateLegend();</b>
+<i>99</i>&nbsp;			
+<b class="nc"><i>100</i>&nbsp;			if (getLegend() instanceof TilePane) {</b>
+<b class="nc"><i>101</i>&nbsp;				TilePane tp = (TilePane)getLegend();</b>
+<i>102</i>&nbsp;	//			if (getLegendSide() == Side.RIGHT)
+<i>103</i>&nbsp;	//				tp.setTranslateX(-tp.getWidth());
+<b class="nc"><i>104</i>&nbsp;				tp.setTranslateX(0);</b>
+<b class="nc"><i>105</i>&nbsp;				tp.setOrientation(Orientation.VERTICAL);</b>
+<i>106</i>&nbsp;			}
+<i>107</i>&nbsp;			
+<i>108</i>&nbsp;			// Here, we remove the graphic for any series that doesn&#39;t have data
+<i>109</i>&nbsp;			// This allows us to add in any &#39;empty&#39; series to provide extra info 
+<i>110</i>&nbsp;			// in the legend (i.e. p-values)
+<b class="nc"><i>111</i>&nbsp;			for (Node node : ((Pane)getLegend()).getChildren()) {</b>
+<b class="nc"><i>112</i>&nbsp;				if (node instanceof Label) {</b>
+<b class="nc"><i>113</i>&nbsp;					Label label = (Label)node;</b>
+<b class="nc"><i>114</i>&nbsp;					String name = label.getText();</b>
+<b class="nc"><i>115</i>&nbsp;					for (Series&lt;?, ?&gt; series : getData()) {</b>
+<b class="nc"><i>116</i>&nbsp;						if (series.getName().equals(name)) {</b>
+<b class="nc"><i>117</i>&nbsp;							if (series.getData().isEmpty()) {</b>
+<i>118</i>&nbsp;//								int ind = name.indexOf(&quot;p = &quot;);
+<i>119</i>&nbsp;//								if (ind &gt; 0) {
+<i>120</i>&nbsp;//									label.setText(name.substring(0, ind));
+<i>121</i>&nbsp;//									label.setGraphic(new Label(name.substring(ind)));
+<i>122</i>&nbsp;//									label.setContentDisplay(ContentDisplay.RIGHT);
+<i>123</i>&nbsp;//									
+<i>124</i>&nbsp;//									label.setAlignment(Pos.CENTER_LEFT);
+<i>125</i>&nbsp;//								} else
+<b class="nc"><i>126</i>&nbsp;									label.setGraphic(null);</b>
+<i>127</i>&nbsp;//								label.setAlignment(Pos.CENTER_RIGHT);
+<b class="nc"><i>128</i>&nbsp;								label.setMaxWidth(Double.MAX_VALUE);</b>
+<i>129</i>&nbsp;							} else
+<b class="nc"><i>130</i>&nbsp;								label.setContentDisplay(ContentDisplay.LEFT);</b>
+<b class="nc"><i>131</i>&nbsp;							break;</b>
+<i>132</i>&nbsp;						}
+<b class="nc"><i>133</i>&nbsp;					}</b>
+<i>134</i>&nbsp;				}
+<b class="nc"><i>135</i>&nbsp;			}</b>
+<i>136</i>&nbsp;		}
+<i>137</i>&nbsp;		
+<i>138</i>&nbsp;	}
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	
+<i>141</i>&nbsp;
+<b class="nc"><i>142</i>&nbsp;	private BooleanProperty showAtRisk = new SimpleBooleanProperty(false);</b>
+<i>143</i>&nbsp;	
+<i>144</i>&nbsp;	KaplanMeierChartWrapper(final String survivalKey) {
+<b class="nc"><i>145</i>&nbsp;		super();</b>
+<i>146</i>&nbsp;		//			yAxis.setAutoRanging(false);
+<i>147</i>&nbsp;		//			yAxis.setUpperBound(1);
+<i>148</i>&nbsp;		//			yAxis.setLowerBound(0);
+<b class="nc"><i>149</i>&nbsp;		yAxis.setTickUnit(0.1);</b>
+<b class="nc"><i>150</i>&nbsp;		yAxis.setLabel(&quot;Probability&quot;);</b>
+<b class="nc"><i>151</i>&nbsp;		xAxis.setLabel(survivalKey);</b>
+<i>152</i>&nbsp;		//			yAxis.setPadding(new Insets(5, 5, 5, 5));
+<i>153</i>&nbsp;		
+<b class="nc"><i>154</i>&nbsp;		xAxis.setTickLabelFormatter(new StringConverter&lt;Number&gt;() {</b>
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;			@Override
+<i>157</i>&nbsp;			public String toString(Number object) {
+<b class="nc"><i>158</i>&nbsp;				double d = object.doubleValue();</b>
+<b class="nc"><i>159</i>&nbsp;				String s = GeneralTools.formatNumber(d, 2);</b>
+<b class="nc"><i>160</i>&nbsp;				if (showAtRisk.get()) {</b>
+<i>161</i>&nbsp;//					s += &quot;\n---&quot;;
+<b class="nc"><i>162</i>&nbsp;					s += d == 0 ? &quot;\n-At risk-&quot; : &quot;\n---&quot;;</b>
+<b class="nc"><i>163</i>&nbsp;					for (KaplanMeierData kmData : kmList) {</b>
+<b class="nc"><i>164</i>&nbsp;						if (d == 0) {</b>
+<b class="nc"><i>165</i>&nbsp;							s += &quot;\n&quot; + kmData.getName() + &quot;: &quot; + kmData.getAtRisk(d);</b>
+<i>166</i>&nbsp;						} else {
+<b class="nc"><i>167</i>&nbsp;							s += &quot;\n&quot; + kmData.getAtRisk(d-0.0001);</b>
+<i>168</i>&nbsp;						}
+<b class="nc"><i>169</i>&nbsp;					}</b>
+<i>170</i>&nbsp;				}
+<b class="nc"><i>171</i>&nbsp;				return s;</b>
+<i>172</i>&nbsp;			}
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;			@Override
+<i>175</i>&nbsp;			public Number fromString(String s) {
+<b class="nc"><i>176</i>&nbsp;				if (s == null)</b>
+<b class="nc"><i>177</i>&nbsp;					return null;</b>
+<b class="nc"><i>178</i>&nbsp;				return Double.parseDouble(s.split(&quot;\n&quot;)[0]);</b>
+<i>179</i>&nbsp;			}
+<i>180</i>&nbsp;			
+<i>181</i>&nbsp;		});
+<i>182</i>&nbsp;		
+<b class="nc"><i>183</i>&nbsp;		xAxis.getTickMarks().addListener((Change&lt;? extends TickMark&lt;Number&gt;&gt; v) -&gt; {</b>
+<i>184</i>&nbsp;			// Center all the text children
+<b class="nc"><i>185</i>&nbsp;			for (Node node : xAxis.getChildrenUnmodifiable()) {</b>
+<b class="nc"><i>186</i>&nbsp;				if (node instanceof Text) {</b>
+<b class="nc"><i>187</i>&nbsp;					Text text = (Text)node;</b>
+<b class="nc"><i>188</i>&nbsp;					text.setTextAlignment(TextAlignment.CENTER);</b>
+<i>189</i>&nbsp;				}
+<b class="nc"><i>190</i>&nbsp;			}</b>
+<i>191</i>&nbsp;			
+<i>192</i>&nbsp;//			for (TickMark&lt;Number&gt; mark : v.getList()) {
+<i>193</i>&nbsp;//				mark.
+<i>194</i>&nbsp;//				TickMark.class.getField(&quot;&quot;)
+<i>195</i>&nbsp;//			}
+<i>196</i>&nbsp;//				System.err.println(v.getList().get(0).getClass());			
+<i>197</i>&nbsp;		});
+<i>198</i>&nbsp;//		xAxis.lay
+<i>199</i>&nbsp;		
+<i>200</i>&nbsp;		
+<b class="nc"><i>201</i>&nbsp;		showAtRisk.addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>202</i>&nbsp;			updateChart();</b>
+<b class="nc"><i>203</i>&nbsp;			chart.layout();</b>
+<i>204</i>&nbsp;//			xAxis.requestAxisLayout();
+<i>205</i>&nbsp;//			chart.requestLayout();
+<i>206</i>&nbsp;//			chart.layout();
+<i>207</i>&nbsp;		});
+<i>208</i>&nbsp;		
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;		// TODO: Fix printing - may depend on Java bug fix https://bugs.openjdk.java.net/browse/JDK-8129364
+<b class="nc"><i>211</i>&nbsp;		ContextMenu menu = new ContextMenu();</b>
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;		Menu menuLegendSide = new Menu(&quot;Set legend...&quot;);</b>
+<b class="nc"><i>214</i>&nbsp;		ToggleGroup toggleSide = new ToggleGroup();</b>
+<b class="nc"><i>215</i>&nbsp;		Action actionNoLegend = new Action(&quot;None&quot;, e -&gt; chart.setLegendVisible(false));</b>
+<b class="nc"><i>216</i>&nbsp;		RadioMenuItem riNone = ActionUtils.createRadioMenuItem(actionNoLegend);</b>
+<b class="nc"><i>217</i>&nbsp;		menuLegendSide.getItems().add(riNone);</b>
+<b class="nc"><i>218</i>&nbsp;		toggleSide.getToggles().add(riNone);</b>
+<b class="nc"><i>219</i>&nbsp;		RadioMenuItem riTop = ActionUtils.createRadioMenuItem(new Action(&quot;Top&quot;, e -&gt; 	{chart.setLegendSide(Side.TOP);</b>
+<b class="nc"><i>220</i>&nbsp;		chart.setLegendVisible(true);}));</b>
+<b class="nc"><i>221</i>&nbsp;		menuLegendSide.getItems().add(riTop);</b>
+<b class="nc"><i>222</i>&nbsp;		toggleSide.getToggles().add(riTop);</b>
+<b class="nc"><i>223</i>&nbsp;		RadioMenuItem riBottom = ActionUtils.createRadioMenuItem(new Action(&quot;Bottom&quot;, e -&gt; {chart.setLegendSide(Side.BOTTOM);</b>
+<b class="nc"><i>224</i>&nbsp;		chart.setLegendVisible(true);}));</b>
+<b class="nc"><i>225</i>&nbsp;		menuLegendSide.getItems().add(riBottom);</b>
+<b class="nc"><i>226</i>&nbsp;		toggleSide.getToggles().add(riBottom);</b>
+<b class="nc"><i>227</i>&nbsp;		RadioMenuItem riRight = ActionUtils.createRadioMenuItem(new Action(&quot;Right&quot;, e -&gt; 	{chart.setLegendSide(Side.RIGHT);</b>
+<b class="nc"><i>228</i>&nbsp;		chart.setLegendVisible(true);}));</b>
+<b class="nc"><i>229</i>&nbsp;		menuLegendSide.getItems().add(riRight);</b>
+<b class="nc"><i>230</i>&nbsp;		toggleSide.getToggles().add(riRight);</b>
+<b class="nc"><i>231</i>&nbsp;		RadioMenuItem riLeft = ActionUtils.createRadioMenuItem(new Action(&quot;Left&quot;, e -&gt;	{chart.setLegendSide(Side.LEFT);</b>
+<b class="nc"><i>232</i>&nbsp;		chart.setLegendVisible(true);}));</b>
+<b class="nc"><i>233</i>&nbsp;		menuLegendSide.getItems().add(riLeft);</b>
+<b class="nc"><i>234</i>&nbsp;		toggleSide.getToggles().add(riLeft);</b>
+<b class="nc"><i>235</i>&nbsp;		toggleSide.selectToggle(riRight);</b>
+<i>236</i>&nbsp;		
+<i>237</i>&nbsp;		// Ensure we update the chart with symbols request changes - this should draw censored ticks (not normal markers)
+<b class="nc"><i>238</i>&nbsp;		chart.createSymbolsProperty().addListener((v, o, n) -&gt; updateChart());</b>
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;		// Expand the clip area to avoid completely cutting off markers occurring at the edge
+<b class="nc"><i>241</i>&nbsp;		ChartTools.expandChartClip(chart, 5);</b>
+<i>242</i>&nbsp;		
+<i>243</i>&nbsp;		
+<b class="nc"><i>244</i>&nbsp;		MenuItem miCopyPanel = new MenuItem(&quot;Entire panel&quot;);</b>
+<b class="nc"><i>245</i>&nbsp;		miCopyPanel.setOnAction(e -&gt; {</b>
+<i>246</i>&nbsp;			// Create a snapshot at 4x the current resolution
+<b class="nc"><i>247</i>&nbsp;			double scale = 2;</b>
+<b class="nc"><i>248</i>&nbsp;			Region region = (Region)chart.getParent().getParent();</b>
+<i>249</i>&nbsp;			//				Region region = chart;
+<b class="nc"><i>250</i>&nbsp;			int w = (int)(region.getWidth() * scale + 0.5);</b>
+<b class="nc"><i>251</i>&nbsp;			int h = (int)(region.getHeight() * scale + 0.5);</b>
+<b class="nc"><i>252</i>&nbsp;			SnapshotParameters params = new SnapshotParameters();</b>
+<b class="nc"><i>253</i>&nbsp;			params.setTransform(Transform.scale(scale, scale));</b>
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;			//				for (Node node : chart.getChildrenUnmodifiable()) {
+<i>256</i>&nbsp;			//					node.setStyle(&quot;-fx-background-color: white&quot;);
+<i>257</i>&nbsp;			//					System.err.println(node.getClass().getName());
+<i>258</i>&nbsp;			//				}
+<i>259</i>&nbsp;			//				chart.setStyle(&quot;.chart-content {\n&quot;
+<i>260</i>&nbsp;			//						+ &quot;-fx-background-color: white;\n&quot;
+<i>261</i>&nbsp;			//						+ &quot;}&quot;);
+<i>262</i>&nbsp;
+<b class="nc"><i>263</i>&nbsp;			WritableImage img = region.snapshot(params, new WritableImage(w, h));</b>
+<b class="nc"><i>264</i>&nbsp;			ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>265</i>&nbsp;			content.putImage(img);</b>
+<b class="nc"><i>266</i>&nbsp;			Clipboard.getSystemClipboard().setContent(content);</b>
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;			//				for (Node node : chart.getChildrenUnmodifiable()) {
+<i>269</i>&nbsp;			//					node.setStyle(null);
+<i>270</i>&nbsp;			//					System.err.println(node.getClass().getName());
+<i>271</i>&nbsp;			//				}
+<i>272</i>&nbsp;			//				chart.setStyle(&quot;&quot;);
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;		});
+<i>275</i>&nbsp;
+<b class="nc"><i>276</i>&nbsp;		MenuItem miCopy = new MenuItem(&quot;Chart only&quot;);</b>
+<b class="nc"><i>277</i>&nbsp;		miCopy.setOnAction(e -&gt; {</b>
+<i>278</i>&nbsp;			// Create a snapshot at 4x the current resolution
+<b class="nc"><i>279</i>&nbsp;			double scale = 4;</b>
+<b class="nc"><i>280</i>&nbsp;			Region region = chart;</b>
+<b class="nc"><i>281</i>&nbsp;			int w = (int)(region.getWidth() * scale + 0.5);</b>
+<b class="nc"><i>282</i>&nbsp;			int h = (int)(region.getHeight() * scale + 0.5);</b>
+<b class="nc"><i>283</i>&nbsp;			SnapshotParameters params = new SnapshotParameters();</b>
+<b class="nc"><i>284</i>&nbsp;			params.setTransform(Transform.scale(scale, scale));</b>
+<b class="nc"><i>285</i>&nbsp;			WritableImage img = region.snapshot(params, new WritableImage(w, h));</b>
+<b class="nc"><i>286</i>&nbsp;			ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>287</i>&nbsp;			content.putImage(img);</b>
+<b class="nc"><i>288</i>&nbsp;			Clipboard.getSystemClipboard().setContent(content);</b>
+<i>289</i>&nbsp;		});
+<b class="nc"><i>290</i>&nbsp;		Menu menuCopy = new Menu(&quot;Copy...&quot;);</b>
+<b class="nc"><i>291</i>&nbsp;		menuCopy.getItems().addAll(miCopy, miCopyPanel);</b>
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;
+<b class="nc"><i>294</i>&nbsp;		MenuItem miPrint = new MenuItem(&quot;Print (experimental)&quot;);</b>
+<b class="nc"><i>295</i>&nbsp;		miPrint.setOnAction(e -&gt; {</b>
+<b class="nc"><i>296</i>&nbsp;			PrinterJob job = PrinterJob.createPrinterJob();</b>
+<b class="nc"><i>297</i>&nbsp;			logger.warn(&quot;Printing does not yet work properly! (At least not on OSX)&quot;);</b>
+<b class="nc"><i>298</i>&nbsp;			if (job != null &amp;&amp; job.showPrintDialog(chart.getScene().getWindow())) {</b>
+<b class="nc"><i>299</i>&nbsp;				boolean success = job.printPage(chart.getParent().getParent());</b>
+<b class="nc"><i>300</i>&nbsp;				if (success) {</b>
+<b class="nc"><i>301</i>&nbsp;					job.endJob();</b>
+<i>302</i>&nbsp;				}
+<i>303</i>&nbsp;			}
+<i>304</i>&nbsp;		});
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;//		MenuItem miShowPlot = new MenuItem(&quot;Show plot window&quot;);
+<i>307</i>&nbsp;//		miShowPlot.setOnAction(e -&gt; showKaplanMeierPlotWindow(this));
+<i>308</i>&nbsp;
+<b class="nc"><i>309</i>&nbsp;		menu.getItems().addAll(</b>
+<i>310</i>&nbsp;				menuLegendSide,
+<i>311</i>&nbsp;				menuCopy,
+<i>312</i>&nbsp;				miPrint
+<i>313</i>&nbsp;//				new SeparatorMenuItem(),
+<i>314</i>&nbsp;//				miShowPlot
+<i>315</i>&nbsp;				);
+<b class="nc"><i>316</i>&nbsp;		chart.setOnContextMenuRequested(e -&gt; menu.show(chart, e.getScreenX(), e.getScreenY()));</b>
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;	}
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;	KaplanMeierChartWrapper addKaplanMeier(final KaplanMeierData km) {
+<b class="nc"><i>321</i>&nbsp;		kmList.add(km);</b>
+<b class="nc"><i>322</i>&nbsp;		return this;</b>
+<i>323</i>&nbsp;	}
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;	KaplanMeierChartWrapper setKaplanMeierCurves(final String survivalKey, final KaplanMeierData... kms) {
+<b class="nc"><i>327</i>&nbsp;		kmList.clear();</b>
+<b class="nc"><i>328</i>&nbsp;		double maxTime = 0;</b>
+<b class="nc"><i>329</i>&nbsp;		for (KaplanMeierData km : kms) {</b>
+<b class="nc"><i>330</i>&nbsp;			kmList.add(km);</b>
+<b class="nc"><i>331</i>&nbsp;			maxTime = Math.max(maxTime, km.getMaxTime());</b>
+<i>332</i>&nbsp;		}
+<b class="nc"><i>333</i>&nbsp;		xAxis.setAutoRanging(false);</b>
+<b class="nc"><i>334</i>&nbsp;		xAxis.setLowerBound(0);</b>
+<b class="nc"><i>335</i>&nbsp;		xAxis.setUpperBound(maxTime);</b>
+<b class="nc"><i>336</i>&nbsp;		xAxis.setLabel(survivalKey);</b>
+<b class="nc"><i>337</i>&nbsp;		yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>338</i>&nbsp;		yAxis.setLowerBound(0);</b>
+<b class="nc"><i>339</i>&nbsp;		yAxis.setUpperBound(1);</b>
+<i>340</i>&nbsp;
+<b class="nc"><i>341</i>&nbsp;		chart.setLegendSide(Side.RIGHT);</b>
+<i>342</i>&nbsp;		
+<b class="nc"><i>343</i>&nbsp;		updateChart();</b>
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;//		if (kms.length == 2) {
+<i>346</i>&nbsp;//			LogRankResult logRankResult = LogRankTest.computeLogRankTest(kms[0], kms[1]);
+<i>347</i>&nbsp;//			String pValueString = &quot;p = &quot; + GeneralTools.getFormatter(5).format(logRankResult.getPValue());
+<i>348</i>&nbsp;//			Series&lt;Number, Number&gt; series = new Series&lt;&gt;();
+<i>349</i>&nbsp;//			series.setName(pValueString);
+<i>350</i>&nbsp;//			series.setNode(null);
+<i>351</i>&nbsp;//			chart.getData().add(series);
+<i>352</i>&nbsp;//		}
+<i>353</i>&nbsp;
+<i>354</i>&nbsp;		
+<b class="nc"><i>355</i>&nbsp;		return this;</b>
+<i>356</i>&nbsp;	}
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;	//		public Canvas getCanvas() {
+<i>360</i>&nbsp;	//			return canvas;
+<i>361</i>&nbsp;	//		}
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;	public Node getCanvas() {
+<b class="nc"><i>364</i>&nbsp;		return chart;</b>
+<i>365</i>&nbsp;	}
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;	public void setShowKey(final boolean showKey) {
+<b class="nc"><i>369</i>&nbsp;		chart.setLegendVisible(showKey);</b>
+<i>370</i>&nbsp;	}
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;	public boolean getShowKey() {
+<b class="nc"><i>373</i>&nbsp;		return chart.isLegendVisible();</b>
+<i>374</i>&nbsp;	}
+<i>375</i>&nbsp;	
+<i>376</i>&nbsp;	
+<i>377</i>&nbsp;	public boolean getShowAtRisk() {
+<b class="nc"><i>378</i>&nbsp;		return showAtRisk.get();</b>
+<i>379</i>&nbsp;	}
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;	public void setShowAtRisk(boolean show) {
+<b class="nc"><i>382</i>&nbsp;		showAtRisk.set(show);</b>
+<i>383</i>&nbsp;	}
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;	public boolean getShowCensoredTicks() {
+<b class="nc"><i>386</i>&nbsp;		return chart.getCreateSymbols();</b>
+<i>387</i>&nbsp;	}
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;	public void setShowCensoredTicks(final boolean showTicks) {
+<b class="nc"><i>390</i>&nbsp;		chart.setCreateSymbols(showTicks);</b>
+<i>391</i>&nbsp;	}
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;	void updateChart() {
+<i>395</i>&nbsp;		// Loop through the plots to get the maximum time that&#39;s needed
+<b class="nc"><i>396</i>&nbsp;		double maxTime = -1;</b>
+<b class="nc"><i>397</i>&nbsp;		for (KaplanMeierData km : kmList) {</b>
+<b class="nc"><i>398</i>&nbsp;			maxTime = Math.max(maxTime, km.getMaxTime());</b>
+<b class="nc"><i>399</i>&nbsp;		}</b>
+<b class="nc"><i>400</i>&nbsp;		if (maxTime &lt; 0)</b>
+<i>401</i>&nbsp;			return;
+<i>402</i>&nbsp;
+<b class="nc"><i>403</i>&nbsp;		chart.setAnimated(false);</b>
+<i>404</i>&nbsp;
+<i>405</i>&nbsp;		// Loop through the plots to draw them
+<b class="nc"><i>406</i>&nbsp;		int count = 0;</b>
+<b class="nc"><i>407</i>&nbsp;		for (KaplanMeierData km : kmList) {</b>
+<b class="nc"><i>408</i>&nbsp;			XYChart.Series&lt;Number, Number&gt; series = new XYChart.Series&lt;&gt;();</b>
+<b class="nc"><i>409</i>&nbsp;			series.setName(km.getName());</b>
+<b class="nc"><i>410</i>&nbsp;			double[] times = km.getAllTimes();</b>
+<b class="nc"><i>411</i>&nbsp;			double[] stats = km.getStatistic();</b>
+<b class="nc"><i>412</i>&nbsp;			double x1 = 0;</b>
+<b class="nc"><i>413</i>&nbsp;			double y1 = 1;</b>
+<b class="nc"><i>414</i>&nbsp;			series.getData().add(new XYChart.Data&lt;&gt;(x1, y1));</b>
+<b class="nc"><i>415</i>&nbsp;			for (int i = 0; i &lt; times.length; i++) {</b>
+<i>416</i>&nbsp;				// Transform coordinates for lines
+<b class="nc"><i>417</i>&nbsp;				double x2 = times[i];</b>
+<b class="nc"><i>418</i>&nbsp;				double y2 = stats[i];</b>
+<i>419</i>&nbsp;				// Draw
+<b class="nc"><i>420</i>&nbsp;				XYChart.Data&lt;Number, Number&gt; data = new XYChart.Data&lt;&gt;(x2, y1);</b>
+<b class="nc"><i>421</i>&nbsp;				series.getData().add(data);</b>
+<b class="nc"><i>422</i>&nbsp;				if (y1 != y2) {</b>
+<b class="nc"><i>423</i>&nbsp;					data = new XYChart.Data&lt;&gt;(x2, y2);</b>
+<b class="nc"><i>424</i>&nbsp;					data.setExtraValue(Boolean.FALSE);</b>
+<b class="nc"><i>425</i>&nbsp;					series.getData().add(data);</b>
+<i>426</i>&nbsp;					//						data.setNode(null);
+<i>427</i>&nbsp;				} else
+<b class="nc"><i>428</i>&nbsp;					data.setExtraValue(Boolean.TRUE);</b>
+<i>429</i>&nbsp;				//					else {
+<i>430</i>&nbsp;				//						StackPane itemNode = new StackPane();
+<i>431</i>&nbsp;				//				        itemNode.setPrefHeight(10);
+<i>432</i>&nbsp;				//				        itemNode.setPrefWidth(1);
+<i>433</i>&nbsp;				//						data.setNode(itemNode);
+<i>434</i>&nbsp;				//					}
+<i>435</i>&nbsp;				// Update
+<b class="nc"><i>436</i>&nbsp;				x1 = x2;</b>
+<b class="nc"><i>437</i>&nbsp;				y1 = y2;</b>
+<i>438</i>&nbsp;			}
+<b class="nc"><i>439</i>&nbsp;			if (count &lt; chart.getData().size())</b>
+<b class="nc"><i>440</i>&nbsp;				chart.getData().set(count, series);</b>
+<i>441</i>&nbsp;			else
+<b class="nc"><i>442</i>&nbsp;				chart.getData().add(series);</b>
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;			//				Color color = colors[count % colors.length];
+<b class="nc"><i>445</i>&nbsp;			for (XYChart.Data&lt;Number, Number&gt; data : series.getData()) {</b>
+<b class="nc"><i>446</i>&nbsp;				Node node = data.getNode();</b>
+<b class="nc"><i>447</i>&nbsp;				if (node == null)</b>
+<b class="nc"><i>448</i>&nbsp;					continue;</b>
+<b class="nc"><i>449</i>&nbsp;				if (data.getExtraValue() == Boolean.TRUE)</b>
+<b class="nc"><i>450</i>&nbsp;					((StackPane)node).setPrefWidth(2);</b>
+<b class="nc"><i>451</i>&nbsp;				else if (data.getNode() != null)</b>
+<b class="nc"><i>452</i>&nbsp;					node.setVisible(false);</b>
+<b class="nc"><i>453</i>&nbsp;			}</b>
+<i>454</i>&nbsp;
+<b class="nc"><i>455</i>&nbsp;			count++;</b>
+<b class="nc"><i>456</i>&nbsp;		}</b>
+<b class="nc"><i>457</i>&nbsp;		while (count &lt; chart.getData().size())</b>
+<b class="nc"><i>458</i>&nbsp;			chart.getData().remove(count);</b>
+<i>459</i>&nbsp;		
+<i>460</i>&nbsp;		
+<i>461</i>&nbsp;		// Show p-values if we have 2 or 3
+<i>462</i>&nbsp;		Series&lt;Number, Number&gt; series;
+<b class="nc"><i>463</i>&nbsp;		if (kmList.size() == 2) {</b>
+<b class="nc"><i>464</i>&nbsp;			LogRankResult logRankResult = LogRankTest.computeLogRankTest(kmList.get(0), kmList.get(1));</b>
+<b class="nc"><i>465</i>&nbsp;			String pValueString = &quot;p = &quot; + GeneralTools.formatNumber(logRankResult.getPValue(), 3);</b>
+<i>466</i>&nbsp;			
+<i>467</i>&nbsp;//			series = new Series&lt;&gt;();
+<i>468</i>&nbsp;//			series.setName(&quot;Log-rank test&quot;);
+<i>469</i>&nbsp;//			series.setNode(null);
+<i>470</i>&nbsp;//			chart.getData().add(series);
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;			series = new Series&lt;&gt;();</b>
+<b class="nc"><i>473</i>&nbsp;			series.setName(pValueString);</b>
+<b class="nc"><i>474</i>&nbsp;			series.setNode(null);</b>
+<b class="nc"><i>475</i>&nbsp;			chart.getData().add(series);</b>
+<b class="nc"><i>476</i>&nbsp;		} else if (kmList.size() == 3) {</b>
+<b class="nc"><i>477</i>&nbsp;			LogRankResult logRankResult = LogRankTest.computeLogRankTest(kmList.get(0), kmList.get(1));</b>
+<i>478</i>&nbsp;			
+<i>479</i>&nbsp;//			series = new Series&lt;&gt;();
+<i>480</i>&nbsp;//			series.setName(&quot;Log-rank test&quot;);
+<i>481</i>&nbsp;//			series.setNode(null);
+<i>482</i>&nbsp;//			chart.getData().add(series);
+<i>483</i>&nbsp;			
+<b class="nc"><i>484</i>&nbsp;			series = new Series&lt;&gt;();</b>
+<b class="nc"><i>485</i>&nbsp;			series.nameProperty().bind(</b>
+<b class="nc"><i>486</i>&nbsp;					chart.getData().get(0).nameProperty()</b>
+<b class="nc"><i>487</i>&nbsp;					.concat(&quot; vs &quot;)</b>
+<b class="nc"><i>488</i>&nbsp;					.concat(chart.getData().get(1).nameProperty())</b>
+<b class="nc"><i>489</i>&nbsp;					.concat(String.format(&quot;: p = %.4f&quot;, logRankResult.getPValue())));</b>
+<b class="nc"><i>490</i>&nbsp;			series.setNode(null);</b>
+<b class="nc"><i>491</i>&nbsp;			chart.getData().add(series);</b>
+<i>492</i>&nbsp;			
+<b class="nc"><i>493</i>&nbsp;			logRankResult = LogRankTest.computeLogRankTest(kmList.get(0), kmList.get(2));</b>
+<b class="nc"><i>494</i>&nbsp;			series = new Series&lt;&gt;();</b>
+<b class="nc"><i>495</i>&nbsp;			series.nameProperty().bind(</b>
+<b class="nc"><i>496</i>&nbsp;					chart.getData().get(0).nameProperty()</b>
+<b class="nc"><i>497</i>&nbsp;					.concat(&quot; vs &quot;)</b>
+<b class="nc"><i>498</i>&nbsp;					.concat(chart.getData().get(2).nameProperty())</b>
+<b class="nc"><i>499</i>&nbsp;					.concat(String.format(&quot;: p = %.4f&quot;, logRankResult.getPValue())));</b>
+<b class="nc"><i>500</i>&nbsp;			series.setNode(null);</b>
+<b class="nc"><i>501</i>&nbsp;			chart.getData().add(series);</b>
+<i>502</i>&nbsp;
+<b class="nc"><i>503</i>&nbsp;			logRankResult = LogRankTest.computeLogRankTest(kmList.get(1), kmList.get(2));</b>
+<b class="nc"><i>504</i>&nbsp;			series = new Series&lt;&gt;();</b>
+<b class="nc"><i>505</i>&nbsp;			series.nameProperty().bind(</b>
+<b class="nc"><i>506</i>&nbsp;					chart.getData().get(1).nameProperty()</b>
+<b class="nc"><i>507</i>&nbsp;					.concat(&quot; vs &quot;)</b>
+<b class="nc"><i>508</i>&nbsp;					.concat(chart.getData().get(2).nameProperty())</b>
+<b class="nc"><i>509</i>&nbsp;					.concat(String.format(&quot;: p = %.4f&quot;, logRankResult.getPValue())));</b>
+<b class="nc"><i>510</i>&nbsp;			series.setNode(null);</b>
+<b class="nc"><i>511</i>&nbsp;			chart.getData().add(series);</b>
+<i>512</i>&nbsp;			
+<i>513</i>&nbsp;//			series = new Series&lt;&gt;();
+<i>514</i>&nbsp;//			series.nameProperty().bind(
+<i>515</i>&nbsp;//					chart.getData().get(0).nameProperty()
+<i>516</i>&nbsp;//					.concat(&quot; vs &quot;)
+<i>517</i>&nbsp;//					.concat(chart.getData().get(1).nameProperty())
+<i>518</i>&nbsp;//					.concat(&quot;: p = &quot; + GeneralTools.getFormatter(3).format(logRankResult.getPValue())));
+<i>519</i>&nbsp;//			series.setNode(null);
+<i>520</i>&nbsp;//			chart.getData().add(series);
+<i>521</i>&nbsp;//			
+<i>522</i>&nbsp;//			logRankResult = LogRankTest.computeLogRankTest(kmList.get(0), kmList.get(2));
+<i>523</i>&nbsp;//			series = new Series&lt;&gt;();
+<i>524</i>&nbsp;//			series.nameProperty().bind(
+<i>525</i>&nbsp;//					chart.getData().get(0).nameProperty()
+<i>526</i>&nbsp;//					.concat(&quot; vs &quot;)
+<i>527</i>&nbsp;//					.concat(chart.getData().get(2).nameProperty())
+<i>528</i>&nbsp;//					.concat(&quot;: p = &quot; + GeneralTools.getFormatter(3).format(logRankResult.getPValue())));
+<i>529</i>&nbsp;//			series.setNode(null);
+<i>530</i>&nbsp;//			chart.getData().add(series);
+<i>531</i>&nbsp;//
+<i>532</i>&nbsp;//			logRankResult = LogRankTest.computeLogRankTest(kmList.get(1), kmList.get(2));
+<i>533</i>&nbsp;//			series = new Series&lt;&gt;();
+<i>534</i>&nbsp;//			series.nameProperty().bind(
+<i>535</i>&nbsp;//					chart.getData().get(1).nameProperty()
+<i>536</i>&nbsp;//					.concat(&quot; vs &quot;)
+<i>537</i>&nbsp;//					.concat(chart.getData().get(2).nameProperty())
+<i>538</i>&nbsp;//					.concat(&quot;: p = &quot; + GeneralTools.getFormatter(3).format(logRankResult.getPValue())));
+<i>539</i>&nbsp;//			series.setNode(null);
+<i>540</i>&nbsp;//			chart.getData().add(series);
+<i>541</i>&nbsp;		}
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;		
+<i>544</i>&nbsp;//		for (Series&lt;Number, Number&gt; series : chart.getData()) {
+<i>545</i>&nbsp;//			System.out.println(series.getName());
+<i>546</i>&nbsp;//			for (Data&lt;Number, Number&gt; data : series.getData()) {
+<i>547</i>&nbsp;//				System.err.println(data);
+<i>548</i>&nbsp;//			}
+<i>549</i>&nbsp;//		}
+<i>550</i>&nbsp;		
+<i>551</i>&nbsp;	}
+<i>552</i>&nbsp;	
+<i>553</i>&nbsp;	
+<i>554</i>&nbsp;	/*
+<i>555</i>&nbsp;	 * Removed in QuPath v0.2.0 because of refactoring to make ExportChartPane less visible.
+<i>556</i>&nbsp;	 * Can be reinstated if it turns out to be useful.
+<i>557</i>&nbsp;	 * 
+<i>558</i>&nbsp;	// Attempt to show a separate survival plot window (not yet stable)
+<i>559</i>&nbsp;		static void showKaplanMeierPlotWindow(final KaplanMeierChartWrapper kmPlotter) {
+<i>560</i>&nbsp;			
+<i>561</i>&nbsp;			XYChart&lt;Number, Number&gt; chart2;
+<i>562</i>&nbsp;			try {
+<i>563</i>&nbsp;				KaplanMeierChartWrapper kmPlotter2 = new KaplanMeierChartWrapper(kmPlotter.chart.getXAxis().getLabel());
+<i>564</i>&nbsp;				NumberAxis xAxis = kmPlotter2.xAxis;
+<i>565</i>&nbsp;				NumberAxis yAxis = kmPlotter2.yAxis;
+<i>566</i>&nbsp;				kmPlotter2.kmList.addAll(kmPlotter.kmList);
+<i>567</i>&nbsp;//				xAxis.labelProperty().bind(kmPlotter.chart.getXAxis().labelProperty());
+<i>568</i>&nbsp;				int n = kmPlotter.kmList.size();
+<i>569</i>&nbsp;				if (!kmPlotter.kmList.isEmpty()) {
+<i>570</i>&nbsp;					xAxis.setAutoRanging(false);
+<i>571</i>&nbsp;					xAxis.setLowerBound(0);
+<i>572</i>&nbsp;					xAxis.setUpperBound(Math.ceil(kmPlotter.kmList.get(n-1).getMaxTime()));
+<i>573</i>&nbsp;				}
+<i>574</i>&nbsp;				yAxis.setLabel(kmPlotter.chart.getYAxis().getLabel());
+<i>575</i>&nbsp;//				yAxis.labelProperty().bind(kmPlotter.chart.getYAxis().labelProperty());
+<i>576</i>&nbsp;				yAxis.setAutoRanging(false);
+<i>577</i>&nbsp;				yAxis.setLowerBound(0);
+<i>578</i>&nbsp;				yAxis.setUpperBound(1);
+<i>579</i>&nbsp;				kmPlotter2.updateChart();
+<i>580</i>&nbsp;				
+<i>581</i>&nbsp;				kmPlotter2.setShowAtRisk(kmPlotter.getShowAtRisk());
+<i>582</i>&nbsp;				kmPlotter2.setShowCensoredTicks(kmPlotter.getShowCensoredTicks());
+<i>583</i>&nbsp;				
+<i>584</i>&nbsp;				chart2 = kmPlotter2.chart;
+<i>585</i>&nbsp;				
+<i>586</i>&nbsp;//				chart2 = ExportChartPanel.copyChart(kmPlotter.chart);
+<i>587</i>&nbsp;				ExportChartPane exportPane = new ExportChartPane(chart2);
+<i>588</i>&nbsp;				Pane pane = exportPane.getPane();
+<i>589</i>&nbsp;				Stage stage = new Stage();
+<i>590</i>&nbsp;				stage.initOwner(kmPlotter.chart.getScene().getWindow());
+<i>591</i>&nbsp;				stage.setTitle(&quot;Kaplan Meier figure&quot;);
+<i>592</i>&nbsp;				stage.setScene(new Scene(pane));
+<i>593</i>&nbsp;				stage.show();
+<i>594</i>&nbsp;				exportPane.refreshChartDisplay();
+<i>595</i>&nbsp;			} catch (Exception e) {
+<i>596</i>&nbsp;				Dialogs.showErrorNotification(&quot;Survival curve error&quot;, &quot;Unable to copy the current survival curve!&quot;);
+<i>597</i>&nbsp;				logger.error(&quot;Survival curve copy error&quot;, e);
+<i>598</i>&nbsp;			}
+<i>599</i>&nbsp;		}
+<i>600</i>&nbsp;	*/
+<i>601</i>&nbsp;	
+<i>602</i>&nbsp;
+<i>603</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

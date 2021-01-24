@@ -1,0 +1,1015 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageDetailsPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.panes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageDetailsPane (qupath.lib.gui.panes)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageDetailsPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    63.2%
+  </span>
+  <span class="absValue">
+    (12/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    35.4%
+  </span>
+  <span class="absValue">
+    (145/ 410)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageDetailsPane$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    16%
+  </span>
+  <span class="absValue">
+    (4/ 25)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageDetailsPane$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80.6%
+  </span>
+  <span class="absValue">
+    (25/ 31)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageDetailsPane$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageDetailsPane$ImageDetailRow</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (5/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    70.4%
+  </span>
+  <span class="absValue">
+    (19/ 27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.1%
+  </span>
+  <span class="absValue">
+    (180/ 472)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.panes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.beans.PropertyChangeEvent;
+<i>28</i>&nbsp;import java.beans.PropertyChangeListener;
+<i>29</i>&nbsp;import java.io.File;
+<i>30</i>&nbsp;import java.io.IOException;
+<i>31</i>&nbsp;import java.net.URI;
+<i>32</i>&nbsp;import java.net.URLDecoder;
+<i>33</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>34</i>&nbsp;import java.util.ArrayList;
+<i>35</i>&nbsp;import java.util.Arrays;
+<i>36</i>&nbsp;import java.util.Collection;
+<i>37</i>&nbsp;import java.util.Collections;
+<i>38</i>&nbsp;import java.util.List;
+<i>39</i>&nbsp;import java.util.Locale;
+<i>40</i>&nbsp;import java.util.Locale.Category;
+<i>41</i>&nbsp;import java.util.Objects;
+<i>42</i>&nbsp;import java.util.stream.Collectors;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import javax.imageio.ImageIO;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import org.controlsfx.control.MasterDetailPane;
+<i>47</i>&nbsp;import org.slf4j.Logger;
+<i>48</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>51</i>&nbsp;import javafx.beans.property.ReadOnlyObjectWrapper;
+<i>52</i>&nbsp;import javafx.beans.property.ReadOnlyStringWrapper;
+<i>53</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>54</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>55</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>56</i>&nbsp;import javafx.geometry.Side;
+<i>57</i>&nbsp;import javafx.scene.control.Label;
+<i>58</i>&nbsp;import javafx.scene.Scene;
+<i>59</i>&nbsp;import javafx.scene.control.ChoiceDialog;
+<i>60</i>&nbsp;import javafx.scene.control.ListView;
+<i>61</i>&nbsp;import javafx.scene.control.Menu;
+<i>62</i>&nbsp;import javafx.scene.control.MenuBar;
+<i>63</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>64</i>&nbsp;import javafx.scene.control.TableCell;
+<i>65</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>66</i>&nbsp;import javafx.scene.control.TableView;
+<i>67</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>68</i>&nbsp;import javafx.scene.image.Image;
+<i>69</i>&nbsp;import javafx.scene.image.ImageView;
+<i>70</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>71</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>72</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>73</i>&nbsp;import javafx.scene.input.KeyCodeCombination;
+<i>74</i>&nbsp;import javafx.scene.input.KeyCombination;
+<i>75</i>&nbsp;import javafx.scene.layout.Background;
+<i>76</i>&nbsp;import javafx.scene.layout.BackgroundFill;
+<i>77</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>78</i>&nbsp;import javafx.scene.layout.Pane;
+<i>79</i>&nbsp;import javafx.scene.layout.StackPane;
+<i>80</i>&nbsp;import javafx.scene.paint.Color;
+<i>81</i>&nbsp;import javafx.stage.Modality;
+<i>82</i>&nbsp;import javafx.stage.Stage;
+<i>83</i>&nbsp;import javafx.util.Callback;
+<i>84</i>&nbsp;import qupath.lib.awt.common.BufferedImageTools;
+<i>85</i>&nbsp;import qupath.lib.color.ColorDeconvolutionHelper;
+<i>86</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>87</i>&nbsp;import qupath.lib.color.StainVector;
+<i>88</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>89</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>90</i>&nbsp;import qupath.lib.display.ChannelDisplayInfo;
+<i>91</i>&nbsp;import qupath.lib.display.ImageDisplay;
+<i>92</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>93</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>94</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>95</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>96</i>&nbsp;import qupath.lib.images.ImageData;
+<i>97</i>&nbsp;import qupath.lib.images.ImageData.ImageType;
+<i>98</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>99</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>100</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>101</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>102</i>&nbsp;import qupath.lib.images.servers.WrappedBufferedImageServer;
+<i>103</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>104</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>105</i>&nbsp;import qupath.lib.roi.RectangleROI;
+<i>106</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>107</i>&nbsp;import qupath.lib.scripting.QP;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;/**
+<i>110</i>&nbsp; * A panel used for displaying basic info about an image, e.g. its path, width, height, pixel size etc.
+<i>111</i>&nbsp; * &lt;p&gt;
+<i>112</i>&nbsp; * It also includes displaying color deconvolution vectors for RGB brightfield images.
+<i>113</i>&nbsp; * 
+<i>114</i>&nbsp; * @author Pete Bankhead
+<i>115</i>&nbsp; *
+<i>116</i>&nbsp; */
+<i>117</i>&nbsp;public class ImageDetailsPane implements ChangeListener&lt;ImageData&lt;BufferedImage&gt;&gt;, PropertyChangeListener {
+<i>118</i>&nbsp;	
+<b class="fc"><i>119</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ImageDetailsPane.class);</b>
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	private QuPathGUI qupath;
+<i>122</i>&nbsp;	
+<b class="fc"><i>123</i>&nbsp;	private StackPane pane = new StackPane();</b>
+<i>124</i>&nbsp;		
+<b class="fc"><i>125</i>&nbsp;	private TableView&lt;ImageDetailRow&gt; table = new TableView&lt;&gt;();</b>
+<b class="fc"><i>126</i>&nbsp;	private ListView&lt;String&gt; listAssociatedImages = new ListView&lt;&gt;();</b>
+<i>127</i>&nbsp;
+<b class="fc"><i>128</i>&nbsp;	private enum ImageDetailRow {</b>
+<b class="fc"><i>129</i>&nbsp;		NAME, URI, PIXEL_TYPE, MAGNIFICATION, WIDTH, HEIGHT, DIMENSIONS,</b>
+<b class="fc"><i>130</i>&nbsp;		PIXEL_WIDTH, PIXEL_HEIGHT, UNCOMPRESSED_SIZE, SERVER_TYPE, PYRAMID,</b>
+<b class="fc"><i>131</i>&nbsp;		METADATA_CHANGED, IMAGE_TYPE,</b>
+<b class="fc"><i>132</i>&nbsp;		STAIN_1, STAIN_2, STAIN_3, BACKGROUND;</b>
+<i>133</i>&nbsp;	};
+<i>134</i>&nbsp;	
+<b class="fc"><i>135</i>&nbsp;	private static List&lt;ImageDetailRow&gt; brightfieldRows = Arrays.asList(ImageDetailRow.values());</b>
+<b class="fc"><i>136</i>&nbsp;	private static List&lt;ImageDetailRow&gt; otherRows = new ArrayList&lt;&gt;(brightfieldRows);</b>
+<i>137</i>&nbsp;	static {
+<b class="fc"><i>138</i>&nbsp;		otherRows.remove(ImageDetailRow.STAIN_1);</b>
+<b class="fc"><i>139</i>&nbsp;		otherRows.remove(ImageDetailRow.STAIN_2);</b>
+<b class="fc"><i>140</i>&nbsp;		otherRows.remove(ImageDetailRow.STAIN_3);</b>
+<b class="fc"><i>141</i>&nbsp;		otherRows.remove(ImageDetailRow.BACKGROUND);</b>
+<b class="fc"><i>142</i>&nbsp;	}</b>
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;	/**
+<i>148</i>&nbsp;	 * Constructor.
+<i>149</i>&nbsp;	 * @param qupath QuPath instance
+<i>150</i>&nbsp;	 */
+<b class="fc"><i>151</i>&nbsp;	public ImageDetailsPane(final QuPathGUI qupath) {</b>
+<b class="fc"><i>152</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>153</i>&nbsp;		qupath.imageDataProperty().addListener(this);</b>
+<i>154</i>&nbsp;		
+<i>155</i>&nbsp;		// Create the table
+<b class="fc"><i>156</i>&nbsp;		table.setMinHeight(200);</b>
+<b class="fc"><i>157</i>&nbsp;		table.setPrefHeight(250);</b>
+<b class="fc"><i>158</i>&nbsp;		table.setMaxHeight(Double.MAX_VALUE);</b>
+<b class="fc"><i>159</i>&nbsp;		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<b class="fc"><i>160</i>&nbsp;		TableColumn&lt;ImageDetailRow, String&gt; columnName = new TableColumn&lt;&gt;(&quot;Name&quot;);</b>
+<b class="fc"><i>161</i>&nbsp;		columnName.setCellValueFactory(v -&gt; new ReadOnlyStringWrapper(getName(v.getValue())));</b>
+<b class="fc"><i>162</i>&nbsp;		columnName.setEditable(false);</b>
+<b class="fc"><i>163</i>&nbsp;		columnName.setPrefWidth(150);</b>
+<b class="fc"><i>164</i>&nbsp;		TableColumn&lt;ImageDetailRow, Object&gt; columnValue = new TableColumn&lt;&gt;(&quot;Value&quot;);</b>
+<b class="fc"><i>165</i>&nbsp;		columnValue.setCellValueFactory(v -&gt; new ReadOnlyObjectWrapper&lt;&gt;(getValue(v.getValue())));</b>
+<b class="fc"><i>166</i>&nbsp;		columnValue.setEditable(false);</b>
+<b class="fc"><i>167</i>&nbsp;		columnValue.setPrefWidth(200);</b>
+<b class="fc"><i>168</i>&nbsp;		columnValue.setCellFactory(new Callback&lt;TableColumn&lt;ImageDetailRow, Object&gt;, TableCell&lt;ImageDetailRow, Object&gt;&gt;() {</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;			@Override
+<i>171</i>&nbsp;			public TableCell&lt;ImageDetailRow, Object&gt; call(TableColumn&lt;ImageDetailRow, Object&gt; param) {
+<b class="fc"><i>172</i>&nbsp;				TableCell&lt;ImageDetailRow, Object&gt; cell = new TableCell&lt;ImageDetailRow, Object&gt;() {</b>
+<i>173</i>&nbsp;					@Override
+<i>174</i>&nbsp;					protected void updateItem(Object item, boolean empty) {
+<b class="fc"><i>175</i>&nbsp;						super.updateItem(item, empty);</b>
+<b class="fc"><i>176</i>&nbsp;						if (empty) {</b>
+<b class="fc"><i>177</i>&nbsp;							setText(null);</b>
+<b class="fc"><i>178</i>&nbsp;							setGraphic(null);</b>
+<b class="fc"><i>179</i>&nbsp;							return;</b>
+<i>180</i>&nbsp;						}
+<i>181</i>&nbsp;						//			             ComboBoxTableCell&lt;TableEntry, Object&gt;
+<b class="fc"><i>182</i>&nbsp;						String style = null;</b>
+<b class="fc"><i>183</i>&nbsp;						String text = item == null ? &quot;&quot; : item.toString();</b>
+<b class="fc"><i>184</i>&nbsp;						String tooltipText = text;</b>
+<b class="fc"><i>185</i>&nbsp;						if (item instanceof double[]) {</b>
+<b class="nc"><i>186</i>&nbsp;							text = GeneralTools.arrayToString(Locale.getDefault(Category.FORMAT), (double[])item, 2);</b>
+<b class="fc"><i>187</i>&nbsp;						} else if (item instanceof StainVector) {</b>
+<b class="nc"><i>188</i>&nbsp;							StainVector stain = (StainVector)item;</b>
+<b class="nc"><i>189</i>&nbsp;							Integer color = stain.getColor();</b>
+<b class="nc"><i>190</i>&nbsp;							style = String.format(&quot;-fx-text-fill: rgb(%d, %d, %d);&quot;, ColorTools.red(color), ColorTools.green(color), ColorTools.blue(color));</b>
+<b class="nc"><i>191</i>&nbsp;							tooltipText = &quot;Double-click to set stain color (either type values or use a small rectangle ROI in the image)&quot;;</b>
+<b class="nc"><i>192</i>&nbsp;						} else {</b>
+<b class="fc"><i>193</i>&nbsp;							var type = getTableRow().getItem();</b>
+<b class="fc"><i>194</i>&nbsp;							if (type != null) {</b>
+<b class="fc"><i>195</i>&nbsp;								if (type.equals(ImageDetailRow.PIXEL_WIDTH) || type.equals(ImageDetailRow.PIXEL_HEIGHT)) {</b>
+<b class="fc"><i>196</i>&nbsp;									if (&quot;Unknown&quot;.equals(item))</b>
+<b class="fc"><i>197</i>&nbsp;										style = &quot;-fx-text-fill: red;&quot;;</b>
+<b class="fc"><i>198</i>&nbsp;									tooltipText = &quot;Double-click to set pixel calibration (can use a selected line or area ROI in the image)&quot;;</b>
+<b class="fc"><i>199</i>&nbsp;								} else if (type.equals(ImageDetailRow.METADATA_CHANGED))</b>
+<b class="fc"><i>200</i>&nbsp;									tooltipText = &quot;Double-click to reset original metadata&quot;;</b>
+<b class="fc"><i>201</i>&nbsp;								else if (type.equals(ImageDetailRow.UNCOMPRESSED_SIZE))</b>
+<b class="fc"><i>202</i>&nbsp;									tooltipText = &quot;Approximate memory required to store all pixels in the image uncompressed&quot;;</b>
+<i>203</i>&nbsp;							}
+<i>204</i>&nbsp;						}
+<b class="fc"><i>205</i>&nbsp;						setStyle(style);</b>
+<b class="fc"><i>206</i>&nbsp;						setText(text);</b>
+<b class="fc"><i>207</i>&nbsp;						setTooltip(new Tooltip(tooltipText));</b>
+<b class="fc"><i>208</i>&nbsp;					}</b>
+<i>209</i>&nbsp;				};
+<i>210</i>&nbsp;				
+<b class="fc"><i>211</i>&nbsp;				cell.setOnMouseClicked(event -&gt; {</b>
+<b class="nc"><i>212</i>&nbsp;					if (event.getClickCount() &lt; 2)</b>
+<b class="nc"><i>213</i>&nbsp;						return;</b>
+<b class="nc"><i>214</i>&nbsp;					TableCell&lt;ImageDetailRow, Object&gt; c = (TableCell&lt;ImageDetailRow, Object&gt;)event.getSource();</b>
+<b class="nc"><i>215</i>&nbsp;					Object value = c.getItem();</b>
+<b class="nc"><i>216</i>&nbsp;					if (value instanceof StainVector || value instanceof double[])</b>
+<b class="nc"><i>217</i>&nbsp;						editStainVector(value);</b>
+<b class="nc"><i>218</i>&nbsp;					else if (value instanceof ImageType) {</b>
+<b class="nc"><i>219</i>&nbsp;						promptToSetImageType(imageData);</b>
+<i>220</i>&nbsp;					} else {
+<i>221</i>&nbsp;						// TODO: Support z-spacing
+<b class="nc"><i>222</i>&nbsp;						var type = c.getTableRow().getItem();</b>
+<b class="nc"><i>223</i>&nbsp;						boolean metadataChanged = false;</b>
+<b class="nc"><i>224</i>&nbsp;						if (type == ImageDetailRow.PIXEL_WIDTH ||</b>
+<i>225</i>&nbsp;								type == ImageDetailRow.PIXEL_HEIGHT) {
+<b class="nc"><i>226</i>&nbsp;							metadataChanged = promptToSetPixelSize(imageData, false);</b>
+<b class="nc"><i>227</i>&nbsp;						} else if (type == ImageDetailRow.MAGNIFICATION) {</b>
+<b class="nc"><i>228</i>&nbsp;							metadataChanged = promptToSetMagnification(imageData);</b>
+<b class="nc"><i>229</i>&nbsp;						} else if (type == ImageDetailRow.METADATA_CHANGED) {</b>
+<b class="nc"><i>230</i>&nbsp;							if (!hasOriginalMetadata(imageData.getServer())) {</b>
+<b class="nc"><i>231</i>&nbsp;								metadataChanged = promptToResetServerMetadata(imageData);</b>
+<i>232</i>&nbsp;							}
+<i>233</i>&nbsp;						}
+<b class="nc"><i>234</i>&nbsp;						if (metadataChanged) {</b>
+<b class="nc"><i>235</i>&nbsp;							c.getTableView().refresh();</b>
+<b class="nc"><i>236</i>&nbsp;							imageData.getHierarchy().fireHierarchyChangedEvent(this);</b>
+<i>237</i>&nbsp;						}
+<i>238</i>&nbsp;					}
+<b class="nc"><i>239</i>&nbsp;				});</b>
+<i>240</i>&nbsp;				
+<b class="fc"><i>241</i>&nbsp;				return cell;</b>
+<i>242</i>&nbsp;			}
+<i>243</i>&nbsp;		});
+<b class="fc"><i>244</i>&nbsp;		table.getColumns().add(columnName);</b>
+<b class="fc"><i>245</i>&nbsp;		table.getColumns().add(columnValue);</b>
+<i>246</i>&nbsp;		
+<b class="fc"><i>247</i>&nbsp;		setImageData(qupath.getImageData());</b>
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;//		listImages.setOnMouseClicked(event -&gt; {
+<i>250</i>&nbsp;//			if (event.getClickCount() &lt; 2 || listImages.getSelectionModel().getSelectedItem() == null)
+<i>251</i>&nbsp;//				return;
+<i>252</i>&nbsp;//			}
+<i>253</i>&nbsp;//		);
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		
+<i>256</i>&nbsp;		
+<b class="fc"><i>257</i>&nbsp;		listAssociatedImages.setOnMouseClicked(event -&gt; {</b>
+<b class="nc"><i>258</i>&nbsp;				if (event.getClickCount() &lt; 2 || listAssociatedImages.getSelectionModel().getSelectedItem() == null)</b>
+<b class="nc"><i>259</i>&nbsp;					return;</b>
+<b class="nc"><i>260</i>&nbsp;				String name = listAssociatedImages.getSelectionModel().getSelectedItem();</b>
+<i>261</i>&nbsp;				
+<b class="nc"><i>262</i>&nbsp;				Stage dialog = new Stage();</b>
+<b class="nc"><i>263</i>&nbsp;				dialog.setTitle(name);</b>
+<b class="nc"><i>264</i>&nbsp;				dialog.initModality(Modality.NONE);</b>
+<b class="nc"><i>265</i>&nbsp;				dialog.initOwner(qupath.getStage());</b>
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;				// Create menubar
+<b class="nc"><i>268</i>&nbsp;				MenuBar menubar = new MenuBar();</b>
+<b class="nc"><i>269</i>&nbsp;				Menu menuFile = new Menu(&quot;File&quot;);</b>
+<b class="nc"><i>270</i>&nbsp;				MenuItem miClose = new MenuItem(&quot;Close&quot;);</b>
+<b class="nc"><i>271</i>&nbsp;				miClose.setAccelerator(new KeyCodeCombination(KeyCode.W, KeyCombination.SHORTCUT_DOWN));</b>
+<b class="nc"><i>272</i>&nbsp;				miClose.setOnAction(e -&gt; dialog.close());</b>
+<b class="nc"><i>273</i>&nbsp;				MenuItem miSave = new MenuItem(&quot;Save as PNG&quot;);</b>
+<b class="nc"><i>274</i>&nbsp;				miSave.setAccelerator(new KeyCodeCombination(KeyCode.S, KeyCombination.SHORTCUT_DOWN));</b>
+<b class="nc"><i>275</i>&nbsp;				miSave.setOnAction(e -&gt; {</b>
+<b class="nc"><i>276</i>&nbsp;					BufferedImage img = imageData.getServer().getAssociatedImage(name);</b>
+<b class="nc"><i>277</i>&nbsp;					File fileOutput = Dialogs.getChooser(dialog).promptToSaveFile(&quot;Save image&quot;, null, name, &quot;PNG&quot;, &quot;.png&quot;);</b>
+<b class="nc"><i>278</i>&nbsp;					if (fileOutput != null) {</b>
+<i>279</i>&nbsp;						try {
+<b class="nc"><i>280</i>&nbsp;							ImageIO.write(img, &quot;PNG&quot;, fileOutput);</b>
+<b class="nc"><i>281</i>&nbsp;						} catch (Exception e1) {</b>
+<b class="nc"><i>282</i>&nbsp;							Dialogs.showErrorMessage(&quot;Save image&quot;, &quot;Error saving &quot; + fileOutput.getName() + &quot;\n&quot; + e1.getLocalizedMessage());</b>
+<b class="nc"><i>283</i>&nbsp;						}</b>
+<i>284</i>&nbsp;					}
+<b class="nc"><i>285</i>&nbsp;				});</b>
+<b class="nc"><i>286</i>&nbsp;				menuFile.getItems().addAll(miSave, miClose);</b>
+<i>287</i>&nbsp;				
+<b class="nc"><i>288</i>&nbsp;				Menu menuEdit = new Menu(&quot;Edit&quot;);</b>
+<b class="nc"><i>289</i>&nbsp;				MenuItem miCopy = new MenuItem(&quot;Copy&quot;);</b>
+<b class="nc"><i>290</i>&nbsp;				miCopy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));</b>
+<b class="nc"><i>291</i>&nbsp;				miCopy.setOnAction(e -&gt; {</b>
+<b class="nc"><i>292</i>&nbsp;					Image img = SwingFXUtils.toFXImage(imageData.getServer().getAssociatedImage(name), null);</b>
+<b class="nc"><i>293</i>&nbsp;					ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>294</i>&nbsp;					content.putImage(img);</b>
+<b class="nc"><i>295</i>&nbsp;					Clipboard.getSystemClipboard().setContent(content);</b>
+<b class="nc"><i>296</i>&nbsp;				});</b>
+<i>297</i>&nbsp;				
+<i>298</i>&nbsp;				
+<b class="nc"><i>299</i>&nbsp;				menuEdit.getItems().add(miCopy);</b>
+<i>300</i>&nbsp;				
+<b class="nc"><i>301</i>&nbsp;				menubar.getMenus().addAll(menuFile, menuEdit);</b>
+<i>302</i>&nbsp;				
+<i>303</i>&nbsp;				// Create image view
+<b class="nc"><i>304</i>&nbsp;				var imgBuffered = imageData.getServer().getAssociatedImage(name);</b>
+<b class="nc"><i>305</i>&nbsp;				if (!BufferedImageTools.is8bitColorType(imgBuffered.getType()) &amp;&amp; imgBuffered.getType() != BufferedImage.TYPE_BYTE_GRAY) {</b>
+<i>306</i>&nbsp;					// By wrapping the thumbnail, we avoid slow z-stack/time series requests &amp; determine brightness &amp; contrast just from one plane
+<b class="nc"><i>307</i>&nbsp;					var wrappedServer = new WrappedBufferedImageServer(&quot;Dummy&quot;, imgBuffered);</b>
+<b class="nc"><i>308</i>&nbsp;					var imageDisplay = new ImageDisplay(new ImageData&lt;&gt;(wrappedServer));</b>
+<b class="nc"><i>309</i>&nbsp;					for (ChannelDisplayInfo info : imageDisplay.selectedChannels()) {</b>
+<b class="nc"><i>310</i>&nbsp;						imageDisplay.autoSetDisplayRange(info);</b>
+<b class="nc"><i>311</i>&nbsp;					}</b>
+<b class="nc"><i>312</i>&nbsp;					imgBuffered = imageDisplay.applyTransforms(imgBuffered, null);</b>
+<i>313</i>&nbsp;				}
+<b class="nc"><i>314</i>&nbsp;				Image img = SwingFXUtils.toFXImage(imgBuffered, null);</b>
+<b class="nc"><i>315</i>&nbsp;				ImageView imageView = new ImageView(img);</b>
+<b class="nc"><i>316</i>&nbsp;				BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>317</i>&nbsp;				imageView.fitWidthProperty().bind(pane.widthProperty());</b>
+<b class="nc"><i>318</i>&nbsp;				imageView.fitHeightProperty().bind(pane.heightProperty());</b>
+<b class="nc"><i>319</i>&nbsp;				imageView.setPreserveRatio(true);</b>
+<b class="nc"><i>320</i>&nbsp;				pane.setCenter(imageView);</b>
+<b class="nc"><i>321</i>&nbsp;				pane.setTop(menubar);</b>
+<b class="nc"><i>322</i>&nbsp;				Scene scene = new Scene(pane);</b>
+<b class="nc"><i>323</i>&nbsp;				pane.prefWidthProperty().bind(scene.widthProperty());</b>
+<b class="nc"><i>324</i>&nbsp;				pane.prefHeightProperty().bind(scene.heightProperty());</b>
+<b class="nc"><i>325</i>&nbsp;				menubar.useSystemMenuBarProperty().bindBidirectional(PathPrefs.useSystemMenubarProperty());</b>
+<i>326</i>&nbsp;//				menubar.setUseSystemMenuBar(true);
+<b class="nc"><i>327</i>&nbsp;				pane.setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));</b>
+<i>328</i>&nbsp;				
+<b class="nc"><i>329</i>&nbsp;				dialog.setScene(scene);</b>
+<b class="nc"><i>330</i>&nbsp;				dialog.show();</b>
+<b class="nc"><i>331</i>&nbsp;			}</b>
+<i>332</i>&nbsp;		);
+<i>333</i>&nbsp;		
+<b class="fc"><i>334</i>&nbsp;		PathPrefs.maskImageNamesProperty().addListener((v, o, n) -&gt; table.refresh());</b>
+<i>335</i>&nbsp;
+<b class="fc"><i>336</i>&nbsp;		MasterDetailPane mdPane = new MasterDetailPane(Side.BOTTOM);</b>
+<b class="fc"><i>337</i>&nbsp;		mdPane.setMasterNode(new StackPane(table));</b>
+<b class="fc"><i>338</i>&nbsp;		mdPane.setDetailNode(new StackPane(listAssociatedImages));</b>
+<b class="fc"><i>339</i>&nbsp;		mdPane.showDetailNodeProperty().bind(</b>
+<b class="fc"><i>340</i>&nbsp;				Bindings.createBooleanBinding(() -&gt; !listAssociatedImages.getItems().isEmpty(),</b>
+<b class="fc"><i>341</i>&nbsp;						listAssociatedImages.getItems()));</b>
+<b class="fc"><i>342</i>&nbsp;		pane.getChildren().add(mdPane);</b>
+<i>343</i>&nbsp;//		Accordion accordion = new Accordion(panelTable, panelAssociatedImages);
+<i>344</i>&nbsp;//		accordion.setExpandedPane(panelTable);
+<i>345</i>&nbsp;//		pane.getChildren().add(accordion);
+<b class="fc"><i>346</i>&nbsp;	}</b>
+<i>347</i>&nbsp;	
+<i>348</i>&nbsp;	
+<i>349</i>&nbsp;	static boolean hasOriginalMetadata(ImageServer&lt;BufferedImage&gt; server) {
+<b class="fc"><i>350</i>&nbsp;		var metadata = server.getMetadata();</b>
+<b class="fc"><i>351</i>&nbsp;		var originalMetadata = server.getOriginalMetadata();</b>
+<b class="fc"><i>352</i>&nbsp;		return Objects.equals(metadata, originalMetadata);</b>
+<i>353</i>&nbsp;	}
+<i>354</i>&nbsp;	
+<i>355</i>&nbsp;	
+<i>356</i>&nbsp;	static boolean promptToResetServerMetadata(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>357</i>&nbsp;		var server = imageData.getServer();</b>
+<b class="nc"><i>358</i>&nbsp;		if (hasOriginalMetadata(server)) {</b>
+<b class="nc"><i>359</i>&nbsp;			logger.info(&quot;ImageServer metadata is unchanged!&quot;);</b>
+<b class="nc"><i>360</i>&nbsp;			return false;</b>
+<i>361</i>&nbsp;		}
+<b class="nc"><i>362</i>&nbsp;		var originalMetadata = server.getOriginalMetadata();</b>
+<i>363</i>&nbsp;		
+<b class="nc"><i>364</i>&nbsp;		if (Dialogs.showConfirmDialog(&quot;Reset metadata&quot;, &quot;Reset to original metadata?&quot;)) {</b>
+<b class="nc"><i>365</i>&nbsp;			imageData.updateServerMetadata(originalMetadata);</b>
+<b class="nc"><i>366</i>&nbsp;			return true;</b>
+<i>367</i>&nbsp;		}
+<b class="nc"><i>368</i>&nbsp;		return false;</b>
+<i>369</i>&nbsp;	}
+<i>370</i>&nbsp;	
+<i>371</i>&nbsp;	
+<i>372</i>&nbsp;	static boolean promptToSetMagnification(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>373</i>&nbsp;		var server = imageData.getServer();</b>
+<b class="nc"><i>374</i>&nbsp;		Double mag = server.getMetadata().getMagnification();</b>
+<b class="nc"><i>375</i>&nbsp;		if (mag != null &amp;&amp; !Double.isFinite(mag))</b>
+<b class="nc"><i>376</i>&nbsp;			mag = null;</b>
+<b class="nc"><i>377</i>&nbsp;		Double mag2 = Dialogs.showInputDialog(&quot;Set magnification&quot;, &quot;Set magnification for full resolution image&quot;, mag);</b>
+<b class="nc"><i>378</i>&nbsp;		if (mag2 == null || Objects.equals(mag, mag2))</b>
+<b class="nc"><i>379</i>&nbsp;			return false;</b>
+<b class="nc"><i>380</i>&nbsp;		if (!Double.isFinite(mag2) &amp;&amp; mag == null)</b>
+<b class="nc"><i>381</i>&nbsp;			return false;</b>
+<b class="nc"><i>382</i>&nbsp;		var metadata2 = new ImageServerMetadata.Builder(server.getMetadata())</b>
+<b class="nc"><i>383</i>&nbsp;			.magnification(mag2)</b>
+<b class="nc"><i>384</i>&nbsp;			.build();</b>
+<b class="nc"><i>385</i>&nbsp;		imageData.updateServerMetadata(metadata2);</b>
+<b class="nc"><i>386</i>&nbsp;		return true;</b>
+<i>387</i>&nbsp;	}
+<i>388</i>&nbsp;	
+<i>389</i>&nbsp;	static boolean promptToSetPixelSize(ImageData&lt;BufferedImage&gt; imageData, boolean requestZSpacing) {
+<b class="nc"><i>390</i>&nbsp;		var server = imageData.getServer();</b>
+<b class="nc"><i>391</i>&nbsp;		var hierarchy = imageData.getHierarchy();</b>
+<b class="nc"><i>392</i>&nbsp;		var selected = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>393</i>&nbsp;		var roi = selected == null ? null : selected.getROI();</b>
+<i>394</i>&nbsp;		
+<b class="nc"><i>395</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>396</i>&nbsp;		double pixelWidthMicrons = cal.getPixelWidthMicrons();</b>
+<b class="nc"><i>397</i>&nbsp;		double pixelHeightMicrons = cal.getPixelHeightMicrons();</b>
+<b class="nc"><i>398</i>&nbsp;		double zSpacingMicrons = cal.getZSpacingMicrons();</b>
+<i>399</i>&nbsp;		
+<i>400</i>&nbsp;		// Use line or area ROI if possible
+<b class="nc"><i>401</i>&nbsp;		if (!requestZSpacing &amp;&amp; roi != null &amp;&amp; !roi.isEmpty() &amp;&amp; (roi.isArea() || roi.isLine())) {</b>
+<b class="nc"><i>402</i>&nbsp;			boolean setPixelHeight = true;</b>
+<b class="nc"><i>403</i>&nbsp;			boolean setPixelWidth = true;	</b>
+<i>404</i>&nbsp;			String message;
+<i>405</i>&nbsp;			
+<b class="nc"><i>406</i>&nbsp;			double pixelWidth = cal.getPixelWidthMicrons();</b>
+<b class="nc"><i>407</i>&nbsp;			double pixelHeight = cal.getPixelHeightMicrons();</b>
+<b class="nc"><i>408</i>&nbsp;			if (!Double.isFinite(pixelWidth))</b>
+<b class="nc"><i>409</i>&nbsp;				pixelWidth = 1;</b>
+<b class="nc"><i>410</i>&nbsp;			if (!Double.isFinite(pixelHeight))</b>
+<b class="nc"><i>411</i>&nbsp;				pixelHeight = 1;</b>
+<i>412</i>&nbsp;			
+<b class="nc"><i>413</i>&nbsp;			Double defaultValue = null;</b>
+<b class="nc"><i>414</i>&nbsp;			if (roi.isLine()) {</b>
+<b class="nc"><i>415</i>&nbsp;				setPixelHeight = roi.getBoundsHeight() != 0;</b>
+<b class="nc"><i>416</i>&nbsp;				setPixelWidth = roi.getBoundsWidth() != 0;</b>
+<b class="nc"><i>417</i>&nbsp;				message = &quot;Enter selected line length in &quot; + GeneralTools.micrometerSymbol();</b>
+<b class="nc"><i>418</i>&nbsp;				defaultValue = roi.getScaledLength(pixelWidth, pixelHeight);</b>
+<i>419</i>&nbsp;			} else {
+<b class="nc"><i>420</i>&nbsp;				message = &quot;Enter selected ROI area in &quot; + GeneralTools.micrometerSymbol() + &quot;^2&quot;;</b>
+<b class="nc"><i>421</i>&nbsp;				defaultValue = roi.getScaledArea(pixelWidth, pixelHeight);</b>
+<i>422</i>&nbsp;			}
+<i>423</i>&nbsp;//			if (setPixelHeight &amp;&amp; setPixelWidth) {
+<i>424</i>&nbsp;//				defaultValue = server.getAveragedPixelSizeMicrons();
+<i>425</i>&nbsp;//			} else if (setPixelHeight) {
+<i>426</i>&nbsp;//				defaultValue = server.getPixelHeightMicrons();					
+<i>427</i>&nbsp;//			} else if (setPixelWidth) {
+<i>428</i>&nbsp;//				defaultValue = server.getPixelWidthMicrons();					
+<i>429</i>&nbsp;//			}
+<b class="nc"><i>430</i>&nbsp;			if (Double.isNaN(defaultValue))</b>
+<b class="nc"><i>431</i>&nbsp;				defaultValue = 1.0;</b>
+<b class="nc"><i>432</i>&nbsp;			Double result = Dialogs.showInputDialog(&quot;Set pixel size&quot;, message, defaultValue);</b>
+<b class="nc"><i>433</i>&nbsp;			if (result == null)</b>
+<b class="nc"><i>434</i>&nbsp;				return false;</b>
+<i>435</i>&nbsp;			
+<i>436</i>&nbsp;			double sizeMicrons;
+<b class="nc"><i>437</i>&nbsp;			if (roi.isLine())</b>
+<b class="nc"><i>438</i>&nbsp;				sizeMicrons = result.doubleValue() / roi.getLength();</b>
+<i>439</i>&nbsp;			else
+<b class="nc"><i>440</i>&nbsp;				sizeMicrons = Math.sqrt(result.doubleValue() / roi.getArea());</b>
+<i>441</i>&nbsp;			
+<b class="nc"><i>442</i>&nbsp;			if (setPixelHeight)</b>
+<b class="nc"><i>443</i>&nbsp;				pixelHeightMicrons = sizeMicrons;</b>
+<b class="nc"><i>444</i>&nbsp;			if (setPixelWidth)</b>
+<b class="nc"><i>445</i>&nbsp;				pixelWidthMicrons = sizeMicrons;</b>
+<b class="nc"><i>446</i>&nbsp;		} else {</b>
+<i>447</i>&nbsp;			// Prompt for all required values
+<b class="nc"><i>448</i>&nbsp;			ParameterList params = new ParameterList()</b>
+<b class="nc"><i>449</i>&nbsp;					.addDoubleParameter(&quot;pixelWidth&quot;, &quot;Pixel width&quot;, pixelWidthMicrons, GeneralTools.micrometerSymbol(), &quot;Enter the pixel width&quot;)</b>
+<b class="nc"><i>450</i>&nbsp;					.addDoubleParameter(&quot;pixelHeight&quot;, &quot;Pixel height&quot;, pixelHeightMicrons, GeneralTools.micrometerSymbol(), &quot;Entry the pixel height&quot;)</b>
+<b class="nc"><i>451</i>&nbsp;					.addDoubleParameter(&quot;zSpacing&quot;, &quot;Z-spacing&quot;, zSpacingMicrons, GeneralTools.micrometerSymbol(), &quot;Enter the spacing between slices of a z-stack&quot;);</b>
+<b class="nc"><i>452</i>&nbsp;			params.setHiddenParameters(server.nZSlices() == 1, &quot;zSpacing&quot;);</b>
+<b class="nc"><i>453</i>&nbsp;			if (!Dialogs.showParameterDialog(&quot;Set pixel size&quot;, params))</b>
+<b class="nc"><i>454</i>&nbsp;				return false;</b>
+<b class="nc"><i>455</i>&nbsp;			if (server.nZSlices() != 1) {</b>
+<b class="nc"><i>456</i>&nbsp;				zSpacingMicrons = params.getDoubleParameterValue(&quot;zSpacing&quot;);</b>
+<i>457</i>&nbsp;			}
+<b class="nc"><i>458</i>&nbsp;			pixelWidthMicrons = params.getDoubleParameterValue(&quot;pixelWidth&quot;);</b>
+<b class="nc"><i>459</i>&nbsp;			pixelHeightMicrons = params.getDoubleParameterValue(&quot;pixelHeight&quot;);</b>
+<i>460</i>&nbsp;		}
+<b class="nc"><i>461</i>&nbsp;		if ((pixelWidthMicrons &lt;= 0 || pixelHeightMicrons &lt;= 0) || (server.nZSlices() &gt; 1 &amp;&amp; zSpacingMicrons &lt;= 0)) {</b>
+<b class="nc"><i>462</i>&nbsp;			if (!Dialogs.showConfirmDialog(&quot;Set pixel size&quot;, &quot;You entered values &lt;= 0, do you really want to remove this pixel calibration information?&quot;)) {</b>
+<b class="nc"><i>463</i>&nbsp;				return false;</b>
+<i>464</i>&nbsp;			}
+<b class="nc"><i>465</i>&nbsp;			zSpacingMicrons = server.nZSlices() &gt; 1 &amp;&amp; zSpacingMicrons &gt; 0 ? zSpacingMicrons : Double.NaN;</b>
+<b class="nc"><i>466</i>&nbsp;			if (pixelWidthMicrons &lt;= 0 || pixelHeightMicrons &lt;= 0) {</b>
+<b class="nc"><i>467</i>&nbsp;				pixelWidthMicrons = Double.NaN;</b>
+<b class="nc"><i>468</i>&nbsp;				pixelHeightMicrons = Double.NaN;</b>
+<i>469</i>&nbsp;			}
+<i>470</i>&nbsp;		}
+<b class="nc"><i>471</i>&nbsp;		return QP.setPixelSizeMicrons(imageData, pixelWidthMicrons, pixelHeightMicrons, zSpacingMicrons);</b>
+<i>472</i>&nbsp;	}
+<i>473</i>&nbsp;	
+<i>474</i>&nbsp;	
+<i>475</i>&nbsp;	/**
+<i>476</i>&nbsp;	 * Prompt the user to set the {@link ImageType} for the image.
+<i>477</i>&nbsp;	 * @param imageData
+<i>478</i>&nbsp;	 * @return
+<i>479</i>&nbsp;	 */
+<i>480</i>&nbsp;	public static boolean promptToSetImageType(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="fc"><i>481</i>&nbsp;		List&lt;ImageType&gt; values = Arrays.asList(ImageType.values());</b>
+<b class="fc"><i>482</i>&nbsp;		if (!imageData.getServer().isRGB()) {</b>
+<b class="fc"><i>483</i>&nbsp;			values =new ArrayList&lt;&gt;(values);</b>
+<b class="fc"><i>484</i>&nbsp;			values.remove(ImageType.BRIGHTFIELD_H_DAB);</b>
+<b class="fc"><i>485</i>&nbsp;			values.remove(ImageType.BRIGHTFIELD_H_E);</b>
+<b class="fc"><i>486</i>&nbsp;			values.remove(ImageType.BRIGHTFIELD_OTHER);</b>
+<i>487</i>&nbsp;		}
+<i>488</i>&nbsp;		
+<b class="fc"><i>489</i>&nbsp;		var dialog = new ChoiceDialog&lt;&gt;(imageData.getImageType(), values);</b>
+<b class="fc"><i>490</i>&nbsp;		dialog.setTitle(&quot;Image type&quot;);</b>
+<b class="fc"><i>491</i>&nbsp;		if (QuPathGUI.getInstance() != null)</b>
+<b class="fc"><i>492</i>&nbsp;			dialog.initOwner(QuPathGUI.getInstance().getStage());</b>
+<b class="fc"><i>493</i>&nbsp;		dialog.getDialogPane().setHeaderText(null);</b>
+<b class="fc"><i>494</i>&nbsp;		dialog.getDialogPane().setContentText(&quot;Set image type&quot;);</b>
+<b class="fc"><i>495</i>&nbsp;		dialog.getDialogPane().setPrefWidth(400);</b>
+<i>496</i>&nbsp;		
+<b class="fc"><i>497</i>&nbsp;		var labelExplain = new Label(&quot;The image type influences some commands (e.g. cell detection) and should be set for every image. &quot;</b>
+<i>498</i>&nbsp;				+ &quot;\n\nUse the &#39;Set image type&#39; item in the preferences to control prompts for the type to be set when opening an image.&quot;);
+<b class="fc"><i>499</i>&nbsp;		labelExplain.setWrapText(true);</b>
+<b class="fc"><i>500</i>&nbsp;		labelExplain.setPrefWidth(400);</b>
+<b class="fc"><i>501</i>&nbsp;		labelExplain.setMinHeight(Label.USE_PREF_SIZE);</b>
+<b class="fc"><i>502</i>&nbsp;		dialog.getDialogPane().setExpandableContent(labelExplain);</b>
+<i>503</i>&nbsp;		
+<b class="fc"><i>504</i>&nbsp;		var result = dialog.showAndWait();</b>
+<b class="fc"><i>505</i>&nbsp;		ImageType type = result.orElse(null);</b>
+<i>506</i>&nbsp;		
+<i>507</i>&nbsp;//		ImageType type = (ImageType)Dialogs.showChoiceDialog(&quot;Image type&quot;, &quot;Set image type&quot;, values, imageData.getImageType());
+<b class="fc"><i>508</i>&nbsp;		if (type != null &amp;&amp; type != imageData.getImageType()) {</b>
+<b class="fc"><i>509</i>&nbsp;			imageData.setImageType(type);</b>
+<b class="fc"><i>510</i>&nbsp;			return true;</b>
+<i>511</i>&nbsp;		}
+<b class="nc"><i>512</i>&nbsp;		return false;</b>
+<i>513</i>&nbsp;	}
+<i>514</i>&nbsp;	
+<i>515</i>&nbsp;	
+<i>516</i>&nbsp;	
+<i>517</i>&nbsp;	void editStainVector(Object value) {
+<b class="nc"><i>518</i>&nbsp;		if (!(value instanceof StainVector || value instanceof double[]))</b>
+<b class="nc"><i>519</i>&nbsp;			return;</b>
+<i>520</i>&nbsp;		//					JOptionPane.showMessageDialog(null, &quot;Modifying stain vectors not yet implemented...&quot;);
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>523</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>524</i>&nbsp;			return;</b>
+<b class="nc"><i>525</i>&nbsp;		ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>526</i>&nbsp;		int num = -1; // Default to background values</b>
+<b class="nc"><i>527</i>&nbsp;		String name = null;</b>
+<b class="nc"><i>528</i>&nbsp;		String message = null;</b>
+<b class="nc"><i>529</i>&nbsp;		if (value instanceof StainVector) {</b>
+<i>530</i>&nbsp;
+<b class="nc"><i>531</i>&nbsp;			StainVector stainVector = (StainVector)value;</b>
+<i>532</i>&nbsp;
+<b class="nc"><i>533</i>&nbsp;			if (stainVector.isResidual() &amp;&amp; imageData.getImageType() != ImageType.BRIGHTFIELD_OTHER) {</b>
+<b class="nc"><i>534</i>&nbsp;				logger.warn(&quot;Cannot set residual stain vector - this is computed from the known vectors&quot;);</b>
+<b class="nc"><i>535</i>&nbsp;				return;</b>
+<i>536</i>&nbsp;			}
+<b class="nc"><i>537</i>&nbsp;			num = stains.getStainNumber(stainVector);</b>
+<b class="nc"><i>538</i>&nbsp;			if (num &lt;= 0) {</b>
+<b class="nc"><i>539</i>&nbsp;				logger.error(&quot;Could not identify stain vector &quot; + stainVector + &quot; inside &quot; + stains);</b>
+<b class="nc"><i>540</i>&nbsp;				return;</b>
+<i>541</i>&nbsp;			}
+<b class="nc"><i>542</i>&nbsp;			name = stainVector.getName();</b>
+<b class="nc"><i>543</i>&nbsp;			message = &quot;Set stain vector from ROI?&quot;;</b>
+<b class="nc"><i>544</i>&nbsp;		} else</b>
+<b class="nc"><i>545</i>&nbsp;			message = &quot;Set color deconvolution background values from ROI?&quot;;</b>
+<i>546</i>&nbsp;
+<b class="nc"><i>547</i>&nbsp;		ROI pathROI = imageData.getHierarchy().getSelectionModel().getSelectedROI();</b>
+<b class="nc"><i>548</i>&nbsp;		boolean wasChanged = false;</b>
+<b class="nc"><i>549</i>&nbsp;		String warningMessage = null;</b>
+<b class="nc"><i>550</i>&nbsp;		boolean editableName = imageData.getImageType() == ImageType.BRIGHTFIELD_OTHER;</b>
+<b class="nc"><i>551</i>&nbsp;		if (pathROI != null) {</b>
+<b class="nc"><i>552</i>&nbsp;			if ((pathROI instanceof RectangleROI) &amp;&amp; </b>
+<b class="nc"><i>553</i>&nbsp;					!pathROI.isEmpty() &amp;&amp;</b>
+<b class="nc"><i>554</i>&nbsp;					((RectangleROI) pathROI).getArea() &lt; 500*500) {</b>
+<b class="nc"><i>555</i>&nbsp;				if (Dialogs.showYesNoDialog(&quot;Color deconvolution stains&quot;, message)) {</b>
+<b class="nc"><i>556</i>&nbsp;					ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="nc"><i>557</i>&nbsp;					BufferedImage img = null;</b>
+<i>558</i>&nbsp;					try {
+<b class="nc"><i>559</i>&nbsp;						img = server.readBufferedImage(RegionRequest.createInstance(server.getPath(), 1, pathROI));</b>
+<b class="nc"><i>560</i>&nbsp;					} catch (IOException e) {</b>
+<b class="nc"><i>561</i>&nbsp;						Dialogs.showErrorMessage(&quot;Set stain vector&quot;, &quot;Unable to read image region&quot;);</b>
+<b class="nc"><i>562</i>&nbsp;						logger.error(&quot;Unable to read region&quot;, e);</b>
+<b class="nc"><i>563</i>&nbsp;					}</b>
+<b class="nc"><i>564</i>&nbsp;					int rgb = ColorDeconvolutionHelper.getMedianRGB(img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth()));</b>
+<b class="nc"><i>565</i>&nbsp;					if (num &gt;= 0) {</b>
+<b class="nc"><i>566</i>&nbsp;						StainVector vectorValue = ColorDeconvolutionHelper.generateMedianStainVectorFromPixels(name, img.getRGB(0, 0, img.getWidth(), img.getHeight(), null, 0, img.getWidth()), stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue());</b>
+<b class="nc"><i>567</i>&nbsp;						if (!Double.isFinite(vectorValue.getRed() + vectorValue.getGreen() + vectorValue.getBlue())) {</b>
+<b class="nc"><i>568</i>&nbsp;							Dialogs.showErrorMessage(&quot;Set stain vector&quot;,</b>
+<i>569</i>&nbsp;									&quot;Cannot set stains for the current ROI!\n&quot;
+<i>570</i>&nbsp;									+ &quot;It might be too close to the background color.&quot;);
+<b class="nc"><i>571</i>&nbsp;							return;</b>
+<i>572</i>&nbsp;						}
+<b class="nc"><i>573</i>&nbsp;						value = vectorValue;</b>
+<b class="nc"><i>574</i>&nbsp;					} else {</b>
+<i>575</i>&nbsp;						// Update the background
+<b class="nc"><i>576</i>&nbsp;						value = new double[] {ColorTools.red(rgb), ColorTools.green(rgb), ColorTools.blue(rgb)};</b>
+<i>577</i>&nbsp;					}
+<b class="nc"><i>578</i>&nbsp;					wasChanged = true;</b>
+<b class="nc"><i>579</i>&nbsp;				}</b>
+<i>580</i>&nbsp;			} else {
+<b class="nc"><i>581</i>&nbsp;				warningMessage = &quot;Note: To set stain values from an image region, draw a small, rectangular ROI first&quot;;</b>
+<i>582</i>&nbsp;			}
+<i>583</i>&nbsp;		}
+<i>584</i>&nbsp;
+<i>585</i>&nbsp;		// Prompt to set the name / verify stains
+<b class="nc"><i>586</i>&nbsp;		ParameterList params = new ParameterList();</b>
+<i>587</i>&nbsp;		String title;
+<b class="nc"><i>588</i>&nbsp;		String nameBefore = null;</b>
+<b class="nc"><i>589</i>&nbsp;		String valuesBefore = null;</b>
+<b class="nc"><i>590</i>&nbsp;		String collectiveNameBefore = stains.getName();</b>
+<i>591</i>&nbsp;		String suggestedName;
+<b class="nc"><i>592</i>&nbsp;		if (collectiveNameBefore.endsWith(&quot;default&quot;))</b>
+<b class="nc"><i>593</i>&nbsp;			suggestedName = collectiveNameBefore.substring(0, collectiveNameBefore.lastIndexOf(&quot;default&quot;)) + &quot;modified&quot;;</b>
+<i>594</i>&nbsp;		else
+<b class="nc"><i>595</i>&nbsp;			suggestedName = collectiveNameBefore;</b>
+<b class="nc"><i>596</i>&nbsp;		params.addStringParameter(&quot;collectiveName&quot;, &quot;Collective name&quot;, suggestedName, &quot;Enter collective name for all 3 stains (e.g. H-DAB Scanner A, H&amp;E Scanner B)&quot;);</b>
+<b class="nc"><i>597</i>&nbsp;		if (value instanceof StainVector) {</b>
+<b class="nc"><i>598</i>&nbsp;			nameBefore = ((StainVector)value).getName();</b>
+<b class="nc"><i>599</i>&nbsp;			valuesBefore = ((StainVector)value).arrayAsString(Locale.getDefault(Category.FORMAT));</b>
+<b class="nc"><i>600</i>&nbsp;			params.addStringParameter(&quot;name&quot;, &quot;Name&quot;, nameBefore, &quot;Enter stain name&quot;)</b>
+<b class="nc"><i>601</i>&nbsp;			.addStringParameter(&quot;values&quot;, &quot;Values&quot;, valuesBefore, &quot;Enter 3 values (red, green, blue) defining color deconvolution stain vector, separated by spaces&quot;);</b>
+<b class="nc"><i>602</i>&nbsp;			title = &quot;Set stain vector&quot;;</b>
+<i>603</i>&nbsp;		} else {
+<b class="nc"><i>604</i>&nbsp;			nameBefore = &quot;Background&quot;;</b>
+<b class="nc"><i>605</i>&nbsp;			valuesBefore = GeneralTools.arrayToString(Locale.getDefault(Category.FORMAT), (double[])value, 2);</b>
+<b class="nc"><i>606</i>&nbsp;			params.addStringParameter(&quot;name&quot;, &quot;Stain name&quot;, nameBefore);</b>
+<b class="nc"><i>607</i>&nbsp;			params.addStringParameter(&quot;values&quot;, &quot;Stain values&quot;, valuesBefore, &quot;Enter 3 values (red, green, blue) defining background, separated by spaces&quot;);</b>
+<b class="nc"><i>608</i>&nbsp;			params.setHiddenParameters(true, &quot;name&quot;);</b>
+<b class="nc"><i>609</i>&nbsp;			title = &quot;Set background&quot;;</b>
+<i>610</i>&nbsp;		}
+<i>611</i>&nbsp;
+<b class="nc"><i>612</i>&nbsp;		if (warningMessage != null)</b>
+<b class="nc"><i>613</i>&nbsp;			params.addEmptyParameter(warningMessage);</b>
+<i>614</i>&nbsp;
+<i>615</i>&nbsp;		// Disable editing the name if it should be fixed
+<b class="nc"><i>616</i>&nbsp;		ParameterPanelFX parameterPanel = new ParameterPanelFX(params);</b>
+<b class="nc"><i>617</i>&nbsp;		parameterPanel.setParameterEnabled(&quot;name&quot;, editableName);;</b>
+<b class="nc"><i>618</i>&nbsp;		if (!Dialogs.showConfirmDialog(title, parameterPanel.getPane()))</b>
+<b class="nc"><i>619</i>&nbsp;			return;</b>
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;		// Check if anything changed
+<b class="nc"><i>622</i>&nbsp;		String collectiveName = params.getStringParameterValue(&quot;collectiveName&quot;);</b>
+<b class="nc"><i>623</i>&nbsp;		String nameAfter = params.getStringParameterValue(&quot;name&quot;);</b>
+<b class="nc"><i>624</i>&nbsp;		String valuesAfter = params.getStringParameterValue(&quot;values&quot;);</b>
+<b class="nc"><i>625</i>&nbsp;		if (collectiveName.equals(collectiveNameBefore) &amp;&amp; nameAfter.equals(nameBefore) &amp;&amp; valuesAfter.equals(valuesBefore) &amp;&amp; !wasChanged)</b>
+<b class="nc"><i>626</i>&nbsp;			return;</b>
+<i>627</i>&nbsp;
+<b class="nc"><i>628</i>&nbsp;		double[] valuesParsed = ColorDeconvolutionStains.parseStainValues(Locale.getDefault(Category.FORMAT), valuesAfter);</b>
+<b class="nc"><i>629</i>&nbsp;		if (valuesParsed == null) {</b>
+<b class="nc"><i>630</i>&nbsp;			logger.error(&quot;Input for setting color deconvolution information invalid! Cannot parse 3 numbers from {}&quot;, valuesAfter);</b>
+<b class="nc"><i>631</i>&nbsp;			return;</b>
+<i>632</i>&nbsp;		}
+<i>633</i>&nbsp;
+<b class="nc"><i>634</i>&nbsp;		if (num &gt;= 0) {</b>
+<i>635</i>&nbsp;			try {
+<b class="nc"><i>636</i>&nbsp;				stains = stains.changeStain(StainVector.createStainVector(nameAfter, valuesParsed[0], valuesParsed[1], valuesParsed[2]), num);					</b>
+<b class="nc"><i>637</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>638</i>&nbsp;				logger.error(&quot;Error setting stain vectors&quot;, e);</b>
+<b class="nc"><i>639</i>&nbsp;				Dialogs.showErrorMessage(&quot;Set stain vectors&quot;, &quot;Requested stain vectors are not valid!\nAre two stains equal?&quot;);</b>
+<b class="nc"><i>640</i>&nbsp;			}</b>
+<i>641</i>&nbsp;		} else {
+<i>642</i>&nbsp;			// Update the background
+<b class="nc"><i>643</i>&nbsp;			stains = stains.changeMaxValues(valuesParsed[0], valuesParsed[1], valuesParsed[2]);</b>
+<i>644</i>&nbsp;		}
+<i>645</i>&nbsp;		
+<i>646</i>&nbsp;		// Set the collective name
+<b class="nc"><i>647</i>&nbsp;		stains = stains.changeName(collectiveName);</b>
+<i>648</i>&nbsp;
+<b class="nc"><i>649</i>&nbsp;		imageData.setColorDeconvolutionStains(stains);</b>
+<i>650</i>&nbsp;		
+<b class="nc"><i>651</i>&nbsp;		qupath.getViewer().repaintEntireImage();</b>
+<b class="nc"><i>652</i>&nbsp;	}</b>
+<i>653</i>&nbsp;	
+<i>654</i>&nbsp;	
+<i>655</i>&nbsp;	/**
+<i>656</i>&nbsp;	 * Get the {@link Pane} component for addition to a scene.
+<i>657</i>&nbsp;	 * @return
+<i>658</i>&nbsp;	 */
+<i>659</i>&nbsp;	public Pane getPane() {
+<b class="fc"><i>660</i>&nbsp;		return pane;</b>
+<i>661</i>&nbsp;	}
+<i>662</i>&nbsp;	
+<i>663</i>&nbsp;	private void setImageData(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="fc"><i>664</i>&nbsp;		if (this.imageData != null)</b>
+<b class="fc"><i>665</i>&nbsp;			this.imageData.removePropertyChangeListener(this);</b>
+<i>666</i>&nbsp;		
+<b class="fc"><i>667</i>&nbsp;		this.imageData = imageData;</b>
+<b class="fc"><i>668</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = null;</b>
+<b class="fc"><i>669</i>&nbsp;		if (imageData != null) {</b>
+<b class="fc"><i>670</i>&nbsp;			imageData.addPropertyChangeListener(this);</b>
+<b class="fc"><i>671</i>&nbsp;			server = imageData.getServer();</b>
+<i>672</i>&nbsp;		}
+<i>673</i>&nbsp;		
+<b class="fc"><i>674</i>&nbsp;		table.getItems().setAll(getRows());</b>
+<b class="fc"><i>675</i>&nbsp;		table.refresh();</b>
+<i>676</i>&nbsp;		
+<b class="fc"><i>677</i>&nbsp;		if (listAssociatedImages != null) {</b>
+<b class="fc"><i>678</i>&nbsp;			if (server == null)</b>
+<b class="fc"><i>679</i>&nbsp;				listAssociatedImages.getItems().clear();</b>
+<i>680</i>&nbsp;			else
+<b class="fc"><i>681</i>&nbsp;				listAssociatedImages.getItems().setAll(server.getAssociatedImageList());</b>
+<i>682</i>&nbsp;		}
+<b class="fc"><i>683</i>&nbsp;	}</b>
+<i>684</i>&nbsp;
+<i>685</i>&nbsp;
+<i>686</i>&nbsp;	@Override
+<i>687</i>&nbsp;	public void propertyChange(PropertyChangeEvent evt) {
+<b class="fc"><i>688</i>&nbsp;		setImageData(imageData);</b>
+<b class="fc"><i>689</i>&nbsp;	}</b>
+<i>690</i>&nbsp;
+<i>691</i>&nbsp;
+<i>692</i>&nbsp;	@Override
+<i>693</i>&nbsp;	public void changed(ObservableValue&lt;? extends ImageData&lt;BufferedImage&gt;&gt; source, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="fc"><i>694</i>&nbsp;		setImageData(imageDataNew);</b>
+<b class="fc"><i>695</i>&nbsp;	}</b>
+<i>696</i>&nbsp;
+<i>697</i>&nbsp;
+<i>698</i>&nbsp;	private List&lt;ImageDetailRow&gt; getRows() {
+<b class="fc"><i>699</i>&nbsp;		if (imageData == null || imageData.getServer() == null)</b>
+<b class="fc"><i>700</i>&nbsp;			return Collections.emptyList();</b>
+<b class="fc"><i>701</i>&nbsp;		if (imageData.isBrightfield())</b>
+<b class="nc"><i>702</i>&nbsp;			return brightfieldRows;</b>
+<i>703</i>&nbsp;		else
+<b class="fc"><i>704</i>&nbsp;			return otherRows;</b>
+<i>705</i>&nbsp;	}
+<i>706</i>&nbsp;
+<i>707</i>&nbsp;	private String getName(ImageDetailRow row) {
+<b class="fc"><i>708</i>&nbsp;		switch (row) {</b>
+<i>709</i>&nbsp;		case NAME:
+<b class="fc"><i>710</i>&nbsp;			return &quot;Name&quot;;</b>
+<i>711</i>&nbsp;		case URI:
+<b class="fc"><i>712</i>&nbsp;			if (imageData != null &amp;&amp; imageData.getServer().getURIs().size() == 1)</b>
+<b class="fc"><i>713</i>&nbsp;				return &quot;URI&quot;;</b>
+<b class="nc"><i>714</i>&nbsp;			return &quot;URIs&quot;;</b>
+<i>715</i>&nbsp;		case IMAGE_TYPE:
+<b class="fc"><i>716</i>&nbsp;			return &quot;Image type&quot;;</b>
+<i>717</i>&nbsp;		case METADATA_CHANGED:
+<b class="fc"><i>718</i>&nbsp;			return &quot;Metadata changed&quot;;</b>
+<i>719</i>&nbsp;		case PIXEL_TYPE:
+<b class="fc"><i>720</i>&nbsp;			return &quot;Pixel type&quot;;</b>
+<i>721</i>&nbsp;		case MAGNIFICATION:
+<b class="fc"><i>722</i>&nbsp;			return &quot;Magnification&quot;;</b>
+<i>723</i>&nbsp;		case WIDTH:
+<b class="fc"><i>724</i>&nbsp;			return &quot;Width&quot;;</b>
+<i>725</i>&nbsp;		case HEIGHT:
+<b class="fc"><i>726</i>&nbsp;			return &quot;Height&quot;;</b>
+<i>727</i>&nbsp;		case DIMENSIONS:
+<b class="fc"><i>728</i>&nbsp;			return &quot;Dimensions (CZT)&quot;;</b>
+<i>729</i>&nbsp;		case PIXEL_WIDTH:
+<b class="fc"><i>730</i>&nbsp;			return &quot;Pixel width&quot;;</b>
+<i>731</i>&nbsp;		case PIXEL_HEIGHT:
+<b class="fc"><i>732</i>&nbsp;			return &quot;Pixel height&quot;;</b>
+<i>733</i>&nbsp;		case UNCOMPRESSED_SIZE:
+<b class="fc"><i>734</i>&nbsp;			return &quot;Uncompressed size&quot;;</b>
+<i>735</i>&nbsp;		case SERVER_TYPE:
+<b class="fc"><i>736</i>&nbsp;			return &quot;Server type&quot;;</b>
+<i>737</i>&nbsp;		case PYRAMID:
+<b class="fc"><i>738</i>&nbsp;			return &quot;Pyramid&quot;;</b>
+<i>739</i>&nbsp;		case STAIN_1:
+<b class="nc"><i>740</i>&nbsp;			return &quot;Stain 1&quot;;</b>
+<i>741</i>&nbsp;		case STAIN_2:
+<b class="nc"><i>742</i>&nbsp;			return &quot;Stain 2&quot;;</b>
+<i>743</i>&nbsp;		case STAIN_3:
+<b class="nc"><i>744</i>&nbsp;			return &quot;Stain 3&quot;;</b>
+<i>745</i>&nbsp;		case BACKGROUND:
+<b class="nc"><i>746</i>&nbsp;			return &quot;Background&quot;;</b>
+<i>747</i>&nbsp;		default:
+<b class="nc"><i>748</i>&nbsp;			return null;</b>
+<i>749</i>&nbsp;		}
+<i>750</i>&nbsp;	}
+<i>751</i>&nbsp;
+<i>752</i>&nbsp;	static String decodeURI(URI uri) {
+<i>753</i>&nbsp;		try {
+<b class="fc"><i>754</i>&nbsp;			return URLDecoder.decode(uri.toString(), StandardCharsets.UTF_8);</b>
+<b class="nc"><i>755</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>756</i>&nbsp;			return uri.toString();</b>
+<i>757</i>&nbsp;		}
+<i>758</i>&nbsp;	}
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;	private Object getValue(ImageDetailRow rowType) {
+<b class="fc"><i>761</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>762</i>&nbsp;			return null;</b>
+<b class="fc"><i>763</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="fc"><i>764</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="fc"><i>765</i>&nbsp;		switch (rowType) {</b>
+<i>766</i>&nbsp;		case NAME:
+<b class="fc"><i>767</i>&nbsp;			var project = QuPathGUI.getInstance().getProject();</b>
+<b class="fc"><i>768</i>&nbsp;			var entry = project == null ? null : project.getEntry(imageData);</b>
+<b class="fc"><i>769</i>&nbsp;			if (entry == null)</b>
+<b class="fc"><i>770</i>&nbsp;				return ServerTools.getDisplayableImageName(server);</b>
+<i>771</i>&nbsp;			else
+<b class="nc"><i>772</i>&nbsp;				return entry.getImageName();</b>
+<i>773</i>&nbsp;		case URI:
+<b class="fc"><i>774</i>&nbsp;			Collection&lt;URI&gt; uris = server.getURIs();</b>
+<b class="fc"><i>775</i>&nbsp;			if (uris.isEmpty())</b>
+<b class="nc"><i>776</i>&nbsp;				return &quot;Not available&quot;;</b>
+<b class="fc"><i>777</i>&nbsp;			if (uris.size() == 1)</b>
+<b class="fc"><i>778</i>&nbsp;				return decodeURI(uris.iterator().next());</b>
+<b class="nc"><i>779</i>&nbsp;			return &quot;[&quot; + String.join(&quot;, &quot;, uris.stream().map(ImageDetailsPane::decodeURI).collect(Collectors.toList())) + &quot;]&quot;;</b>
+<i>780</i>&nbsp;		case IMAGE_TYPE:
+<b class="fc"><i>781</i>&nbsp;			return imageData.getImageType();</b>
+<i>782</i>&nbsp;		case METADATA_CHANGED:
+<b class="fc"><i>783</i>&nbsp;			return hasOriginalMetadata(imageData.getServer()) ? &quot;No&quot; : &quot;Yes&quot;;</b>
+<i>784</i>&nbsp;		case PIXEL_TYPE:
+<b class="fc"><i>785</i>&nbsp;			String type = server.getPixelType().toString().toLowerCase();</b>
+<b class="fc"><i>786</i>&nbsp;			if (server.isRGB())</b>
+<b class="nc"><i>787</i>&nbsp;				type += &quot; (rgb)&quot;;</b>
+<b class="fc"><i>788</i>&nbsp;			return type;</b>
+<i>789</i>&nbsp;		case MAGNIFICATION:
+<b class="fc"><i>790</i>&nbsp;			double mag = server.getMetadata().getMagnification();</b>
+<b class="fc"><i>791</i>&nbsp;			if (Double.isNaN(mag))</b>
+<b class="fc"><i>792</i>&nbsp;				return &quot;Unknown&quot;;</b>
+<b class="nc"><i>793</i>&nbsp;			return mag;</b>
+<i>794</i>&nbsp;		case WIDTH:
+<b class="fc"><i>795</i>&nbsp;			if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>796</i>&nbsp;				return String.format(&quot;%s px (%.2f %s)&quot;, server.getWidth(), server.getWidth() * cal.getPixelWidthMicrons(), GeneralTools.micrometerSymbol());</b>
+<i>797</i>&nbsp;			else
+<b class="fc"><i>798</i>&nbsp;				return String.format(&quot;%s px&quot;, server.getWidth());</b>
+<i>799</i>&nbsp;		case HEIGHT:
+<b class="fc"><i>800</i>&nbsp;			if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>801</i>&nbsp;				return String.format(&quot;%s px (%.2f %s)&quot;, server.getHeight(), server.getHeight() * cal.getPixelHeightMicrons(), GeneralTools.micrometerSymbol());</b>
+<i>802</i>&nbsp;			else
+<b class="fc"><i>803</i>&nbsp;				return String.format(&quot;%s px&quot;, server.getHeight());</b>
+<i>804</i>&nbsp;		case DIMENSIONS:
+<b class="fc"><i>805</i>&nbsp;			return String.format(&quot;%d x %d x %d&quot;, server.nChannels(), server.nZSlices(), server.nTimepoints());</b>
+<i>806</i>&nbsp;		case PIXEL_WIDTH:
+<b class="fc"><i>807</i>&nbsp;			if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>808</i>&nbsp;				return String.format(&quot;%.4f %s&quot;, cal.getPixelWidthMicrons(), GeneralTools.micrometerSymbol());</b>
+<i>809</i>&nbsp;			else
+<b class="fc"><i>810</i>&nbsp;				return &quot;Unknown&quot;;</b>
+<i>811</i>&nbsp;		case PIXEL_HEIGHT:
+<b class="fc"><i>812</i>&nbsp;			if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>813</i>&nbsp;				return String.format(&quot;%.4f %s&quot;, cal.getPixelHeightMicrons(), GeneralTools.micrometerSymbol());</b>
+<i>814</i>&nbsp;			else
+<b class="fc"><i>815</i>&nbsp;				return &quot;Unknown&quot;;</b>
+<i>816</i>&nbsp;		case UNCOMPRESSED_SIZE:
+<b class="fc"><i>817</i>&nbsp;			double size =</b>
+<b class="fc"><i>818</i>&nbsp;			server.getWidth()/1024.0 * server.getHeight()/1024.0 * </b>
+<b class="fc"><i>819</i>&nbsp;			server.getPixelType().getBytesPerPixel() * server.nChannels() *</b>
+<b class="fc"><i>820</i>&nbsp;			server.nZSlices() * server.nTimepoints();</b>
+<b class="fc"><i>821</i>&nbsp;			String units = &quot; MB&quot;;</b>
+<b class="fc"><i>822</i>&nbsp;			if (size &gt; 1000) {</b>
+<b class="nc"><i>823</i>&nbsp;				size /= 1024.0;</b>
+<b class="nc"><i>824</i>&nbsp;				units = &quot; GB&quot;;</b>
+<i>825</i>&nbsp;			}
+<b class="fc"><i>826</i>&nbsp;			return GeneralTools.formatNumber(size, 1) + units;</b>
+<i>827</i>&nbsp;		case SERVER_TYPE:
+<b class="fc"><i>828</i>&nbsp;			return server.getServerType();</b>
+<i>829</i>&nbsp;		case PYRAMID:
+<b class="fc"><i>830</i>&nbsp;			if (server.nResolutions() == 1)</b>
+<b class="fc"><i>831</i>&nbsp;				return &quot;No&quot;;</b>
+<b class="nc"><i>832</i>&nbsp;			return GeneralTools.arrayToString(Locale.getDefault(), server.getPreferredDownsamples(), 1);</b>
+<i>833</i>&nbsp;		case STAIN_1:
+<b class="nc"><i>834</i>&nbsp;			return imageData.getColorDeconvolutionStains().getStain(1);</b>
+<i>835</i>&nbsp;		case STAIN_2:
+<b class="nc"><i>836</i>&nbsp;			return imageData.getColorDeconvolutionStains().getStain(2);</b>
+<i>837</i>&nbsp;		case STAIN_3:
+<b class="nc"><i>838</i>&nbsp;			return imageData.getColorDeconvolutionStains().getStain(3);</b>
+<i>839</i>&nbsp;		case BACKGROUND:
+<b class="nc"><i>840</i>&nbsp;			ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>841</i>&nbsp;			double[] whitespace = new double[]{stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue()};</b>
+<b class="nc"><i>842</i>&nbsp;			return whitespace;</b>
+<i>843</i>&nbsp;		default:
+<b class="nc"><i>844</i>&nbsp;			return null;</b>
+<i>845</i>&nbsp;		}
+<i>846</i>&nbsp;
+<i>847</i>&nbsp;	}
+<i>848</i>&nbsp;		
+<i>849</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

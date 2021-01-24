@@ -1,0 +1,715 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PixelClassifierUI</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.ml</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PixelClassifierUI (qupath.process.gui.ml)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PixelClassifierUI</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 238)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PixelClassifierUI$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PixelClassifierUI$SelectionChoice</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 262)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui.ml;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.LinkedHashMap;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Objects;
+<i>33</i>&nbsp;import java.util.stream.Collectors;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.beans.binding.BooleanBinding;
+<i>39</i>&nbsp;import javafx.beans.binding.ObjectExpression;
+<i>40</i>&nbsp;import javafx.beans.binding.StringExpression;
+<i>41</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>42</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>43</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>44</i>&nbsp;import javafx.geometry.Side;
+<i>45</i>&nbsp;import javafx.scene.control.Button;
+<i>46</i>&nbsp;import javafx.scene.control.CheckMenuItem;
+<i>47</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>48</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>49</i>&nbsp;import javafx.scene.control.Label;
+<i>50</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>51</i>&nbsp;import javafx.scene.control.TextField;
+<i>52</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>53</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>54</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>55</i>&nbsp;import javafx.scene.layout.Pane;
+<i>56</i>&nbsp;import qupath.lib.classifiers.pixel.PixelClassifier;
+<i>57</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>58</i>&nbsp;import qupath.lib.gui.commands.Commands;
+<i>59</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>60</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>61</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>62</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>63</i>&nbsp;import qupath.lib.gui.viewer.RegionFilter;
+<i>64</i>&nbsp;import qupath.lib.gui.viewer.RegionFilter.StandardRegionFilters;
+<i>65</i>&nbsp;import qupath.lib.images.ImageData;
+<i>66</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>67</i>&nbsp;import qupath.lib.images.writers.ImageWriter;
+<i>68</i>&nbsp;import qupath.lib.images.writers.ImageWriterTools;
+<i>69</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>70</i>&nbsp;import qupath.lib.objects.PathCellObject;
+<i>71</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>72</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>73</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>74</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>75</i>&nbsp;import qupath.lib.objects.classes.PathClassTools;
+<i>76</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>77</i>&nbsp;import qupath.lib.plugins.parameters.BooleanParameter;
+<i>78</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>79</i>&nbsp;import qupath.lib.plugins.workflow.DefaultScriptableWorkflowStep;
+<i>80</i>&nbsp;import qupath.lib.projects.Project;
+<i>81</i>&nbsp;import qupath.opencv.ml.pixel.PixelClassifierTools;
+<i>82</i>&nbsp;import qupath.opencv.ml.pixel.PixelClassifierTools.CreateObjectOptions;
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;/**
+<i>85</i>&nbsp; * Helper class for generating standardized UI components for pixel classification.
+<i>86</i>&nbsp; * 
+<i>87</i>&nbsp; * @author Pete Bankhead
+<i>88</i>&nbsp; */
+<b class="nc"><i>89</i>&nbsp;public class PixelClassifierUI {</b>
+<i>90</i>&nbsp;	
+<b class="nc"><i>91</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(PixelClassifierUI.class);</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Create a {@link ComboBox} that can be used to select the pixel classification region filter.
+<i>95</i>&nbsp;	 * @param options
+<i>96</i>&nbsp;	 * @return
+<i>97</i>&nbsp;	 */
+<i>98</i>&nbsp;	public static ComboBox&lt;RegionFilter&gt; createRegionFilterCombo(OverlayOptions options) {
+<b class="nc"><i>99</i>&nbsp;		var comboRegion = new ComboBox&lt;RegionFilter&gt;();</b>
+<i>100</i>&nbsp;//		comboRegion.getItems().addAll(StandardRegionFilters.values());
+<b class="nc"><i>101</i>&nbsp;		comboRegion.getItems().addAll(StandardRegionFilters.EVERYWHERE, StandardRegionFilters.ANY_OBJECTS, StandardRegionFilters.ANY_ANNOTATIONS);</b>
+<b class="nc"><i>102</i>&nbsp;		var selected = options.getPixelClassificationRegionFilter();</b>
+<b class="nc"><i>103</i>&nbsp;		if (!comboRegion.getItems().contains(selected))</b>
+<b class="nc"><i>104</i>&nbsp;			comboRegion.getItems().add(selected);</b>
+<b class="nc"><i>105</i>&nbsp;		comboRegion.getSelectionModel().select(selected);</b>
+<b class="nc"><i>106</i>&nbsp;		comboRegion.getSelectionModel().selectedItemProperty().addListener((v, o, n) -&gt; options.setPixelClassificationRegionFilter(n));</b>
+<i>107</i>&nbsp;		// We need to be able to update somehow... but don&#39;t really want to listen to the OverlayOptions and risk thwarting garbage collection
+<b class="nc"><i>108</i>&nbsp;		comboRegion.focusedProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>109</i>&nbsp;			comboRegion.getSelectionModel().select(options.getPixelClassificationRegionFilter());</b>
+<i>110</i>&nbsp;		});
+<b class="nc"><i>111</i>&nbsp;		comboRegion.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>112</i>&nbsp;		comboRegion.setTooltip(new Tooltip(&quot;Control where the pixel classification is applied during preview.\n&quot;</b>
+<i>113</i>&nbsp;				+ &quot;Warning! Classifying the entire image at high resolution can be very slow and require a lot of memory.&quot;));
+<b class="nc"><i>114</i>&nbsp;		return comboRegion;</b>
+<i>115</i>&nbsp;	}
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;	/**
+<i>118</i>&nbsp;	 * Create a standard button pane for pixel classifiers, to create, measure and classify objects.
+<i>119</i>&nbsp;	 * @param imageData expression that provides the {@link ImageData} to which the operation should be applied
+<i>120</i>&nbsp;	 * @param classifier expression that provides the {@link PixelClassifier} that will be used
+<i>121</i>&nbsp;	 * @param classifierName expression that provides the saved name of the classifier. If available, running a command will 
+<i>122</i>&nbsp;	 * 					     result in it being logged to the history workflow for later scripting.
+<i>123</i>&nbsp;	 * @return a {@link Pane} that may be added to a scene
+<i>124</i>&nbsp;	 */
+<i>125</i>&nbsp;	public static Pane createPixelClassifierButtons(ObjectExpression&lt;ImageData&lt;BufferedImage&gt;&gt; imageData, ObjectExpression&lt;PixelClassifier&gt; classifier, StringExpression classifierName) {
+<i>126</i>&nbsp;	
+<b class="nc"><i>127</i>&nbsp;		BooleanProperty allowWithoutSaving = new SimpleBooleanProperty(false);</b>
+<i>128</i>&nbsp;		
+<b class="nc"><i>129</i>&nbsp;		BooleanBinding disableButtons = imageData.isNull()</b>
+<b class="nc"><i>130</i>&nbsp;				.or(classifier.isNull())</b>
+<b class="nc"><i>131</i>&nbsp;				.or(classifierName.isEmpty().and(allowWithoutSaving.not()));</b>
+<i>132</i>&nbsp;		
+<i>133</i>&nbsp;		
+<b class="nc"><i>134</i>&nbsp;		var btnCreateObjects = new Button(&quot;Create objects&quot;);</b>
+<b class="nc"><i>135</i>&nbsp;		btnCreateObjects.disableProperty().bind(disableButtons);</b>
+<b class="nc"><i>136</i>&nbsp;		btnCreateObjects.setTooltip(new Tooltip(&quot;Create annotation or detection objects from the classification output&quot;));</b>
+<i>137</i>&nbsp;		
+<b class="nc"><i>138</i>&nbsp;		var btnAddMeasurements = new Button(&quot;Measure&quot;);</b>
+<b class="nc"><i>139</i>&nbsp;		btnAddMeasurements.disableProperty().bind(disableButtons);</b>
+<b class="nc"><i>140</i>&nbsp;		btnAddMeasurements.setTooltip(new Tooltip(&quot;Add measurements to existing objects based upon the classification output&quot;));</b>
+<i>141</i>&nbsp;		
+<b class="nc"><i>142</i>&nbsp;		var btnClassifyObjects = new Button(&quot;Classify&quot;);</b>
+<b class="nc"><i>143</i>&nbsp;		btnClassifyObjects.disableProperty().bind(disableButtons);</b>
+<b class="nc"><i>144</i>&nbsp;		btnClassifyObjects.setTooltip(new Tooltip(&quot;Classify detection based upon the prediction at the ROI centroid&quot;));</b>
+<i>145</i>&nbsp;		
+<b class="nc"><i>146</i>&nbsp;		btnAddMeasurements.setOnAction(e -&gt; {</b>
+<b class="nc"><i>147</i>&nbsp;			promptToAddMeasurements(imageData.get(), classifier.get(), classifierName.get());			</b>
+<i>148</i>&nbsp;		});
+<b class="nc"><i>149</i>&nbsp;		btnCreateObjects.setOnAction(e -&gt; {</b>
+<b class="nc"><i>150</i>&nbsp;			promptToCreateObjects(imageData.get(), classifier.get(), classifierName.get());</b>
+<i>151</i>&nbsp;		});
+<b class="nc"><i>152</i>&nbsp;		btnClassifyObjects.setOnAction(e -&gt; {</b>
+<b class="nc"><i>153</i>&nbsp;			promptToClassifyDetectionsByCentroid(imageData.get(), classifier.get(), classifierName.get());</b>
+<i>154</i>&nbsp;		});
+<i>155</i>&nbsp;		
+<b class="nc"><i>156</i>&nbsp;		PaneTools.setMaxWidth(Double.MAX_VALUE, btnAddMeasurements, btnCreateObjects, btnClassifyObjects);</b>
+<i>157</i>&nbsp;		
+<b class="nc"><i>158</i>&nbsp;		var paneMain = PaneTools.createColumnGrid(btnAddMeasurements, btnCreateObjects, btnClassifyObjects);</b>
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		// Add some more options
+<b class="nc"><i>161</i>&nbsp;		var menu = new ContextMenu();</b>
+<b class="nc"><i>162</i>&nbsp;		var miWithoutSaving = new CheckMenuItem(&quot;Enable buttons for unsaved classifiers&quot;);</b>
+<b class="nc"><i>163</i>&nbsp;		miWithoutSaving.selectedProperty().bindBidirectional(allowWithoutSaving);</b>
+<b class="nc"><i>164</i>&nbsp;		var miSavePrediction = new MenuItem(&quot;Save prediction image&quot;);</b>
+<b class="nc"><i>165</i>&nbsp;		miSavePrediction.setOnAction(e -&gt; promptToSavePredictionImage(imageData.get(), classifier.get(), classifierName.get()));</b>
+<b class="nc"><i>166</i>&nbsp;		miSavePrediction.disableProperty().bind(disableButtons);</b>
+<i>167</i>&nbsp;		
+<b class="nc"><i>168</i>&nbsp;		menu.getItems().addAll(</b>
+<i>169</i>&nbsp;				miSavePrediction,
+<i>170</i>&nbsp;				miWithoutSaving
+<i>171</i>&nbsp;				);
+<i>172</i>&nbsp;		
+<b class="nc"><i>173</i>&nbsp;		var btnAdvanced = GuiTools.createMoreButton(menu, Side.RIGHT);</b>
+<i>174</i>&nbsp;		
+<b class="nc"><i>175</i>&nbsp;		var pane = new BorderPane(paneMain);</b>
+<b class="nc"><i>176</i>&nbsp;		pane.setRight(btnAdvanced);</b>
+<b class="nc"><i>177</i>&nbsp;		return pane;</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Create a pane that contains a text field and save button to allow a pixel classifier to be saved in a project.
+<i>182</i>&nbsp;	 * @param project the current project, within which the classifier can be saved
+<i>183</i>&nbsp;	 * @param classifier the classifier to save
+<i>184</i>&nbsp;	 * @param savedName property to store the classifier name. If the user saves the classifier, this will be set to the saved name.
+<i>185</i>&nbsp;	 *                  Otherwise, if classifier is changed, this will be set to null. Therefore it provides a way to determine if the  
+<i>186</i>&nbsp;	 *                  current classifier has been saved and, if so, what is its name.
+<i>187</i>&nbsp;	 * @return a pane that may be added to a scene 
+<i>188</i>&nbsp;	 */
+<i>189</i>&nbsp;	public static Pane createSavePixelClassifierPane(ObjectExpression&lt;Project&lt;BufferedImage&gt;&gt; project, ObjectExpression&lt;PixelClassifier&gt; classifier, StringProperty savedName) {
+<i>190</i>&nbsp;		
+<b class="nc"><i>191</i>&nbsp;		var tooltip = new Tooltip(&quot;Save classifier in the current project - this is required to use the classifier to use the classifier later (e.g. to create objects, measurements)&quot;);</b>
+<b class="nc"><i>192</i>&nbsp;		var label = new Label(&quot;Classifier name&quot;);</b>
+<b class="nc"><i>193</i>&nbsp;		var defaultName = savedName.get();</b>
+<b class="nc"><i>194</i>&nbsp;		var tfClassifierName = new TextField(defaultName == null ? &quot;&quot; : defaultName);</b>
+<b class="nc"><i>195</i>&nbsp;		tfClassifierName.setPromptText(&quot;Enter pixel classifier name&quot;);</b>
+<i>196</i>&nbsp;		
+<i>197</i>&nbsp;		// Reset the saved name if the classifier changes
+<b class="nc"><i>198</i>&nbsp;		classifier.addListener((v, o, n) -&gt; savedName.set(null));</b>
+<i>199</i>&nbsp;		
+<b class="nc"><i>200</i>&nbsp;		var btnSave = new Button(&quot;Save&quot;);</b>
+<b class="nc"><i>201</i>&nbsp;		btnSave.setOnAction(e -&gt; {</b>
+<b class="nc"><i>202</i>&nbsp;			var name = tryToSave(project.get(), classifier.get(), tfClassifierName.getText(), false);</b>
+<b class="nc"><i>203</i>&nbsp;			if (name != null) {</b>
+<b class="nc"><i>204</i>&nbsp;				Dialogs.showInfoNotification(&quot;Pixel classifier&quot;, &quot;Classifier saved as \&quot;&quot; + name + &quot;\&quot;&quot;);</b>
+<b class="nc"><i>205</i>&nbsp;				savedName.set(name);</b>
+<b class="nc"><i>206</i>&nbsp;				tfClassifierName.requestFocus();</b>
+<b class="nc"><i>207</i>&nbsp;				btnSave.requestFocus();</b>
+<i>208</i>&nbsp;			}
+<i>209</i>&nbsp;		});
+<b class="nc"><i>210</i>&nbsp;		btnSave.disableProperty().bind(</b>
+<b class="nc"><i>211</i>&nbsp;				classifier.isNull()</b>
+<b class="nc"><i>212</i>&nbsp;					.or(project.isNull())</b>
+<b class="nc"><i>213</i>&nbsp;					.or(tfClassifierName.textProperty().isEmpty()));</b>
+<i>214</i>&nbsp;		
+<b class="nc"><i>215</i>&nbsp;		label.setLabelFor(tfClassifierName);</b>
+<b class="nc"><i>216</i>&nbsp;		label.setTooltip(tooltip);</b>
+<b class="nc"><i>217</i>&nbsp;		tfClassifierName.setTooltip(tooltip);</b>
+<b class="nc"><i>218</i>&nbsp;		btnSave.setTooltip(tooltip);</b>
+<i>219</i>&nbsp;		
+<b class="nc"><i>220</i>&nbsp;		var pane = new GridPane();</b>
+<b class="nc"><i>221</i>&nbsp;		PaneTools.addGridRow(pane, 0, 0, null, label, tfClassifierName, btnSave);</b>
+<b class="nc"><i>222</i>&nbsp;		PaneTools.setToExpandGridPaneWidth(tfClassifierName);</b>
+<b class="nc"><i>223</i>&nbsp;		pane.setHgap(5);</b>
+<i>224</i>&nbsp;		
+<i>225</i>&nbsp;		
+<b class="nc"><i>226</i>&nbsp;		ProjectClassifierBindings.bindPixelClassifierNameInput(tfClassifierName, project);</b>
+<i>227</i>&nbsp;		
+<b class="nc"><i>228</i>&nbsp;		return pane;</b>
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	
+<i>233</i>&nbsp;	private static String tryToSave(Project&lt;?&gt; project, PixelClassifier classifier, String name, boolean overwriteQuietly) {
+<b class="nc"><i>234</i>&nbsp;		if (project == null) {</b>
+<b class="nc"><i>235</i>&nbsp;			Dialogs.showWarningNotification(&quot;Pixel classifier&quot;, &quot;You need a project to be able to save the pixel classifier&quot;);</b>
+<b class="nc"><i>236</i>&nbsp;			return null;</b>
+<i>237</i>&nbsp;		}
+<b class="nc"><i>238</i>&nbsp;		name = GeneralTools.stripInvalidFilenameChars(name);</b>
+<b class="nc"><i>239</i>&nbsp;		if (name.isBlank()) {</b>
+<b class="nc"><i>240</i>&nbsp;			Dialogs.showErrorMessage(&quot;Pixel classifier&quot;, &quot;Please enter a valid classifier name!&quot;);</b>
+<b class="nc"><i>241</i>&nbsp;			return null;</b>
+<i>242</i>&nbsp;		}
+<i>243</i>&nbsp;		try {
+<b class="nc"><i>244</i>&nbsp;			var classifiers = project.getPixelClassifiers();</b>
+<b class="nc"><i>245</i>&nbsp;			if (!overwriteQuietly &amp;&amp; classifiers.contains(name)) {</b>
+<b class="nc"><i>246</i>&nbsp;				if (!Dialogs.showYesNoDialog(&quot;Pixel classifier&quot;, &quot;Overwrite existing classifier &#39;&quot; + name + &quot;&#39;?&quot;))</b>
+<b class="nc"><i>247</i>&nbsp;					return null;</b>
+<i>248</i>&nbsp;			}
+<b class="nc"><i>249</i>&nbsp;			classifiers.put(name, classifier);</b>
+<b class="nc"><i>250</i>&nbsp;			return name;</b>
+<b class="nc"><i>251</i>&nbsp;		} catch (IOException ex) {</b>
+<b class="nc"><i>252</i>&nbsp;			Dialogs.showErrorMessage(&quot;Pixel classifier&quot;, ex);</b>
+<b class="nc"><i>253</i>&nbsp;			return null;</b>
+<i>254</i>&nbsp;		}
+<i>255</i>&nbsp;	}
+<i>256</i>&nbsp;	
+<i>257</i>&nbsp;	
+<i>258</i>&nbsp;	private static boolean promptToSavePredictionImage(ImageData&lt;BufferedImage&gt; imageData, PixelClassifier classifier, String classifierName) {
+<b class="nc"><i>259</i>&nbsp;		Objects.requireNonNull(imageData);</b>
+<b class="nc"><i>260</i>&nbsp;		Objects.requireNonNull(classifier);</b>
+<i>261</i>&nbsp;		
+<b class="nc"><i>262</i>&nbsp;		var server = PixelClassifierTools.createPixelClassificationServer(imageData, classifier);</b>
+<i>263</i>&nbsp;		ImageWriter&lt;BufferedImage&gt; writer;
+<b class="nc"><i>264</i>&nbsp;		var allWriters = ImageWriterTools.getCompatibleWriters(server, &quot;ome.tif&quot;);</b>
+<b class="nc"><i>265</i>&nbsp;		if (allWriters == null || allWriters.isEmpty()) {</b>
+<b class="nc"><i>266</i>&nbsp;			allWriters = ImageWriterTools.getCompatibleWriters(server, null);</b>
+<i>267</i>&nbsp;		}
+<b class="nc"><i>268</i>&nbsp;		if (allWriters.isEmpty()) {</b>
+<b class="nc"><i>269</i>&nbsp;			Dialogs.showErrorMessage(&quot;Save prediction&quot;, &quot;Sorry, I could not find any compatible image writers!&quot;);</b>
+<b class="nc"><i>270</i>&nbsp;			return false;</b>
+<b class="nc"><i>271</i>&nbsp;		} else if (allWriters.size() &gt; 1) {</b>
+<b class="nc"><i>272</i>&nbsp;			Map&lt;String, ImageWriter&lt;BufferedImage&gt;&gt; map = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>273</i>&nbsp;			for (var w : allWriters)</b>
+<b class="nc"><i>274</i>&nbsp;				map.put(w.getName(), w);</b>
+<b class="nc"><i>275</i>&nbsp;			var choice = Dialogs.showChoiceDialog(&quot;Save prediction&quot;, &quot;Choose image writer&quot;, map.keySet(), map.keySet().iterator().next());</b>
+<b class="nc"><i>276</i>&nbsp;			writer = choice == null ? null : map.get(choice);</b>
+<b class="nc"><i>277</i>&nbsp;			if (writer == null)</b>
+<b class="nc"><i>278</i>&nbsp;				return false;</b>
+<b class="nc"><i>279</i>&nbsp;		} else</b>
+<b class="nc"><i>280</i>&nbsp;			writer = allWriters.iterator().next();</b>
+<i>281</i>&nbsp;
+<b class="nc"><i>282</i>&nbsp;		var file = Dialogs.promptToSaveFile(&quot;Save prediction&quot;, null, classifierName, writer.getName(), writer.getDefaultExtension());</b>
+<b class="nc"><i>283</i>&nbsp;		if (file == null)</b>
+<b class="nc"><i>284</i>&nbsp;			return false;</b>
+<i>285</i>&nbsp;		try {
+<b class="nc"><i>286</i>&nbsp;			var path = file.getAbsolutePath();</b>
+<b class="nc"><i>287</i>&nbsp;			writer.writeImage(server, path);</b>
+<b class="nc"><i>288</i>&nbsp;			if (classifierName != null &amp;&amp; !classifierName.isBlank()) {</b>
+<b class="nc"><i>289</i>&nbsp;				imageData.getHistoryWorkflow().addStep(</b>
+<i>290</i>&nbsp;						new DefaultScriptableWorkflowStep(&quot;Write prediction image&quot;,
+<b class="nc"><i>291</i>&nbsp;								String.format(&quot;writePredictionImage(\&quot;%s\&quot;, \&quot;%s\&quot;)&quot;, classifierName, path)</b>
+<i>292</i>&nbsp;								)
+<i>293</i>&nbsp;						);
+<i>294</i>&nbsp;			}
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>297</i>&nbsp;			Dialogs.showErrorMessage(&quot;Save prediction&quot;, e);</b>
+<b class="nc"><i>298</i>&nbsp;		}</b>
+<i>299</i>&nbsp;		
+<b class="nc"><i>300</i>&nbsp;		return true;</b>
+<i>301</i>&nbsp;	}
+<i>302</i>&nbsp;	
+<i>303</i>&nbsp;	
+<i>304</i>&nbsp;	private static boolean promptToClassifyDetectionsByCentroid(ImageData&lt;BufferedImage&gt; imageData, PixelClassifier classifier, String classifierName) {
+<b class="nc"><i>305</i>&nbsp;		Objects.requireNonNull(imageData);</b>
+<b class="nc"><i>306</i>&nbsp;		Objects.requireNonNull(classifier);</b>
+<i>307</i>&nbsp;		
+<b class="nc"><i>308</i>&nbsp;		PixelClassifierTools.classifyDetectionsByCentroid(imageData, classifier);</b>
+<b class="nc"><i>309</i>&nbsp;		if (classifierName != null) {</b>
+<b class="nc"><i>310</i>&nbsp;			imageData.getHistoryWorkflow().addStep(</b>
+<i>311</i>&nbsp;					new DefaultScriptableWorkflowStep(&quot;Classify detections by centroid&quot;,
+<b class="nc"><i>312</i>&nbsp;							String.format(&quot;classifyDetectionsByCentroid(\&quot;%s\&quot;)&quot;,</b>
+<i>313</i>&nbsp;									classifierName)
+<i>314</i>&nbsp;					)
+<i>315</i>&nbsp;			);
+<i>316</i>&nbsp;		}
+<b class="nc"><i>317</i>&nbsp;		return true;</b>
+<i>318</i>&nbsp;	}
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;	
+<i>321</i>&nbsp;	private static ParameterList lastCreateObjectParams;
+<i>322</i>&nbsp;	
+<i>323</i>&nbsp;	/**
+<i>324</i>&nbsp;	 * Prompt the user to create objects directly from the pixels of an {@link ImageServer}.
+<i>325</i>&nbsp;	 * Often, the {@link ImageServer} has been created by applying a {@link PixelClassifier}.
+<i>326</i>&nbsp;	 * 
+<i>327</i>&nbsp;	 * @param imageData the {@link ImageData} to which objects should be added
+<i>328</i>&nbsp;	 * @param classifier the {@link ImageServer} used to generate objects
+<i>329</i>&nbsp;	 * @param classifierName the name of the classifier; if not null and the command runs to completion, it will be logged in the history 
+<i>330</i>&nbsp;	 * 						 workflow of the {@link ImageData} for later scripting.
+<i>331</i>&nbsp;	 * @return true if changes were made, false otherwise
+<i>332</i>&nbsp;	 */
+<i>333</i>&nbsp;	private static boolean promptToCreateObjects(ImageData&lt;BufferedImage&gt; imageData, PixelClassifier classifier, String classifierName) {
+<b class="nc"><i>334</i>&nbsp;		Objects.requireNonNull(imageData);</b>
+<b class="nc"><i>335</i>&nbsp;		Objects.requireNonNull(classifier);</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;		// Check what is selected
+<b class="nc"><i>339</i>&nbsp;		List&lt;SelectionChoice&gt; choices = buildChoiceList(imageData.getHierarchy(),</b>
+<i>340</i>&nbsp;				SelectionChoice.FULL_IMAGE, SelectionChoice.CURRENT_SELECTION, SelectionChoice.ANNOTATIONS, SelectionChoice.TMA);
+<i>341</i>&nbsp;		SelectionChoice defaultChoice;
+<b class="nc"><i>342</i>&nbsp;		if (choices.contains(SelectionChoice.CURRENT_SELECTION))</b>
+<b class="nc"><i>343</i>&nbsp;			defaultChoice = SelectionChoice.CURRENT_SELECTION;</b>
+<b class="nc"><i>344</i>&nbsp;		else if (choices.contains(SelectionChoice.ANNOTATIONS))</b>
+<b class="nc"><i>345</i>&nbsp;			defaultChoice = SelectionChoice.ANNOTATIONS;</b>
+<i>346</i>&nbsp;		else 
+<b class="nc"><i>347</i>&nbsp;			defaultChoice = choices.get(0);</b>
+<i>348</i>&nbsp;
+<b class="nc"><i>349</i>&nbsp;		var parentChoice = Dialogs.showChoiceDialog(&quot;Pixel classifier&quot;,</b>
+<i>350</i>&nbsp;				&quot;Choose parent objects&quot;, choices, defaultChoice);
+<b class="nc"><i>351</i>&nbsp;		if (parentChoice == null)</b>
+<b class="nc"><i>352</i>&nbsp;			return false;</b>
+<i>353</i>&nbsp;
+<b class="nc"><i>354</i>&nbsp;		var outputObjectTypes = Arrays.asList(</b>
+<i>355</i>&nbsp;				&quot;Annotation&quot;, &quot;Detection&quot;
+<i>356</i>&nbsp;				);
+<i>357</i>&nbsp;		
+<i>358</i>&nbsp;		// To avoid confusing the user unnecessary, if we *only* have ignored classes then set default for includeIgnored to true
+<b class="nc"><i>359</i>&nbsp;		boolean includeIgnored = false;</b>
+<b class="nc"><i>360</i>&nbsp;		var labels = classifier.getMetadata().getClassificationLabels();</b>
+<b class="nc"><i>361</i>&nbsp;		if (!labels.isEmpty() &amp;&amp; labels.values().stream().allMatch(p -&gt; p == null || PathClassTools.isIgnoredClass(p)))</b>
+<b class="nc"><i>362</i>&nbsp;			includeIgnored = true;</b>
+<i>363</i>&nbsp;
+<b class="nc"><i>364</i>&nbsp;		var cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>365</i>&nbsp;		var units = cal.unitsMatch2D() ? cal.getPixelWidthUnit()+&quot;^2&quot; : cal.getPixelWidthUnit() + &quot;x&quot; + cal.getPixelHeightUnit();</b>
+<i>366</i>&nbsp;
+<i>367</i>&nbsp;		ParameterList params;
+<b class="nc"><i>368</i>&nbsp;		if (lastCreateObjectParams != null) {</b>
+<b class="nc"><i>369</i>&nbsp;			params = lastCreateObjectParams.duplicate();</b>
+<b class="nc"><i>370</i>&nbsp;			params.setHiddenParameters(false, params.getKeyValueParameters(true).keySet().toArray(String[]::new));</b>
+<b class="nc"><i>371</i>&nbsp;			((BooleanParameter)params.getParameters().get(&quot;includeIgnored&quot;)).setValue(includeIgnored);</b>
+<i>372</i>&nbsp;		} else {
+<b class="nc"><i>373</i>&nbsp;			params = new ParameterList()</b>
+<b class="nc"><i>374</i>&nbsp;					.addChoiceParameter(&quot;objectType&quot;, &quot;New object type&quot;, &quot;Annotation&quot;, outputObjectTypes, &quot;Define the type of objects that will be created&quot;)</b>
+<b class="nc"><i>375</i>&nbsp;					.addDoubleParameter(&quot;minSize&quot;, &quot;Minimum object size&quot;, 0, units, &quot;Minimum size of a region to keep (smaller regions will be dropped)&quot;)</b>
+<b class="nc"><i>376</i>&nbsp;					.addDoubleParameter(&quot;minHoleSize&quot;, &quot;Minimum hole size&quot;, 0, units, &quot;Minimum size of a hole to keep (smaller holes will be filled)&quot;)</b>
+<b class="nc"><i>377</i>&nbsp;					.addBooleanParameter(&quot;doSplit&quot;, &quot;Split objects&quot;, false,</b>
+<i>378</i>&nbsp;							&quot;Split multi-part regions into separate objects&quot;)
+<b class="nc"><i>379</i>&nbsp;					.addBooleanParameter(&quot;clearExisting&quot;, &quot;Delete existing objects&quot;, false,</b>
+<i>380</i>&nbsp;							&quot;Delete any existing objects within the selected object before adding new objects (or entire image if no object is selected)&quot;)
+<b class="nc"><i>381</i>&nbsp;					.addBooleanParameter(&quot;includeIgnored&quot;, &quot;Create objects for ignored classes&quot;, includeIgnored,</b>
+<i>382</i>&nbsp;							&quot;Create objects for classifications that are usually ignored (e.g. \&quot;Ignore*\&quot;, \&quot;Region*\&quot;)&quot;)
+<b class="nc"><i>383</i>&nbsp;					.addBooleanParameter(&quot;selectNew&quot;, &quot;Set new objects to selected&quot;, false,</b>
+<i>384</i>&nbsp;							&quot;Set the newly-created objects to be selected&quot;);
+<i>385</i>&nbsp;		}
+<i>386</i>&nbsp;		
+<b class="nc"><i>387</i>&nbsp;		if (!Dialogs.showParameterDialog(&quot;Create objects&quot;, params))</b>
+<b class="nc"><i>388</i>&nbsp;			return false;</b>
+<i>389</i>&nbsp;
+<b class="nc"><i>390</i>&nbsp;		boolean createDetections = params.getChoiceParameterValue(&quot;objectType&quot;).equals(&quot;Detection&quot;);</b>
+<b class="nc"><i>391</i>&nbsp;		boolean doSplit = params.getBooleanParameterValue(&quot;doSplit&quot;);</b>
+<b class="nc"><i>392</i>&nbsp;		includeIgnored = params.getBooleanParameterValue(&quot;includeIgnored&quot;);</b>
+<b class="nc"><i>393</i>&nbsp;		double minSize = params.getDoubleParameterValue(&quot;minSize&quot;);</b>
+<b class="nc"><i>394</i>&nbsp;		double minHoleSize = params.getDoubleParameterValue(&quot;minHoleSize&quot;);</b>
+<b class="nc"><i>395</i>&nbsp;		boolean clearExisting = params.getBooleanParameterValue(&quot;clearExisting&quot;);</b>
+<b class="nc"><i>396</i>&nbsp;		boolean selectNew = params.getBooleanParameterValue(&quot;selectNew&quot;);</b>
+<i>397</i>&nbsp;
+<b class="nc"><i>398</i>&nbsp;		lastCreateObjectParams = params;</b>
+<i>399</i>&nbsp;
+<b class="nc"><i>400</i>&nbsp;		parentChoice.handleSelection(imageData);</b>
+<i>401</i>&nbsp;		
+<b class="nc"><i>402</i>&nbsp;		List&lt;CreateObjectOptions&gt; options = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>403</i>&nbsp;		if (doSplit)</b>
+<b class="nc"><i>404</i>&nbsp;			options.add(CreateObjectOptions.SPLIT);</b>
+<b class="nc"><i>405</i>&nbsp;		if (clearExisting)</b>
+<b class="nc"><i>406</i>&nbsp;			options.add(CreateObjectOptions.DELETE_EXISTING);</b>
+<b class="nc"><i>407</i>&nbsp;		if (includeIgnored)</b>
+<b class="nc"><i>408</i>&nbsp;			options.add(CreateObjectOptions.INCLUDE_IGNORED);</b>
+<b class="nc"><i>409</i>&nbsp;		if (selectNew)</b>
+<b class="nc"><i>410</i>&nbsp;			options.add(CreateObjectOptions.SELECT_NEW);</b>
+<i>411</i>&nbsp;		
+<b class="nc"><i>412</i>&nbsp;		var optionsArray = options.toArray(CreateObjectOptions[]::new);</b>
+<b class="nc"><i>413</i>&nbsp;		String optionsString = &quot;&quot;;</b>
+<b class="nc"><i>414</i>&nbsp;		if (!options.isEmpty())</b>
+<b class="nc"><i>415</i>&nbsp;			optionsString = &quot;, &quot; + options.stream().map(o -&gt; &quot;\&quot;&quot; + o.name() + &quot;\&quot;&quot;).collect(Collectors.joining(&quot;, &quot;));</b>
+<i>416</i>&nbsp;
+<b class="nc"><i>417</i>&nbsp;		if (createDetections) {</b>
+<b class="nc"><i>418</i>&nbsp;			if (PixelClassifierTools.createDetectionsFromPixelClassifier(imageData, classifier, minSize, minHoleSize, optionsArray)) {</b>
+<b class="nc"><i>419</i>&nbsp;				if (classifierName != null) {</b>
+<b class="nc"><i>420</i>&nbsp;					imageData.getHistoryWorkflow().addStep(</b>
+<i>421</i>&nbsp;							new DefaultScriptableWorkflowStep(&quot;Pixel classifier create detections&quot;,
+<b class="nc"><i>422</i>&nbsp;									String.format(&quot;createDetectionsFromPixelClassifier(\&quot;%s\&quot;, %s, %s)&quot;,</b>
+<i>423</i>&nbsp;											classifierName,
+<b class="nc"><i>424</i>&nbsp;											minSize,</b>
+<i>425</i>&nbsp;											minHoleSize + optionsString)
+<i>426</i>&nbsp;									)
+<i>427</i>&nbsp;							);
+<i>428</i>&nbsp;				}
+<b class="nc"><i>429</i>&nbsp;				return true;</b>
+<i>430</i>&nbsp;			}
+<i>431</i>&nbsp;		} else {
+<b class="nc"><i>432</i>&nbsp;			if (PixelClassifierTools.createAnnotationsFromPixelClassifier(imageData, classifier, minSize, minHoleSize, optionsArray)) {</b>
+<b class="nc"><i>433</i>&nbsp;				if (classifierName != null) {</b>
+<b class="nc"><i>434</i>&nbsp;					imageData.getHistoryWorkflow().addStep(</b>
+<i>435</i>&nbsp;							new DefaultScriptableWorkflowStep(&quot;Pixel classifier create annotations&quot;,
+<b class="nc"><i>436</i>&nbsp;									String.format(&quot;createAnnotationsFromPixelClassifier(\&quot;%s\&quot;, %s, %s)&quot;,</b>
+<i>437</i>&nbsp;											classifierName,
+<b class="nc"><i>438</i>&nbsp;											minSize,</b>
+<i>439</i>&nbsp;											minHoleSize + optionsString)
+<i>440</i>&nbsp;									)
+<i>441</i>&nbsp;							);
+<i>442</i>&nbsp;				}
+<b class="nc"><i>443</i>&nbsp;				return true;</b>
+<i>444</i>&nbsp;			}
+<i>445</i>&nbsp;		}
+<b class="nc"><i>446</i>&nbsp;		return false;</b>
+<i>447</i>&nbsp;	}
+<i>448</i>&nbsp;	
+<i>449</i>&nbsp;	
+<i>450</i>&nbsp;	
+<i>451</i>&nbsp;	
+<i>452</i>&nbsp;	
+<b class="nc"><i>453</i>&nbsp;	private static enum SelectionChoice {</b>
+<b class="nc"><i>454</i>&nbsp;		CURRENT_SELECTION, ANNOTATIONS, DETECTIONS, CELLS, TILES, TMA, FULL_IMAGE;</b>
+<i>455</i>&nbsp;		
+<i>456</i>&nbsp;		private void handleSelection(ImageData&lt;?&gt; imageData) {
+<b class="nc"><i>457</i>&nbsp;			switch (this) {</b>
+<i>458</i>&nbsp;			case FULL_IMAGE:
+<b class="nc"><i>459</i>&nbsp;				Commands.resetSelection(imageData);</b>
+<b class="nc"><i>460</i>&nbsp;				break;</b>
+<i>461</i>&nbsp;			case ANNOTATIONS:
+<i>462</i>&nbsp;			case CELLS:
+<i>463</i>&nbsp;			case DETECTIONS:
+<i>464</i>&nbsp;			case TMA:
+<i>465</i>&nbsp;			case TILES:
+<b class="nc"><i>466</i>&nbsp;				Commands.selectObjectsByClass(imageData, getObjectClass());</b>
+<b class="nc"><i>467</i>&nbsp;				break;</b>
+<i>468</i>&nbsp;			case CURRENT_SELECTION:
+<i>469</i>&nbsp;			default:
+<i>470</i>&nbsp;				break;
+<i>471</i>&nbsp;			}
+<i>472</i>&nbsp;		}
+<i>473</i>&nbsp;		
+<i>474</i>&nbsp;		private Class&lt;? extends PathObject&gt; getObjectClass() {
+<b class="nc"><i>475</i>&nbsp;			switch (this) {</b>
+<i>476</i>&nbsp;			case ANNOTATIONS:
+<b class="nc"><i>477</i>&nbsp;				return PathAnnotationObject.class;</b>
+<i>478</i>&nbsp;			case CELLS:
+<b class="nc"><i>479</i>&nbsp;				return PathCellObject.class;</b>
+<i>480</i>&nbsp;			case DETECTIONS:
+<b class="nc"><i>481</i>&nbsp;				return PathDetectionObject.class;</b>
+<i>482</i>&nbsp;			case TMA:
+<b class="nc"><i>483</i>&nbsp;				return TMACoreObject.class;</b>
+<i>484</i>&nbsp;			case TILES:
+<b class="nc"><i>485</i>&nbsp;				return PathTileObject.class;</b>
+<i>486</i>&nbsp;			default:
+<b class="nc"><i>487</i>&nbsp;				return null;</b>
+<i>488</i>&nbsp;			}
+<i>489</i>&nbsp;		}
+<i>490</i>&nbsp;		
+<i>491</i>&nbsp;		@Override
+<i>492</i>&nbsp;		public String toString() {
+<b class="nc"><i>493</i>&nbsp;			switch (this) {</b>
+<i>494</i>&nbsp;			case ANNOTATIONS:
+<b class="nc"><i>495</i>&nbsp;				return &quot;All annotations&quot;;</b>
+<i>496</i>&nbsp;			case CELLS:
+<b class="nc"><i>497</i>&nbsp;				return &quot;All cells&quot;;</b>
+<i>498</i>&nbsp;			case CURRENT_SELECTION:
+<b class="nc"><i>499</i>&nbsp;				return &quot;Current selection&quot;;</b>
+<i>500</i>&nbsp;			case DETECTIONS:
+<b class="nc"><i>501</i>&nbsp;				return &quot;All detections&quot;;</b>
+<i>502</i>&nbsp;			case TMA:
+<b class="nc"><i>503</i>&nbsp;				return &quot;TMA cores&quot;;</b>
+<i>504</i>&nbsp;			case FULL_IMAGE:
+<b class="nc"><i>505</i>&nbsp;				return &quot;Full image&quot;;</b>
+<i>506</i>&nbsp;			case TILES:
+<b class="nc"><i>507</i>&nbsp;				return &quot;All tiles&quot;;</b>
+<i>508</i>&nbsp;			default:
+<b class="nc"><i>509</i>&nbsp;				throw new IllegalArgumentException(&quot;Unknown enum &quot; + this);</b>
+<i>510</i>&nbsp;			}
+<i>511</i>&nbsp;		}
+<i>512</i>&nbsp;	}
+<i>513</i>&nbsp;	
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;	
+<i>516</i>&nbsp;	
+<i>517</i>&nbsp;	private static List&lt;SelectionChoice&gt; buildChoiceList(PathObjectHierarchy hierarchy, SelectionChoice... validChoices) {
+<b class="nc"><i>518</i>&nbsp;		List&lt;SelectionChoice&gt; choices = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>519</i>&nbsp;		if (!hierarchy.getSelectionModel().noSelection()) {</b>
+<b class="nc"><i>520</i>&nbsp;			choices.add(SelectionChoice.CURRENT_SELECTION);</b>
+<i>521</i>&nbsp;		}
+<b class="nc"><i>522</i>&nbsp;		choices.add(SelectionChoice.FULL_IMAGE);</b>
+<b class="nc"><i>523</i>&nbsp;		var classes = hierarchy.getFlattenedObjectList(null).stream().map(p -&gt; p.getClass()).collect(Collectors.toSet());</b>
+<b class="nc"><i>524</i>&nbsp;		for (var choice : validChoices) {</b>
+<b class="nc"><i>525</i>&nbsp;			if (choice.getObjectClass() != null &amp;&amp; classes.contains(choice.getObjectClass()))</b>
+<b class="nc"><i>526</i>&nbsp;					choices.add(choice);</b>
+<i>527</i>&nbsp;		}
+<b class="nc"><i>528</i>&nbsp;		return choices;</b>
+<i>529</i>&nbsp;	}
+<i>530</i>&nbsp;	
+<i>531</i>&nbsp;	
+<i>532</i>&nbsp;	private static boolean promptToAddMeasurements(ImageData&lt;BufferedImage&gt; imageData, PixelClassifier classifier, String classifierName) {
+<i>533</i>&nbsp;		
+<b class="nc"><i>534</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>535</i>&nbsp;			Dialogs.showNoImageError(&quot;Pixel classifier&quot;);</b>
+<b class="nc"><i>536</i>&nbsp;			return false;</b>
+<i>537</i>&nbsp;		}
+<i>538</i>&nbsp;		
+<b class="nc"><i>539</i>&nbsp;		var hierarchy = imageData.getHierarchy();</b>
+<i>540</i>&nbsp;		
+<b class="nc"><i>541</i>&nbsp;		List&lt;SelectionChoice&gt; choices = buildChoiceList(imageData.getHierarchy(), SelectionChoice.values());</b>
+<i>542</i>&nbsp;		SelectionChoice defaultChoice;
+<b class="nc"><i>543</i>&nbsp;		if (choices.contains(SelectionChoice.CURRENT_SELECTION))</b>
+<b class="nc"><i>544</i>&nbsp;			defaultChoice = SelectionChoice.CURRENT_SELECTION;</b>
+<b class="nc"><i>545</i>&nbsp;		else if (choices.contains(SelectionChoice.ANNOTATIONS))</b>
+<b class="nc"><i>546</i>&nbsp;			defaultChoice = SelectionChoice.ANNOTATIONS;</b>
+<i>547</i>&nbsp;		else 
+<b class="nc"><i>548</i>&nbsp;			defaultChoice = choices.get(0);</b>
+<i>549</i>&nbsp;			
+<b class="nc"><i>550</i>&nbsp;		var params = new ParameterList()</b>
+<b class="nc"><i>551</i>&nbsp;				.addStringParameter(&quot;id&quot;, &quot;Measurement name&quot;, classifierName == null ? &quot;Classifier&quot; : classifierName, &quot;Choose a base name for measurements - this helps distinguish between measurements from different classifiers&quot;)</b>
+<b class="nc"><i>552</i>&nbsp;				.addChoiceParameter(&quot;choice&quot;, &quot;Select objects&quot;, defaultChoice, choices, &quot;Select the objects&quot;);</b>
+<i>553</i>&nbsp;		
+<b class="nc"><i>554</i>&nbsp;		if (!Dialogs.showParameterDialog(&quot;Pixel classifier&quot;, params))</b>
+<b class="nc"><i>555</i>&nbsp;			return false;</b>
+<i>556</i>&nbsp;		
+<b class="nc"><i>557</i>&nbsp;		var measurementID = params.getStringParameterValue(&quot;id&quot;);</b>
+<b class="nc"><i>558</i>&nbsp;		var selectionChoice = (SelectionChoice)params.getChoiceParameterValue(&quot;choice&quot;);</b>
+<i>559</i>&nbsp;		
+<b class="nc"><i>560</i>&nbsp;		selectionChoice.handleSelection(imageData);</b>
+<i>561</i>&nbsp;		
+<b class="nc"><i>562</i>&nbsp;		var objectsToMeasure = hierarchy.getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>563</i>&nbsp;		int n = objectsToMeasure.size();</b>
+<b class="nc"><i>564</i>&nbsp;		if (objectsToMeasure.isEmpty()) {</b>
+<b class="nc"><i>565</i>&nbsp;			objectsToMeasure = Collections.singleton(hierarchy.getRootObject());</b>
+<b class="nc"><i>566</i>&nbsp;			logger.info(&quot;Requesting measurements for image&quot;);</b>
+<b class="nc"><i>567</i>&nbsp;		} else if (n == 1)</b>
+<b class="nc"><i>568</i>&nbsp;			logger.info(&quot;Requesting measurements for one object&quot;);</b>
+<i>569</i>&nbsp;		else
+<b class="nc"><i>570</i>&nbsp;			logger.info(&quot;Requesting measurements for {} objects&quot;, n);</b>
+<i>571</i>&nbsp;		
+<b class="nc"><i>572</i>&nbsp;		if (PixelClassifierTools.addMeasurementsToSelectedObjects(imageData, classifier, measurementID)) {</b>
+<b class="nc"><i>573</i>&nbsp;			if (classifierName != null) {</b>
+<b class="nc"><i>574</i>&nbsp;				String idString = measurementID == null ? &quot;null&quot; : &quot;\&quot;&quot; + measurementID + &quot;\&quot;&quot;;</b>
+<b class="nc"><i>575</i>&nbsp;				imageData.getHistoryWorkflow().addStep(</b>
+<i>576</i>&nbsp;						new DefaultScriptableWorkflowStep(&quot;Pixel classifier measurements&quot;,
+<b class="nc"><i>577</i>&nbsp;								String.format(&quot;addPixelClassifierMeasurements(\&quot;%s\&quot;, %s)&quot;, classifierName, idString)</b>
+<i>578</i>&nbsp;								)
+<i>579</i>&nbsp;						);
+<i>580</i>&nbsp;			}
+<b class="nc"><i>581</i>&nbsp;			return true;</b>
+<i>582</i>&nbsp;		}
+<b class="nc"><i>583</i>&nbsp;		return false;</b>
+<i>584</i>&nbsp;	}
+<i>585</i>&nbsp;	
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

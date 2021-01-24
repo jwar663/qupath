@@ -1,0 +1,308 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Padding</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.regions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Padding (qupath.lib.regions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Padding</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.regions;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;/**
+<i>25</i>&nbsp; * Requested padding for a 2D image.
+<i>26</i>&nbsp; * 
+<i>27</i>&nbsp; * @author Pete Bankhead
+<i>28</i>&nbsp; */
+<i>29</i>&nbsp;public class Padding {
+<i>30</i>&nbsp;	
+<i>31</i>&nbsp;	private final int x1, x2, y1, y2;
+<i>32</i>&nbsp;	
+<i>33</i>&nbsp;	/**
+<i>34</i>&nbsp;	 * Get the first horizontal padding (left of the image), in pixels.
+<i>35</i>&nbsp;	 * @return
+<i>36</i>&nbsp;	 */
+<i>37</i>&nbsp;	public int getX1() {
+<b class="nc"><i>38</i>&nbsp;		return x1;</b>
+<i>39</i>&nbsp;	}
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;	/**
+<i>42</i>&nbsp;	 * Get the second horizontal padding (right of the image), in pixels.
+<i>43</i>&nbsp;	 * @return
+<i>44</i>&nbsp;	 */
+<i>45</i>&nbsp;	public int getX2() {
+<b class="nc"><i>46</i>&nbsp;		return x2;</b>
+<i>47</i>&nbsp;	}
+<i>48</i>&nbsp;	
+<i>49</i>&nbsp;	/**
+<i>50</i>&nbsp;	 * Get the total horizontal padding (sum of x1 and x2).
+<i>51</i>&nbsp;	 * @return
+<i>52</i>&nbsp;	 */
+<i>53</i>&nbsp;	public int getXSum() {
+<b class="nc"><i>54</i>&nbsp;		return getX1() + getX2();</b>
+<i>55</i>&nbsp;	}
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	/**
+<i>58</i>&nbsp;	 * Get the first vertical padding (top of the image), in pixels.
+<i>59</i>&nbsp;	 * @return
+<i>60</i>&nbsp;	 */
+<i>61</i>&nbsp;	public int getY1() {
+<b class="nc"><i>62</i>&nbsp;		return y1;</b>
+<i>63</i>&nbsp;	}
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;	 * Get the second vertical padding (bottom of the image), in pixels.
+<i>67</i>&nbsp;	 * @return
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	public int getY2() {
+<b class="nc"><i>70</i>&nbsp;		return y2;</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	/**
+<i>74</i>&nbsp;	 * Get the total vertical padding (sum of x1 and x2).
+<i>75</i>&nbsp;	 * @return
+<i>76</i>&nbsp;	 */
+<i>77</i>&nbsp;	public int getYSum() {
+<b class="nc"><i>78</i>&nbsp;		return getY1() + getY2();</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	@Override
+<i>82</i>&nbsp;	public String toString() {
+<b class="nc"><i>83</i>&nbsp;		return String.format(</b>
+<i>84</i>&nbsp;				&quot;Padding (x=[%d, %d], y=[%d, %d])&quot;,
+<b class="nc"><i>85</i>&nbsp;				getX1(), getX2(), getY1(), getY2()</b>
+<i>86</i>&nbsp;				);
+<i>87</i>&nbsp;	}
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Returns true of the padding is identical on all sides (x1 == x2 == y1 == y2).
+<i>91</i>&nbsp;	 * @return
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public boolean isSymmetric() {
+<b class="nc"><i>94</i>&nbsp;		return x1 == x2 &amp;&amp; x2 == y1 &amp;&amp; y1 == y2;</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Returns true of the padding is zero.
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public boolean isEmpty() {
+<b class="nc"><i>102</i>&nbsp;		return x1 == 0 &amp;&amp; isSymmetric();</b>
+<i>103</i>&nbsp;	}
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Add this padding to another. This padding is unchanged.
+<i>107</i>&nbsp;	 * @param padding
+<i>108</i>&nbsp;	 * @return a {@link Padding} where the padding on all sides is the sum of the corresponding padding of both objects.
+<i>109</i>&nbsp;	 */
+<i>110</i>&nbsp;	public Padding add(Padding padding) {
+<b class="nc"><i>111</i>&nbsp;		if (isEmpty())</b>
+<b class="nc"><i>112</i>&nbsp;			return padding;</b>
+<b class="nc"><i>113</i>&nbsp;		else if (padding.isEmpty())</b>
+<b class="nc"><i>114</i>&nbsp;			return this;</b>
+<b class="nc"><i>115</i>&nbsp;		return getPadding(</b>
+<i>116</i>&nbsp;				x1 + padding.x1,
+<i>117</i>&nbsp;				x2 + padding.x2,
+<i>118</i>&nbsp;				y1 + padding.y1,
+<i>119</i>&nbsp;				y2 + padding.y2
+<i>120</i>&nbsp;				);
+<i>121</i>&nbsp;	}
+<i>122</i>&nbsp;	
+<i>123</i>&nbsp;	/**
+<i>124</i>&nbsp;	 * Add another padding from this one. This padding is unchanged.
+<i>125</i>&nbsp;	 * @param padding
+<i>126</i>&nbsp;	 * @return a {@link Padding} where the padding on all sides is result of subtracting another padding from this one.
+<i>127</i>&nbsp;	 *         Note that all values from the padding being subtracted must be &amp;le; the corresponding values of this padding.
+<i>128</i>&nbsp;	 */
+<i>129</i>&nbsp;	public Padding subtract(Padding padding) {
+<b class="nc"><i>130</i>&nbsp;		if (isEmpty())</b>
+<b class="nc"><i>131</i>&nbsp;			return padding;</b>
+<b class="nc"><i>132</i>&nbsp;		else if (padding.isEmpty())</b>
+<b class="nc"><i>133</i>&nbsp;			return this;</b>
+<b class="nc"><i>134</i>&nbsp;		return getPadding(</b>
+<i>135</i>&nbsp;				x1 - padding.x1,
+<i>136</i>&nbsp;				x2 - padding.x2,
+<i>137</i>&nbsp;				y1 - padding.y1,
+<i>138</i>&nbsp;				y2 - padding.y2
+<i>139</i>&nbsp;				);
+<i>140</i>&nbsp;	}
+<i>141</i>&nbsp;	
+<i>142</i>&nbsp;	/**
+<i>143</i>&nbsp;	 * Compare two paddings, and take the larger padding value on all sides.
+<i>144</i>&nbsp;	 * @param padding
+<i>145</i>&nbsp;	 * @return
+<i>146</i>&nbsp;	 */
+<i>147</i>&nbsp;	public Padding max(Padding padding) {
+<b class="nc"><i>148</i>&nbsp;		if (isEmpty())</b>
+<b class="nc"><i>149</i>&nbsp;			return padding;</b>
+<b class="nc"><i>150</i>&nbsp;		else if (padding.isEmpty())</b>
+<b class="nc"><i>151</i>&nbsp;			return this;</b>
+<b class="nc"><i>152</i>&nbsp;		return getPadding(</b>
+<b class="nc"><i>153</i>&nbsp;				Math.max(x1, padding.x1),</b>
+<b class="nc"><i>154</i>&nbsp;				Math.max(x2, padding.x2),</b>
+<b class="nc"><i>155</i>&nbsp;				Math.max(y1, padding.y1),</b>
+<b class="nc"><i>156</i>&nbsp;				Math.max(y2, padding.y2)</b>
+<i>157</i>&nbsp;				);
+<i>158</i>&nbsp;	}
+<i>159</i>&nbsp;	
+<b class="nc"><i>160</i>&nbsp;	private Padding(int x1, int x2, int y1, int y2) {</b>
+<b class="nc"><i>161</i>&nbsp;		this.x1 = x1;</b>
+<b class="nc"><i>162</i>&nbsp;		this.x2 = x2;</b>
+<b class="nc"><i>163</i>&nbsp;		this.y1 = y1;</b>
+<b class="nc"><i>164</i>&nbsp;		this.y2 = y2;</b>
+<b class="nc"><i>165</i>&nbsp;		if (x1 &lt; 0 || x2 &lt; 0 || y1 &lt; 0 || y2 &lt; 0)</b>
+<b class="nc"><i>166</i>&nbsp;			throw new IllegalArgumentException(&quot;Padding must be &gt;= 0! Requested &quot; + toString());</b>
+<b class="nc"><i>167</i>&nbsp;	}</b>
+<i>168</i>&nbsp;	
+<i>169</i>&nbsp;	private Padding(int pad) {
+<b class="nc"><i>170</i>&nbsp;		this(pad, pad, pad, pad);</b>
+<b class="nc"><i>171</i>&nbsp;	}</b>
+<i>172</i>&nbsp;	
+<b class="nc"><i>173</i>&nbsp;	private static Padding[] symmetric = new Padding[65];</b>
+<i>174</i>&nbsp;	
+<i>175</i>&nbsp;	static {
+<b class="nc"><i>176</i>&nbsp;		for (int i = 0; i &lt; symmetric.length; i++)</b>
+<b class="nc"><i>177</i>&nbsp;			symmetric[i] = new Padding(i);</b>
+<b class="nc"><i>178</i>&nbsp;	}</b>
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Get a padding object with &#39;pad&#39; pixels on all sides.
+<i>182</i>&nbsp;	 * @param pad the padding for x1, x2, y1 and y2
+<i>183</i>&nbsp;	 * @return
+<i>184</i>&nbsp;	 */
+<i>185</i>&nbsp;	public static Padding symmetric(int pad) {
+<b class="nc"><i>186</i>&nbsp;		if (pad &lt; symmetric.length)</b>
+<b class="nc"><i>187</i>&nbsp;			return symmetric[pad];</b>
+<b class="nc"><i>188</i>&nbsp;		return new Padding(pad);</b>
+<i>189</i>&nbsp;	}
+<i>190</i>&nbsp;	
+<i>191</i>&nbsp;	/**
+<i>192</i>&nbsp;	 * Get an padding object &#39;x&#39; pixels to the left and right, and &#39;y&#39; pixels above and below.
+<i>193</i>&nbsp;	 * @param x the padding for x1 and x2
+<i>194</i>&nbsp;	 * @param y the padding for y1 and y2
+<i>195</i>&nbsp;	 * @return
+<i>196</i>&nbsp;	 */
+<i>197</i>&nbsp;	public static Padding getPadding(int x, int y) {
+<b class="nc"><i>198</i>&nbsp;		if (x == y)</b>
+<b class="nc"><i>199</i>&nbsp;			return symmetric(x);</b>
+<b class="nc"><i>200</i>&nbsp;		return getPadding(x, x, y ,y);</b>
+<i>201</i>&nbsp;	}
+<i>202</i>&nbsp;	
+<i>203</i>&nbsp;	/**
+<i>204</i>&nbsp;	 * Get an empty padding object (0 on all sides).
+<i>205</i>&nbsp;	 * @return
+<i>206</i>&nbsp;	 */
+<i>207</i>&nbsp;	public static Padding empty() {
+<b class="nc"><i>208</i>&nbsp;		return symmetric[0];</b>
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;	
+<i>211</i>&nbsp;	/**
+<i>212</i>&nbsp;	 * Get a padding object that may have different padding on each side.
+<i>213</i>&nbsp;	 * @param x1
+<i>214</i>&nbsp;	 * @param x2
+<i>215</i>&nbsp;	 * @param y1
+<i>216</i>&nbsp;	 * @param y2
+<i>217</i>&nbsp;	 * @return
+<i>218</i>&nbsp;	 */
+<i>219</i>&nbsp;	public static Padding getPadding(int x1, int x2, int y1, int y2) {
+<b class="nc"><i>220</i>&nbsp;		if (x1 == x2 &amp;&amp; x1 == y1 &amp;&amp; x1 == y2)</b>
+<b class="nc"><i>221</i>&nbsp;			return symmetric(x1);</b>
+<b class="nc"><i>222</i>&nbsp;		return new Padding(x1, x2, y1, y2);</b>
+<i>223</i>&nbsp;	}
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

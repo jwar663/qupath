@@ -1,0 +1,363 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DelaunayClusteringPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.opencv.features</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DelaunayClusteringPlugin (qupath.opencv.features)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DelaunayClusteringPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 46)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DelaunayClusteringPlugin$DelaunayRunnable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.opencv.features;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.stream.Collectors;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>37</i>&nbsp;import qupath.lib.images.ImageData;
+<i>38</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>39</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>40</i>&nbsp;import qupath.lib.objects.DefaultPathObjectConnectionGroup;
+<i>41</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>42</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>43</i>&nbsp;import qupath.lib.objects.PathObjectConnectionGroup;
+<i>44</i>&nbsp;import qupath.lib.objects.PathObjectConnections;
+<i>45</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>46</i>&nbsp;import qupath.lib.objects.PathRootObject;
+<i>47</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>48</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>49</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>50</i>&nbsp;import qupath.lib.plugins.PathTask;
+<i>51</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>52</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;/**
+<i>55</i>&nbsp; * Plugin for calculating Delaunay clustering, and associated features.
+<i>56</i>&nbsp; * &lt;p&gt;
+<i>57</i>&nbsp; * Warning! Because the implementation will have to change in the future, it is best not to rely on this class!
+<i>58</i>&nbsp; * 
+<i>59</i>&nbsp; * @author Pete Bankhead
+<i>60</i>&nbsp; * @param &lt;T&gt; 
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; */
+<i>63</i>&nbsp;public class DelaunayClusteringPlugin&lt;T&gt; extends AbstractInteractivePlugin&lt;T&gt; {
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(DelaunayClusteringPlugin.class);</b>
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	/**
+<i>68</i>&nbsp;	 * Constructor.
+<i>69</i>&nbsp;	 */
+<i>70</i>&nbsp;	public DelaunayClusteringPlugin() {
+<b class="nc"><i>71</i>&nbsp;		super();</b>
+<b class="nc"><i>72</i>&nbsp;	}	</b>
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	@Override
+<i>75</i>&nbsp;	protected void preprocess(PluginRunner&lt;T&gt; pluginRunner) {
+<b class="nc"><i>76</i>&nbsp;		super.preprocess(pluginRunner);</b>
+<i>77</i>&nbsp;		// Reset any previous connections
+<b class="nc"><i>78</i>&nbsp;		pluginRunner.getImageData().removeProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS);</b>
+<b class="nc"><i>79</i>&nbsp;	}</b>
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	@Override
+<i>82</i>&nbsp;	protected void postprocess(PluginRunner&lt;T&gt; pluginRunner) {
+<b class="nc"><i>83</i>&nbsp;		super.postprocess(pluginRunner);</b>
+<b class="nc"><i>84</i>&nbsp;		getHierarchy(pluginRunner).fireHierarchyChangedEvent(this);</b>
+<b class="nc"><i>85</i>&nbsp;	}</b>
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;	@Override
+<i>89</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>90</i>&nbsp;		return Arrays.asList(TMACoreObject.class, PathAnnotationObject.class, PathRootObject.class);</b>
+<i>91</i>&nbsp;	}
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	@Override
+<i>94</i>&nbsp;	public String getName() {
+<b class="nc"><i>95</i>&nbsp;		return &quot;Delaunay clustering&quot;;</b>
+<i>96</i>&nbsp;	}
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;	@Override
+<i>99</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>100</i>&nbsp;		return &quot;Cluster neighboring objects, optionally limited by classification and/or distance&quot;;</b>
+<i>101</i>&nbsp;	}
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;	@Override
+<i>104</i>&nbsp;	public String getLastResultsDescription() {
+<i>105</i>&nbsp;		// TODO Auto-generated method stub
+<b class="nc"><i>106</i>&nbsp;		return null;</b>
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	@Override
+<i>110</i>&nbsp;	public ParameterList getDefaultParameterList(ImageData&lt;T&gt; imageData) {
+<b class="nc"><i>111</i>&nbsp;		ParameterList params = new ParameterList()</b>
+<b class="nc"><i>112</i>&nbsp;				.addDoubleParameter(&quot;distanceThreshold&quot;, &quot;Distance threshold&quot;, 0, &quot;pixels&quot;, &quot;Distance threshold - edges longer than this will be omitted&quot;)</b>
+<b class="nc"><i>113</i>&nbsp;				.addDoubleParameter(&quot;distanceThresholdMicrons&quot;, &quot;Distance threshold&quot;, 0, GeneralTools.micrometerSymbol(), &quot;Distance threshold - edges longer than this will be omitted&quot;)</b>
+<b class="nc"><i>114</i>&nbsp;				.addBooleanParameter(&quot;limitByClass&quot;, &quot;Limit edges to same class&quot;, false, &quot;Prevent edges linking objects with different base classifications&quot;)</b>
+<b class="nc"><i>115</i>&nbsp;				.addBooleanParameter(&quot;addClusterMeasurements&quot;, &quot;Add cluster measurements&quot;, false, &quot;Add measurements derived from clustering connected objects&quot;)</b>
+<i>116</i>&nbsp;				;
+<i>117</i>&nbsp;		
+<b class="nc"><i>118</i>&nbsp;		ImageServer&lt;?&gt; server = imageData.getServer();</b>
+<b class="nc"><i>119</i>&nbsp;		boolean hasMicrons = server != null &amp;&amp; server.getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>120</i>&nbsp;		params.setHiddenParameters(hasMicrons, &quot;distanceThreshold&quot;);</b>
+<b class="nc"><i>121</i>&nbsp;		params.setHiddenParameters(!hasMicrons, &quot;distanceThresholdMicrons&quot;);</b>
+<b class="nc"><i>122</i>&nbsp;		return params;</b>
+<i>123</i>&nbsp;	}
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;	@Override
+<i>126</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>127</i>&nbsp;		PathObjectHierarchy hierarchy = getHierarchy(runner);</b>
+<b class="nc"><i>128</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>129</i>&nbsp;			return Collections.emptyList();</b>
+<i>130</i>&nbsp;		
+<b class="nc"><i>131</i>&nbsp;		List&lt;PathObject&gt; selected = new ArrayList&lt;&gt;(hierarchy.getSelectionModel().getSelectedObjects());</b>
+<b class="nc"><i>132</i>&nbsp;		if (selected.isEmpty()) {</b>
+<b class="nc"><i>133</i>&nbsp;			logger.trace(&quot;Creating task for the root object&quot;);</b>
+<b class="nc"><i>134</i>&nbsp;			return Collections.singletonList(hierarchy.getRootObject());</b>
+<i>135</i>&nbsp;		} else {
+<b class="nc"><i>136</i>&nbsp;			logger.trace(&quot;Creating tasks for {} parent objects&quot;, selected.size());</b>
+<b class="nc"><i>137</i>&nbsp;			return selected;</b>
+<i>138</i>&nbsp;		}
+<i>139</i>&nbsp;	}
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;	@Override
+<i>142</i>&nbsp;	protected void addRunnableTasks(ImageData&lt;T&gt; imageData, PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<i>143</i>&nbsp;		
+<i>144</i>&nbsp;		// Get pixel sizes, if possible
+<b class="nc"><i>145</i>&nbsp;		ImageServer&lt;?&gt; server = imageData.getServer();</b>
+<b class="nc"><i>146</i>&nbsp;		double pixelWidth = 1, pixelHeight = 1;</b>
+<b class="nc"><i>147</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>148</i>&nbsp;		boolean hasMicrons = server != null &amp;&amp; cal.hasPixelSizeMicrons();</b>
+<b class="nc"><i>149</i>&nbsp;		if (hasMicrons) {</b>
+<b class="nc"><i>150</i>&nbsp;			pixelWidth = cal.getPixelWidthMicrons();</b>
+<b class="nc"><i>151</i>&nbsp;			pixelHeight = cal.getPixelHeightMicrons();</b>
+<i>152</i>&nbsp;		}
+<i>153</i>&nbsp;		double distanceThresholdPixels;
+<b class="nc"><i>154</i>&nbsp;		if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>155</i>&nbsp;			distanceThresholdPixels = params.getDoubleParameterValue(&quot;distanceThresholdMicrons&quot;) / cal.getAveragedPixelSizeMicrons();</b>
+<i>156</i>&nbsp;		else
+<b class="nc"><i>157</i>&nbsp;			distanceThresholdPixels = params.getDoubleParameterValue(&quot;distanceThreshold&quot;);</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;		tasks.add(new DelaunayRunnable(</b>
+<i>161</i>&nbsp;				imageData,
+<i>162</i>&nbsp;				parentObject,
+<b class="nc"><i>163</i>&nbsp;				params.getBooleanParameterValue(&quot;addClusterMeasurements&quot;),</b>
+<i>164</i>&nbsp;				pixelWidth,
+<i>165</i>&nbsp;				pixelHeight,
+<i>166</i>&nbsp;				distanceThresholdPixels,
+<b class="nc"><i>167</i>&nbsp;				params.getBooleanParameterValue(&quot;limitByClass&quot;)</b>
+<i>168</i>&nbsp;				));
+<b class="nc"><i>169</i>&nbsp;	}</b>
+<i>170</i>&nbsp;	
+<i>171</i>&nbsp;	
+<i>172</i>&nbsp;	
+<i>173</i>&nbsp;	
+<i>174</i>&nbsp;	private static class DelaunayRunnable implements PathTask {
+<i>175</i>&nbsp;		
+<i>176</i>&nbsp;		private ImageData&lt;?&gt; imageData;
+<i>177</i>&nbsp;		private PathObject parentObject;
+<i>178</i>&nbsp;		private double pixelWidth;
+<i>179</i>&nbsp;		private double pixelHeight;
+<i>180</i>&nbsp;		private double distanceThresholdPixels;
+<i>181</i>&nbsp;		
+<i>182</i>&nbsp;		private boolean addClusterMeasurements;
+<i>183</i>&nbsp;		private boolean limitByClass;
+<i>184</i>&nbsp;		
+<i>185</i>&nbsp;		private PathObjectConnectionGroup result;
+<i>186</i>&nbsp;		
+<b class="nc"><i>187</i>&nbsp;		private String lastResult = null;</b>
+<i>188</i>&nbsp;		
+<b class="nc"><i>189</i>&nbsp;		DelaunayRunnable(final ImageData&lt;?&gt; imageData, final PathObject parentObject, final boolean addClusterMeasurements, final double pixelWidth, final double pixelHeight, final double distanceThresholdPixels, final boolean limitByClass) {</b>
+<b class="nc"><i>190</i>&nbsp;			this.imageData = imageData;</b>
+<b class="nc"><i>191</i>&nbsp;			this.parentObject = parentObject;</b>
+<b class="nc"><i>192</i>&nbsp;			this.pixelWidth = pixelWidth;</b>
+<b class="nc"><i>193</i>&nbsp;			this.pixelHeight = pixelHeight;</b>
+<b class="nc"><i>194</i>&nbsp;			this.addClusterMeasurements = addClusterMeasurements;</b>
+<b class="nc"><i>195</i>&nbsp;			this.distanceThresholdPixels = distanceThresholdPixels;</b>
+<b class="nc"><i>196</i>&nbsp;			this.limitByClass = limitByClass;</b>
+<i>197</i>&nbsp;		}
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;		
+<i>200</i>&nbsp;		@Override
+<i>201</i>&nbsp;		public void run() {
+<i>202</i>&nbsp;			
+<b class="nc"><i>203</i>&nbsp;			List&lt;PathObject&gt; pathObjects = PathObjectTools.getFlattenedObjectList(parentObject, null, false);</b>
+<b class="nc"><i>204</i>&nbsp;			pathObjects = pathObjects.stream().filter(p -&gt; p.isDetection()).collect(Collectors.toList());</b>
+<b class="nc"><i>205</i>&nbsp;			if (pathObjects.isEmpty()) {</b>
+<b class="nc"><i>206</i>&nbsp;				lastResult = &quot;No detection descendant objects for &quot; + parentObject;</b>
+<i>207</i>&nbsp;				return;
+<i>208</i>&nbsp;			}
+<i>209</i>&nbsp;			
+<b class="nc"><i>210</i>&nbsp;			DelaunayTriangulation dt = new DelaunayTriangulation(pathObjects, pixelWidth, pixelHeight, distanceThresholdPixels, limitByClass);</b>
+<i>211</i>&nbsp;			
+<b class="nc"><i>212</i>&nbsp;			DefaultPathObjectConnectionGroup result = new DefaultPathObjectConnectionGroup(dt);</b>
+<b class="nc"><i>213</i>&nbsp;			pathObjects = new ArrayList&lt;&gt;(result.getPathObjects());</b>
+<i>214</i>&nbsp;			
+<b class="nc"><i>215</i>&nbsp;			dt.addNodeMeasurements();</b>
+<b class="nc"><i>216</i>&nbsp;			if (addClusterMeasurements)</b>
+<b class="nc"><i>217</i>&nbsp;				dt.addClusterMeasurements();</b>
+<i>218</i>&nbsp;			
+<i>219</i>&nbsp;			
+<b class="nc"><i>220</i>&nbsp;			this.result = result;</b>
+<i>221</i>&nbsp;			
+<b class="nc"><i>222</i>&nbsp;			lastResult = &quot;Delaunay triangulation calculated for &quot; + parentObject;</b>
+<i>223</i>&nbsp;		}
+<i>224</i>&nbsp;		
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;		@Override
+<i>227</i>&nbsp;		public void taskComplete(boolean wasCancelled) {
+<b class="nc"><i>228</i>&nbsp;			if (wasCancelled)</b>
+<i>229</i>&nbsp;				return;
+<i>230</i>&nbsp;			
+<b class="nc"><i>231</i>&nbsp;			if (result != null &amp;&amp; imageData != null) {</b>
+<b class="nc"><i>232</i>&nbsp;				synchronized(imageData) {</b>
+<b class="nc"><i>233</i>&nbsp;					Object o = imageData.getProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS);</b>
+<b class="nc"><i>234</i>&nbsp;					PathObjectConnections connections = null;</b>
+<b class="nc"><i>235</i>&nbsp;					if (o instanceof PathObjectConnections)</b>
+<b class="nc"><i>236</i>&nbsp;						connections = (PathObjectConnections)o;</b>
+<i>237</i>&nbsp;					else {
+<b class="nc"><i>238</i>&nbsp;						connections = new PathObjectConnections();</b>
+<b class="nc"><i>239</i>&nbsp;						imageData.setProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS, connections);</b>
+<i>240</i>&nbsp;					}
+<b class="nc"><i>241</i>&nbsp;					connections.addGroup(result);</b>
+<b class="nc"><i>242</i>&nbsp;				}</b>
+<i>243</i>&nbsp;			}
+<i>244</i>&nbsp;		}
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;		@Override
+<i>247</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>248</i>&nbsp;			return lastResult;</b>
+<i>249</i>&nbsp;		}
+<i>250</i>&nbsp;		
+<i>251</i>&nbsp;		
+<i>252</i>&nbsp;	}
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,589 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BrushTool</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BrushTool (qupath.lib.gui.viewer.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BrushTool</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.5%
+  </span>
+  <span class="absValue">
+    (2/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3%
+  </span>
+  <span class="absValue">
+    (6/ 199)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.geom.Point2D;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;import java.util.Set;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import org.locationtech.jts.geom.Coordinate;
+<i>32</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>33</i>&nbsp;import org.locationtech.jts.geom.GeometryCollection;
+<i>34</i>&nbsp;import org.locationtech.jts.geom.GeometryFactory;
+<i>35</i>&nbsp;import org.locationtech.jts.simplify.VWSimplifier;
+<i>36</i>&nbsp;import org.locationtech.jts.util.GeometricShapeFactory;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import javafx.scene.Cursor;
+<i>41</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>42</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>43</i>&nbsp;import qupath.lib.gui.viewer.tools.QuPathPenManager.PenInputManager;
+<i>44</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>45</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>46</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>47</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>48</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>49</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>50</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory.StandardPathClasses;
+<i>51</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>52</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>53</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>54</i>&nbsp;import qupath.lib.roi.GeometryTools;
+<i>55</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>56</i>&nbsp;import qupath.lib.roi.RectangleROI;
+<i>57</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;/**
+<i>60</i>&nbsp; * Tool for drawing (and subtract from) freehand regions, optionally adapting brush size to magnification.
+<i>61</i>&nbsp; * 
+<i>62</i>&nbsp; * @author Pete Bankhead
+<i>63</i>&nbsp; *
+<i>64</i>&nbsp; */
+<b class="fc"><i>65</i>&nbsp;public class BrushTool extends AbstractPathROITool {</b>
+<i>66</i>&nbsp;	
+<b class="fc"><i>67</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(BrushTool.class);</b>
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	/**
+<i>70</i>&nbsp;	 * A collection of classes that should be ignored when
+<i>71</i>&nbsp;	 */
+<b class="fc"><i>72</i>&nbsp;	static Set&lt;PathClass&gt; reservedPathClasses = Collections.singleton(</b>
+<b class="fc"><i>73</i>&nbsp;			PathClassFactory.getPathClass(StandardPathClasses.REGION)</b>
+<i>74</i>&nbsp;			);
+<i>75</i>&nbsp;	
+<b class="fc"><i>76</i>&nbsp;	double lastRequestedCursorDiameter = Double.NaN;</b>
+<i>77</i>&nbsp;	Cursor requestedCursor;
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	/**
+<i>80</i>&nbsp;	 * The object currently being edited by the Brush.
+<i>81</i>&nbsp;	 * This is set when the mouse is pressed, to avoid relying on QuPathViewer.getSelectedObject() 
+<i>82</i>&nbsp;	 * (in case something has sneakily changed this).
+<i>83</i>&nbsp;	 */
+<i>84</i>&nbsp;	private PathObject currentObject;
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	Point2D lastPoint;
+<i>87</i>&nbsp;	
+<i>88</i>&nbsp;//	/**
+<i>89</i>&nbsp;//	 * Cache the last 50 cursors we saw
+<i>90</i>&nbsp;//	 */
+<i>91</i>&nbsp;//	private static Map&lt;String, Cursor&gt; cursorCache = new LinkedHashMap&lt;String, Cursor&gt;() {
+<i>92</i>&nbsp;//		private static final long serialVersionUID = 1L;
+<i>93</i>&nbsp;//		@Override
+<i>94</i>&nbsp;//		protected boolean removeEldestEntry(Map.Entry&lt;String, Cursor&gt; eldest) {
+<i>95</i>&nbsp;//	        return size() &gt; 50;
+<i>96</i>&nbsp;//	    }
+<i>97</i>&nbsp;//	};
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	/**
+<i>100</i>&nbsp;	 * Returns false.
+<i>101</i>&nbsp;	 */
+<i>102</i>&nbsp;	@Override
+<i>103</i>&nbsp;	protected boolean preferReturnToMove() {
+<b class="nc"><i>104</i>&nbsp;		return false;</b>
+<i>105</i>&nbsp;	}
+<i>106</i>&nbsp;	
+<i>107</i>&nbsp;	protected Cursor getRequestedCursor() {
+<i>108</i>&nbsp;		// Display of image cursors seems buggy, at least on macOS?
+<i>109</i>&nbsp;		// TODO: Check if image cursors are buggy on all platforms or may be reinstated
+<b class="nc"><i>110</i>&nbsp;		return Cursor.CROSSHAIR;</b>
+<i>111</i>&nbsp;//		if (PathPrefs.getUseTileBrush())
+<i>112</i>&nbsp;//			return Cursor.CROSSHAIR;
+<i>113</i>&nbsp;//		
+<i>114</i>&nbsp;//		double res = 0.05;
+<i>115</i>&nbsp;//		
+<i>116</i>&nbsp;//		double diameter = getBrushDiameter() / viewer.getDownsampleFactor();
+<i>117</i>&nbsp;//		if (requestedCursor != null &amp;&amp; Math.abs(diameter - lastRequestedCursorDiameter) &lt; res)
+<i>118</i>&nbsp;//			return requestedCursor;
+<i>119</i>&nbsp;//		
+<i>120</i>&nbsp;//		Color color = viewer.getSuggestedOverlayColorFX();
+<i>121</i>&nbsp;//		String key = color.toString() + (int)Math.round(diameter * (1.0/res));
+<i>122</i>&nbsp;//		requestedCursor = cursorCache.get(key);
+<i>123</i>&nbsp;//		if (requestedCursor != null)
+<i>124</i>&nbsp;//			return requestedCursor;
+<i>125</i>&nbsp;//		
+<i>126</i>&nbsp;//		Ellipse e = new Ellipse(diameter/2, diameter/2);
+<i>127</i>&nbsp;//		e.setFill(null);
+<i>128</i>&nbsp;//		e.setStroke(color);
+<i>129</i>&nbsp;//		Image image = e.snapshot(snapshotParameters, null);
+<i>130</i>&nbsp;//		requestedCursor = new ImageCursor(image, image.getWidth()/2, image.getHeight()/2);
+<i>131</i>&nbsp;//		
+<i>132</i>&nbsp;//		this.registerTool(viewer);
+<i>133</i>&nbsp;//
+<i>134</i>&nbsp;//		cursorCache.put(key, requestedCursor);
+<i>135</i>&nbsp;//
+<i>136</i>&nbsp;//		return requestedCursor;
+<i>137</i>&nbsp;	}
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	@Override
+<i>141</i>&nbsp;	public void mouseExited(MouseEvent e) {
+<i>142</i>&nbsp;//		ensureCursorType(Cursor.DEFAULT);
+<b class="nc"><i>143</i>&nbsp;	}</b>
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	@Override
+<i>146</i>&nbsp;	public void mouseEntered(MouseEvent e) {
+<i>147</i>&nbsp;//		ensureCursorType(getRequestedCursor());
+<b class="nc"><i>148</i>&nbsp;	}</b>
+<i>149</i>&nbsp;	
+<i>150</i>&nbsp;	
+<i>151</i>&nbsp;	@Override
+<i>152</i>&nbsp;	public void mouseMoved(MouseEvent e) {
+<b class="nc"><i>153</i>&nbsp;		ensureCursorType(getRequestedCursor());</b>
+<b class="nc"><i>154</i>&nbsp;	}</b>
+<i>155</i>&nbsp;	
+<i>156</i>&nbsp;	
+<i>157</i>&nbsp;	@Override
+<i>158</i>&nbsp;	public void mousePressed(MouseEvent e) {
+<i>159</i>&nbsp;//		if (e.getClickCount() &gt; 1)
+<i>160</i>&nbsp;//			super.mousePressed(e);
+<i>161</i>&nbsp;		
+<i>162</i>&nbsp;//		super.mousePressed(e);
+<b class="nc"><i>163</i>&nbsp;		if (!e.isPrimaryButtonDown() || e.isConsumed()) {</b>
+<b class="nc"><i>164</i>&nbsp;            return;</b>
+<i>165</i>&nbsp;        }
+<i>166</i>&nbsp;		
+<b class="nc"><i>167</i>&nbsp;		ensureCursorType(getRequestedCursor());</b>
+<i>168</i>&nbsp;		
+<b class="nc"><i>169</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>170</i>&nbsp;		PathObjectHierarchy hierarchy = viewer.getHierarchy();</b>
+<b class="nc"><i>171</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>172</i>&nbsp;			return;</b>
+<i>173</i>&nbsp;		
+<b class="nc"><i>174</i>&nbsp;		PathObject currentObject = viewer.getSelectedObject();</b>
+<i>175</i>&nbsp;		
+<i>176</i>&nbsp;		// Determine if we are creating a new object
+<i>177</i>&nbsp;//		boolean createNew = currentObject == null || e.getClickCount() &gt; 1;// || (!currentObject.getROI().contains(p.getX(), p.getY()) &amp;&amp; !e.isAltDown());
+<b class="nc"><i>178</i>&nbsp;		Point2D p = mouseLocationToImage(e, false, requestPixelSnapping());</b>
+<b class="nc"><i>179</i>&nbsp;		double xx = p.getX();</b>
+<b class="nc"><i>180</i>&nbsp;		double yy = p.getY();</b>
+<b class="nc"><i>181</i>&nbsp;		if (xx &lt; 0 || yy &lt; 0 || xx &gt;= viewer.getServerWidth() || yy &gt;= viewer.getServerHeight())</b>
+<b class="nc"><i>182</i>&nbsp;			return;</b>
+<i>183</i>&nbsp;		
+<i>184</i>&nbsp;//		boolean createNew = currentObject == null || !(currentObject instanceof PathAnnotationObject) || (currentObject.hasChildren()) || (PathPrefs.getBrushCreateNewObjects() &amp;&amp; !ROIHelpers.areaContains(currentObject.getROI(), p.getX(), p.getY()) &amp;&amp; !isSubtractMode(e));
+<b class="nc"><i>185</i>&nbsp;		boolean createNew = currentObject == null || </b>
+<b class="nc"><i>186</i>&nbsp;				PathPrefs.selectionModeProperty().get() || </b>
+<i>187</i>&nbsp;				!(currentObject instanceof PathAnnotationObject) || 
+<b class="nc"><i>188</i>&nbsp;				(!currentObject.isEditable()) || </b>
+<b class="nc"><i>189</i>&nbsp;				currentObject.getROI().getZ() != viewer.getZPosition() || </b>
+<b class="nc"><i>190</i>&nbsp;				currentObject.getROI().getT() != viewer.getTPosition() ||</b>
+<b class="nc"><i>191</i>&nbsp;				(!e.isShiftDown() &amp;&amp; PathPrefs.brushCreateNewObjectsProperty().get() &amp;&amp; !RoiTools.areaContains(currentObject.getROI(), p.getX(), p.getY()) &amp;&amp; !isSubtractMode(e));</b>
+<b class="nc"><i>192</i>&nbsp;		if (isSubtractMode(e))</b>
+<b class="nc"><i>193</i>&nbsp;			createNew = false;</b>
+<i>194</i>&nbsp;		
+<i>195</i>&nbsp;		// See if, rather than creating something, we can instead reactivate a current object
+<b class="nc"><i>196</i>&nbsp;		boolean multipleClicks = e.getClickCount() &gt; 1;</b>
+<b class="nc"><i>197</i>&nbsp;		if (!PathPrefs.selectionModeProperty().get() &amp;&amp; (multipleClicks || (createNew &amp;&amp; !e.isShiftDown()))) {</b>
+<i>198</i>&nbsp;			// See if, rather than creating something, we can instead reactivate a current object
+<b class="nc"><i>199</i>&nbsp;			if (multipleClicks) {</b>
+<b class="nc"><i>200</i>&nbsp;				PathObject objectSelectable = getSelectableObject(p.getX(), p.getY(), e.getClickCount() - 1);</b>
+<b class="nc"><i>201</i>&nbsp;				if (objectSelectable != null &amp;&amp; objectSelectable.isEditable() &amp;&amp; objectSelectable.hasROI() &amp;&amp; objectSelectable.getROI().isArea()) {</b>
+<b class="nc"><i>202</i>&nbsp;					createNew = false;</b>
+<b class="nc"><i>203</i>&nbsp;					viewer.setSelectedObject(objectSelectable);</b>
+<b class="nc"><i>204</i>&nbsp;					currentObject = objectSelectable;</b>
+<b class="nc"><i>205</i>&nbsp;				} else if (createNew) {</b>
+<b class="nc"><i>206</i>&nbsp;					viewer.setSelectedObject(null);</b>
+<b class="nc"><i>207</i>&nbsp;					currentObject = null;</b>
+<i>208</i>&nbsp;				}
+<b class="nc"><i>209</i>&nbsp;			} else if (!PathPrefs.selectionModeProperty().get()) {</b>
+<b class="nc"><i>210</i>&nbsp;					List&lt;PathObject&gt; listSelectable = getSelectableObjectList(p.getX(), p.getY());</b>
+<b class="nc"><i>211</i>&nbsp;					PathObject objectSelectable = null;</b>
+<b class="nc"><i>212</i>&nbsp;					for (int i = listSelectable.size()-1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>213</i>&nbsp;						PathObject temp = listSelectable.get(i);</b>
+<b class="nc"><i>214</i>&nbsp;						if (temp.isEditable() &amp;&amp; temp instanceof PathAnnotationObject &amp;&amp; temp.hasROI() &amp;&amp; temp.getROI().isArea()) { //temp.getROI() instanceof AreaROI) {</b>
+<b class="nc"><i>215</i>&nbsp;							objectSelectable = temp;</b>
+<b class="nc"><i>216</i>&nbsp;							break;</b>
+<i>217</i>&nbsp;						}
+<i>218</i>&nbsp;					}
+<b class="nc"><i>219</i>&nbsp;					if (objectSelectable != null) {</b>
+<b class="nc"><i>220</i>&nbsp;						createNew = false;</b>
+<b class="nc"><i>221</i>&nbsp;						viewer.setSelectedObject(objectSelectable);</b>
+<b class="nc"><i>222</i>&nbsp;						currentObject = objectSelectable;</b>
+<b class="nc"><i>223</i>&nbsp;					} else if (createNew) {</b>
+<b class="nc"><i>224</i>&nbsp;						viewer.setSelectedObject(null);</b>
+<b class="nc"><i>225</i>&nbsp;						currentObject = null;</b>
+<i>226</i>&nbsp;					}
+<i>227</i>&nbsp;			}
+<i>228</i>&nbsp;		}
+<i>229</i>&nbsp;		
+<i>230</i>&nbsp;		// Can only modify annotations
+<b class="nc"><i>231</i>&nbsp;		if (!createNew &amp;&amp; !(currentObject != null &amp;&amp; currentObject.isAnnotation() &amp;&amp; currentObject.isEditable() &amp;&amp; RoiTools.isShapeROI(currentObject.getROI())))</b>
+<b class="nc"><i>232</i>&nbsp;			return;</b>
+<i>233</i>&nbsp;						
+<i>234</i>&nbsp;		// Get the parent, in case we need to constrain the shape
+<i>235</i>&nbsp;//		PathObject parent = null;
+<i>236</i>&nbsp;//		if (currentObject != null) {
+<i>237</i>&nbsp;//			parent = currentObject.getParent();
+<i>238</i>&nbsp;//		}
+<i>239</i>&nbsp;//		var currentObject2 = currentObject;
+<i>240</i>&nbsp;//		if (parent == null || parent.isDetection()) {
+<i>241</i>&nbsp;//			parent = getSelectableObjectList(p.getX(), p.getY())
+<i>242</i>&nbsp;//					.stream()
+<i>243</i>&nbsp;//					.filter(o -&gt; !o.isDetection() &amp;&amp; o != currentObject2)
+<i>244</i>&nbsp;//					.findFirst()
+<i>245</i>&nbsp;//					.orElseGet(() -&gt; null);
+<i>246</i>&nbsp;//		}
+<i>247</i>&nbsp;//		setConstrainedAreaParent(hierarchy, parent, currentObject);
+<b class="nc"><i>248</i>&nbsp;		setConstrainedAreaParent(hierarchy, xx, yy, Collections.singleton(currentObject));</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;		
+<i>251</i>&nbsp;		// Need to remove the object from the hierarchy while editing it
+<b class="nc"><i>252</i>&nbsp;		if (!createNew &amp;&amp; currentObject != null) {</b>
+<b class="nc"><i>253</i>&nbsp;			hierarchy.removeObjectWithoutUpdate(currentObject, true);</b>
+<i>254</i>&nbsp;		}
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;		ROI shapeROI = createNew ? null : currentObject.getROI();</b>
+<b class="nc"><i>257</i>&nbsp;		if (createNew) {</b>
+<b class="nc"><i>258</i>&nbsp;			creatingTiledROI = false; // Reset this</b>
+<b class="nc"><i>259</i>&nbsp;			this.currentObject = createNewAnnotation(e, p.getX(), p.getY());</b>
+<b class="nc"><i>260</i>&nbsp;			viewer.getROIEditor().setROI(null);</b>
+<i>261</i>&nbsp;		} else {
+<b class="nc"><i>262</i>&nbsp;			this.currentObject = getUpdatedObject(e, shapeROI, currentObject, -1);</b>
+<b class="nc"><i>263</i>&nbsp;			viewer.setSelectedObject(this.currentObject);</b>
+<b class="nc"><i>264</i>&nbsp;			viewer.getROIEditor().setROI(null); // Avoids handles appearing?</b>
+<i>265</i>&nbsp;		}		
+<b class="nc"><i>266</i>&nbsp;		lastPoint = p;</b>
+<b class="nc"><i>267</i>&nbsp;	}</b>
+<i>268</i>&nbsp;	
+<i>269</i>&nbsp;	
+<i>270</i>&nbsp;	
+<i>271</i>&nbsp;	
+<i>272</i>&nbsp;	@Override
+<i>273</i>&nbsp;	public void mouseDragged(MouseEvent e) {
+<i>274</i>&nbsp;		// Note: if the &#39;freehand&#39; part of the polygon creation isn&#39;t desired, just comment out this whole method
+<b class="nc"><i>275</i>&nbsp;		super.mouseDragged(e);</b>
+<i>276</i>&nbsp;		
+<b class="nc"><i>277</i>&nbsp;		ensureCursorType(getRequestedCursor());</b>
+<b class="nc"><i>278</i>&nbsp;		if (!e.isPrimaryButtonDown()) {</b>
+<b class="nc"><i>279</i>&nbsp;            return;</b>
+<i>280</i>&nbsp;        }
+<i>281</i>&nbsp;		
+<i>282</i>&nbsp;		// Can only modify annotations
+<b class="nc"><i>283</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>284</i>&nbsp;		PathObject pathObject = viewer.getSelectedObject();</b>
+<b class="nc"><i>285</i>&nbsp;		if (pathObject == null || !pathObject.isAnnotation() || !pathObject.isEditable())</b>
+<b class="nc"><i>286</i>&nbsp;			return;</b>
+<b class="nc"><i>287</i>&nbsp;		if (pathObject != currentObject) {</b>
+<b class="nc"><i>288</i>&nbsp;			logger.warn(&quot;Selected object has changed from {} to {}&quot;, currentObject, pathObject);</b>
+<b class="nc"><i>289</i>&nbsp;			return;</b>
+<i>290</i>&nbsp;		}
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;		ROI currentROI = pathObject.getROI();</b>
+<b class="nc"><i>293</i>&nbsp;		if (!(currentROI instanceof ROI))</b>
+<b class="nc"><i>294</i>&nbsp;			return;</b>
+<i>295</i>&nbsp;		
+<b class="nc"><i>296</i>&nbsp;		ROI shapeROI = currentROI;</b>
+<i>297</i>&nbsp;		
+<b class="nc"><i>298</i>&nbsp;		PathObject pathObjectUpdated = getUpdatedObject(e, shapeROI, pathObject, -1);</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;		if (pathObject != pathObjectUpdated) {</b>
+<b class="nc"><i>301</i>&nbsp;			viewer.setSelectedObject(pathObjectUpdated, PathPrefs.selectionModeProperty().get());</b>
+<i>302</i>&nbsp;		} else {
+<b class="nc"><i>303</i>&nbsp;			viewer.repaint();</b>
+<i>304</i>&nbsp;		}
+<b class="nc"><i>305</i>&nbsp;	}</b>
+<i>306</i>&nbsp;	
+<i>307</i>&nbsp;	
+<i>308</i>&nbsp;	protected boolean isSubtractMode(MouseEvent e) {
+<b class="nc"><i>309</i>&nbsp;		PenInputManager manager = QuPathPenManager.getPenManager();</b>
+<b class="nc"><i>310</i>&nbsp;		if (manager.isEraser())</b>
+<b class="nc"><i>311</i>&nbsp;			return true;</b>
+<b class="nc"><i>312</i>&nbsp;		return e == null ? false : e.isAltDown();</b>
+<i>313</i>&nbsp;	}
+<i>314</i>&nbsp;	
+<i>315</i>&nbsp;	
+<i>316</i>&nbsp;	private PathObject getUpdatedObject(MouseEvent e, ROI shapeROI, PathObject currentObject, double flatness) {
+<b class="nc"><i>317</i>&nbsp;		Point2D p = mouseLocationToImage(e, true, requestPixelSnapping());</b>
+<i>318</i>&nbsp;		
+<b class="nc"><i>319</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>320</i>&nbsp;		ImagePlane plane = shapeROI == null ? ImagePlane.getPlane(viewer.getZPosition(), viewer.getTPosition()) : shapeROI.getImagePlane();</b>
+<i>321</i>&nbsp;		Geometry shapeNew;
+<b class="nc"><i>322</i>&nbsp;		boolean subtractMode = isSubtractMode(e);</b>
+<b class="nc"><i>323</i>&nbsp;		Geometry shapeCurrent = shapeROI == null ? null : shapeROI.getGeometry();</b>
+<i>324</i>&nbsp;		
+<b class="nc"><i>325</i>&nbsp;		Geometry shapeDrawn = createShape(e, p.getX(), p.getY(),</b>
+<b class="nc"><i>326</i>&nbsp;				PathPrefs.useTileBrushProperty().get() &amp;&amp; !e.isShiftDown(),</b>
+<b class="nc"><i>327</i>&nbsp;				subtractMode ? null : shapeCurrent);</b>
+<i>328</i>&nbsp;		
+<b class="nc"><i>329</i>&nbsp;		if (shapeDrawn == null)</b>
+<b class="nc"><i>330</i>&nbsp;			return currentObject;</b>
+<i>331</i>&nbsp;		
+<i>332</i>&nbsp;		// Do our pixel snapping now, with the simpler geometry (rather than latter when things are already complex)
+<b class="nc"><i>333</i>&nbsp;		if (requestPixelSnapping())</b>
+<b class="nc"><i>334</i>&nbsp;			shapeDrawn = GeometryTools.roundCoordinates(shapeDrawn);</b>
+<i>335</i>&nbsp;		
+<b class="nc"><i>336</i>&nbsp;		lastPoint = p;</b>
+<i>337</i>&nbsp;		try {
+<b class="nc"><i>338</i>&nbsp;			if (shapeROI != null) {</b>
+<i>339</i>&nbsp;				// Check to see if any changes are required at all
+<b class="nc"><i>340</i>&nbsp;				if (shapeDrawn == null || (subtractMode &amp;&amp; !shapeCurrent.intersects(shapeDrawn)) || </b>
+<b class="nc"><i>341</i>&nbsp;						(!subtractMode &amp;&amp; shapeCurrent.covers(shapeDrawn)))</b>
+<b class="nc"><i>342</i>&nbsp;					return currentObject;</b>
+<i>343</i>&nbsp;				
+<i>344</i>&nbsp;				// TODO: Consider whether a preference should be used rather than the shift key?
+<i>345</i>&nbsp;				// Anyhow, this will switch to &#39;dodge&#39; mode, and avoid overlapping existing annotations
+<b class="nc"><i>346</i>&nbsp;				boolean avoidOtherAnnotations = requestParentClipping(e);</b>
+<b class="nc"><i>347</i>&nbsp;				if (subtractMode) {</b>
+<i>348</i>&nbsp;					// If subtracting... then just subtract
+<b class="nc"><i>349</i>&nbsp;					shapeNew = shapeROI.getGeometry().difference(shapeDrawn);</b>
+<b class="nc"><i>350</i>&nbsp;				} else if (avoidOtherAnnotations) {</b>
+<b class="nc"><i>351</i>&nbsp;					shapeNew = shapeCurrent.union(shapeDrawn);</b>
+<b class="nc"><i>352</i>&nbsp;					shapeNew = refineGeometryByParent(shapeNew);</b>
+<i>353</i>&nbsp;				} else {
+<i>354</i>&nbsp;					// Just add, regardless of whether there are other annotations below or not
+<b class="nc"><i>355</i>&nbsp;					var temp = shapeROI.getGeometry();</b>
+<i>356</i>&nbsp;					try {
+<b class="nc"><i>357</i>&nbsp;						shapeNew = temp.union(shapeDrawn);</b>
+<b class="nc"><i>358</i>&nbsp;					} catch (Exception e2) {</b>
+<b class="nc"><i>359</i>&nbsp;						shapeNew = shapeROI.getGeometry();</b>
+<b class="nc"><i>360</i>&nbsp;					}</b>
+<i>361</i>&nbsp;				}
+<b class="nc"><i>362</i>&nbsp;			} else {</b>
+<b class="nc"><i>363</i>&nbsp;				shapeNew = shapeDrawn;</b>
+<i>364</i>&nbsp;			}
+<i>365</i>&nbsp;			
+<i>366</i>&nbsp;			// If we aren&#39;t snapping, at least remove some vertices
+<b class="nc"><i>367</i>&nbsp;			if (!requestPixelSnapping()) {</b>
+<i>368</i>&nbsp;				try {
+<b class="nc"><i>369</i>&nbsp;					shapeNew = VWSimplifier.simplify(shapeNew, 0.1);</b>
+<b class="nc"><i>370</i>&nbsp;				} catch (Exception e2) {</b>
+<b class="nc"><i>371</i>&nbsp;					logger.error(&quot;Error simplifying ROI: &quot; + e2.getLocalizedMessage(), e2);</b>
+<b class="nc"><i>372</i>&nbsp;				}</b>
+<i>373</i>&nbsp;			}
+<i>374</i>&nbsp;			
+<i>375</i>&nbsp;			// Make sure we fit inside the image
+<b class="nc"><i>376</i>&nbsp;			shapeNew = GeometryTools.constrainToBounds(shapeNew, 0, 0, viewer.getServerWidth(), viewer.getServerHeight());</b>
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;			// Sometimes we can end up with a GeometryCollection containing lines/non-areas... if so, remove these
+<b class="nc"><i>379</i>&nbsp;			if (shapeNew instanceof GeometryCollection) {</b>
+<b class="nc"><i>380</i>&nbsp;				shapeNew = GeometryTools.ensurePolygonal(shapeNew);</b>
+<i>381</i>&nbsp;			}
+<i>382</i>&nbsp;					
+<b class="nc"><i>383</i>&nbsp;			ROI roiNew = GeometryTools.geometryToROI(shapeNew, plane);</b>
+<i>384</i>&nbsp;			
+<b class="nc"><i>385</i>&nbsp;			if (currentObject instanceof PathAnnotationObject) {</b>
+<b class="nc"><i>386</i>&nbsp;				((PathAnnotationObject)currentObject).setROI(roiNew);</b>
+<b class="nc"><i>387</i>&nbsp;				return currentObject;</b>
+<i>388</i>&nbsp;			}
+<i>389</i>&nbsp;			
+<i>390</i>&nbsp;//			shapeNew = new PathAreaROI(new Area(shapeNew.getShape()));
+<b class="nc"><i>391</i>&nbsp;			PathObject pathObjectNew = PathObjects.createAnnotationObject(roiNew, PathPrefs.autoSetAnnotationClassProperty().get());</b>
+<b class="nc"><i>392</i>&nbsp;			if (currentObject != null) {</b>
+<b class="nc"><i>393</i>&nbsp;				pathObjectNew.setName(currentObject.getName());</b>
+<b class="nc"><i>394</i>&nbsp;				pathObjectNew.setColorRGB(currentObject.getColorRGB());</b>
+<b class="nc"><i>395</i>&nbsp;				pathObjectNew.setPathClass(currentObject.getPathClass());</b>
+<i>396</i>&nbsp;			}
+<b class="nc"><i>397</i>&nbsp;			return pathObjectNew;</b>
+<i>398</i>&nbsp;
+<b class="nc"><i>399</i>&nbsp;		} catch (Exception ex) {</b>
+<b class="nc"><i>400</i>&nbsp;			logger.error(&quot;Error updating ROI&quot;, ex);</b>
+<b class="nc"><i>401</i>&nbsp;			return currentObject;</b>
+<i>402</i>&nbsp;		}
+<i>403</i>&nbsp;	}
+<i>404</i>&nbsp;	
+<i>405</i>&nbsp;	
+<i>406</i>&nbsp;	@Override
+<i>407</i>&nbsp;	public void mouseReleased(MouseEvent e) {
+<b class="nc"><i>408</i>&nbsp;		super.mouseReleased(e);</b>
+<i>409</i>&nbsp;		
+<b class="nc"><i>410</i>&nbsp;		ensureCursorType(Cursor.DEFAULT);</b>
+<i>411</i>&nbsp;		
+<b class="nc"><i>412</i>&nbsp;		if (e.isConsumed())</b>
+<b class="nc"><i>413</i>&nbsp;			return;</b>
+<i>414</i>&nbsp;
+<b class="nc"><i>415</i>&nbsp;		if (currentObject != null)</b>
+<b class="nc"><i>416</i>&nbsp;			commitObjectToHierarchy(e, currentObject);</b>
+<i>417</i>&nbsp;		
+<b class="nc"><i>418</i>&nbsp;		lastPoint = null;</b>
+<b class="nc"><i>419</i>&nbsp;		this.currentObject = null;</b>
+<b class="nc"><i>420</i>&nbsp;	}</b>
+<i>421</i>&nbsp;	
+<i>422</i>&nbsp;	
+<i>423</i>&nbsp;	protected double getBrushDiameter() {
+<b class="nc"><i>424</i>&nbsp;		PenInputManager manager = QuPathPenManager.getPenManager();</b>
+<b class="nc"><i>425</i>&nbsp;		double scale = manager.getPressure();</b>
+<b class="nc"><i>426</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>427</i>&nbsp;		double brushDiameter = PathPrefs.brushDiameterProperty().get() * scale;</b>
+<b class="nc"><i>428</i>&nbsp;		if (PathPrefs.brushScaleByMagProperty().get())</b>
+<b class="nc"><i>429</i>&nbsp;			return brushDiameter * viewer.getDownsampleFactor();</b>
+<i>430</i>&nbsp;		else
+<b class="nc"><i>431</i>&nbsp;			return brushDiameter;</b>
+<i>432</i>&nbsp;	}
+<i>433</i>&nbsp;	
+<i>434</i>&nbsp;	
+<i>435</i>&nbsp;	/**
+<i>436</i>&nbsp;	 * Create a new Geometry using the specified tool, assuming a user click/drag at the provided x &amp;amp; y coordinates.
+<i>437</i>&nbsp;	 * @param e 
+<i>438</i>&nbsp;	 * 
+<i>439</i>&nbsp;	 * @param x
+<i>440</i>&nbsp;	 * @param y
+<i>441</i>&nbsp;	 * @param useTiles If true, request generating a shape from existing tile objects.
+<i>442</i>&nbsp;	 * @param addToShape If provided, it can be assumed that any new shape ought to be added to this one.
+<i>443</i>&nbsp;	 *                   The purpose is that this method may (optionally) use the shape to refine the one it will generate, 
+<i>444</i>&nbsp;	 *                   e.g. to avoid having isolated or jagged boundaries.
+<i>445</i>&nbsp;	 * @return
+<i>446</i>&nbsp;	 */
+<i>447</i>&nbsp;	protected Geometry createShape(MouseEvent e, double x, double y, boolean useTiles, Geometry addToShape) {
+<i>448</i>&nbsp;		
+<i>449</i>&nbsp;		// See if we&#39;re on top of a tile
+<b class="nc"><i>450</i>&nbsp;		if (useTiles) {</b>
+<b class="nc"><i>451</i>&nbsp;			List&lt;PathObject&gt; listSelectable = getSelectableObjectList(x, y);</b>
+<b class="nc"><i>452</i>&nbsp;			for (PathObject temp : listSelectable) {</b>
+<i>453</i>&nbsp;//				if ((temp instanceof PathDetectionObject) &amp;&amp; temp.getROI() instanceof PathArea)
+<b class="nc"><i>454</i>&nbsp;				if (temp instanceof PathTileObject &amp;&amp; temp.hasROI() &amp;&amp; temp.getROI().isArea() &amp;&amp; !(temp.getROI() instanceof RectangleROI)) {</b>
+<b class="nc"><i>455</i>&nbsp;					creatingTiledROI = true;</b>
+<b class="nc"><i>456</i>&nbsp;					return temp.getROI().getGeometry();</b>
+<i>457</i>&nbsp;				}
+<b class="nc"><i>458</i>&nbsp;			}</b>
+<i>459</i>&nbsp;			// If we&#39;re currently creating a tiled, ROI, but now not clicked on a tile, just return
+<b class="nc"><i>460</i>&nbsp;			if (creatingTiledROI)</b>
+<b class="nc"><i>461</i>&nbsp;				return null;</b>
+<i>462</i>&nbsp;		}
+<i>463</i>&nbsp;		
+<i>464</i>&nbsp;		// Compute a diameter scaled according to the pressure being applied
+<b class="nc"><i>465</i>&nbsp;		double diameter = Math.max(1, getBrushDiameter());</b>
+<i>466</i>&nbsp;		
+<i>467</i>&nbsp;		Geometry geometry;
+<b class="nc"><i>468</i>&nbsp;		if (lastPoint == null) {</b>
+<b class="nc"><i>469</i>&nbsp;			var shapeFactory = new GeometricShapeFactory(getGeometryFactory());</b>
+<b class="nc"><i>470</i>&nbsp;			shapeFactory.setCentre(new Coordinate(x, y));</b>
+<b class="nc"><i>471</i>&nbsp;			shapeFactory.setSize(diameter);</b>
+<i>472</i>&nbsp;//			shapeFactory.setCentre(new Coordinate(x-diameter/2, y-diameter/2));
+<b class="nc"><i>473</i>&nbsp;			geometry = shapeFactory.createEllipse();</b>
+<b class="nc"><i>474</i>&nbsp;		} else {</b>
+<b class="nc"><i>475</i>&nbsp;			if (lastPoint.distanceSq(x, y) == 0)</b>
+<b class="nc"><i>476</i>&nbsp;				return null;</b>
+<b class="nc"><i>477</i>&nbsp;			var factory = getGeometryFactory();</b>
+<b class="nc"><i>478</i>&nbsp;			geometry = factory.createLineString(new Coordinate[] {</b>
+<b class="nc"><i>479</i>&nbsp;					new Coordinate(lastPoint.getX(), lastPoint.getY()),</b>
+<b class="nc"><i>480</i>&nbsp;					new Coordinate(x, y)}).buffer(diameter/2.0);</b>
+<i>481</i>&nbsp;		}
+<i>482</i>&nbsp;		
+<b class="nc"><i>483</i>&nbsp;		return geometry;</b>
+<i>484</i>&nbsp;	}
+<i>485</i>&nbsp;	
+<b class="fc"><i>486</i>&nbsp;	private boolean creatingTiledROI = false;</b>
+<i>487</i>&nbsp;	
+<i>488</i>&nbsp;	protected GeometryFactory getGeometryFactory() {
+<b class="nc"><i>489</i>&nbsp;		var factory = GeometryTools.getDefaultFactory();</b>
+<b class="nc"><i>490</i>&nbsp;		return factory;</b>
+<i>491</i>&nbsp;	}
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;	@Override
+<i>494</i>&nbsp;	protected ROI createNewROI(MouseEvent e, double x, double y, ImagePlane plane) {
+<b class="nc"><i>495</i>&nbsp;		creatingTiledROI = false;</b>
+<b class="nc"><i>496</i>&nbsp;		lastPoint = null;</b>
+<b class="nc"><i>497</i>&nbsp;		Geometry geom = createShape(e, x, y, PathPrefs.useTileBrushProperty().get(), null);</b>
+<b class="nc"><i>498</i>&nbsp;		if (geom == null || geom.isEmpty())</b>
+<b class="nc"><i>499</i>&nbsp;			return ROIs.createEmptyROI();</b>
+<b class="nc"><i>500</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>501</i>&nbsp;		geom = GeometryTools.roundCoordinates(geom);</b>
+<b class="nc"><i>502</i>&nbsp;		geom = GeometryTools.constrainToBounds(geom, 0, 0, viewer.getServerWidth(), viewer.getServerHeight());</b>
+<b class="nc"><i>503</i>&nbsp;		return GeometryTools.geometryToROI(geom, plane);</b>
+<i>504</i>&nbsp;	}
+<i>505</i>&nbsp;	
+<i>506</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

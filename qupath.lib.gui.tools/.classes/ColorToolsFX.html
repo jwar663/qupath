@@ -1,0 +1,334 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ColorToolsFX</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ColorToolsFX (qupath.lib.gui.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ColorToolsFX</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46.2%
+  </span>
+  <span class="absValue">
+    (6/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    39.4%
+  </span>
+  <span class="absValue">
+    (26/ 66)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.HashMap;
+<i>27</i>&nbsp;import java.util.Map;
+<i>28</i>&nbsp;import java.util.concurrent.locks.Lock;
+<i>29</i>&nbsp;import java.util.concurrent.locks.ReentrantReadWriteLock;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import javafx.scene.paint.Color;
+<i>32</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>33</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>34</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>35</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>36</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>37</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Helper class for converting between packed RGB colors and Java&#39;s AWT representation, as well as creating some ColorModels for BufferedImages.
+<i>41</i>&nbsp; * 
+<i>42</i>&nbsp; * @author Pete Bankhead
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; */
+<b class="nc"><i>45</i>&nbsp;public class ColorToolsFX {</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;	// Shouldn&#39;t need to synchronize, because each key value pair should always be a fixed &amp; unique combination?
+<i>48</i>&nbsp;	// In other words, if the same Integer is used as a key, it will *always* may to a Color object that is the
+<i>49</i>&nbsp;	// same (in terms of &#39;equals&#39; - not necessarily reference).
+<i>50</i>&nbsp;//	private static Map&lt;Integer, Color&gt; colorMap = Collections.synchronizedMap(new HashMap&lt;Integer, Color&gt;());
+<i>51</i>&nbsp;//	private static Map&lt;Integer, Color&gt; colorMapWithAlpha = Collections.synchronizedMap(new HashMap&lt;Integer, Color&gt;());
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;	/**
+<i>54</i>&nbsp;	 * Black with opacity at 50%.
+<i>55</i>&nbsp;	 */
+<b class="fc"><i>56</i>&nbsp;	public static final Color TRANSLUCENT_BLACK_FX = Color.rgb(0, 0, 0, 0.5);</b>
+<i>57</i>&nbsp;	
+<i>58</i>&nbsp;	/**
+<i>59</i>&nbsp;	 * White with opacity at 50%.
+<i>60</i>&nbsp;	 */
+<b class="fc"><i>61</i>&nbsp;	public static final Color TRANSLUCENT_WHITE_FX = Color.rgb(255, 255, 255, 0.5);</b>
+<i>62</i>&nbsp;
+<b class="fc"><i>63</i>&nbsp;	private static Map&lt;Integer, Color&gt; colorMap = new HashMap&lt;Integer, Color&gt;();</b>
+<b class="fc"><i>64</i>&nbsp;	private static Map&lt;Integer, Color&gt; colorMapWithAlpha = new HashMap&lt;Integer, Color&gt;();</b>
+<i>65</i>&nbsp;	
+<b class="fc"><i>66</i>&nbsp;	private static final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();</b>
+<b class="fc"><i>67</i>&nbsp;    private static final Lock r = rwl.readLock();</b>
+<b class="fc"><i>68</i>&nbsp;    private static final Lock w = rwl.writeLock();</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Get a Color object, possibly from a shared map (used to avoid creating too many objects unnecessarily).
+<i>72</i>&nbsp;	 * @param r
+<i>73</i>&nbsp;	 * @param g
+<i>74</i>&nbsp;	 * @param b
+<i>75</i>&nbsp;	 * @param a
+<i>76</i>&nbsp;	 * @return
+<i>77</i>&nbsp;	 */
+<i>78</i>&nbsp;	public static Color getCachedColor(final int r, final int g, final int b, final int a) {
+<b class="fc"><i>79</i>&nbsp;		return getCachedColor(ColorTools.makeRGBA(r, g, b, a), true);</b>
+<i>80</i>&nbsp;	}
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Get a Color object, possibly from a shared map (used to avoid creating too many objects unnecessarily).
+<i>84</i>&nbsp;	 * @param r
+<i>85</i>&nbsp;	 * @param g
+<i>86</i>&nbsp;	 * @param b
+<i>87</i>&nbsp;	 * @return
+<i>88</i>&nbsp;	 */
+<i>89</i>&nbsp;	public static Color getCachedColor(final int r, final int g, final int b) {
+<b class="fc"><i>90</i>&nbsp;		return getCachedColor(ColorTools.makeRGB(r, g, b));</b>
+<i>91</i>&nbsp;	}
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Get cached color. Assumed not to have alpha set, unless the relevant bits are non-zero.
+<i>95</i>&nbsp;	 * @param rgb
+<i>96</i>&nbsp;	 * @return
+<i>97</i>&nbsp;	 */
+<i>98</i>&nbsp;	public static Color getCachedColor(final Integer rgb) {
+<b class="fc"><i>99</i>&nbsp;		return getCachedColor(rgb, ColorTools.alpha(rgb.intValue()) &gt; 0);</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;	/**
+<i>103</i>&nbsp;	 * Get cached color, explicitly stating whether alpha should be included or not.
+<i>104</i>&nbsp;	 * @param rgb
+<i>105</i>&nbsp;	 * @param hasAlpha
+<i>106</i>&nbsp;	 * @return
+<i>107</i>&nbsp;	 */
+<i>108</i>&nbsp;	public static Color getCachedColor(final Integer rgb, final boolean hasAlpha) {
+<b class="fc"><i>109</i>&nbsp;		if (rgb == null)</b>
+<b class="nc"><i>110</i>&nbsp;			return null;</b>
+<b class="fc"><i>111</i>&nbsp;		r.lock();</b>
+<i>112</i>&nbsp;		try {
+<b class="fc"><i>113</i>&nbsp;			Color color = hasAlpha ? colorMapWithAlpha.get(rgb) : colorMap.get(rgb);</b>
+<b class="fc"><i>114</i>&nbsp;			if (color != null)</b>
+<b class="fc"><i>115</i>&nbsp;				return color;</b>
+<i>116</i>&nbsp;		} finally {
+<b class="fc"><i>117</i>&nbsp;			r.unlock();</b>
+<b class="fc"><i>118</i>&nbsp;		}</b>
+<b class="fc"><i>119</i>&nbsp;		w.lock();</b>
+<i>120</i>&nbsp;		try {
+<i>121</i>&nbsp;			Color color;
+<b class="fc"><i>122</i>&nbsp;			if (hasAlpha) {</b>
+<b class="fc"><i>123</i>&nbsp;				color = Color.rgb(ColorTools.red(rgb), ColorTools.green(rgb), ColorTools.blue(rgb), ColorTools.alpha(rgb)/255.0);</b>
+<b class="fc"><i>124</i>&nbsp;				colorMapWithAlpha.put(rgb, color);</b>
+<i>125</i>&nbsp;			} else {
+<b class="nc"><i>126</i>&nbsp;				color = Color.rgb(ColorTools.red(rgb), ColorTools.green(rgb), ColorTools.blue(rgb));</b>
+<b class="nc"><i>127</i>&nbsp;				colorMap.put(rgb, color);</b>
+<i>128</i>&nbsp;			}
+<b class="fc"><i>129</i>&nbsp;			return color;</b>
+<i>130</i>&nbsp;		} finally {
+<b class="fc"><i>131</i>&nbsp;			w.unlock();</b>
+<b class="nc"><i>132</i>&nbsp;		}</b>
+<i>133</i>&nbsp;	}
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	/**
+<i>137</i>&nbsp;	 * Get a packed int (ARGB) representation of a Color object, omitting the alpha component.
+<i>138</i>&nbsp;	 * @param color
+<i>139</i>&nbsp;	 * @return
+<i>140</i>&nbsp;	 */
+<i>141</i>&nbsp;	public static int getRGB(final Color color) {
+<b class="nc"><i>142</i>&nbsp;		return ColorTools.makeRGB((int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255));</b>
+<i>143</i>&nbsp;	}
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	/**
+<i>146</i>&nbsp;	 * Get a packed int (ARGB) representation of a Color object.
+<i>147</i>&nbsp;	 * @param color
+<i>148</i>&nbsp;	 * @return
+<i>149</i>&nbsp;	 */
+<i>150</i>&nbsp;	public static int getARGB(final Color color) {
+<b class="nc"><i>151</i>&nbsp;		return ColorTools.makeRGBA((int)(color.getRed() * 255), (int)(color.getGreen() * 255), (int)(color.getBlue() * 255), (int)(color.getOpacity() * 255));</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;	
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;	/**
+<i>156</i>&nbsp;	 * Get a Color appropriate for displaying an object.
+<i>157</i>&nbsp;	 * @param pathObject
+<i>158</i>&nbsp;	 * @return
+<i>159</i>&nbsp;	 * 
+<i>160</i>&nbsp;	 * @see #getDisplayedColorARGB(PathObject)
+<i>161</i>&nbsp;	 */
+<i>162</i>&nbsp;	public static Color getDisplayedColor(final PathObject pathObject) {
+<b class="nc"><i>163</i>&nbsp;		Integer rgb = getDisplayedColorARGB(pathObject);</b>
+<b class="nc"><i>164</i>&nbsp;		Color color = getCachedColor(rgb);</b>
+<b class="nc"><i>165</i>&nbsp;		return color;</b>
+<i>166</i>&nbsp;	}
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;	/**
+<i>169</i>&nbsp;	 * Get a Color appropriate for displaying a {@link PathClass}.
+<i>170</i>&nbsp;	 * @param pathClass
+<i>171</i>&nbsp;	 * @return
+<i>172</i>&nbsp;	 */
+<i>173</i>&nbsp;	public static Color getPathClassColor(final PathClass pathClass) {
+<b class="fc"><i>174</i>&nbsp;		Color color = getCachedColor(pathClass.getColor());</b>
+<b class="fc"><i>175</i>&nbsp;		if (color == null)</b>
+<b class="nc"><i>176</i>&nbsp;			return Color.GRAY;</b>
+<b class="fc"><i>177</i>&nbsp;		return color;</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Get a Color from a packed RGB value, setting the alpha component to match the desired opacity.
+<i>182</i>&nbsp;	 * @param rgb
+<i>183</i>&nbsp;	 * @param opacity
+<i>184</i>&nbsp;	 * @return
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public static Color getColorWithOpacityFX(Integer rgb, double opacity) {
+<b class="nc"><i>187</i>&nbsp;		if (rgb == null)</b>
+<b class="nc"><i>188</i>&nbsp;			return null;</b>
+<b class="nc"><i>189</i>&nbsp;		if (opacity &gt; 1)</b>
+<b class="nc"><i>190</i>&nbsp;			opacity = 1;</b>
+<b class="nc"><i>191</i>&nbsp;		else if (opacity &lt; 0)</b>
+<b class="nc"><i>192</i>&nbsp;			opacity = 0;</b>
+<i>193</i>&nbsp;		//		IJ.log(&quot;Opacity: &quot; + (int)(opacity * 255 + .5));
+<b class="nc"><i>194</i>&nbsp;		return Color.rgb(ColorTools.red(rgb), ColorTools.green(rgb), ColorTools.blue(rgb), opacity);</b>
+<i>195</i>&nbsp;	}
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;	/**
+<i>198</i>&nbsp;	 * Derived a Color from an existing one, setting the alpha component to match the desired opacity.
+<i>199</i>&nbsp;	 * @param color
+<i>200</i>&nbsp;	 * @param opacity
+<i>201</i>&nbsp;	 * @return
+<i>202</i>&nbsp;	 */
+<i>203</i>&nbsp;	public static Color getColorWithOpacity(Color color, double opacity) {
+<b class="nc"><i>204</i>&nbsp;		if (color == null)</b>
+<b class="nc"><i>205</i>&nbsp;			return null;</b>
+<b class="nc"><i>206</i>&nbsp;		if (opacity &gt; 1)</b>
+<b class="nc"><i>207</i>&nbsp;			opacity = 1;</b>
+<b class="nc"><i>208</i>&nbsp;		else if (opacity &lt; 0)</b>
+<b class="nc"><i>209</i>&nbsp;			opacity = 0;</b>
+<i>210</i>&nbsp;		//		IJ.log(&quot;Opacity: &quot; + (int)(opacity * 255 + .5));
+<b class="nc"><i>211</i>&nbsp;		return Color.color(color.getRed(), color.getGreen(), color.getBlue(), opacity);</b>
+<i>212</i>&nbsp;	}
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;	/**
+<i>215</i>&nbsp;	 * Get the color with which an object should be displayed, as a packaged ARGB integer.
+<i>216</i>&nbsp;	 * 
+<i>217</i>&nbsp;	 * This could be stored internally, or obtained from its PathClass.
+<i>218</i>&nbsp;	 * 
+<i>219</i>&nbsp;	 * If neither of these produces a result, a default color will be returned based on PathPrefs
+<i>220</i>&nbsp;	 * for the specific (Java) class of the PathObject.
+<i>221</i>&nbsp;	 * 
+<i>222</i>&nbsp;	 * Assuming PathPrefs does not contain any nulls, this will therefore not return nulls either.
+<i>223</i>&nbsp;	 * 
+<i>224</i>&nbsp;	 * @param pathObject
+<i>225</i>&nbsp;	 * @return
+<i>226</i>&nbsp;	 */
+<i>227</i>&nbsp;	public static Integer getDisplayedColorARGB(final PathObject pathObject) {
+<i>228</i>&nbsp;		// Check if any color has been set - if so, return it
+<b class="nc"><i>229</i>&nbsp;		Integer color = pathObject.getColorRGB();</b>
+<b class="nc"><i>230</i>&nbsp;		if (color != null)</b>
+<b class="nc"><i>231</i>&nbsp;			return color;</b>
+<i>232</i>&nbsp;		// Check if any class has been set, if so then use its color
+<b class="nc"><i>233</i>&nbsp;		PathClass pathClass = pathObject.getPathClass();</b>
+<b class="nc"><i>234</i>&nbsp;		if (pathClass != null)</b>
+<b class="nc"><i>235</i>&nbsp;			color = pathClass.getColor();</b>
+<b class="nc"><i>236</i>&nbsp;		if (color != null)</b>
+<b class="nc"><i>237</i>&nbsp;			return color;</b>
+<i>238</i>&nbsp;	
+<b class="nc"><i>239</i>&nbsp;		if (pathObject instanceof PathTileObject)</b>
+<b class="nc"><i>240</i>&nbsp;			return PathPrefs.colorTileProperty().getValue();</b>
+<b class="nc"><i>241</i>&nbsp;		if (pathObject instanceof TMACoreObject) {</b>
+<b class="nc"><i>242</i>&nbsp;			if (((TMACoreObject)pathObject).isMissing())</b>
+<b class="nc"><i>243</i>&nbsp;				return PathPrefs.colorTMAMissingProperty().getValue();</b>
+<i>244</i>&nbsp;			else
+<b class="nc"><i>245</i>&nbsp;				return PathPrefs.colorTMAProperty().getValue();</b>
+<i>246</i>&nbsp;		}
+<b class="nc"><i>247</i>&nbsp;		return PathPrefs.colorDefaultObjectsProperty().getValue();</b>
+<i>248</i>&nbsp;	}
+<i>249</i>&nbsp;	
+<i>250</i>&nbsp;
+<i>251</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

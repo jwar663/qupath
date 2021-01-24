@@ -23,6 +23,7 @@
 
 package qupath.lib.images;
 
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Collections;
@@ -47,6 +48,7 @@ import qupath.lib.plugins.workflow.DefaultScriptableWorkflowStep;
 import qupath.lib.plugins.workflow.Workflow;
 import qupath.lib.plugins.workflow.WorkflowListener;
 import qupath.lib.plugins.workflow.WorkflowStep;
+import qupath.lib.regions.RegionRequest;
 
 /**
  * Class that brings together the main data in connection with the analysis of a single image.
@@ -174,6 +176,8 @@ public class ImageData<T> implements WorkflowListener, PathObjectHierarchyListen
 	public ImageData(ImageServer<T> server, ImageType type) {
 
 		this(server, new PathObjectHierarchy(), type);
+//		RegionRequest request =
+//		BufferedImage img = server.readBufferedImage()
 		System.out.println("method called: " + TestCommon.methodCalled());
 		System.out.println("image data ImageData 2");
 		System.out.println("type: " + type.text);

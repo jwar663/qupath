@@ -1,0 +1,469 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AnnotationPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.panes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AnnotationPane (qupath.lib.gui.panes)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AnnotationPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    72.7%
+  </span>
+  <span class="absValue">
+    (8/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50.6%
+  </span>
+  <span class="absValue">
+    (82/ 162)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.panes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Arrays;
+<i>29</i>&nbsp;import java.util.Collection;
+<i>30</i>&nbsp;import java.util.HashSet;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.Set;
+<i>33</i>&nbsp;import java.util.TreeSet;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.application.Platform;
+<i>39</i>&nbsp;import javafx.beans.binding.BooleanBinding;
+<i>40</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>41</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>42</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>43</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>44</i>&nbsp;import javafx.collections.ListChangeListener.Change;
+<i>45</i>&nbsp;import javafx.geometry.Side;
+<i>46</i>&nbsp;import javafx.scene.control.Button;
+<i>47</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>48</i>&nbsp;import javafx.scene.control.ListView;
+<i>49</i>&nbsp;import javafx.scene.control.MultipleSelectionModel;
+<i>50</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>51</i>&nbsp;import javafx.scene.control.SplitPane;
+<i>52</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>53</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>54</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>55</i>&nbsp;import javafx.scene.layout.Pane;
+<i>56</i>&nbsp;import javafx.scene.layout.Priority;
+<i>57</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>58</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>59</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>60</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>61</i>&nbsp;import qupath.lib.images.ImageData;
+<i>62</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>63</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>64</i>&nbsp;import qupath.lib.objects.DefaultPathObjectComparator;
+<i>65</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>66</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>67</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>68</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>69</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;/**
+<i>73</i>&nbsp; * Component for displaying annotations within the active image.
+<i>74</i>&nbsp; * &lt;p&gt;
+<i>75</i>&nbsp; * Also shows the {@link PathClass} list.
+<i>76</i>&nbsp; * 
+<i>77</i>&nbsp; * @author Pete Bankhead
+<i>78</i>&nbsp; *
+<i>79</i>&nbsp; */
+<i>80</i>&nbsp;public class AnnotationPane implements PathObjectSelectionListener, ChangeListener&lt;ImageData&lt;BufferedImage&gt;&gt;, PathObjectHierarchyListener {
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(AnnotationPane.class);</b>
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;	private QuPathGUI qupath;
+<i>85</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<i>86</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<b class="fc"><i>87</i>&nbsp;	private BooleanProperty hasImageData = new SimpleBooleanProperty(false);</b>
+<i>88</i>&nbsp;	
+<b class="fc"><i>89</i>&nbsp;	private BorderPane pane = new BorderPane();</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	/*
+<i>92</i>&nbsp;	 * Request that we only synchronize to the primary selection; otherwise synchronizing to 
+<i>93</i>&nbsp;	 * multiple selections from long lists can be a performance bottleneck
+<i>94</i>&nbsp;	 */
+<b class="fc"><i>95</i>&nbsp;	private static boolean synchronizePrimarySelectionOnly = true;</b>
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	private PathClassPane pathClassPane;
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	/*
+<i>100</i>&nbsp;	 * List displaying annotations in the current hierarchy
+<i>101</i>&nbsp;	 */
+<i>102</i>&nbsp;	private ListView&lt;PathObject&gt; listAnnotations;
+<i>103</i>&nbsp;		
+<i>104</i>&nbsp;	/*
+<i>105</i>&nbsp;	 * Selection being changed by outside forces, i.e. don&#39;t fire an event
+<i>106</i>&nbsp;	 */
+<b class="fc"><i>107</i>&nbsp;	private boolean suppressSelectionChanges = false;</b>
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;	/**
+<i>111</i>&nbsp;	 * Constructor.
+<i>112</i>&nbsp;	 * @param qupath current QuPath instance.
+<i>113</i>&nbsp;	 */
+<b class="fc"><i>114</i>&nbsp;	public AnnotationPane(final QuPathGUI qupath) {</b>
+<b class="fc"><i>115</i>&nbsp;		this.qupath = qupath;</b>
+<i>116</i>&nbsp;		
+<b class="fc"><i>117</i>&nbsp;		pathClassPane = new PathClassPane(qupath);</b>
+<b class="fc"><i>118</i>&nbsp;		setImageData(qupath.getImageData());</b>
+<i>119</i>&nbsp;		
+<b class="fc"><i>120</i>&nbsp;		Pane paneAnnotations = createAnnotationsPane();</b>
+<i>121</i>&nbsp;		
+<i>122</i>&nbsp;//		GridPane paneColumns = PaneTools.createColumnGrid(panelObjects, panelClasses);
+<b class="fc"><i>123</i>&nbsp;		SplitPane paneColumns = new SplitPane(</b>
+<i>124</i>&nbsp;				paneAnnotations,
+<b class="fc"><i>125</i>&nbsp;				pathClassPane.getPane()</b>
+<i>126</i>&nbsp;				);
+<b class="fc"><i>127</i>&nbsp;		paneColumns.setDividerPositions(0.5);</b>
+<b class="fc"><i>128</i>&nbsp;		pane.setCenter(paneColumns);</b>
+<b class="fc"><i>129</i>&nbsp;		qupath.imageDataProperty().addListener(this);</b>
+<b class="fc"><i>130</i>&nbsp;	}</b>
+<i>131</i>&nbsp;	
+<i>132</i>&nbsp;	
+<i>133</i>&nbsp;	private Pane createAnnotationsPane() {
+<b class="fc"><i>134</i>&nbsp;		listAnnotations = new ListView&lt;&gt;();</b>
+<b class="fc"><i>135</i>&nbsp;		hierarchyChanged(null); // Force update</b>
+<i>136</i>&nbsp;
+<b class="fc"><i>137</i>&nbsp;		listAnnotations.setCellFactory(v -&gt; new PathObjectListCell());</b>
+<i>138</i>&nbsp;
+<b class="fc"><i>139</i>&nbsp;		listAnnotations.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</b>
+<b class="fc"><i>140</i>&nbsp;		listAnnotations.getSelectionModel().getSelectedItems().addListener(</b>
+<b class="nc"><i>141</i>&nbsp;				(Change&lt;? extends PathObject&gt; c) -&gt; synchronizeHierarchySelectionToListSelection()</b>
+<i>142</i>&nbsp;		);
+<b class="fc"><i>143</i>&nbsp;		listAnnotations.getSelectionModel().selectedItemProperty().addListener((v, o, n) -&gt; synchronizeHierarchySelectionToListSelection());</b>
+<i>144</i>&nbsp;
+<b class="fc"><i>145</i>&nbsp;		listAnnotations.setOnMouseClicked(e -&gt; {</b>
+<b class="nc"><i>146</i>&nbsp;			if (e.getClickCount() &gt; 1) {</b>
+<b class="nc"><i>147</i>&nbsp;				PathObject pathObject = listAnnotations.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>148</i>&nbsp;				if (pathObject == null || !pathObject.hasROI())</b>
+<b class="nc"><i>149</i>&nbsp;					return;</b>
+<b class="nc"><i>150</i>&nbsp;				qupath.getViewer().centerROI(pathObject.getROI());</b>
+<i>151</i>&nbsp;			}
+<b class="nc"><i>152</i>&nbsp;		});</b>
+<i>153</i>&nbsp;		
+<b class="fc"><i>154</i>&nbsp;		PathPrefs.colorDefaultObjectsProperty().addListener((v, o, n) -&gt; listAnnotations.refresh());</b>
+<i>155</i>&nbsp;
+<b class="fc"><i>156</i>&nbsp;		ContextMenu menuAnnotations = GuiTools.populateAnnotationsMenu(qupath, new ContextMenu());</b>
+<b class="fc"><i>157</i>&nbsp;		listAnnotations.setContextMenu(menuAnnotations);</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;		// Add the main annotation list
+<b class="fc"><i>160</i>&nbsp;		BorderPane panelObjects = new BorderPane();</b>
+<b class="fc"><i>161</i>&nbsp;		panelObjects.setCenter(listAnnotations);</b>
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;		// Add buttons
+<b class="fc"><i>164</i>&nbsp;		Button btnSelectAll = new Button(&quot;Select all&quot;);</b>
+<b class="fc"><i>165</i>&nbsp;		btnSelectAll.setOnAction(e -&gt; listAnnotations.getSelectionModel().selectAll());</b>
+<b class="fc"><i>166</i>&nbsp;		btnSelectAll.setTooltip(new Tooltip(&quot;Select all annotations&quot;));</b>
+<i>167</i>&nbsp;
+<b class="fc"><i>168</i>&nbsp;		Button btnDelete = new Button(&quot;Delete&quot;);</b>
+<b class="fc"><i>169</i>&nbsp;		btnDelete.setOnAction(e -&gt; GuiTools.promptToClearAllSelectedObjects(imageData));</b>
+<b class="fc"><i>170</i>&nbsp;		btnDelete.setTooltip(new Tooltip(&quot;Delete all selected objects&quot;));</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;		// Create a button to show context menu (makes it more obvious to the user that it exists)
+<b class="fc"><i>173</i>&nbsp;		Button btnMore = GuiTools.createMoreButton(menuAnnotations, Side.RIGHT);</b>
+<b class="fc"><i>174</i>&nbsp;		GridPane panelButtons = new GridPane();</b>
+<b class="fc"><i>175</i>&nbsp;		panelButtons.add(btnSelectAll, 0, 0);</b>
+<b class="fc"><i>176</i>&nbsp;		panelButtons.add(btnDelete, 1, 0);</b>
+<b class="fc"><i>177</i>&nbsp;		panelButtons.add(btnMore, 2, 0);</b>
+<b class="fc"><i>178</i>&nbsp;		GridPane.setHgrow(btnSelectAll, Priority.ALWAYS);</b>
+<b class="fc"><i>179</i>&nbsp;		GridPane.setHgrow(btnDelete, Priority.ALWAYS);</b>
+<i>180</i>&nbsp;
+<b class="fc"><i>181</i>&nbsp;		PaneTools.setMaxWidth(Double.MAX_VALUE,</b>
+<i>182</i>&nbsp;				btnSelectAll, btnDelete);
+<i>183</i>&nbsp;		
+<b class="fc"><i>184</i>&nbsp;		BooleanBinding disableButtons = hasImageData.not();</b>
+<b class="fc"><i>185</i>&nbsp;		btnSelectAll.disableProperty().bind(disableButtons);</b>
+<b class="fc"><i>186</i>&nbsp;		btnDelete.disableProperty().bind(disableButtons);</b>
+<b class="fc"><i>187</i>&nbsp;		btnMore.disableProperty().bind(disableButtons);</b>
+<i>188</i>&nbsp;
+<b class="fc"><i>189</i>&nbsp;		panelObjects.setBottom(panelButtons);</b>
+<b class="fc"><i>190</i>&nbsp;		return panelObjects;</b>
+<i>191</i>&nbsp;	}
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	/**
+<i>195</i>&nbsp;	 * Update the selected objects in the hierarchy to match those in the list, 
+<i>196</i>&nbsp;	 * unless selection changes should be suppressed.
+<i>197</i>&nbsp;	 */
+<i>198</i>&nbsp;	void synchronizeHierarchySelectionToListSelection() {
+<b class="nc"><i>199</i>&nbsp;		if (hierarchy == null || suppressSelectionChanges)</b>
+<b class="nc"><i>200</i>&nbsp;			return;</b>
+<b class="nc"><i>201</i>&nbsp;		suppressSelectionChanges = true;</b>
+<b class="nc"><i>202</i>&nbsp;		Set&lt;PathObject&gt; selectedSet = new HashSet&lt;&gt;(listAnnotations.getSelectionModel().getSelectedItems());</b>
+<b class="nc"><i>203</i>&nbsp;		PathObject selectedObject = listAnnotations.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>204</i>&nbsp;		if (!selectedSet.contains(selectedObject))</b>
+<b class="nc"><i>205</i>&nbsp;			selectedObject = null;</b>
+<b class="nc"><i>206</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObjects(selectedSet, selectedObject);</b>
+<b class="nc"><i>207</i>&nbsp;		suppressSelectionChanges = false;</b>
+<b class="nc"><i>208</i>&nbsp;	}</b>
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;	/**
+<i>211</i>&nbsp;	 * Get the pane for display.
+<i>212</i>&nbsp;	 * @return
+<i>213</i>&nbsp;	 */
+<i>214</i>&nbsp;	public Pane getPane() {
+<b class="fc"><i>215</i>&nbsp;		return pane;</b>
+<i>216</i>&nbsp;	}
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;	void setImageData(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="fc"><i>220</i>&nbsp;		if (this.imageData == imageData)</b>
+<b class="fc"><i>221</i>&nbsp;			return;</b>
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;		// Deal with listeners for the current ImageData
+<b class="fc"><i>224</i>&nbsp;		if (this.hierarchy != null) {</b>
+<b class="fc"><i>225</i>&nbsp;			hierarchy.removePathObjectListener(this);</b>
+<b class="fc"><i>226</i>&nbsp;			hierarchy.getSelectionModel().removePathObjectSelectionListener(this);</b>
+<i>227</i>&nbsp;		}
+<b class="fc"><i>228</i>&nbsp;		this.imageData = imageData;</b>
+<b class="fc"><i>229</i>&nbsp;		if (this.imageData != null) {</b>
+<b class="fc"><i>230</i>&nbsp;			hierarchy = imageData.getHierarchy();</b>
+<b class="fc"><i>231</i>&nbsp;			hierarchy.getSelectionModel().addPathObjectSelectionListener(this);</b>
+<b class="fc"><i>232</i>&nbsp;			hierarchy.addPathObjectListener(this);</b>
+<b class="fc"><i>233</i>&nbsp;			PathObject selected = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="fc"><i>234</i>&nbsp;			listAnnotations.getItems().setAll(hierarchy.getAnnotationObjects());</b>
+<b class="fc"><i>235</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObject(selected);</b>
+<b class="fc"><i>236</i>&nbsp;		} else {</b>
+<b class="fc"><i>237</i>&nbsp;			listAnnotations.getItems().clear();</b>
+<i>238</i>&nbsp;		}
+<b class="fc"><i>239</i>&nbsp;		hasImageData.set(this.imageData != null);</b>
+<b class="fc"><i>240</i>&nbsp;		pathClassPane.refresh();</b>
+<b class="fc"><i>241</i>&nbsp;	}</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;	
+<i>244</i>&nbsp;	
+<i>245</i>&nbsp;	@Override
+<i>246</i>&nbsp;	public void selectedPathObjectChanged(final PathObject pathObjectSelected, final PathObject previousObject, Collection&lt;PathObject&gt; allSelected) {
+<b class="fc"><i>247</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<i>248</i>&nbsp;			// Do not synchronize to changes on other threads (since these may interfere with scripts)
+<i>249</i>&nbsp;//			Platform.runLater(() -&gt; selectedPathObjectChanged(pathObjectSelected, previousObject, allSelected));
+<b class="nc"><i>250</i>&nbsp;			return;</b>
+<i>251</i>&nbsp;		}
+<i>252</i>&nbsp;
+<b class="fc"><i>253</i>&nbsp;		if (suppressSelectionChanges)</b>
+<b class="nc"><i>254</i>&nbsp;			return;</b>
+<i>255</i>&nbsp;		
+<b class="fc"><i>256</i>&nbsp;		suppressSelectionChanges = true;</b>
+<b class="fc"><i>257</i>&nbsp;		if (synchronizePrimarySelectionOnly) {</b>
+<i>258</i>&nbsp;			try {
+<b class="fc"><i>259</i>&nbsp;				var listSelectionModel = listAnnotations.getSelectionModel();</b>
+<b class="fc"><i>260</i>&nbsp;				listSelectionModel.clearSelection();</b>
+<b class="fc"><i>261</i>&nbsp;				if (pathObjectSelected != null &amp;&amp; pathObjectSelected.isAnnotation()) {</b>
+<b class="nc"><i>262</i>&nbsp;					listSelectionModel.select(pathObjectSelected);</b>
+<b class="nc"><i>263</i>&nbsp;					listAnnotations.scrollTo(pathObjectSelected);</b>
+<i>264</i>&nbsp;				}
+<b class="fc"><i>265</i>&nbsp;				return;</b>
+<i>266</i>&nbsp;			} finally {
+<b class="fc"><i>267</i>&nbsp;				suppressSelectionChanges = false;</b>
+<b class="nc"><i>268</i>&nbsp;			}</b>
+<i>269</i>&nbsp;		}
+<i>270</i>&nbsp;		
+<i>271</i>&nbsp;		try {
+<i>272</i>&nbsp;			
+<b class="nc"><i>273</i>&nbsp;			var hierarchySelected = new TreeSet&lt;&gt;(DefaultPathObjectComparator.getInstance());</b>
+<b class="nc"><i>274</i>&nbsp;			hierarchySelected.addAll(allSelected);</b>
+<i>275</i>&nbsp;			
+<i>276</i>&nbsp;			// Determine the objects to select
+<b class="nc"><i>277</i>&nbsp;			MultipleSelectionModel&lt;PathObject&gt; model = listAnnotations.getSelectionModel();</b>
+<b class="nc"><i>278</i>&nbsp;			List&lt;PathObject&gt; selected = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>279</i>&nbsp;			for (PathObject pathObject : hierarchySelected) {</b>
+<b class="nc"><i>280</i>&nbsp;				if (pathObject == null)</b>
+<b class="nc"><i>281</i>&nbsp;					logger.warn(&quot;Selected object is null!&quot;);</b>
+<b class="nc"><i>282</i>&nbsp;				else if (pathObject.isAnnotation())</b>
+<b class="nc"><i>283</i>&nbsp;					selected.add(pathObject);</b>
+<b class="nc"><i>284</i>&nbsp;			}</b>
+<b class="nc"><i>285</i>&nbsp;			if (selected.isEmpty()) {</b>
+<b class="nc"><i>286</i>&nbsp;				if (!model.isEmpty())</b>
+<b class="nc"><i>287</i>&nbsp;					model.clearSelection();</b>
+<b class="nc"><i>288</i>&nbsp;				return;</b>
+<i>289</i>&nbsp;			}
+<i>290</i>&nbsp;			// Check if we&#39;re making changes
+<b class="nc"><i>291</i>&nbsp;			List&lt;PathObject&gt; currentlySelected = model.getSelectedItems();</b>
+<b class="nc"><i>292</i>&nbsp;			if (selected.size() == currentlySelected.size() &amp;&amp; (hierarchySelected.containsAll(currentlySelected))) {</b>
+<b class="nc"><i>293</i>&nbsp;				listAnnotations.refresh();</b>
+<b class="nc"><i>294</i>&nbsp;				return;</b>
+<i>295</i>&nbsp;			}
+<i>296</i>&nbsp;			
+<i>297</i>&nbsp;//			System.err.println(&quot;Starting...&quot;);
+<i>298</i>&nbsp;//			System.err.println(hierarchy.getAnnotationObjects().size());
+<i>299</i>&nbsp;//			System.err.println(hierarchySelected.size());
+<i>300</i>&nbsp;//			System.err.println(listAnnotations.getItems().size());
+<b class="nc"><i>301</i>&nbsp;			if (hierarchySelected.containsAll(listAnnotations.getItems())) {</b>
+<b class="nc"><i>302</i>&nbsp;				model.selectAll();</b>
+<b class="nc"><i>303</i>&nbsp;				return;</b>
+<i>304</i>&nbsp;			}
+<i>305</i>&nbsp;			
+<i>306</i>&nbsp;	//		System.err.println(&quot;Setting &quot; + currentlySelected + &quot; to &quot; + selected);
+<b class="nc"><i>307</i>&nbsp;			int[] inds = new int[selected.size()];</b>
+<b class="nc"><i>308</i>&nbsp;			int i = 0;</b>
+<b class="nc"><i>309</i>&nbsp;			model.clearSelection();</b>
+<b class="nc"><i>310</i>&nbsp;			boolean firstInd = true;</b>
+<b class="nc"><i>311</i>&nbsp;			for (PathObject temp : selected) {</b>
+<b class="nc"><i>312</i>&nbsp;				int idx = listAnnotations.getItems().indexOf(temp);</b>
+<b class="nc"><i>313</i>&nbsp;				if (idx &gt;= 0 &amp;&amp; firstInd) {</b>
+<b class="nc"><i>314</i>&nbsp;					Arrays.fill(inds, idx);</b>
+<b class="nc"><i>315</i>&nbsp;					firstInd = false;</b>
+<i>316</i>&nbsp;				}
+<b class="nc"><i>317</i>&nbsp;				inds[i] = idx;</b>
+<b class="nc"><i>318</i>&nbsp;				i++;</b>
+<b class="nc"><i>319</i>&nbsp;			}</b>
+<i>320</i>&nbsp;			
+<b class="nc"><i>321</i>&nbsp;			if (inds.length == 1 &amp;&amp; pathObjectSelected instanceof PathAnnotationObject)</b>
+<b class="nc"><i>322</i>&nbsp;				listAnnotations.scrollTo(pathObjectSelected);</b>
+<i>323</i>&nbsp;			
+<b class="nc"><i>324</i>&nbsp;			if (firstInd) {</b>
+<b class="nc"><i>325</i>&nbsp;				suppressSelectionChanges = false;</b>
+<b class="nc"><i>326</i>&nbsp;				return;</b>
+<i>327</i>&nbsp;			}
+<b class="nc"><i>328</i>&nbsp;			if (inds.length == 1)</b>
+<b class="nc"><i>329</i>&nbsp;				model.select(inds[0]);</b>
+<b class="nc"><i>330</i>&nbsp;			else if (inds.length &gt; 1)</b>
+<b class="nc"><i>331</i>&nbsp;				model.selectIndices(inds[0], inds);</b>
+<i>332</i>&nbsp;		} finally {
+<b class="nc"><i>333</i>&nbsp;			suppressSelectionChanges = false;			</b>
+<b class="nc"><i>334</i>&nbsp;		}</b>
+<b class="nc"><i>335</i>&nbsp;	}</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;
+<i>341</i>&nbsp;	
+<i>342</i>&nbsp;	@Override
+<i>343</i>&nbsp;	public void changed(ObservableValue&lt;? extends ImageData&lt;BufferedImage&gt;&gt; source, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="fc"><i>344</i>&nbsp;		setImageData(imageDataNew);</b>
+<b class="fc"><i>345</i>&nbsp;	}</b>
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;	@Override
+<i>350</i>&nbsp;	public void hierarchyChanged(PathObjectHierarchyEvent event) {
+<b class="fc"><i>351</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>352</i>&nbsp;			Platform.runLater(() -&gt; hierarchyChanged(event));</b>
+<b class="nc"><i>353</i>&nbsp;			return;</b>
+<i>354</i>&nbsp;		}
+<i>355</i>&nbsp;		
+<b class="fc"><i>356</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="fc"><i>357</i>&nbsp;			listAnnotations.getItems().clear();</b>
+<b class="fc"><i>358</i>&nbsp;			return;</b>
+<i>359</i>&nbsp;		}
+<i>360</i>&nbsp;
+<b class="nc"><i>361</i>&nbsp;		Collection&lt;PathObject&gt; newList = hierarchy.getObjects(new HashSet&lt;&gt;(), PathAnnotationObject.class);</b>
+<b class="nc"><i>362</i>&nbsp;		pathClassPane.getListView().refresh();</b>
+<i>363</i>&nbsp;		// If the lists are the same, we just need to refresh the appearance (because e.g. classifications or measurements now differ)
+<i>364</i>&nbsp;		// For some reason, &#39;equals&#39; alone wasn&#39;t behaving nicely (perhaps due to ordering?)... so try a more manual test instead
+<i>365</i>&nbsp;//		if (newList.equals(listAnnotations.getItems())) {
+<b class="nc"><i>366</i>&nbsp;		if (newList.size() == listAnnotations.getItems().size() &amp;&amp; newList.containsAll(listAnnotations.getItems())) {</b>
+<i>367</i>&nbsp;			// Don&#39;t refresh unless there is good reason to believe the list should appear different now
+<i>368</i>&nbsp;			// This was introduced due to flickering as annotations were dragged
+<i>369</i>&nbsp;			// TODO: Reconsider when annotation list is refreshed
+<i>370</i>&nbsp;			
+<i>371</i>&nbsp;//			listAnnotations.setStyle(&quot;.list-cell:empty {-fx-background-color: white;}&quot;);
+<i>372</i>&nbsp;			
+<i>373</i>&nbsp;//			if (event.getEventType() == HierarchyEventType.CHANGE_CLASSIFICATION || event.getEventType() == HierarchyEventType.CHANGE_MEASUREMENTS || (event.getStructureChangeBase() != null &amp;&amp; event.getStructureChangeBase().isPoint()) || PathObjectTools.containsPointObject(event.getChangedObjects()))
+<b class="nc"><i>374</i>&nbsp;			if (!event.isChanging())</b>
+<b class="nc"><i>375</i>&nbsp;				listAnnotations.refresh();</b>
+<b class="nc"><i>376</i>&nbsp;			return;</b>
+<i>377</i>&nbsp;		}
+<i>378</i>&nbsp;		// If the lists are different, we need to update accordingly - but we don&#39;t want to trigger accidental selection updates
+<i>379</i>&nbsp;//		listAnnotations.getSelectionModel().clearSelection(); // Clearing the selection would cause annotations to disappear when interactively training a classifier!
+<b class="nc"><i>380</i>&nbsp;		boolean lastChanging = suppressSelectionChanges;</b>
+<b class="nc"><i>381</i>&nbsp;		suppressSelectionChanges = true;</b>
+<b class="nc"><i>382</i>&nbsp;		listAnnotations.getItems().setAll(newList);</b>
+<b class="nc"><i>383</i>&nbsp;		suppressSelectionChanges = lastChanging;</b>
+<b class="nc"><i>384</i>&nbsp;	}</b>
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

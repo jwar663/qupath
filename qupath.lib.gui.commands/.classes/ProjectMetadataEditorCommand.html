@@ -1,0 +1,499 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ProjectMetadataEditorCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ProjectMetadataEditorCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProjectMetadataEditorCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 146)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProjectMetadataEditorCommand$ImageEntryWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 164)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.List;
+<i>28</i>&nbsp;import java.util.Map;
+<i>29</i>&nbsp;import java.util.Map.Entry;
+<i>30</i>&nbsp;import java.util.Optional;
+<i>31</i>&nbsp;import java.util.stream.Collectors;
+<i>32</i>&nbsp;import java.util.Set;
+<i>33</i>&nbsp;import java.util.TreeMap;
+<i>34</i>&nbsp;import java.util.TreeSet;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>39</i>&nbsp;import javafx.beans.binding.BooleanBinding;
+<i>40</i>&nbsp;import javafx.beans.value.ObservableStringValue;
+<i>41</i>&nbsp;import javafx.scene.control.ButtonBar.ButtonData;
+<i>42</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>43</i>&nbsp;import javafx.scene.control.Dialog;
+<i>44</i>&nbsp;import javafx.scene.control.Menu;
+<i>45</i>&nbsp;import javafx.scene.control.MenuBar;
+<i>46</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>47</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>48</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>49</i>&nbsp;import javafx.scene.control.TablePosition;
+<i>50</i>&nbsp;import javafx.scene.control.TableView;
+<i>51</i>&nbsp;import javafx.scene.control.cell.TextFieldTableCell;
+<i>52</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>53</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>54</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>55</i>&nbsp;import javafx.scene.input.KeyCodeCombination;
+<i>56</i>&nbsp;import javafx.scene.input.KeyCombination;
+<i>57</i>&nbsp;import javafx.scene.input.KeyEvent;
+<i>58</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>59</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>60</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>61</i>&nbsp;import qupath.lib.gui.panes.ProjectBrowser;
+<i>62</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>63</i>&nbsp;import qupath.lib.projects.Project;
+<i>64</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;/**
+<i>67</i>&nbsp; * Command to enable editing of project metadata.
+<i>68</i>&nbsp; * &lt;p&gt;
+<i>69</i>&nbsp; * TODO: Support copying and pasting tables, to allow better editing within a spreadsheet application.
+<i>70</i>&nbsp; * &lt;p&gt;
+<i>71</i>&nbsp; * TODO: Support adding/removing metadata columns.
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * @author Pete Bankhead
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; */
+<b class="nc"><i>76</i>&nbsp;class ProjectMetadataEditorCommand {</b>
+<i>77</i>&nbsp;	
+<b class="nc"><i>78</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ProjectMetadataEditorCommand.class);</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	private final static String IMAGE_NAME = &quot;Image name&quot;;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	public static void showProjectMetadataEditor(Project&lt;?&gt; project) {
+<b class="nc"><i>84</i>&nbsp;		if (project == null) {</b>
+<b class="nc"><i>85</i>&nbsp;			logger.warn(&quot;No project available!&quot;);</b>
+<i>86</i>&nbsp;			return;
+<i>87</i>&nbsp;		}
+<i>88</i>&nbsp;		
+<b class="nc"><i>89</i>&nbsp;		Set&lt;String&gt; metadataNameSet = new TreeSet&lt;&gt;();</b>
+<b class="nc"><i>90</i>&nbsp;		List&lt;ImageEntryWrapper&gt; entries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>91</i>&nbsp;		for (ProjectImageEntry&lt;?&gt; entry : project.getImageList()) {</b>
+<b class="nc"><i>92</i>&nbsp;			entries.add(new ImageEntryWrapper(entry));</b>
+<b class="nc"><i>93</i>&nbsp;			metadataNameSet.addAll(entry.getMetadataKeys());</b>
+<b class="nc"><i>94</i>&nbsp;		}</b>
+<i>95</i>&nbsp;		
+<b class="nc"><i>96</i>&nbsp;		TableView&lt;ImageEntryWrapper&gt; table = new TableView&lt;&gt;();</b>
+<i>97</i>&nbsp;		
+<b class="nc"><i>98</i>&nbsp;		TableColumn&lt;ImageEntryWrapper, String&gt; colName = new TableColumn&lt;&gt;(IMAGE_NAME);</b>
+<b class="nc"><i>99</i>&nbsp;		colName.setCellValueFactory(v -&gt; v.getValue().getNameBinding());</b>
+<b class="nc"><i>100</i>&nbsp;		table.getColumns().add(colName);</b>
+<b class="nc"><i>101</i>&nbsp;		table.setEditable(true);</b>
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		for (String metadataName : metadataNameSet) {</b>
+<b class="nc"><i>104</i>&nbsp;			TableColumn&lt;ImageEntryWrapper, String&gt; col = new TableColumn&lt;&gt;(metadataName);</b>
+<b class="nc"><i>105</i>&nbsp;			col.setCellFactory(TextFieldTableCell.&lt;ImageEntryWrapper&gt;forTableColumn());</b>
+<b class="nc"><i>106</i>&nbsp;			col.setOnEditCommit(e -&gt; {</b>
+<b class="nc"><i>107</i>&nbsp;				ImageEntryWrapper entry = e.getRowValue();</b>
+<b class="nc"><i>108</i>&nbsp;				String n = e.getNewValue();</b>
+<b class="nc"><i>109</i>&nbsp;				if (n == null || n.isEmpty())</b>
+<b class="nc"><i>110</i>&nbsp;					entry.removeMetadataValue(e.getTableColumn().getText());</b>
+<i>111</i>&nbsp;				else
+<b class="nc"><i>112</i>&nbsp;					entry.putMetadataValue(e.getTableColumn().getText(), n);</b>
+<i>113</i>&nbsp;			});
+<i>114</i>&nbsp;			
+<b class="nc"><i>115</i>&nbsp;			col.setCellValueFactory(v -&gt; v.getValue().getProperty(metadataName));</b>
+<b class="nc"><i>116</i>&nbsp;			col.setEditable(true);</b>
+<b class="nc"><i>117</i>&nbsp;			table.getColumns().add(col);			</b>
+<b class="nc"><i>118</i>&nbsp;		}</b>
+<i>119</i>&nbsp;		
+<b class="nc"><i>120</i>&nbsp;		table.getItems().setAll(entries);</b>
+<b class="nc"><i>121</i>&nbsp;		table.getSelectionModel().setCellSelectionEnabled(true);</b>
+<b class="nc"><i>122</i>&nbsp;		table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</b>
+<i>123</i>&nbsp;		
+<i>124</i>&nbsp;		// Handle deleting entries
+<b class="nc"><i>125</i>&nbsp;		table.addEventHandler(KeyEvent.KEY_RELEASED, e -&gt; {</b>
+<b class="nc"><i>126</i>&nbsp;			if (e.getCode() == KeyCode.BACK_SPACE || e.getCode() == KeyCode.DELETE) {</b>
+<b class="nc"><i>127</i>&nbsp;				var positions = table.getSelectionModel().getSelectedCells().stream().filter(</b>
+<b class="nc"><i>128</i>&nbsp;						p -&gt; !IMAGE_NAME.equals(p.getTableColumn().getText())).collect(Collectors.toList());</b>
+<b class="nc"><i>129</i>&nbsp;				if (positions.isEmpty())</b>
+<i>130</i>&nbsp;					return;
+<b class="nc"><i>131</i>&nbsp;				if (positions.size() == 1) {</b>
+<b class="nc"><i>132</i>&nbsp;					setTextForSelectedCells(positions, null);</b>
+<i>133</i>&nbsp;				} else {
+<b class="nc"><i>134</i>&nbsp;					if (Dialogs.showConfirmDialog(&quot;Project metadata&quot;, &quot;Clear metadata for &quot; + positions.size() + &quot; selected cells?&quot;)) {</b>
+<b class="nc"><i>135</i>&nbsp;						setTextForSelectedCells(positions, null);</b>
+<i>136</i>&nbsp;					}
+<i>137</i>&nbsp;				}
+<b class="nc"><i>138</i>&nbsp;				table.refresh();</b>
+<i>139</i>&nbsp;			}
+<i>140</i>&nbsp;		});
+<i>141</i>&nbsp;		
+<b class="nc"><i>142</i>&nbsp;		BooleanBinding selectedCells = Bindings.createBooleanBinding(</b>
+<b class="nc"><i>143</i>&nbsp;				() -&gt; table.getSelectionModel().selectedItemProperty() == null,</b>
+<b class="nc"><i>144</i>&nbsp;				table.getSelectionModel().selectedItemProperty()</b>
+<i>145</i>&nbsp;				);
+<i>146</i>&nbsp;		
+<b class="nc"><i>147</i>&nbsp;		MenuBar menubar = new MenuBar();</b>
+<b class="nc"><i>148</i>&nbsp;		Menu menuEdit = new Menu(&quot;Edit&quot;);</b>
+<b class="nc"><i>149</i>&nbsp;		MenuItem miCopy = new MenuItem(&quot;Copy selected cells&quot;);</b>
+<b class="nc"><i>150</i>&nbsp;		miCopy.disableProperty().bind(selectedCells);</b>
+<b class="nc"><i>151</i>&nbsp;		miCopy.setAccelerator(new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN));</b>
+<b class="nc"><i>152</i>&nbsp;		miCopy.setOnAction(e -&gt; copySelectedCellsToClipboard(table, true));</b>
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;		MenuItem miCopyFull = new MenuItem(&quot;Copy full table&quot;);</b>
+<b class="nc"><i>155</i>&nbsp;		miCopyFull.setOnAction(e -&gt; copyEntireTableToClipboard(table));</b>
+<i>156</i>&nbsp;		
+<b class="nc"><i>157</i>&nbsp;		MenuItem miPaste = new MenuItem(&quot;Paste&quot;);</b>
+<b class="nc"><i>158</i>&nbsp;		miPaste.setAccelerator(new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN));</b>
+<b class="nc"><i>159</i>&nbsp;		miPaste.disableProperty().bind(selectedCells);</b>
+<b class="nc"><i>160</i>&nbsp;		miPaste.setOnAction(e -&gt; pasteClipboardContentsToTable(table));</b>
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;		MenuItem miSet = new MenuItem(&quot;Set cell contents&quot;);</b>
+<b class="nc"><i>163</i>&nbsp;		miSet.disableProperty().bind(selectedCells);</b>
+<b class="nc"><i>164</i>&nbsp;		miSet.setOnAction(e -&gt; {</b>
+<b class="nc"><i>165</i>&nbsp;			String input = Dialogs.showInputDialog(&quot;Set metadata cells&quot;, &quot;Metadata text&quot;, &quot;&quot;);</b>
+<b class="nc"><i>166</i>&nbsp;			if (input == null)</b>
+<i>167</i>&nbsp;				return;
+<b class="nc"><i>168</i>&nbsp;			setTextForSelectedCells(table.getSelectionModel().getSelectedCells(), input);</b>
+<b class="nc"><i>169</i>&nbsp;			table.refresh();</b>
+<i>170</i>&nbsp;		});
+<i>171</i>&nbsp;
+<b class="nc"><i>172</i>&nbsp;		menuEdit.getItems().addAll(miCopy, miCopyFull, miPaste, miSet);</b>
+<b class="nc"><i>173</i>&nbsp;		menubar.getMenus().add(menuEdit);</b>
+<i>174</i>&nbsp;		
+<b class="nc"><i>175</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>176</i>&nbsp;		pane.setTop(menubar);</b>
+<b class="nc"><i>177</i>&nbsp;		pane.setCenter(table);</b>
+<i>178</i>&nbsp;//		menubar.setUseSystemMenuBar(true);
+<b class="nc"><i>179</i>&nbsp;		menubar.useSystemMenuBarProperty().bindBidirectional(PathPrefs.useSystemMenubarProperty());		</b>
+<i>180</i>&nbsp;		
+<b class="nc"><i>181</i>&nbsp;		Dialog&lt;ButtonType&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc"><i>182</i>&nbsp;		var qupath = QuPathGUI.getInstance();</b>
+<b class="nc"><i>183</i>&nbsp;		if (qupath != null)</b>
+<b class="nc"><i>184</i>&nbsp;			dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>185</i>&nbsp;		dialog.setTitle(&quot;Project metadata&quot;);</b>
+<b class="nc"><i>186</i>&nbsp;		dialog.setHeaderText(null);</b>
+<b class="nc"><i>187</i>&nbsp;		dialog.setResizable(true);</b>
+<b class="nc"><i>188</i>&nbsp;		dialog.getDialogPane().setContent(pane);</b>
+<b class="nc"><i>189</i>&nbsp;		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);</b>
+<b class="nc"><i>190</i>&nbsp;		dialog.getDialogPane().setPrefWidth(500);</b>
+<b class="nc"><i>191</i>&nbsp;		Optional&lt;ButtonType&gt; result = dialog.showAndWait();</b>
+<b class="nc"><i>192</i>&nbsp;		if (result.isPresent() &amp;&amp; result.get().getButtonData() == ButtonData.OK_DONE) {</b>
+<i>193</i>&nbsp;			// Make the changes
+<b class="nc"><i>194</i>&nbsp;			for (ImageEntryWrapper wrapper : entries) {</b>
+<b class="nc"><i>195</i>&nbsp;				wrapper.commitChanges();</b>
+<b class="nc"><i>196</i>&nbsp;			}</b>
+<i>197</i>&nbsp;			// Write the project
+<b class="nc"><i>198</i>&nbsp;			ProjectBrowser.syncProject(project);</b>
+<i>199</i>&nbsp;		}
+<i>200</i>&nbsp;		
+<i>201</i>&nbsp;//		Stage stage = new Stage();
+<i>202</i>&nbsp;//		stage.initOwner(qupath.getStage());
+<i>203</i>&nbsp;//		stage.setTitle(&quot;Project metadata&quot;);
+<i>204</i>&nbsp;//		stage.setScene(new Scene(pane, 500, 400));
+<i>205</i>&nbsp;//		stage.showAndWait();
+<i>206</i>&nbsp;		
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;	
+<i>209</i>&nbsp;	
+<i>210</i>&nbsp;	/**
+<i>211</i>&nbsp;	 * Copy the text content of selected table cells to the clipboard.
+<i>212</i>&nbsp;	 * 
+<i>213</i>&nbsp;	 * Note #1: This only works for continuous selections, i.e. single selected 
+<i>214</i>&nbsp;	 * cells, or multiple cells arranged in a full rectangular grid.
+<i>215</i>&nbsp;	 * 
+<i>216</i>&nbsp;	 * Note #2: This method assumes that TableSelectionModel.getSelectedCells() returns
+<i>217</i>&nbsp;	 * table rows and columns returned with valid indices &gt;= 0.
+<i>218</i>&nbsp;	 * No provision is made for indices of -1 used to indicate the selection of 
+<i>219</i>&nbsp;	 * an entire row or column.
+<i>220</i>&nbsp;	 * 
+<i>221</i>&nbsp;	 * @param table
+<i>222</i>&nbsp;	 * @param warnIfDiscontinuous If true, a warning is shown if a discontinuous selection is made.
+<i>223</i>&nbsp;	 */
+<i>224</i>&nbsp;	private static void copySelectedCellsToClipboard(final TableView&lt;?&gt; table, final boolean warnIfDiscontinuous) {
+<b class="nc"><i>225</i>&nbsp;		var positions = table.getSelectionModel().getSelectedCells();</b>
+<b class="nc"><i>226</i>&nbsp;		if (positions.isEmpty())</b>
+<i>227</i>&nbsp;			return;
+<i>228</i>&nbsp;		
+<b class="nc"><i>229</i>&nbsp;		int[] rows = positions.stream().mapToInt(tp -&gt; tp.getRow()).sorted().toArray();</b>
+<b class="nc"><i>230</i>&nbsp;		int[] cols = positions.stream().mapToInt(tp -&gt; tp.getColumn()).sorted().toArray();</b>
+<b class="nc"><i>231</i>&nbsp;		boolean isContinuous = (rows[rows.length-1] - rows[0] + 1) * (cols[cols.length-1] - cols[0] + 1) == positions.size();</b>
+<b class="nc"><i>232</i>&nbsp;		if (!isContinuous) {</b>
+<b class="nc"><i>233</i>&nbsp;			if (warnIfDiscontinuous)</b>
+<b class="nc"><i>234</i>&nbsp;				Dialogs.showWarningNotification(&quot;Copy table selection&quot;, &quot;Cannot copy discontinuous selection, sorry&quot;);</b>
+<i>235</i>&nbsp;			return;
+<i>236</i>&nbsp;		}
+<i>237</i>&nbsp;		
+<b class="nc"><i>238</i>&nbsp;		copyToClipboard(positions);</b>
+<i>239</i>&nbsp;	}
+<i>240</i>&nbsp;	
+<i>241</i>&nbsp;	
+<i>242</i>&nbsp;	
+<i>243</i>&nbsp;	/**
+<i>244</i>&nbsp;	 * Copy the contents of an entire table to the clipboard.
+<i>245</i>&nbsp;	 * 
+<i>246</i>&nbsp;	 * This should adapt to sorted rows as required.
+<i>247</i>&nbsp;	 * 
+<i>248</i>&nbsp;	 * @param table
+<i>249</i>&nbsp;	 */
+<i>250</i>&nbsp;	private static &lt;T&gt; void copyEntireTableToClipboard(final TableView&lt;T&gt; table) {
+<b class="nc"><i>251</i>&nbsp;		List&lt;TablePosition&gt; positions = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>252</i>&nbsp;		for (TableColumn&lt;?, ?&gt; column : table.getColumns()) {</b>
+<b class="nc"><i>253</i>&nbsp;			for (int row = 0; row &lt; table.getItems().size(); row++) {</b>
+<b class="nc"><i>254</i>&nbsp;				positions.add(new TablePosition(table, row, column));</b>
+<i>255</i>&nbsp;			}
+<b class="nc"><i>256</i>&nbsp;		}</b>
+<b class="nc"><i>257</i>&nbsp;		copyToClipboard(positions);</b>
+<i>258</i>&nbsp;	}
+<i>259</i>&nbsp;	
+<i>260</i>&nbsp;	
+<i>261</i>&nbsp;	private static void copyToClipboard(List&lt;TablePosition&gt; positions) {
+<i>262</i>&nbsp;		// Ensure positions are sorted
+<b class="nc"><i>263</i>&nbsp;		positions = new ArrayList&lt;&gt;(positions);</b>
+<b class="nc"><i>264</i>&nbsp;		positions.sort((p1, p2) -&gt; {</b>
+<b class="nc"><i>265</i>&nbsp;			int row = Integer.compare(p1.getRow(), p2.getRow());</b>
+<b class="nc"><i>266</i>&nbsp;			if (row == 0)</b>
+<b class="nc"><i>267</i>&nbsp;				return Integer.compare(p1.getColumn(), p2.getColumn());</b>
+<b class="nc"><i>268</i>&nbsp;			return row;</b>
+<i>269</i>&nbsp;		});
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;		// Create tab-delimited string representation
+<b class="nc"><i>272</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>273</i>&nbsp;		int lastRow = -1;</b>
+<b class="nc"><i>274</i>&nbsp;		for (TablePosition&lt;?,?&gt; tp : positions) {</b>
+<b class="nc"><i>275</i>&nbsp;			int row = tp.getRow();</b>
+<b class="nc"><i>276</i>&nbsp;			Object data = tp.getTableColumn().getCellData(row);</b>
+<b class="nc"><i>277</i>&nbsp;			String dataString = data == null ? &quot;&quot; : data.toString();</b>
+<b class="nc"><i>278</i>&nbsp;			if (row == lastRow)</b>
+<b class="nc"><i>279</i>&nbsp;				sb.append(&quot;\t&quot;);</b>
+<b class="nc"><i>280</i>&nbsp;			else if (lastRow &gt;= 0)</b>
+<b class="nc"><i>281</i>&nbsp;				sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>282</i>&nbsp;			sb.append(dataString);</b>
+<b class="nc"><i>283</i>&nbsp;			lastRow = row;</b>
+<b class="nc"><i>284</i>&nbsp;		}</b>
+<i>285</i>&nbsp;
+<b class="nc"><i>286</i>&nbsp;		ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>287</i>&nbsp;		content.putString(sb.toString());</b>
+<b class="nc"><i>288</i>&nbsp;		Clipboard.getSystemClipboard().setContent(content);</b>
+<i>289</i>&nbsp;	}
+<i>290</i>&nbsp;	
+<i>291</i>&nbsp;	
+<i>292</i>&nbsp;	private static void pasteClipboardContentsToTable(TableView&lt;?&gt; table) {
+<b class="nc"><i>293</i>&nbsp;		String s = Clipboard.getSystemClipboard().getString();</b>
+<b class="nc"><i>294</i>&nbsp;		if (s == null) {</b>
+<b class="nc"><i>295</i>&nbsp;			logger.warn(&quot;No text on clipboard&quot;);</b>
+<i>296</i>&nbsp;			return;
+<i>297</i>&nbsp;		}
+<i>298</i>&nbsp;		
+<b class="nc"><i>299</i>&nbsp;		var positions = table.getSelectionModel().getSelectedCells();</b>
+<b class="nc"><i>300</i>&nbsp;		if (positions.isEmpty()) {</b>
+<b class="nc"><i>301</i>&nbsp;			logger.warn(&quot;No table cells selected&quot;);</b>
+<i>302</i>&nbsp;			return;
+<i>303</i>&nbsp;		}
+<i>304</i>&nbsp;		
+<b class="nc"><i>305</i>&nbsp;		if (s.contains(&quot;\n&quot;) || s.contains(&quot;\t&quot;)) {</b>
+<b class="nc"><i>306</i>&nbsp;			Dialogs.showWarningNotification(&quot;Paste contents&quot;, &quot;Cannot paste clipboard contents - only simple, single-cell text supported&quot;);</b>
+<i>307</i>&nbsp;			return;
+<i>308</i>&nbsp;		}
+<i>309</i>&nbsp;		
+<b class="nc"><i>310</i>&nbsp;		setTextForSelectedCells(positions, s);</b>
+<b class="nc"><i>311</i>&nbsp;		table.refresh();</b>
+<i>312</i>&nbsp;	}
+<i>313</i>&nbsp;	
+<i>314</i>&nbsp;	private static void setTextForSelectedCells(final List&lt;TablePosition&gt; positions, final String text) {
+<b class="nc"><i>315</i>&nbsp;		boolean containsImageNameColumns = false;</b>
+<b class="nc"><i>316</i>&nbsp;		for (TablePosition&lt;?,?&gt; tp : positions) {</b>
+<b class="nc"><i>317</i>&nbsp;			boolean isImageNameColumn = IMAGE_NAME.equals(tp.getTableColumn().getText());</b>
+<b class="nc"><i>318</i>&nbsp;			if (isImageNameColumn) {</b>
+<b class="nc"><i>319</i>&nbsp;				containsImageNameColumns = true;</b>
+<b class="nc"><i>320</i>&nbsp;				continue;</b>
+<i>321</i>&nbsp;			}
+<b class="nc"><i>322</i>&nbsp;			ImageEntryWrapper wrapper = (ImageEntryWrapper)tp.getTableView().getItems().get(tp.getRow());</b>
+<b class="nc"><i>323</i>&nbsp;			String key = tp.getTableColumn().getText();</b>
+<b class="nc"><i>324</i>&nbsp;			if (text == null)</b>
+<b class="nc"><i>325</i>&nbsp;				wrapper.removeMetadataValue(key);</b>
+<i>326</i>&nbsp;			else
+<b class="nc"><i>327</i>&nbsp;				wrapper.putMetadataValue(key, text);</b>
+<b class="nc"><i>328</i>&nbsp;		}</b>
+<b class="nc"><i>329</i>&nbsp;		if (containsImageNameColumns) {</b>
+<b class="nc"><i>330</i>&nbsp;			Dialogs.showWarningNotification(&quot;Project metadata table&quot;, &quot;The image name cannot be changed&quot;);</b>
+<i>331</i>&nbsp;		}
+<i>332</i>&nbsp;	}
+<i>333</i>&nbsp;	
+<i>334</i>&nbsp;	
+<i>335</i>&nbsp;	
+<i>336</i>&nbsp;	static class ImageEntryWrapper {
+<i>337</i>&nbsp;		
+<i>338</i>&nbsp;		private ProjectImageEntry&lt;?&gt; entry;
+<i>339</i>&nbsp;		/*
+<i>340</i>&nbsp;		 * Internal metadata map - used to store temporary edits, which the user may yet cancel.
+<i>341</i>&nbsp;		 */
+<b class="nc"><i>342</i>&nbsp;		private Map&lt;String, String&gt; metadataMap = new TreeMap&lt;&gt;();</b>
+<i>343</i>&nbsp;		
+<b class="nc"><i>344</i>&nbsp;		ImageEntryWrapper(final ProjectImageEntry&lt;?&gt; entry) {</b>
+<b class="nc"><i>345</i>&nbsp;			this.entry = entry;</b>
+<b class="nc"><i>346</i>&nbsp;			this.metadataMap.putAll(entry.getMetadataMap());</b>
+<i>347</i>&nbsp;		}
+<i>348</i>&nbsp;		
+<i>349</i>&nbsp;		public ObservableStringValue getNameBinding() {
+<b class="nc"><i>350</i>&nbsp;			return Bindings.createStringBinding(() -&gt; entry.getImageName());</b>
+<i>351</i>&nbsp;		}
+<i>352</i>&nbsp;		
+<i>353</i>&nbsp;		/**
+<i>354</i>&nbsp;		 * Update the underlying ProjectImageEntry to have the same metadata map.
+<i>355</i>&nbsp;		 */
+<i>356</i>&nbsp;		public void commitChanges() {
+<b class="nc"><i>357</i>&nbsp;			if (metadataMap.equals(entry.getMetadataMap()))</b>
+<i>358</i>&nbsp;				return;
+<b class="nc"><i>359</i>&nbsp;			entry.clearMetadata();</b>
+<b class="nc"><i>360</i>&nbsp;			for (Entry&lt;String, String&gt; mapEntry : metadataMap.entrySet()) {</b>
+<b class="nc"><i>361</i>&nbsp;				entry.putMetadataValue(mapEntry.getKey(), mapEntry.getValue());</b>
+<b class="nc"><i>362</i>&nbsp;			}</b>
+<i>363</i>&nbsp;		}
+<i>364</i>&nbsp;		
+<i>365</i>&nbsp;		public ObservableStringValue getProperty(final String columnName) {
+<b class="nc"><i>366</i>&nbsp;			return Bindings.createStringBinding(() -&gt; {</b>
+<b class="nc"><i>367</i>&nbsp;				String value = metadataMap.get(columnName);</b>
+<b class="nc"><i>368</i>&nbsp;				if (value == null)</b>
+<b class="nc"><i>369</i>&nbsp;					return &quot;&quot;;</b>
+<b class="nc"><i>370</i>&nbsp;				return</b>
+<i>371</i>&nbsp;						value;
+<i>372</i>&nbsp;			});
+<i>373</i>&nbsp;		}
+<i>374</i>&nbsp;		
+<i>375</i>&nbsp;		public String getMetadataValue(Object key) {
+<b class="nc"><i>376</i>&nbsp;			return metadataMap.get(key);</b>
+<i>377</i>&nbsp;		}
+<i>378</i>&nbsp;		
+<i>379</i>&nbsp;		public void putMetadataValue(String key, String value) {
+<b class="nc"><i>380</i>&nbsp;			metadataMap.put(key, value);</b>
+<i>381</i>&nbsp;		}
+<i>382</i>&nbsp;
+<i>383</i>&nbsp;		public void removeMetadataValue(String key) {
+<b class="nc"><i>384</i>&nbsp;			metadataMap.remove(key);</b>
+<i>385</i>&nbsp;		}
+<i>386</i>&nbsp;
+<i>387</i>&nbsp;	}
+<i>388</i>&nbsp;	
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,491 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathClassificationLabellingHelper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.ml.legacy</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathClassificationLabellingHelper (qupath.process.gui.ml.legacy)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathClassificationLabellingHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 86)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PathClassificationLabellingHelper$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PathClassificationLabellingHelper$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PathClassificationLabellingHelper$SplitType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">PathClassificationLabellingHelper$TrainingEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 117)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.process.gui.ml.legacy;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.Comparator;
+<i>30</i>&nbsp;import java.util.Iterator;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.Map;
+<i>33</i>&nbsp;import java.util.Random;
+<i>34</i>&nbsp;import java.util.Map.Entry;
+<i>35</i>&nbsp;import java.util.TreeMap;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import qupath.lib.geom.Point2;
+<i>41</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>42</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>43</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>44</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>45</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>46</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>47</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory.StandardPathClasses;
+<i>48</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>49</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;/**
+<i>52</i>&nbsp; * Collection of static methods to help with object classification.
+<i>53</i>&nbsp; * 
+<i>54</i>&nbsp; * @author Pete Bankhead
+<i>55</i>&nbsp; *
+<i>56</i>&nbsp; * @Deprecated
+<i>57</i>&nbsp; */
+<b class="nc"><i>58</i>&nbsp;class PathClassificationLabellingHelper {</b>
+<i>59</i>&nbsp;	
+<b class="nc"><i>60</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathClassificationLabellingHelper.class);</b>
+<i>61</i>&nbsp;	
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * Enum representing different ways of extracting a subset of elements from a collection.
+<i>64</i>&nbsp;	 */
+<b class="nc"><i>65</i>&nbsp;	public enum SplitType {</b>
+<i>66</i>&nbsp;		/**
+<i>67</i>&nbsp;		 * Extract the first samples in the collection
+<i>68</i>&nbsp;		 */
+<b class="nc"><i>69</i>&nbsp;		FIRST_SAMPLES,</b>
+<i>70</i>&nbsp;		
+<i>71</i>&nbsp;		/**
+<i>72</i>&nbsp;		 * Extract the last samples in the collection
+<i>73</i>&nbsp;		 */
+<b class="nc"><i>74</i>&nbsp;		LAST_SAMPLES,</b>
+<i>75</i>&nbsp;		
+<i>76</i>&nbsp;		/**
+<i>77</i>&nbsp;		 * Extract samples randomly, without replacement
+<i>78</i>&nbsp;		 */
+<b class="nc"><i>79</i>&nbsp;		RANDOM_NO_REPLACEMENT,</b>
+<i>80</i>&nbsp;		
+<i>81</i>&nbsp;		/**
+<i>82</i>&nbsp;		 * Extract samples randomly, with replacement
+<i>83</i>&nbsp;		 */
+<b class="nc"><i>84</i>&nbsp;		RANDOM_WITH_REPLACEMENT,</b>
+<i>85</i>&nbsp;		
+<i>86</i>&nbsp;		/**
+<i>87</i>&nbsp;		 * Extract samples with (approximately) equal separation between them
+<i>88</i>&nbsp;		 */
+<b class="nc"><i>89</i>&nbsp;		EQUIDISTANT;</b>
+<i>90</i>&nbsp;		
+<i>91</i>&nbsp;		@Override
+<i>92</i>&nbsp;		public String toString() {
+<b class="nc"><i>93</i>&nbsp;			switch (this) {</b>
+<i>94</i>&nbsp;			case EQUIDISTANT:
+<b class="nc"><i>95</i>&nbsp;				return &quot;Equally-spaced&quot;;</b>
+<i>96</i>&nbsp;			case FIRST_SAMPLES:
+<b class="nc"><i>97</i>&nbsp;				return &quot;First samples&quot;;</b>
+<i>98</i>&nbsp;			case LAST_SAMPLES:
+<b class="nc"><i>99</i>&nbsp;				return &quot;Last samples&quot;;</b>
+<i>100</i>&nbsp;			case RANDOM_NO_REPLACEMENT:
+<b class="nc"><i>101</i>&nbsp;				return &quot;Random (no replacement)&quot;;</b>
+<i>102</i>&nbsp;			case RANDOM_WITH_REPLACEMENT:
+<b class="nc"><i>103</i>&nbsp;				return &quot;Random (with replacement)&quot;;</b>
+<i>104</i>&nbsp;			default:
+<b class="nc"><i>105</i>&nbsp;				throw new IllegalArgumentException(&quot;Unknown SplitType!&quot;);</b>
+<i>106</i>&nbsp;			}
+<i>107</i>&nbsp;		}
+<i>108</i>&nbsp;	};
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;	
+<i>111</i>&nbsp;	private static Collection&lt;PathObject&gt; getAnnotations(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>112</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>113</i>&nbsp;			return Collections.emptyList();</b>
+<i>114</i>&nbsp;		else
+<b class="nc"><i>115</i>&nbsp;			return hierarchy.getAnnotationObjects();</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Get a map of training data, based on the child objects of some classified annotations.
+<i>121</i>&nbsp;	 * 
+<i>122</i>&nbsp;	 * @param hierarchy the hierarchy containing all the objects and annotations.
+<i>123</i>&nbsp;	 * @param pointsOnly if true, only Point annotations will be used for training.
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;	 * @return
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public static Map&lt;PathClass, List&lt;PathObject&gt;&gt; getClassificationMap(final PathObjectHierarchy hierarchy, final boolean pointsOnly) {
+<b class="nc"><i>128</i>&nbsp;		Map&lt;PathClass, List&lt;PathObject&gt;&gt; classifications = new TreeMap&lt;&gt;();</b>
+<i>129</i>&nbsp;		
+<i>130</i>&nbsp;		// Get the annotations &amp; filter out those that are useful
+<b class="nc"><i>131</i>&nbsp;		List&lt;PathObject&gt; annotations = new ArrayList&lt;&gt;(getAnnotations(hierarchy));</b>
+<b class="nc"><i>132</i>&nbsp;		Iterator&lt;PathObject&gt; iter = annotations.iterator();</b>
+<b class="nc"><i>133</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>134</i>&nbsp;			PathObject pathObject = iter.next();</b>
+<i>135</i>&nbsp;			// We need a PathClass, and may need to only include points
+<b class="nc"><i>136</i>&nbsp;			if (pathObject.getPathClass() == null || pathObject.getPathClass() == PathClassFactory.getPathClass(StandardPathClasses.REGION) ||</b>
+<b class="nc"><i>137</i>&nbsp;					(pointsOnly &amp;&amp; !PathObjectTools.hasPointROI(pathObject)))</b>
+<b class="nc"><i>138</i>&nbsp;				iter.remove();</b>
+<i>139</i>&nbsp;			else
+<b class="nc"><i>140</i>&nbsp;				classifications.put(pathObject.getPathClass(), new ArrayList&lt;&gt;());</b>
+<b class="nc"><i>141</i>&nbsp;		}</b>
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;		
+<i>144</i>&nbsp;		// Slightly strange move, admittedly, but sort the annotations somehow... anyhow
+<i>145</i>&nbsp;		// The reason is that training that involves randomness should always receive the training
+<i>146</i>&nbsp;		// data in a reproducible order, otherwise it can produce different results each time
+<i>147</i>&nbsp;		// even when the only difference is that completely irrelevant objects have been added/removed
+<i>148</i>&nbsp;		// from the hierarchy
+<b class="nc"><i>149</i>&nbsp;		if (annotations.size() &gt; 1) {</b>
+<b class="nc"><i>150</i>&nbsp;			annotations.sort(new Comparator&lt;PathObject&gt;() {</b>
+<i>151</i>&nbsp;				@Override
+<i>152</i>&nbsp;				public int compare(PathObject o1, PathObject o2) {
+<b class="nc"><i>153</i>&nbsp;					PathAnnotationObject p1 = (PathAnnotationObject)o1;</b>
+<b class="nc"><i>154</i>&nbsp;					PathAnnotationObject p2 = (PathAnnotationObject)o2;</b>
+<b class="nc"><i>155</i>&nbsp;					int comp = 0;</b>
+<b class="nc"><i>156</i>&nbsp;					if (p1.hasROI()) {</b>
+<b class="nc"><i>157</i>&nbsp;						if (p2.hasROI()) {</b>
+<b class="nc"><i>158</i>&nbsp;							comp = Double.compare(p1.getROI().getCentroidY(), p2.getROI().getCentroidY());</b>
+<b class="nc"><i>159</i>&nbsp;							if (comp == 0)</b>
+<b class="nc"><i>160</i>&nbsp;								comp = Double.compare(p1.getROI().getCentroidX(), p2.getROI().getCentroidX());</b>
+<b class="nc"><i>161</i>&nbsp;							if (comp == 0)</b>
+<b class="nc"><i>162</i>&nbsp;								comp = p1.getROI().toString().compareTo(p2.getROI().toString());</b>
+<i>163</i>&nbsp;						}
+<i>164</i>&nbsp;					}
+<b class="nc"><i>165</i>&nbsp;					if (comp == 0)</b>
+<b class="nc"><i>166</i>&nbsp;						return Integer.compare(o1.hashCode(), o2.hashCode());</b>
+<i>167</i>&nbsp;					else
+<b class="nc"><i>168</i>&nbsp;						return comp;</b>
+<i>169</i>&nbsp;				}
+<i>170</i>&nbsp;			});
+<i>171</i>&nbsp;		}
+<i>172</i>&nbsp;		
+<i>173</i>&nbsp;		
+<i>174</i>&nbsp;		
+<i>175</i>&nbsp;//		StringBuilder sb = new StringBuilder(&quot;DETECTIONS:\t&quot;);
+<b class="nc"><i>176</i>&nbsp;		for (PathObject pathObject : annotations) {</b>
+<b class="nc"><i>177</i>&nbsp;			PathClass pathClass = pathObject.getPathClass();</b>
+<b class="nc"><i>178</i>&nbsp;			List&lt;PathObject&gt; list = classifications.get(pathClass);</b>
+<i>179</i>&nbsp;			// TODO: Consider using overlaps, rather than direct child objects
+<i>180</i>&nbsp;//			list.addAll(pathObject.getChildObjects());
+<i>181</i>&nbsp;//			sb.append(list.size() + &quot;, &quot;);
+<b class="nc"><i>182</i>&nbsp;			if (PathObjectTools.hasPointROI(pathObject)) {</b>
+<b class="nc"><i>183</i>&nbsp;				for (Point2 p : ((PointsROI)pathObject.getROI()).getAllPoints()) {</b>
+<i>184</i>&nbsp;					// TODO: Pay attention to z &amp; t position!
+<b class="nc"><i>185</i>&nbsp;					Collection&lt;PathObject&gt; pathObjectsTemp = PathObjectTools.getObjectsForLocation(hierarchy, p.getX(), p.getY(), 0, 0, -1);</b>
+<b class="nc"><i>186</i>&nbsp;					pathObjectsTemp = PathObjectTools.getObjectsOfClass(pathObjectsTemp, PathDetectionObject.class);</b>
+<b class="nc"><i>187</i>&nbsp;					list.removeAll(pathObjectsTemp); // Clumsy way to avoid duplicates...</b>
+<b class="nc"><i>188</i>&nbsp;					list.addAll(pathObjectsTemp);</b>
+<b class="nc"><i>189</i>&nbsp;				}</b>
+<i>190</i>&nbsp;			} else
+<b class="nc"><i>191</i>&nbsp;				list.addAll(hierarchy.getObjectsForROI(PathDetectionObject.class, pathObject.getROI()));</b>
+<b class="nc"><i>192</i>&nbsp;		}</b>
+<i>193</i>&nbsp;		
+<b class="nc"><i>194</i>&nbsp;		for (Entry&lt;PathClass, List&lt;PathObject&gt;&gt; entry : classifications.entrySet()) {</b>
+<b class="nc"><i>195</i>&nbsp;			logger.info(entry.getKey() + &quot;: &quot; + entry.getValue().size());</b>
+<b class="nc"><i>196</i>&nbsp;		}</b>
+<b class="nc"><i>197</i>&nbsp;		return classifications;</b>
+<i>198</i>&nbsp;	}
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;	
+<i>201</i>&nbsp;	
+<i>202</i>&nbsp;	
+<i>203</i>&nbsp;	/**
+<i>204</i>&nbsp;	 * Resample a training map (PathClass label &amp;amp; lists of PathObjects that should have the specified classifications) so that
+<i>205</i>&nbsp;	 * it contains only a specified proportion of entries.
+<i>206</i>&nbsp;	 * 
+<i>207</i>&nbsp;	 * @param map
+<i>208</i>&nbsp;	 * @param splitType
+<i>209</i>&nbsp;	 * @param proportion between 0 (empty map) and 1
+<i>210</i>&nbsp;	 * @param seed 
+<i>211</i>&nbsp;	 * @return
+<i>212</i>&nbsp;	 */
+<i>213</i>&nbsp;	public static Map&lt;PathClass, List&lt;PathObject&gt;&gt; resampleClassificationMap(final Map&lt;PathClass, List&lt;PathObject&gt;&gt; map, final SplitType splitType, final double proportion, final long seed) {
+<b class="nc"><i>214</i>&nbsp;		if (proportion &gt; 1 || proportion == 0)</b>
+<b class="nc"><i>215</i>&nbsp;			throw new IllegalArgumentException(&quot;Proportion of samples to use for training cannot be &lt; 0 or &gt; 1!&quot;);</b>
+<b class="nc"><i>216</i>&nbsp;		if (proportion == 0)</b>
+<b class="nc"><i>217</i>&nbsp;			return Collections.emptyMap();</b>
+<b class="nc"><i>218</i>&nbsp;		if (proportion == 1 &amp;&amp; splitType != SplitType.RANDOM_WITH_REPLACEMENT)</b>
+<b class="nc"><i>219</i>&nbsp;			return map;</b>
+<i>220</i>&nbsp;		
+<b class="nc"><i>221</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>222</i>&nbsp;		for (List&lt;PathObject&gt; temp : map.values())</b>
+<b class="nc"><i>223</i>&nbsp;			n += temp.size();</b>
+<b class="nc"><i>224</i>&nbsp;		int maxTrainingInstances = (int)(n * proportion + .5);</b>
+<i>225</i>&nbsp;		
+<b class="nc"><i>226</i>&nbsp;		List&lt;TrainingEntry&gt; entries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>227</i>&nbsp;		for (Entry&lt;PathClass, List&lt;PathObject&gt;&gt; entry : map.entrySet()) {</b>
+<i>228</i>&nbsp;			
+<b class="nc"><i>229</i>&nbsp;			List&lt;PathObject&gt; list = entry.getValue();</b>
+<b class="nc"><i>230</i>&nbsp;			if (splitType == SplitType.LAST_SAMPLES)</b>
+<b class="nc"><i>231</i>&nbsp;				Collections.reverse(list);</b>
+<i>232</i>&nbsp;			
+<b class="nc"><i>233</i>&nbsp;			int maxCount = Integer.MAX_VALUE;</b>
+<b class="nc"><i>234</i>&nbsp;			if (splitType == SplitType.LAST_SAMPLES || splitType == SplitType.FIRST_SAMPLES)</b>
+<b class="nc"><i>235</i>&nbsp;				maxCount = (int)(list.size() * proportion + .9);</b>
+<i>236</i>&nbsp;			
+<b class="nc"><i>237</i>&nbsp;			PathClass pathClass = entry.getKey();</b>
+<b class="nc"><i>238</i>&nbsp;			int count = 0;</b>
+<b class="nc"><i>239</i>&nbsp;			for (PathObject temp : list) {</b>
+<b class="nc"><i>240</i>&nbsp;				entries.add(new TrainingEntry(pathClass, temp));</b>
+<b class="nc"><i>241</i>&nbsp;				count++;</b>
+<b class="nc"><i>242</i>&nbsp;				if (count &gt;= maxCount)</b>
+<b class="nc"><i>243</i>&nbsp;					break;</b>
+<b class="nc"><i>244</i>&nbsp;			}</b>
+<b class="nc"><i>245</i>&nbsp;		}</b>
+<i>246</i>&nbsp;		
+<b class="nc"><i>247</i>&nbsp;		Map&lt;PathClass, List&lt;PathObject&gt;&gt; map2 = new TreeMap&lt;&gt;();</b>
+<i>248</i>&nbsp;		
+<b class="nc"><i>249</i>&nbsp;		Random random = new Random(seed);</b>
+<i>250</i>&nbsp;		
+<b class="nc"><i>251</i>&nbsp;		switch (splitType) {</b>
+<i>252</i>&nbsp;		case EQUIDISTANT:
+<b class="nc"><i>253</i>&nbsp;			double increment = 1.0 / proportion;</b>
+<b class="nc"><i>254</i>&nbsp;			for (double i = 0; i &lt; entries.size(); i += increment) {</b>
+<b class="nc"><i>255</i>&nbsp;				int ind = (int)i;</b>
+<b class="nc"><i>256</i>&nbsp;				TrainingEntry entry = entries.get(ind);</b>
+<b class="nc"><i>257</i>&nbsp;				addToMap(map2, entry.pathClass, entry.pathObject);</b>
+<i>258</i>&nbsp;			};
+<b class="nc"><i>259</i>&nbsp;			return map2;</b>
+<i>260</i>&nbsp;//			return resampleClassificationMapEquidistantly(map, proportion);
+<i>261</i>&nbsp;		case RANDOM_NO_REPLACEMENT:
+<b class="nc"><i>262</i>&nbsp;			Collections.shuffle(entries, random);</b>
+<i>263</i>&nbsp;			// Fall through...
+<i>264</i>&nbsp;		case FIRST_SAMPLES:
+<i>265</i>&nbsp;			// Fall through...
+<i>266</i>&nbsp;		case LAST_SAMPLES:
+<b class="nc"><i>267</i>&nbsp;			for (int i = 0; i &lt; maxTrainingInstances; i++) {</b>
+<b class="nc"><i>268</i>&nbsp;				TrainingEntry entry = entries.get(i);</b>
+<b class="nc"><i>269</i>&nbsp;				addToMap(map2, entry.pathClass, entry.pathObject);</b>
+<i>270</i>&nbsp;			};
+<b class="nc"><i>271</i>&nbsp;			return map2;</b>
+<i>272</i>&nbsp;		case RANDOM_WITH_REPLACEMENT:
+<b class="nc"><i>273</i>&nbsp;			for (int i = 0; i &lt; maxTrainingInstances; i++) {</b>
+<b class="nc"><i>274</i>&nbsp;				int ind = random.nextInt(n);</b>
+<b class="nc"><i>275</i>&nbsp;				TrainingEntry entry = entries.get(ind);</b>
+<b class="nc"><i>276</i>&nbsp;				addToMap(map2, entry.pathClass, entry.pathObject);</b>
+<i>277</i>&nbsp;			};
+<b class="nc"><i>278</i>&nbsp;			return map2;</b>
+<i>279</i>&nbsp;		default:
+<i>280</i>&nbsp;			break;
+<i>281</i>&nbsp;		}
+<b class="nc"><i>282</i>&nbsp;		return map;</b>
+<i>283</i>&nbsp;	}
+<i>284</i>&nbsp;	
+<i>285</i>&nbsp;	
+<i>286</i>&nbsp;	private static void addToMap(final Map&lt;PathClass, List&lt;PathObject&gt;&gt; map, final PathClass pathClass, final PathObject pathObject) {
+<b class="nc"><i>287</i>&nbsp;		List&lt;PathObject&gt; list = map.get(pathClass);</b>
+<b class="nc"><i>288</i>&nbsp;		if (list == null) {</b>
+<b class="nc"><i>289</i>&nbsp;			list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>290</i>&nbsp;			map.put(pathClass, list);</b>
+<i>291</i>&nbsp;		}
+<b class="nc"><i>292</i>&nbsp;		list.add(pathObject);</b>
+<i>293</i>&nbsp;	}
+<i>294</i>&nbsp;	
+<i>295</i>&nbsp;	
+<i>296</i>&nbsp;	
+<i>297</i>&nbsp;	static class TrainingEntry {
+<i>298</i>&nbsp;		
+<i>299</i>&nbsp;		final PathClass pathClass;
+<i>300</i>&nbsp;		final PathObject pathObject;
+<i>301</i>&nbsp;		
+<b class="nc"><i>302</i>&nbsp;		TrainingEntry(final PathClass pathClass, final PathObject pathObject) {</b>
+<b class="nc"><i>303</i>&nbsp;			this.pathClass = pathClass;</b>
+<b class="nc"><i>304</i>&nbsp;			this.pathObject = pathObject;</b>
+<i>305</i>&nbsp;		}
+<i>306</i>&nbsp;		
+<i>307</i>&nbsp;	}
+<i>308</i>&nbsp;	
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;	/**
+<i>312</i>&nbsp;	 * In a map where values are lists of PathObjects, count the total number of entries in all the stored lists (directly; child objects ignored).
+<i>313</i>&nbsp;	 * 
+<i>314</i>&nbsp;	 * @param map
+<i>315</i>&nbsp;	 * @return
+<i>316</i>&nbsp;	 */
+<i>317</i>&nbsp;	public static int countObjectsInMap(final Map&lt;?, ? extends Collection&lt;? extends PathObject&gt;&gt; map) {
+<b class="nc"><i>318</i>&nbsp;		return map.values().stream().mapToInt(v -&gt; v.size()).sum();</b>
+<i>319</i>&nbsp;//		int n = 0;
+<i>320</i>&nbsp;//		for (Collection&lt;?&gt; list : map.values())
+<i>321</i>&nbsp;//			n += list.size();
+<i>322</i>&nbsp;//		return n;
+<i>323</i>&nbsp;	}
+<i>324</i>&nbsp;	
+<i>325</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

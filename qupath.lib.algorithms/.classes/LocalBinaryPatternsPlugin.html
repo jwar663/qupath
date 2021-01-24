@@ -1,0 +1,433 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LocalBinaryPatternsPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.algorithms</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LocalBinaryPatternsPlugin (qupath.lib.algorithms)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LocalBinaryPatternsPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 100)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LocalBinaryPatternsPlugin$LBFRunnable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 116)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.algorithms;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Collection;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.analysis.features.LocalBinaryPatterns;
+<i>37</i>&nbsp;import qupath.lib.analysis.images.SimpleImages;
+<i>38</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>39</i>&nbsp;import qupath.lib.analysis.images.SimpleModifiableImage;
+<i>40</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>41</i>&nbsp;import qupath.lib.analysis.stats.StatisticsHelper;
+<i>42</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>43</i>&nbsp;import qupath.lib.color.ColorTransformer;
+<i>44</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>45</i>&nbsp;import qupath.lib.geom.ImmutableDimension;
+<i>46</i>&nbsp;import qupath.lib.images.ImageData;
+<i>47</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>48</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>49</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>50</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>51</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>52</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>53</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>54</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>55</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>56</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;/**
+<i>59</i>&nbsp; * Calculate local binary pattern features.
+<i>60</i>&nbsp; * &lt;p&gt;
+<i>61</i>&nbsp; * TODO: This plugin has not been extensively tested and may be of limited use.
+<i>62</i>&nbsp; * 
+<i>63</i>&nbsp; * @author Pete Bankhead
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;public class LocalBinaryPatternsPlugin extends AbstractInteractivePlugin&lt;BufferedImage&gt; {
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	private ParameterList params;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Default constructor.
+<i>72</i>&nbsp;	 */
+<b class="nc"><i>73</i>&nbsp;	public LocalBinaryPatternsPlugin() {</b>
+<b class="nc"><i>74</i>&nbsp;		params = new ParameterList().</b>
+<b class="nc"><i>75</i>&nbsp;				addDoubleParameter(&quot;magnification&quot;, &quot;Magnification&quot;, 5).</b>
+<b class="nc"><i>76</i>&nbsp;				addChoiceParameter(&quot;stainChoice&quot;, &quot;Stains&quot;, &quot;Optical density&quot;, Arrays.asList(&quot;Optical density&quot;, &quot;H-DAB&quot;, &quot;H&amp;E&quot;, &quot;H-DAB (8-bit)&quot;, &quot;H&amp;E (8-bit)&quot;, &quot;RGB&quot;, &quot;Grayscale&quot;));</b>
+<i>77</i>&nbsp;		
+<b class="nc"><i>78</i>&nbsp;		params.addDoubleParameter(&quot;tileSizeMicrons&quot;, &quot;Tile diameter&quot;, 25, GeneralTools.micrometerSymbol(), &quot;Size of image tile within which to calculate local binary patterns&quot;);</b>
+<b class="nc"><i>79</i>&nbsp;		params.addDoubleParameter(&quot;tileSizePx&quot;, &quot;Tile diameter&quot;, 200, &quot;px (full resolution image)&quot;, &quot;Size of image tile within which to calculate local binary patterns&quot;);</b>
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;		params.addBooleanParameter(&quot;includeStats&quot;, &quot;Include basic statistics&quot;, false).</b>
+<b class="nc"><i>82</i>&nbsp;				addBooleanParameter(&quot;doCircular&quot;, &quot;Use circular tiles&quot;, false);</b>
+<i>83</i>&nbsp;	}
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	static ImmutableDimension getPreferredTileSizePixels(final ImageServer&lt;BufferedImage&gt; server, final ParameterList params) {
+<i>87</i>&nbsp;		// Determine tile size
+<i>88</i>&nbsp;		int tileWidth, tileHeight;
+<b class="nc"><i>89</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>90</i>&nbsp;		if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>91</i>&nbsp;			double tileSize = params.getDoubleParameterValue(&quot;tileSizeMicrons&quot;);</b>
+<b class="nc"><i>92</i>&nbsp;			tileWidth = (int)(tileSize / cal.getPixelWidthMicrons() + .5);</b>
+<b class="nc"><i>93</i>&nbsp;			tileHeight = (int)(tileSize / cal.getPixelHeightMicrons() + .5);</b>
+<b class="nc"><i>94</i>&nbsp;		} else {</b>
+<b class="nc"><i>95</i>&nbsp;			tileWidth = (int)(params.getDoubleParameterValue(&quot;tileSizePx&quot;) + .5);</b>
+<b class="nc"><i>96</i>&nbsp;			tileHeight = tileWidth;</b>
+<i>97</i>&nbsp;		}
+<b class="nc"><i>98</i>&nbsp;		return ImmutableDimension.getInstance(tileWidth, tileHeight);</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	static String getDiameterString(final ImageServer&lt;BufferedImage&gt; server, final ParameterList params) {
+<b class="nc"><i>102</i>&nbsp;		if (server.getPixelCalibration().hasPixelSizeMicrons())</b>
+<b class="nc"><i>103</i>&nbsp;			return String.format(&quot;%.1f %s&quot;, params.getDoubleParameterValue(&quot;tileSizeMicrons&quot;), GeneralTools.micrometerSymbol());</b>
+<i>104</i>&nbsp;		else
+<b class="nc"><i>105</i>&nbsp;			return String.format(&quot;%d px&quot;, (int)(params.getDoubleParameterValue(&quot;tileSizePx&quot;) + .5));</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	@Override
+<i>110</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;BufferedImage&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<b class="nc"><i>111</i>&nbsp;		final ParameterList params = getParameterList(imageData);</b>
+<b class="nc"><i>112</i>&nbsp;		final ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="nc"><i>113</i>&nbsp;		tasks.add(new LBFRunnable(server, parentObject, params, imageData.getColorDeconvolutionStains()));</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;	
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	static class LBFRunnable implements Runnable {
+<i>119</i>&nbsp;		
+<b class="nc"><i>120</i>&nbsp;		private static Logger logger = LoggerFactory.getLogger(LBFRunnable.class);</b>
+<i>121</i>&nbsp;		
+<i>122</i>&nbsp;		private ImageServer&lt;BufferedImage&gt; server;
+<i>123</i>&nbsp;		private ParameterList params;
+<i>124</i>&nbsp;		private PathObject parentObject;
+<i>125</i>&nbsp;		private ColorDeconvolutionStains stains;
+<i>126</i>&nbsp;		
+<b class="nc"><i>127</i>&nbsp;		public LBFRunnable(final ImageServer&lt;BufferedImage&gt; server, final PathObject parentObject, final ParameterList params, final ColorDeconvolutionStains stains) {</b>
+<b class="nc"><i>128</i>&nbsp;			this.server = server;</b>
+<b class="nc"><i>129</i>&nbsp;			this.parentObject = parentObject;</b>
+<b class="nc"><i>130</i>&nbsp;			this.params = params;</b>
+<b class="nc"><i>131</i>&nbsp;			this.stains = stains;</b>
+<i>132</i>&nbsp;		}
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;		@Override
+<i>136</i>&nbsp;		public void run() {
+<i>137</i>&nbsp;			try {
+<b class="nc"><i>138</i>&nbsp;				processObject(parentObject, params, server, stains);</b>
+<b class="nc"><i>139</i>&nbsp;			} catch (InterruptedException e) {</b>
+<b class="nc"><i>140</i>&nbsp;				logger.warn(&quot;Processing interrupted!&quot;, e);</b>
+<b class="nc"><i>141</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>142</i>&nbsp;				logger.warn(&quot;Error processing &quot; + parentObject, e);</b>
+<i>143</i>&nbsp;			} finally {
+<b class="nc"><i>144</i>&nbsp;				parentObject.getMeasurementList().close();</b>
+<b class="nc"><i>145</i>&nbsp;				server = null;</b>
+<b class="nc"><i>146</i>&nbsp;				params = null;</b>
+<b class="nc"><i>147</i>&nbsp;			}</b>
+<i>148</i>&nbsp;		}
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		
+<i>151</i>&nbsp;		@Override
+<i>152</i>&nbsp;		public String toString() {
+<i>153</i>&nbsp;			// TODO: Give a better toString()
+<b class="nc"><i>154</i>&nbsp;			return &quot;Local Binary Pattern features&quot;;</b>
+<i>155</i>&nbsp;		}
+<i>156</i>&nbsp;		
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;	static boolean processObject(final PathObject pathObject, final ParameterList params, final ImageServer&lt;BufferedImage&gt; server, final ColorDeconvolutionStains stains) throws InterruptedException, IOException {
+<b class="nc"><i>163</i>&nbsp;		String stainsName = (String)params.getChoiceParameterValue(&quot;stainChoice&quot;);</b>
+<b class="nc"><i>164</i>&nbsp;		double mag = params.getDoubleParameterValue(&quot;magnification&quot;);</b>
+<i>165</i>&nbsp;//		int d = params.getIntParameterValue(&quot;haralickDistance&quot;);
+<b class="nc"><i>166</i>&nbsp;		boolean includeStats = params.getBooleanParameterValue(&quot;includeStats&quot;);</b>
+<b class="nc"><i>167</i>&nbsp;		boolean doCircular = params.getBooleanParameterValue(&quot;doCircular&quot;);</b>
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;		double downsample = server.getMetadata().getMagnification() / mag;</b>
+<i>170</i>&nbsp;		
+<b class="nc"><i>171</i>&nbsp;		ROI pathROI = pathObject.getROI();</b>
+<b class="nc"><i>172</i>&nbsp;		if (pathROI == null)</b>
+<b class="nc"><i>173</i>&nbsp;			return false;</b>
+<i>174</i>&nbsp;		
+<i>175</i>&nbsp;		// Get bounds
+<b class="nc"><i>176</i>&nbsp;		ImmutableDimension size = getPreferredTileSizePixels(server, params);</b>
+<i>177</i>&nbsp;		
+<b class="nc"><i>178</i>&nbsp;		if (size.getWidth() / downsample &lt; 1 || size.getHeight() / downsample &lt; 1)</b>
+<b class="nc"><i>179</i>&nbsp;			return false;</b>
+<i>180</i>&nbsp;		
+<b class="nc"><i>181</i>&nbsp;		RegionRequest region = RegionRequest.createInstance(server.getPath(), downsample, (int)(pathROI.getCentroidX() + .5) - size.width/2, (int)(pathROI.getCentroidY() + .5) - size.height/2, size.width, size.height, pathROI.getT(), pathROI.getZ());</b>
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;//		System.out.println(bounds);
+<i>184</i>&nbsp;//		System.out.println(&quot;Size: &quot; + size);
+<i>185</i>&nbsp;
+<b class="nc"><i>186</i>&nbsp;		BufferedImage img = server.readBufferedImage(region);</b>
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;//		System.out.println(&quot;Image size: &quot; + img.getWidth() + &quot; x &quot; + img.getHeight() + &quot; pixels&quot;);
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;		// Get a buffer containing the image pixels
+<b class="nc"><i>191</i>&nbsp;		int w = img.getWidth();</b>
+<b class="nc"><i>192</i>&nbsp;		int h = img.getHeight();</b>
+<b class="nc"><i>193</i>&nbsp;		int[] buf = img.getRGB(0, 0, w, h, null, 0, w);</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;		// Create a color transformer to get the images we need
+<b class="nc"><i>196</i>&nbsp;		float[] pixels = new float[buf.length];</b>
+<b class="nc"><i>197</i>&nbsp;		SimpleModifiableImage pxImg = SimpleImages.createFloatImage(pixels, w, h);</b>
+<i>198</i>&nbsp;		
+<b class="nc"><i>199</i>&nbsp;		MeasurementList measurementList = pathObject.getMeasurementList();</b>
+<i>200</i>&nbsp;		
+<b class="nc"><i>201</i>&nbsp;		String postfix = &quot; (&quot; + getDiameterString(server, params) + &quot;)&quot;;</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;		if (stainsName.equals(&quot;H-DAB&quot;)) {</b>
+<b class="nc"><i>204</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_DAB, stains, includeStats, doCircular);</b>
+<b class="nc"><i>205</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;DAB&quot;+postfix, ColorTransformer.ColorTransformMethod.DAB_H_DAB, stains, includeStats, doCircular);</b>
+<i>206</i>&nbsp;		}
+<b class="nc"><i>207</i>&nbsp;		else if (stainsName.equals(&quot;H&amp;E&quot;)) {</b>
+<b class="nc"><i>208</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_E, stains, includeStats, doCircular);</b>
+<b class="nc"><i>209</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Eosin&quot;+postfix, ColorTransformer.ColorTransformMethod.Eosin_H_E, stains, includeStats, doCircular);</b>
+<b class="nc"><i>210</i>&nbsp;		} else if (stainsName.equals(&quot;H-DAB (8-bit)&quot;)) {</b>
+<b class="nc"><i>211</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_DAB_8_bit, stains, includeStats, doCircular);</b>
+<b class="nc"><i>212</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;DAB 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.DAB_H_DAB_8_bit, stains, includeStats, doCircular);</b>
+<i>213</i>&nbsp;		}
+<b class="nc"><i>214</i>&nbsp;		else if (stainsName.equals(&quot;H&amp;E (8-bit)&quot;)) {</b>
+<b class="nc"><i>215</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_E_8_bit, stains, includeStats, doCircular);</b>
+<b class="nc"><i>216</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Eosin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Eosin_H_E_8_bit, stains, includeStats, doCircular);</b>
+<b class="nc"><i>217</i>&nbsp;		} else if (stainsName.equals(&quot;Optical density&quot;)) {</b>
+<b class="nc"><i>218</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;OD sum&quot;+postfix, ColorTransformer.ColorTransformMethod.Optical_density_sum, stains, includeStats, doCircular);</b>
+<b class="nc"><i>219</i>&nbsp;		} else if (stainsName.equals(&quot;RGB&quot;)) {</b>
+<b class="nc"><i>220</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Red&quot;+postfix, ColorTransformer.ColorTransformMethod.Red, stains, includeStats, doCircular);</b>
+<b class="nc"><i>221</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Green&quot;+postfix, ColorTransformer.ColorTransformMethod.Green, stains, includeStats, doCircular);</b>
+<b class="nc"><i>222</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Blue&quot;+postfix, ColorTransformer.ColorTransformMethod.Blue, stains, includeStats, doCircular);</b>
+<b class="nc"><i>223</i>&nbsp;		} else if (stainsName.equals(&quot;Grayscale&quot;)) {</b>
+<b class="nc"><i>224</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Grayscale&quot;+postfix, ColorTransformer.ColorTransformMethod.RGB_mean, stains, includeStats, doCircular);</b>
+<i>225</i>&nbsp;		}
+<b class="nc"><i>226</i>&nbsp;		measurementList.close();</b>
+<i>227</i>&nbsp;		
+<b class="nc"><i>228</i>&nbsp;		return true;</b>
+<i>229</i>&nbsp;		
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	
+<i>233</i>&nbsp;	static void processTransformedImage(SimpleModifiableImage pxImg, int[] buf, float[] pixels, MeasurementList measurementList, String name, ColorTransformer.ColorTransformMethod method, ColorDeconvolutionStains stains, boolean includeStats, boolean doCircular) {
+<b class="nc"><i>234</i>&nbsp;		ColorTransformer.getTransformedPixels(buf, method, pixels, stains);</b>
+<i>235</i>&nbsp;		
+<b class="nc"><i>236</i>&nbsp;		if (doCircular) {</b>
+<b class="nc"><i>237</i>&nbsp;			double w = pxImg.getWidth();</b>
+<b class="nc"><i>238</i>&nbsp;			double h = pxImg.getHeight();</b>
+<b class="nc"><i>239</i>&nbsp;			double cx = (w-1) / 2;</b>
+<b class="nc"><i>240</i>&nbsp;			double cy = (h-1) / 2;</b>
+<b class="nc"><i>241</i>&nbsp;			double radius = Math.max(w, h) * .5;</b>
+<b class="nc"><i>242</i>&nbsp;			double distThreshold = radius * radius;</b>
+<i>243</i>&nbsp;//			int count = 0;
+<b class="nc"><i>244</i>&nbsp;			for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>245</i>&nbsp;				for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>246</i>&nbsp;					if ((cx - x)*(cx - x) + (cy - y)*(cy - y) &gt; distThreshold)</b>
+<b class="nc"><i>247</i>&nbsp;						pxImg.setValue(x, y, Float.NaN);</b>
+<i>248</i>&nbsp;//					else
+<i>249</i>&nbsp;//						count++;
+<i>250</i>&nbsp;				}			
+<i>251</i>&nbsp;			}
+<i>252</i>&nbsp;//			System.out.println(&quot;Masked count: &quot; + count + &quot; for dimension &quot; + w + &quot;, &quot; + h);
+<i>253</i>&nbsp;		}
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		
+<b class="nc"><i>256</i>&nbsp;		if (includeStats)</b>
+<b class="nc"><i>257</i>&nbsp;			addBasicStatistics(pxImg, measurementList, name);</b>
+<b class="nc"><i>258</i>&nbsp;		addLocalBinaryFeatures(LocalBinaryPatterns.computeLocalBinaryPatterns16(pxImg, 2), measurementList, name);</b>
+<i>259</i>&nbsp;//		addLocalBinaryFeatures(LocalBinaryPatterns.computeLocalBinaryPatterns(pxImg), measurementList, name);
+<i>260</i>&nbsp;	}
+<i>261</i>&nbsp;	
+<i>262</i>&nbsp;	
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;	static void addBasicStatistics(final SimpleImage img, final MeasurementList measurementList, final String name) {
+<b class="nc"><i>265</i>&nbsp;		RunningStatistics stats = StatisticsHelper.computeRunningStatistics(img);</b>
+<b class="nc"><i>266</i>&nbsp;		measurementList.addMeasurement(name + &quot; Mean&quot;, stats.getMean());</b>
+<b class="nc"><i>267</i>&nbsp;		measurementList.addMeasurement(name + &quot; Min&quot;, stats.getMin());</b>
+<b class="nc"><i>268</i>&nbsp;		measurementList.addMeasurement(name + &quot; Max&quot;, stats.getMax());</b>
+<b class="nc"><i>269</i>&nbsp;		measurementList.addMeasurement(name + &quot; Range&quot;, stats.getRange());</b>
+<b class="nc"><i>270</i>&nbsp;		measurementList.addMeasurement(name + &quot; Std.dev.&quot;, stats.getStdDev());</b>
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;//		measurementList.addMeasurement(String.format(&quot;%s Mean&quot;, name), stats.getMean());
+<i>273</i>&nbsp;//		measurementList.addMeasurement(String.format(&quot;%s Min&quot;, name), stats.getMin());
+<i>274</i>&nbsp;//		measurementList.addMeasurement(String.format(&quot;%s Max&quot;, name), stats.getMax());
+<i>275</i>&nbsp;//		measurementList.addMeasurement(String.format(&quot;%s Range&quot;, name), stats.getRange());
+<i>276</i>&nbsp;//		measurementList.addMeasurement(String.format(&quot;%s Std.dev.&quot;, name), stats.getStdDev());
+<i>277</i>&nbsp;	}
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;	
+<i>280</i>&nbsp;	static void addLocalBinaryFeatures(final double[] histogram, final MeasurementList measurementList, final String name) {
+<b class="nc"><i>281</i>&nbsp;		for (int i = 0; i &lt; histogram.length; i++) {</b>
+<b class="nc"><i>282</i>&nbsp;			measurementList.addMeasurement(String.format(&quot;%s LBP %d&quot;, name,</b>
+<b class="nc"><i>283</i>&nbsp;					i+1), histogram[i]);</b>
+<i>284</i>&nbsp;		}
+<i>285</i>&nbsp;	}
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;	@Override
+<i>290</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>291</i>&nbsp;		boolean hasMicrons = imageData.getServer().getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>292</i>&nbsp;		params.getParameters().get(&quot;tileSizeMicrons&quot;).setHidden(!hasMicrons);</b>
+<b class="nc"><i>293</i>&nbsp;		params.getParameters().get(&quot;tileSizePx&quot;).setHidden(hasMicrons);</b>
+<b class="nc"><i>294</i>&nbsp;		return params;</b>
+<i>295</i>&nbsp;	}
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;	@Override
+<i>298</i>&nbsp;	public String getName() {
+<b class="nc"><i>299</i>&nbsp;		return &quot;Add Local Binary Pattern features&quot;;</b>
+<i>300</i>&nbsp;	}
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;	@Override
+<i>303</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>304</i>&nbsp;		return &quot;&quot;;</b>
+<i>305</i>&nbsp;	}
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;	@Override
+<i>308</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>309</i>&nbsp;		return &quot;Add Local Binary Pattern features to existing object measurements&quot;;</b>
+<i>310</i>&nbsp;	}
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;	@Override
+<i>313</i>&nbsp;	protected Collection&lt;PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<b class="nc"><i>314</i>&nbsp;		return runner.getImageData().getHierarchy().getDetectionObjects();</b>
+<i>315</i>&nbsp;	}
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;	@Override
+<i>318</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>319</i>&nbsp;		List&lt;Class&lt;? extends PathObject&gt;&gt; parents = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>320</i>&nbsp;		parents.add(PathDetectionObject.class);</b>
+<b class="nc"><i>321</i>&nbsp;		return parents;</b>
+<i>322</i>&nbsp;	}
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

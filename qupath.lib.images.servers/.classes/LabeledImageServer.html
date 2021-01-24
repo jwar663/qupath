@@ -1,0 +1,1022 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LabeledImageServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LabeledImageServer (qupath.lib.images.servers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LabeledImageServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 246)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LabeledImageServer$Builder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 58)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">LabeledImageServer$LabeledServerParameters</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 53)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 326)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.servers;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.BasicStroke;
+<i>25</i>&nbsp;import java.awt.Color;
+<i>26</i>&nbsp;import java.awt.Graphics2D;
+<i>27</i>&nbsp;import java.awt.image.BandedSampleModel;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.awt.image.ColorModel;
+<i>30</i>&nbsp;import java.awt.image.DataBuffer;
+<i>31</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>32</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>33</i>&nbsp;import java.awt.image.WritableRaster;
+<i>34</i>&nbsp;import java.io.IOException;
+<i>35</i>&nbsp;import java.net.URI;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Collection;
+<i>38</i>&nbsp;import java.util.Collections;
+<i>39</i>&nbsp;import java.util.HashMap;
+<i>40</i>&nbsp;import java.util.LinkedHashMap;
+<i>41</i>&nbsp;import java.util.Map;
+<i>42</i>&nbsp;import java.util.Random;
+<i>43</i>&nbsp;import java.util.TreeMap;
+<i>44</i>&nbsp;import java.util.UUID;
+<i>45</i>&nbsp;import java.util.function.Function;
+<i>46</i>&nbsp;import java.util.function.Predicate;
+<i>47</i>&nbsp;import java.util.stream.Collectors;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import org.slf4j.Logger;
+<i>50</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>53</i>&nbsp;import qupath.lib.color.ColorModelFactory;
+<i>54</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>55</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>56</i>&nbsp;import qupath.lib.images.ImageData;
+<i>57</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>58</i>&nbsp;import qupath.lib.images.servers.GeneratingImageServer;
+<i>59</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ChannelType;
+<i>60</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>61</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>62</i>&nbsp;import qupath.lib.objects.PathObjectFilter;
+<i>63</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>64</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>65</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>66</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>67</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>68</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;/**
+<i>72</i>&nbsp; * A special ImageServer implementation that doesn&#39;t have a backing image, but rather
+<i>73</i>&nbsp; * constructs tiles from a PathObjectHierarchy where pixel values are integer labels corresponding 
+<i>74</i>&nbsp; * stored and classified annotations.
+<i>75</i>&nbsp; * &lt;p&gt;
+<i>76</i>&nbsp; * &lt;i&gt;Warning!&lt;/i&gt; This is intend for temporary use when exporting labelled images. No attempt is made to 
+<i>77</i>&nbsp; * respond to changes within the hierarchy. For consistent results, the hierarchy must remain static for the 
+<i>78</i>&nbsp; * time in which this server is being used.
+<i>79</i>&nbsp; * 
+<i>80</i>&nbsp; * @author Pete Bankhead
+<i>81</i>&nbsp; *
+<i>82</i>&nbsp; */
+<i>83</i>&nbsp;public class LabeledImageServer extends AbstractTileableImageServer implements GeneratingImageServer&lt;BufferedImage&gt; {
+<i>84</i>&nbsp;	
+<b class="nc"><i>85</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(LabeledImageServer.class);</b>
+<i>86</i>&nbsp;	
+<b class="nc"><i>87</i>&nbsp;	static long counter = 0;</b>
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>90</i>&nbsp;	
+<i>91</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<i>92</i>&nbsp;		
+<i>93</i>&nbsp;	private ColorModel colorModel;
+<i>94</i>&nbsp;	private boolean multichannelOutput;
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	private LabeledServerParameters params;
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	/**
+<i>99</i>&nbsp;	 * The maximum requested label; this is used to determine the output depth for indexed images.
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	private int maxLabel;
+<i>102</i>&nbsp;	
+<b class="nc"><i>103</i>&nbsp;	private Map&lt;PathObject, PathClass&gt; uniqueClassMap = null;</b>
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	
+<i>106</i>&nbsp;	private LabeledImageServer(final ImageData&lt;BufferedImage&gt; imageData, double downsample, int tileWidth, int tileHeight, LabeledServerParameters params, boolean multichannelOutput) {
+<b class="nc"><i>107</i>&nbsp;		super();</b>
+<i>108</i>&nbsp;		
+<b class="nc"><i>109</i>&nbsp;		this.multichannelOutput = multichannelOutput;</b>
+<b class="nc"><i>110</i>&nbsp;		this.hierarchy = imageData.getHierarchy();</b>
+<i>111</i>&nbsp;		
+<b class="nc"><i>112</i>&nbsp;		this.params = params;</b>
+<i>113</i>&nbsp;		
+<b class="nc"><i>114</i>&nbsp;		var server = imageData.getServer();</b>
+<i>115</i>&nbsp;		
+<i>116</i>&nbsp;		// Generate mapping for labels; it is permissible to have multiple classes for the same labels, in which case a derived class will be used
+<b class="nc"><i>117</i>&nbsp;		Map&lt;Integer, PathClass&gt; classificationLabels = new TreeMap&lt;&gt;();</b>
+<b class="nc"><i>118</i>&nbsp;		if (params.createUniqueLabels) {</b>
+<b class="nc"><i>119</i>&nbsp;			var pathObjects = imageData.getHierarchy().getObjects(null, null).stream().filter(params.objectFilter).collect(Collectors.toCollection(ArrayList::new));</b>
+<i>120</i>&nbsp;			// Shuffle the objects, this helps when using grayscale lookup tables, since labels for neighboring objects are otherwise very similar
+<b class="nc"><i>121</i>&nbsp;			Collections.shuffle(pathObjects, new Random(100L));</b>
+<b class="nc"><i>122</i>&nbsp;			Integer count = multichannelOutput ? 0 : 1;</b>
+<b class="nc"><i>123</i>&nbsp;			uniqueClassMap = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>124</i>&nbsp;			for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>125</i>&nbsp;				var pathClass = PathClassFactory.getPathClass(&quot;Label &quot; + count);</b>
+<b class="nc"><i>126</i>&nbsp;				uniqueClassMap.put(pathObject, pathClass);</b>
+<b class="nc"><i>127</i>&nbsp;				classificationLabels.put(count, pathClass);</b>
+<b class="nc"><i>128</i>&nbsp;				params.labelColors.put(count, pathClass.getColor());</b>
+<b class="nc"><i>129</i>&nbsp;				params.labels.put(pathClass, count);</b>
+<b class="nc"><i>130</i>&nbsp;				count++;</b>
+<b class="nc"><i>131</i>&nbsp;			}</b>
+<b class="nc"><i>132</i>&nbsp;		} else {</b>
+<b class="nc"><i>133</i>&nbsp;			for (var entry : params.labels.entrySet()) {</b>
+<b class="nc"><i>134</i>&nbsp;				var pathClass = getPathClass(entry.getKey());</b>
+<b class="nc"><i>135</i>&nbsp;				var label = entry.getValue();</b>
+<b class="nc"><i>136</i>&nbsp;				var previousClass = classificationLabels.put(label, pathClass);</b>
+<b class="nc"><i>137</i>&nbsp;				if (previousClass != null &amp;&amp; previousClass != PathClassFactory.getPathClassUnclassified()) {</b>
+<b class="nc"><i>138</i>&nbsp;					classificationLabels.put(label, PathClassFactory.getDerivedPathClass(previousClass, pathClass.getName(), null));</b>
+<i>139</i>&nbsp;				}
+<b class="nc"><i>140</i>&nbsp;			}</b>
+<i>141</i>&nbsp;		}
+<i>142</i>&nbsp;		
+<b class="nc"><i>143</i>&nbsp;		for (var entry : params.boundaryLabels.entrySet()) {</b>
+<b class="nc"><i>144</i>&nbsp;			var pathClass = getPathClass(entry.getKey());</b>
+<b class="nc"><i>145</i>&nbsp;			var label = entry.getValue();</b>
+<b class="nc"><i>146</i>&nbsp;			var previousClass = classificationLabels.put(label, pathClass);</b>
+<b class="nc"><i>147</i>&nbsp;			if (previousClass != null &amp;&amp; previousClass != PathClassFactory.getPathClassUnclassified()) {</b>
+<b class="nc"><i>148</i>&nbsp;				classificationLabels.put(label, PathClassFactory.getDerivedPathClass(previousClass, pathClass.getName(), null));</b>
+<i>149</i>&nbsp;			}
+<b class="nc"><i>150</i>&nbsp;		}</b>
+<i>151</i>&nbsp;		
+<b class="nc"><i>152</i>&nbsp;		if (tileWidth &lt;= 0)</b>
+<b class="nc"><i>153</i>&nbsp;			tileWidth = 512;</b>
+<b class="nc"><i>154</i>&nbsp;		if (tileHeight &lt;= 0)</b>
+<b class="nc"><i>155</i>&nbsp;			tileHeight = tileWidth;</b>
+<i>156</i>&nbsp;		
+<b class="nc"><i>157</i>&nbsp;		var metadataBuilder = new ImageServerMetadata.Builder(server.getMetadata())</b>
+<b class="nc"><i>158</i>&nbsp;				.preferredTileSize(tileWidth, tileHeight)</b>
+<b class="nc"><i>159</i>&nbsp;				.levelsFromDownsamples(downsample)</b>
+<b class="nc"><i>160</i>&nbsp;				.pixelType(PixelType.UINT8)</b>
+<b class="nc"><i>161</i>&nbsp;				.rgb(false);</b>
+<i>162</i>&nbsp;		
+<i>163</i>&nbsp;		// Check the labels are valid
+<b class="nc"><i>164</i>&nbsp;		var labelStats = classificationLabels.keySet().stream().mapToInt(i -&gt; i).summaryStatistics();</b>
+<b class="nc"><i>165</i>&nbsp;		int minLabel = labelStats.getMin();</b>
+<b class="nc"><i>166</i>&nbsp;		maxLabel = labelStats.getMax();</b>
+<b class="nc"><i>167</i>&nbsp;		if (minLabel &lt; 0) {</b>
+<b class="nc"><i>168</i>&nbsp;			throw new IllegalArgumentException(&quot;Minimum possible label value is 0! Requested minimum was &quot; + maxLabel);</b>
+<i>169</i>&nbsp;		}
+<b class="nc"><i>170</i>&nbsp;		if (multichannelOutput) {</b>
+<b class="nc"><i>171</i>&nbsp;			int nChannels = maxLabel + 1;</b>
+<b class="nc"><i>172</i>&nbsp;			if (params.maxOutputChannelLimit &gt; 0 &amp;&amp; nChannels &gt; params.maxOutputChannelLimit)</b>
+<b class="nc"><i>173</i>&nbsp;				throw new IllegalArgumentException(&quot;You&#39;ve requested &quot; + nChannels + &quot; output channels, but the maximum supported number is &quot; + params.maxOutputChannelLimit);</b>
+<i>174</i>&nbsp;		}
+<i>175</i>&nbsp;		
+<b class="nc"><i>176</i>&nbsp;		if (multichannelOutput) {</b>
+<b class="nc"><i>177</i>&nbsp;			int nLabels = maxLabel - minLabel + 1;</b>
+<b class="nc"><i>178</i>&nbsp;			if (minLabel != 0 || nLabels != classificationLabels.size()) {</b>
+<b class="nc"><i>179</i>&nbsp;				throw new IllegalArgumentException(&quot;Labels for multichannel output must be consecutive integers starting from 0! Requested labels &quot; + classificationLabels.keySet());</b>
+<i>180</i>&nbsp;			}
+<b class="nc"><i>181</i>&nbsp;			var channels = PathClassifierTools.classificationLabelsToChannels(classificationLabels, false);</b>
+<b class="nc"><i>182</i>&nbsp;			metadataBuilder = metadataBuilder</b>
+<b class="nc"><i>183</i>&nbsp;					.channelType(ChannelType.MULTICLASS_PROBABILITY)</b>
+<b class="nc"><i>184</i>&nbsp;					.channels(channels)</b>
+<b class="nc"><i>185</i>&nbsp;					.classificationLabels(classificationLabels);</b>
+<b class="nc"><i>186</i>&nbsp;			colorModel = ColorModelFactory.createColorModel(PixelType.UINT8, channels);</b>
+<b class="nc"><i>187</i>&nbsp;		} else {</b>
+<b class="nc"><i>188</i>&nbsp;			metadataBuilder = metadataBuilder</b>
+<b class="nc"><i>189</i>&nbsp;					.channelType(ChannelType.CLASSIFICATION)</b>
+<b class="nc"><i>190</i>&nbsp;					.classificationLabels(classificationLabels);</b>
+<i>191</i>&nbsp;			
+<i>192</i>&nbsp;			// Update the color map, ensuring we don&#39;t have null
+<b class="nc"><i>193</i>&nbsp;			var colors = new LinkedHashMap&lt;Integer, Integer&gt;();</b>
+<b class="nc"><i>194</i>&nbsp;			for (var entry : params.labelColors.entrySet()) {</b>
+<b class="nc"><i>195</i>&nbsp;				var key = entry.getKey();</b>
+<b class="nc"><i>196</i>&nbsp;				var value = entry.getValue();</b>
+<b class="nc"><i>197</i>&nbsp;				if (key == null) {</b>
+<b class="nc"><i>198</i>&nbsp;					logger.debug(&quot;Missing key in label map! Will be skipped.&quot;);</b>
+<b class="nc"><i>199</i>&nbsp;					continue;</b>
+<i>200</i>&nbsp;				}
+<b class="nc"><i>201</i>&nbsp;				if (value == null) {</b>
+<i>202</i>&nbsp;					// Flip the bits of the background color, if needed
+<b class="nc"><i>203</i>&nbsp;					logger.debug(&quot;Missing color in label map! Will be derived from the background color.&quot;);</b>
+<b class="nc"><i>204</i>&nbsp;					var backgroundColor = params.labelColors.get(params.labels.get(params.unannotatedClass));</b>
+<b class="nc"><i>205</i>&nbsp;					value = backgroundColor == null ? 0 : ~backgroundColor.intValue();</b>
+<i>206</i>&nbsp;				}
+<b class="nc"><i>207</i>&nbsp;				colors.put(key, value);</b>
+<b class="nc"><i>208</i>&nbsp;			}</b>
+<i>209</i>&nbsp;			
+<b class="nc"><i>210</i>&nbsp;			if (maxLabel &lt; 65536) {</b>
+<b class="nc"><i>211</i>&nbsp;				colorModel = ColorModelFactory.createIndexedColorModel(colors, false);</b>
+<b class="nc"><i>212</i>&nbsp;				if (maxLabel &gt; 255)</b>
+<b class="nc"><i>213</i>&nbsp;					metadataBuilder.pixelType(PixelType.UINT16);</b>
+<i>214</i>&nbsp;			} else {
+<b class="nc"><i>215</i>&nbsp;				colorModel = ColorModelFactory.getDummyColorModel(32);</b>
+<b class="nc"><i>216</i>&nbsp;				metadataBuilder.channels(ImageChannel.getDefaultRGBChannels());</b>
+<i>217</i>&nbsp;			}
+<i>218</i>&nbsp;		}
+<i>219</i>&nbsp;		
+<i>220</i>&nbsp;		// Set metadata, using the underlying server as a basis
+<b class="nc"><i>221</i>&nbsp;		this.originalMetadata = metadataBuilder.build();</b>
+<i>222</i>&nbsp;	}
+<i>223</i>&nbsp;	
+<i>224</i>&nbsp;	/**
+<i>225</i>&nbsp;	 * @param pathClass
+<i>226</i>&nbsp;	 * @return the input classification, or the unclassified classification if the input is null
+<i>227</i>&nbsp;	 */
+<i>228</i>&nbsp;	private static PathClass getPathClass(PathClass pathClass) {
+<b class="nc"><i>229</i>&nbsp;		return pathClass == null ? PathClassFactory.getPathClassUnclassified() : pathClass;</b>
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	/**
+<i>233</i>&nbsp;	 * Get a standardized classification for an object. 
+<i>234</i>&nbsp;	 * If unique labels are requested, this will return the unique classification associated with this object 
+<i>235</i>&nbsp;	 * or null if no unique classification is available (i.e. the object should not be included).
+<i>236</i>&nbsp;	 * Otherwise, it will return either the objects&#39;s classification or the unclassified class (not null).
+<i>237</i>&nbsp;	 * @param pathObject
+<i>238</i>&nbsp;	 * @return
+<i>239</i>&nbsp;	 */
+<i>240</i>&nbsp;	private PathClass getPathClass(PathObject pathObject) {
+<b class="nc"><i>241</i>&nbsp;		if (uniqueClassMap != null)</b>
+<b class="nc"><i>242</i>&nbsp;			return uniqueClassMap.get(pathObject);</b>
+<b class="nc"><i>243</i>&nbsp;		return getPathClass(pathObject.getPathClass());</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;	
+<i>246</i>&nbsp;	
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	private static class LabeledServerParameters {
+<i>249</i>&nbsp;		
+<i>250</i>&nbsp;		/**
+<i>251</i>&nbsp;		 * Background class (name must not clash with any &#39;real&#39; class)
+<i>252</i>&nbsp;		 */
+<b class="nc"><i>253</i>&nbsp;		private PathClass unannotatedClass = PathClassFactory.getPathClass(&quot;Unannotated &quot; + UUID.randomUUID().toString());</b>
+<i>254</i>&nbsp;		
+<b class="nc"><i>255</i>&nbsp;		private Predicate&lt;PathObject&gt; objectFilter = PathObjectFilter.ANNOTATIONS;</b>
+<b class="nc"><i>256</i>&nbsp;		private Function&lt;PathObject, ROI&gt; roiFunction = p -&gt; p.getROI();</b>
+<i>257</i>&nbsp;		
+<b class="nc"><i>258</i>&nbsp;		private boolean createUniqueLabels = false;</b>
+<b class="nc"><i>259</i>&nbsp;		private int maxOutputChannelLimit = 256;</b>
+<i>260</i>&nbsp;		
+<b class="nc"><i>261</i>&nbsp;		private float lineThickness = 1.0f;</b>
+<b class="nc"><i>262</i>&nbsp;		private Map&lt;PathClass, Integer&gt; labels = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>263</i>&nbsp;		private Map&lt;PathClass, Integer&gt; boundaryLabels = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>264</i>&nbsp;		private Map&lt;Integer, Integer&gt; labelColors = new LinkedHashMap&lt;&gt;();</b>
+<i>265</i>&nbsp;		
+<b class="nc"><i>266</i>&nbsp;		LabeledServerParameters() {</b>
+<b class="nc"><i>267</i>&nbsp;			labels.put(unannotatedClass, 0);</b>
+<b class="nc"><i>268</i>&nbsp;			labelColors.put(0, ColorTools.WHITE);</b>
+<i>269</i>&nbsp;		}
+<i>270</i>&nbsp;		
+<b class="nc"><i>271</i>&nbsp;		LabeledServerParameters(LabeledServerParameters params) {</b>
+<b class="nc"><i>272</i>&nbsp;			this.unannotatedClass = params.unannotatedClass;</b>
+<b class="nc"><i>273</i>&nbsp;			this.lineThickness = params.lineThickness;</b>
+<b class="nc"><i>274</i>&nbsp;			this.objectFilter = params.objectFilter;</b>
+<b class="nc"><i>275</i>&nbsp;			this.labels = new LinkedHashMap&lt;&gt;(params.labels);</b>
+<b class="nc"><i>276</i>&nbsp;			this.boundaryLabels = new LinkedHashMap&lt;&gt;(params.boundaryLabels);</b>
+<b class="nc"><i>277</i>&nbsp;			this.labelColors = new LinkedHashMap&lt;&gt;(params.labelColors);</b>
+<b class="nc"><i>278</i>&nbsp;			this.createUniqueLabels = params.createUniqueLabels;</b>
+<b class="nc"><i>279</i>&nbsp;			this.maxOutputChannelLimit = params.maxOutputChannelLimit;</b>
+<b class="nc"><i>280</i>&nbsp;			this.roiFunction = params.roiFunction;</b>
+<i>281</i>&nbsp;		}
+<i>282</i>&nbsp;		
+<i>283</i>&nbsp;	}
+<i>284</i>&nbsp;	
+<i>285</i>&nbsp;	/**
+<i>286</i>&nbsp;	 * Helper class for building a {@link LabeledImageServer}.
+<i>287</i>&nbsp;	 */
+<i>288</i>&nbsp;	public static class Builder {
+<i>289</i>&nbsp;		
+<i>290</i>&nbsp;		private ImageData&lt;BufferedImage&gt; imageData;
+<b class="nc"><i>291</i>&nbsp;		private double downsample = 1.0;</b>
+<i>292</i>&nbsp;		private int tileWidth, tileHeight;
+<i>293</i>&nbsp;		
+<b class="nc"><i>294</i>&nbsp;		private boolean multichannelOutput = false;</b>
+<i>295</i>&nbsp;
+<b class="nc"><i>296</i>&nbsp;		private LabeledServerParameters params = new LabeledServerParameters();</b>
+<i>297</i>&nbsp;		
+<i>298</i>&nbsp;		/**
+<i>299</i>&nbsp;		 * Create a Builder for a {@link LabeledImageServer} for the specified {@link ImageData}.
+<i>300</i>&nbsp;		 * @param imageData
+<i>301</i>&nbsp;		 */
+<b class="nc"><i>302</i>&nbsp;		public Builder(ImageData&lt;BufferedImage&gt; imageData) {</b>
+<b class="nc"><i>303</i>&nbsp;			this.imageData = imageData;</b>
+<i>304</i>&nbsp;		}
+<i>305</i>&nbsp;		
+<i>306</i>&nbsp;		/**
+<i>307</i>&nbsp;		 * Use detections rather than annotations for labels.
+<i>308</i>&nbsp;		 * The default is to use annotations.
+<i>309</i>&nbsp;		 * @return
+<i>310</i>&nbsp;		 * @see #useAnnotations()
+<i>311</i>&nbsp;		 */
+<i>312</i>&nbsp;		public Builder useDetections() {
+<b class="nc"><i>313</i>&nbsp;			params.objectFilter = PathObjectFilter.DETECTIONS_ALL;</b>
+<b class="nc"><i>314</i>&nbsp;			return this;</b>
+<i>315</i>&nbsp;		}
+<i>316</i>&nbsp;		
+<i>317</i>&nbsp;		/**
+<i>318</i>&nbsp;		 * Use cells rather than annotations for labels.
+<i>319</i>&nbsp;		 * The default is to use annotations.
+<i>320</i>&nbsp;		 * @return
+<i>321</i>&nbsp;		 * @see #useAnnotations()
+<i>322</i>&nbsp;		 */
+<i>323</i>&nbsp;		public Builder useCells() {
+<b class="nc"><i>324</i>&nbsp;			params.objectFilter = PathObjectFilter.CELLS;</b>
+<b class="nc"><i>325</i>&nbsp;			return this;</b>
+<i>326</i>&nbsp;		}
+<i>327</i>&nbsp;		
+<i>328</i>&nbsp;		/**
+<i>329</i>&nbsp;		 * Use cells rather than annotations for labels, requesting the nucleus ROI where available.
+<i>330</i>&nbsp;		 * The default is to use annotations.
+<i>331</i>&nbsp;		 * @return
+<i>332</i>&nbsp;		 * @see #useAnnotations()
+<i>333</i>&nbsp;		 */
+<i>334</i>&nbsp;		public Builder useCellNuclei() {
+<b class="nc"><i>335</i>&nbsp;			params.objectFilter = PathObjectFilter.CELLS;</b>
+<b class="nc"><i>336</i>&nbsp;			params.roiFunction = p -&gt; PathObjectTools.getROI(p, true);</b>
+<b class="nc"><i>337</i>&nbsp;			return this;</b>
+<i>338</i>&nbsp;		}
+<i>339</i>&nbsp;		
+<i>340</i>&nbsp;		/**
+<i>341</i>&nbsp;		 * Use annotations for labels. This is the default.
+<i>342</i>&nbsp;		 * @return
+<i>343</i>&nbsp;		 * @see #useDetections()
+<i>344</i>&nbsp;		 */
+<i>345</i>&nbsp;		public Builder useAnnotations() {
+<b class="nc"><i>346</i>&nbsp;			params.objectFilter = PathObjectFilter.ANNOTATIONS;</b>
+<b class="nc"><i>347</i>&nbsp;			return this;</b>
+<i>348</i>&nbsp;		}
+<i>349</i>&nbsp;		
+<i>350</i>&nbsp;		/**
+<i>351</i>&nbsp;		 * Use a custom method of selecting objects for inclusion.
+<i>352</i>&nbsp;		 * The default is to use annotations.
+<i>353</i>&nbsp;		 * @param filter the filter that determines whether an object will be included or not
+<i>354</i>&nbsp;		 * @return
+<i>355</i>&nbsp;		 * @see #useAnnotations()
+<i>356</i>&nbsp;		 */
+<i>357</i>&nbsp;		public Builder useFilter(Predicate&lt;PathObject&gt; filter) {
+<b class="nc"><i>358</i>&nbsp;			params.objectFilter = filter;</b>
+<b class="nc"><i>359</i>&nbsp;			return this;</b>
+<i>360</i>&nbsp;		}
+<i>361</i>&nbsp;		
+<i>362</i>&nbsp;		/**
+<i>363</i>&nbsp;		 * Specify downsample factor. This is &lt;i&gt;very&lt;/i&gt; important because it defines 
+<i>364</i>&nbsp;		 * the resolution at which shapes will be drawn and the line thickness is determined.
+<i>365</i>&nbsp;		 * @param downsample
+<i>366</i>&nbsp;		 * @return
+<i>367</i>&nbsp;		 */
+<i>368</i>&nbsp;		public Builder downsample(double downsample) {
+<b class="nc"><i>369</i>&nbsp;			this.downsample = downsample;</b>
+<b class="nc"><i>370</i>&nbsp;			return this;</b>
+<i>371</i>&nbsp;		}
+<i>372</i>&nbsp;		
+<i>373</i>&nbsp;		/**
+<i>374</i>&nbsp;		 * Set tile width and height (square tiles).
+<i>375</i>&nbsp;		 * @param tileSize
+<i>376</i>&nbsp;		 * @return
+<i>377</i>&nbsp;		 */
+<i>378</i>&nbsp;		public Builder tileSize(int tileSize) {
+<b class="nc"><i>379</i>&nbsp;			return tileSize(tileSize, tileSize);</b>
+<i>380</i>&nbsp;		}
+<i>381</i>&nbsp;		
+<i>382</i>&nbsp;		/**
+<i>383</i>&nbsp;		 * Set tile width and height.
+<i>384</i>&nbsp;		 * @param tileWidth
+<i>385</i>&nbsp;		 * @param tileHeight
+<i>386</i>&nbsp;		 * @return
+<i>387</i>&nbsp;		 */
+<i>388</i>&nbsp;		public Builder tileSize(int tileWidth, int tileHeight) {
+<b class="nc"><i>389</i>&nbsp;			this.tileWidth = tileWidth;</b>
+<b class="nc"><i>390</i>&nbsp;			this.tileHeight = tileHeight;</b>
+<b class="nc"><i>391</i>&nbsp;			return this;</b>
+<i>392</i>&nbsp;		}
+<i>393</i>&nbsp;		
+<i>394</i>&nbsp;		/**
+<i>395</i>&nbsp;		 * Thickness of boundary lines and line annotations, defined in terms of pixels at the 
+<i>396</i>&nbsp;		 * resolution specified by the downsample value of the server.
+<i>397</i>&nbsp;		 * @param thickness
+<i>398</i>&nbsp;		 * @return
+<i>399</i>&nbsp;		 */
+<i>400</i>&nbsp;		public Builder lineThickness(float thickness) {
+<b class="nc"><i>401</i>&nbsp;			params.lineThickness = thickness;</b>
+<b class="nc"><i>402</i>&nbsp;			return this;</b>
+<i>403</i>&nbsp;		}
+<i>404</i>&nbsp;		
+<i>405</i>&nbsp;		
+<i>406</i>&nbsp;		/**
+<i>407</i>&nbsp;		 * Request that unique labels are used for all objects, rather than classifications.
+<i>408</i>&nbsp;		 * If this flag is set, all other label requests are ignored.
+<i>409</i>&nbsp;		 * @return
+<i>410</i>&nbsp;		 */
+<i>411</i>&nbsp;		public Builder useUniqueLabels() {
+<b class="nc"><i>412</i>&nbsp;			params.createUniqueLabels = true;</b>
+<b class="nc"><i>413</i>&nbsp;			return this;</b>
+<i>414</i>&nbsp;		}
+<i>415</i>&nbsp;		
+<i>416</i>&nbsp;		
+<i>417</i>&nbsp;		/**
+<i>418</i>&nbsp;		 * If true, the output image consists of multiple binary images concatenated as different channels, 
+<i>419</i>&nbsp;		 * so that the channel number relates to a classification.
+<i>420</i>&nbsp;		 * If false, the output image is a single-channel indexed image so that each pixel value relates to 
+<i>421</i>&nbsp;		 * a classification.
+<i>422</i>&nbsp;		 * Indexed images are much more efficient, but are unable to support more than one classification per pixel.
+<i>423</i>&nbsp;		 * @param doMultichannel
+<i>424</i>&nbsp;		 * @return
+<i>425</i>&nbsp;		 */
+<i>426</i>&nbsp;		public Builder multichannelOutput(boolean doMultichannel) {
+<b class="nc"><i>427</i>&nbsp;			this.multichannelOutput = doMultichannel;</b>
+<b class="nc"><i>428</i>&nbsp;			return this;</b>
+<i>429</i>&nbsp;		}
+<i>430</i>&nbsp;		
+<i>431</i>&nbsp;		/**
+<i>432</i>&nbsp;		 * Specify the background label (0 by default).
+<i>433</i>&nbsp;		 * @param label
+<i>434</i>&nbsp;		 * @return
+<i>435</i>&nbsp;		 */
+<i>436</i>&nbsp;		public Builder backgroundLabel(int label) {
+<b class="nc"><i>437</i>&nbsp;			return backgroundLabel(label, ColorTools.makeRGB(255, 255, 255));</b>
+<i>438</i>&nbsp;		}
+<i>439</i>&nbsp;		
+<i>440</i>&nbsp;		/**
+<i>441</i>&nbsp;		 * Specify the background label (0 by default) and color.
+<i>442</i>&nbsp;		 * @param label
+<i>443</i>&nbsp;		 * @param color 
+<i>444</i>&nbsp;		 * @return
+<i>445</i>&nbsp;		 */
+<i>446</i>&nbsp;		public Builder backgroundLabel(int label, Integer color) {
+<b class="nc"><i>447</i>&nbsp;			addLabel(params.unannotatedClass, label, color);</b>
+<b class="nc"><i>448</i>&nbsp;			return this;</b>
+<i>449</i>&nbsp;		}
+<i>450</i>&nbsp;		
+<i>451</i>&nbsp;		/**
+<i>452</i>&nbsp;		 * Add multiple labels by classname, where the key represents a classname and the value 
+<i>453</i>&nbsp;		 * represents the integer label that should be used for annotations of the given class.
+<i>454</i>&nbsp;		 * @param labelMap
+<i>455</i>&nbsp;		 * @return
+<i>456</i>&nbsp;		 */
+<i>457</i>&nbsp;		public Builder addLabelsByName(Map&lt;String, Integer&gt; labelMap) {
+<b class="nc"><i>458</i>&nbsp;			for (var entry : labelMap.entrySet())</b>
+<b class="nc"><i>459</i>&nbsp;				addLabel(entry.getKey(), entry.getValue());</b>
+<b class="nc"><i>460</i>&nbsp;			return this;</b>
+<i>461</i>&nbsp;		}
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;		/**
+<i>464</i>&nbsp;		 * Add multiple labels by PathClass, where the key represents a PathClass and the value 
+<i>465</i>&nbsp;		 * represents the integer label that should be used for annotations of the given class.
+<i>466</i>&nbsp;		 * @param labelMap
+<i>467</i>&nbsp;		 * @return
+<i>468</i>&nbsp;		 */
+<i>469</i>&nbsp;		public Builder addLabels(Map&lt;PathClass, Integer&gt; labelMap) {
+<b class="nc"><i>470</i>&nbsp;			for (var entry : labelMap.entrySet())</b>
+<b class="nc"><i>471</i>&nbsp;				addLabel(entry.getKey(), entry.getValue());</b>
+<b class="nc"><i>472</i>&nbsp;			return this;</b>
+<i>473</i>&nbsp;		}
+<i>474</i>&nbsp;		
+<i>475</i>&nbsp;		/**
+<i>476</i>&nbsp;		 * Add a single label by classname, where the label represents the integer label used for 
+<i>477</i>&nbsp;		 * annotations with the given classname.
+<i>478</i>&nbsp;		 * @param pathClassName
+<i>479</i>&nbsp;		 * @param label
+<i>480</i>&nbsp;		 * @return
+<i>481</i>&nbsp;		 */
+<i>482</i>&nbsp;		public Builder addLabel(String pathClassName, int label) {
+<b class="nc"><i>483</i>&nbsp;			return addLabel(pathClassName, label, null);</b>
+<i>484</i>&nbsp;		}
+<i>485</i>&nbsp;
+<i>486</i>&nbsp;		/**
+<i>487</i>&nbsp;		 * Add a single label by classname, where the label represents the integer label used for 
+<i>488</i>&nbsp;		 * annotations with the given classname.
+<i>489</i>&nbsp;		 * @param pathClassName
+<i>490</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>491</i>&nbsp;		 * @param color the color of the lookup table used with any indexed image
+<i>492</i>&nbsp;		 * @return
+<i>493</i>&nbsp;		 */
+<i>494</i>&nbsp;		public Builder addLabel(String pathClassName, int label, Integer color) {
+<b class="nc"><i>495</i>&nbsp;			return addLabel(PathClassFactory.getPathClass(pathClassName), label, color);</b>
+<i>496</i>&nbsp;		}
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;		/**
+<i>499</i>&nbsp;		 * Add a single label by {@link PathClass}, where the label represents the integer label used for 
+<i>500</i>&nbsp;		 * annotations with the given classification.
+<i>501</i>&nbsp;		 * @param pathClass
+<i>502</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>503</i>&nbsp;		 * @return
+<i>504</i>&nbsp;		 */
+<i>505</i>&nbsp;		public Builder addLabel(PathClass pathClass, int label) {
+<b class="nc"><i>506</i>&nbsp;			return addLabel(pathClass, label, null);</b>
+<i>507</i>&nbsp;		}
+<i>508</i>&nbsp;		
+<i>509</i>&nbsp;		/**
+<i>510</i>&nbsp;		 * Add a single label by {@link PathClass}, where the label represents the integer label used for 
+<i>511</i>&nbsp;		 * annotations with the given classification.
+<i>512</i>&nbsp;		 * @param pathClass
+<i>513</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>514</i>&nbsp;		 * @param color the color of the lookup table used with any indexed image
+<i>515</i>&nbsp;		 * @return
+<i>516</i>&nbsp;		 */
+<i>517</i>&nbsp;		public Builder addLabel(PathClass pathClass, int label, Integer color) {
+<b class="nc"><i>518</i>&nbsp;			return addLabel(params.labels, pathClass, label, color);</b>
+<i>519</i>&nbsp;		}
+<i>520</i>&nbsp;		
+<i>521</i>&nbsp;		/**
+<i>522</i>&nbsp;		 * Add a single label for objects that are unclassified, where the label represents the integer label used for 
+<i>523</i>&nbsp;		 * annotations that have no classification set.
+<i>524</i>&nbsp;		 * @param label the indexed image pixel value or channel number without a classification
+<i>525</i>&nbsp;		 * @param color the color of the lookup table used with any indexed image
+<i>526</i>&nbsp;		 * @return
+<i>527</i>&nbsp;		 */
+<i>528</i>&nbsp;		public Builder addUnclassifiedLabel(int label, Integer color) {
+<b class="nc"><i>529</i>&nbsp;			return addLabel(params.labels, PathClassFactory.getPathClassUnclassified(), label, color);</b>
+<i>530</i>&nbsp;		}
+<i>531</i>&nbsp;		
+<i>532</i>&nbsp;		/**
+<i>533</i>&nbsp;		 * Add a single label for objects that are unclassified, where the label represents the integer label used for 
+<i>534</i>&nbsp;		 * annotations that have no classification set.
+<i>535</i>&nbsp;		 * @param label the indexed image pixel value or channel number without a classification
+<i>536</i>&nbsp;		 * @return
+<i>537</i>&nbsp;		 */
+<i>538</i>&nbsp;		public Builder addUnclassifiedLabel(int label) {
+<b class="nc"><i>539</i>&nbsp;			return addLabel(params.labels, PathClassFactory.getPathClassUnclassified(), label, null);</b>
+<i>540</i>&nbsp;		}
+<i>541</i>&nbsp;		
+<i>542</i>&nbsp;		
+<i>543</i>&nbsp;		/**
+<i>544</i>&nbsp;		 * Set the classification and label to use for boundaries for classified areas.
+<i>545</i>&nbsp;		 * @param pathClass
+<i>546</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>547</i>&nbsp;		 * @return
+<i>548</i>&nbsp;		 */
+<i>549</i>&nbsp;		public Builder setBoundaryLabel(PathClass pathClass, int label) {
+<b class="nc"><i>550</i>&nbsp;			return setBoundaryLabel(pathClass, label, null);</b>
+<i>551</i>&nbsp;		}
+<i>552</i>&nbsp;		
+<i>553</i>&nbsp;		/**
+<i>554</i>&nbsp;		 * Set the classification and label to use for boundaries for classified areas.
+<i>555</i>&nbsp;		 * @param pathClass
+<i>556</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>557</i>&nbsp;		 * @param color the color of the lookup table used with any indexed image
+<i>558</i>&nbsp;		 * @return
+<i>559</i>&nbsp;		 */
+<i>560</i>&nbsp;		public Builder setBoundaryLabel(PathClass pathClass, int label, Integer color) {
+<b class="nc"><i>561</i>&nbsp;			params.boundaryLabels.clear();</b>
+<b class="nc"><i>562</i>&nbsp;			return addLabel(params.boundaryLabels, pathClass, label, color);</b>
+<i>563</i>&nbsp;		}
+<i>564</i>&nbsp;		
+<i>565</i>&nbsp;		/**
+<i>566</i>&nbsp;		 * Set the classification and label to use for boundaries for classified areas.
+<i>567</i>&nbsp;		 * @param pathClassName
+<i>568</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>569</i>&nbsp;		 * @return
+<i>570</i>&nbsp;		 */
+<i>571</i>&nbsp;		public Builder setBoundaryLabel(String pathClassName, int label) {
+<b class="nc"><i>572</i>&nbsp;			return setBoundaryLabel(pathClassName, label, null);</b>
+<i>573</i>&nbsp;		}
+<i>574</i>&nbsp;		
+<i>575</i>&nbsp;		/**
+<i>576</i>&nbsp;		 * Set the classification and label to use for boundaries for classified areas.
+<i>577</i>&nbsp;		 * @param pathClassName
+<i>578</i>&nbsp;		 * @param label the indexed image pixel value or channel number for the given classification
+<i>579</i>&nbsp;		 * @param color the color of the lookup table used with any indexed image
+<i>580</i>&nbsp;		 * @return
+<i>581</i>&nbsp;		 */
+<i>582</i>&nbsp;		public Builder setBoundaryLabel(String pathClassName, int label, Integer color) {
+<b class="nc"><i>583</i>&nbsp;			return setBoundaryLabel(PathClassFactory.getPathClass(pathClassName), label, color);</b>
+<i>584</i>&nbsp;		}
+<i>585</i>&nbsp;		
+<i>586</i>&nbsp;		private Builder addLabel(Map&lt;PathClass, Integer&gt; map, PathClass pathClass, int label, Integer color) {
+<b class="nc"><i>587</i>&nbsp;			pathClass = getPathClass(pathClass);</b>
+<b class="nc"><i>588</i>&nbsp;			map.put(pathClass, label);</b>
+<b class="nc"><i>589</i>&nbsp;			if (color != null)</b>
+<b class="nc"><i>590</i>&nbsp;				params.labelColors.put(label, color);</b>
+<b class="nc"><i>591</i>&nbsp;			else if (!params.labelColors.containsKey(label))</b>
+<b class="nc"><i>592</i>&nbsp;				params.labelColors.put(label, pathClass.getColor());</b>
+<b class="nc"><i>593</i>&nbsp;			return this;</b>
+<i>594</i>&nbsp;		}
+<i>595</i>&nbsp;		
+<i>596</i>&nbsp;		/**
+<i>597</i>&nbsp;		 * Specify the maximum number of output channels allowed before QuPath will throw an exception.
+<i>598</i>&nbsp;		 * This is used to guard against inadvertently requesting a labelled image that would have an infeasibly 
+<i>599</i>&nbsp;		 * large number of output channels, most commonly with {@link #useUniqueLabels()}.
+<i>600</i>&nbsp;		 * @param maxChannels the maximum supported channels; set (cautiously!) &amp;le; 0 to ignore the limit entirely.
+<i>601</i>&nbsp;		 * @return
+<i>602</i>&nbsp;		 */
+<i>603</i>&nbsp;		public Builder maxOutputChannelLimit(int maxChannels) {
+<b class="nc"><i>604</i>&nbsp;			params.maxOutputChannelLimit = maxChannels;</b>
+<b class="nc"><i>605</i>&nbsp;			return this;</b>
+<i>606</i>&nbsp;		}
+<i>607</i>&nbsp;		
+<i>608</i>&nbsp;		/**
+<i>609</i>&nbsp;		 * Build the {@link ImageServer} with the requested parameters.
+<i>610</i>&nbsp;		 * @return
+<i>611</i>&nbsp;		 */
+<i>612</i>&nbsp;		public LabeledImageServer build() {
+<b class="nc"><i>613</i>&nbsp;			return new LabeledImageServer(</b>
+<i>614</i>&nbsp;					imageData, downsample, tileWidth, tileHeight,
+<i>615</i>&nbsp;					new LabeledServerParameters(params),
+<i>616</i>&nbsp;					multichannelOutput);
+<i>617</i>&nbsp;		}
+<i>618</i>&nbsp;
+<i>619</i>&nbsp;	}
+<i>620</i>&nbsp;	
+<i>621</i>&nbsp;	/**
+<i>622</i>&nbsp;	 * Returns null (does not support ServerBuilders).
+<i>623</i>&nbsp;	 */
+<i>624</i>&nbsp;	@Override
+<i>625</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>626</i>&nbsp;		return null;</b>
+<i>627</i>&nbsp;	}
+<i>628</i>&nbsp;	
+<i>629</i>&nbsp;	@Override
+<i>630</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="nc"><i>631</i>&nbsp;		return Collections.emptyList();</b>
+<i>632</i>&nbsp;	}
+<i>633</i>&nbsp;	
+<i>634</i>&nbsp;	/**
+<i>635</i>&nbsp;	 * Returns a UUID.
+<i>636</i>&nbsp;	 */
+<i>637</i>&nbsp;	@Override
+<i>638</i>&nbsp;	protected String createID() {
+<b class="nc"><i>639</i>&nbsp;		return UUID.randomUUID().toString();</b>
+<i>640</i>&nbsp;	}
+<i>641</i>&nbsp;	
+<i>642</i>&nbsp;	/**
+<i>643</i>&nbsp;	 * Returns true if there are no objects to be painted within the requested region.
+<i>644</i>&nbsp;	 */
+<i>645</i>&nbsp;	@Override
+<i>646</i>&nbsp;	public boolean isEmptyRegion(RegionRequest request) {
+<b class="nc"><i>647</i>&nbsp;		return !hierarchy.getObjectsForRegion(null, request, null).stream()</b>
+<b class="nc"><i>648</i>&nbsp;				.filter(params.objectFilter)</b>
+<b class="nc"><i>649</i>&nbsp;				.map(p -&gt; getPathClass(p))</b>
+<b class="nc"><i>650</i>&nbsp;				.anyMatch(p -&gt; params.labels.containsKey(p) || params.boundaryLabels.containsKey((p)));</b>
+<i>651</i>&nbsp;	}
+<i>652</i>&nbsp;	
+<i>653</i>&nbsp;	@Override
+<i>654</i>&nbsp;	public void close() {}
+<i>655</i>&nbsp;
+<i>656</i>&nbsp;	@Override
+<i>657</i>&nbsp;	public String getServerType() {
+<b class="nc"><i>658</i>&nbsp;		return &quot;Labelled image&quot;;</b>
+<i>659</i>&nbsp;	}
+<i>660</i>&nbsp;
+<i>661</i>&nbsp;	@Override
+<i>662</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="nc"><i>663</i>&nbsp;		return originalMetadata;</b>
+<i>664</i>&nbsp;	}
+<i>665</i>&nbsp;
+<i>666</i>&nbsp;	/**
+<i>667</i>&nbsp;	 * Throws an exception - metadata should not be set for a hierarchy image server directly.  Any changes should be made to the underlying
+<i>668</i>&nbsp;	 * image server for which this server represents an object hierarchy.
+<i>669</i>&nbsp;	 */
+<i>670</i>&nbsp;	@Override
+<i>671</i>&nbsp;	public void setMetadata(ImageServerMetadata metadata) {
+<b class="nc"><i>672</i>&nbsp;		throw new IllegalArgumentException(&quot;Metadata cannot be set for a labelled image server!&quot;);</b>
+<i>673</i>&nbsp;	}
+<i>674</i>&nbsp;
+<i>675</i>&nbsp;	@Override
+<i>676</i>&nbsp;	protected BufferedImage createDefaultRGBImage(int width, int height) {
+<i>677</i>&nbsp;//		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+<i>678</i>&nbsp;//		return gc.createCompatibleImage(width, height, Transparency.TRANSLUCENT);
+<b class="nc"><i>679</i>&nbsp;		return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);</b>
+<i>680</i>&nbsp;	}
+<i>681</i>&nbsp;	
+<i>682</i>&nbsp;	@Override
+<i>683</i>&nbsp;	protected BufferedImage readTile(TileRequest tileRequest) throws IOException {
+<b class="nc"><i>684</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<i>685</i>&nbsp;		
+<b class="nc"><i>686</i>&nbsp;		var pathObjects = hierarchy.getObjectsForRegion(null, tileRequest.getRegionRequest(), null)</b>
+<b class="nc"><i>687</i>&nbsp;				.stream().filter(params.objectFilter)</b>
+<b class="nc"><i>688</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>689</i>&nbsp;		BufferedImage img;
+<b class="nc"><i>690</i>&nbsp;		if (multichannelOutput) {</b>
+<b class="nc"><i>691</i>&nbsp;			img = createMultichannelTile(tileRequest, pathObjects);</b>
+<i>692</i>&nbsp;			
+<i>693</i>&nbsp;		} else {
+<b class="nc"><i>694</i>&nbsp;			img = createIndexedColorTile(tileRequest, pathObjects);</b>
+<i>695</i>&nbsp;		}
+<i>696</i>&nbsp;		
+<b class="nc"><i>697</i>&nbsp;		long endTime = System.currentTimeMillis();</b>
+<b class="nc"><i>698</i>&nbsp;		logger.trace(&quot;Labelled tile rendered in {} ms&quot;, endTime - startTime);</b>
+<b class="nc"><i>699</i>&nbsp;		return img;</b>
+<i>700</i>&nbsp;	}
+<i>701</i>&nbsp;	
+<i>702</i>&nbsp;	
+<i>703</i>&nbsp;	private BufferedImage createMultichannelTile(TileRequest tileRequest, Collection&lt;PathObject&gt; pathObjects) {
+<i>704</i>&nbsp;		
+<b class="nc"><i>705</i>&nbsp;		int nChannels = nChannels();</b>
+<b class="nc"><i>706</i>&nbsp;		if (nChannels == 1)</b>
+<b class="nc"><i>707</i>&nbsp;			return createBinaryTile(tileRequest, pathObjects, 0);</b>
+<i>708</i>&nbsp;		
+<b class="nc"><i>709</i>&nbsp;		int tileWidth = tileRequest.getTileWidth();</b>
+<b class="nc"><i>710</i>&nbsp;		int tileHeight = tileRequest.getTileHeight();</b>
+<b class="nc"><i>711</i>&nbsp;		byte[][] dataArray = new byte[nChannels][];</b>
+<b class="nc"><i>712</i>&nbsp;		for (int i = 0; i &lt; nChannels; i++) {</b>
+<b class="nc"><i>713</i>&nbsp;			var tile = createBinaryTile(tileRequest, pathObjects, i);</b>
+<b class="nc"><i>714</i>&nbsp;			dataArray[i] = ((DataBufferByte)tile.getRaster().getDataBuffer()).getData();</b>
+<i>715</i>&nbsp;		}
+<b class="nc"><i>716</i>&nbsp;		DataBuffer buffer = new DataBufferByte(dataArray, tileWidth * tileHeight);</b>
+<i>717</i>&nbsp;		
+<b class="nc"><i>718</i>&nbsp;		int[] offsets = new int[nChannels];</b>
+<b class="nc"><i>719</i>&nbsp;		for (int b = 0; b &lt; nChannels; b++)</b>
+<b class="nc"><i>720</i>&nbsp;			offsets[b] = b * tileWidth * tileHeight;</b>
+<i>721</i>&nbsp;		
+<b class="nc"><i>722</i>&nbsp;		var sampleModel = new BandedSampleModel(buffer.getDataType(), tileWidth, tileHeight, nChannels);</b>
+<i>723</i>&nbsp;//		var sampleModel = new ComponentSampleModel(buffer.getDataType(), tileWidth, tileHeight, 1, tileWidth, offsets);
+<i>724</i>&nbsp;		
+<b class="nc"><i>725</i>&nbsp;		var raster = WritableRaster.createWritableRaster(sampleModel, buffer, null);</b>
+<i>726</i>&nbsp;		
+<b class="nc"><i>727</i>&nbsp;		return new BufferedImage(colorModel, raster, false, null);</b>
+<i>728</i>&nbsp;	}
+<i>729</i>&nbsp;	
+<i>730</i>&nbsp;	private BufferedImage createBinaryTile(TileRequest tileRequest, Collection&lt;PathObject&gt; pathObjects, int label) {
+<b class="nc"><i>731</i>&nbsp;		int width = tileRequest.getTileWidth();</b>
+<b class="nc"><i>732</i>&nbsp;		int height = tileRequest.getTileHeight();</b>
+<b class="nc"><i>733</i>&nbsp;		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);</b>
+<b class="nc"><i>734</i>&nbsp;		WritableRaster raster = img.getRaster();</b>
+<b class="nc"><i>735</i>&nbsp;		Graphics2D g2d = img.createGraphics();</b>
+<i>736</i>&nbsp;		
+<b class="nc"><i>737</i>&nbsp;		if (!pathObjects.isEmpty()) {</b>
+<i>738</i>&nbsp;			
+<b class="nc"><i>739</i>&nbsp;			RegionRequest request = tileRequest.getRegionRequest();</b>
+<b class="nc"><i>740</i>&nbsp;			double downsampleFactor = request.getDownsample();</b>
+<i>741</i>&nbsp;			
+<b class="nc"><i>742</i>&nbsp;			g2d.setClip(0, 0, width, height);</b>
+<b class="nc"><i>743</i>&nbsp;			double scale = 1.0/downsampleFactor;</b>
+<b class="nc"><i>744</i>&nbsp;			g2d.scale(scale, scale);</b>
+<b class="nc"><i>745</i>&nbsp;			g2d.translate(-request.getX(), -request.getY());</b>
+<b class="nc"><i>746</i>&nbsp;			g2d.setColor(Color.WHITE);</b>
+<i>747</i>&nbsp;			
+<b class="nc"><i>748</i>&nbsp;			BasicStroke stroke = new BasicStroke((float)(params.lineThickness * tileRequest.getDownsample()));</b>
+<b class="nc"><i>749</i>&nbsp;			g2d.setStroke(stroke);</b>
+<i>750</i>&nbsp;
+<i>751</i>&nbsp;			// We want to order consistently to avoid confusing overlaps
+<b class="nc"><i>752</i>&nbsp;			for (var entry : params.labels.entrySet()) {</b>
+<b class="nc"><i>753</i>&nbsp;				if (entry.getValue() != label)</b>
+<b class="nc"><i>754</i>&nbsp;					continue;</b>
+<b class="nc"><i>755</i>&nbsp;				var pathClass = getPathClass(entry.getKey());</b>
+<b class="nc"><i>756</i>&nbsp;				for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>757</i>&nbsp;					if (getPathClass(pathObject) == pathClass) {</b>
+<b class="nc"><i>758</i>&nbsp;						var roi = params.roiFunction.apply(pathObject);</b>
+<b class="nc"><i>759</i>&nbsp;						if (roi.isArea())</b>
+<b class="nc"><i>760</i>&nbsp;							g2d.fill(roi.getShape());</b>
+<b class="nc"><i>761</i>&nbsp;						else if (roi.isLine())</b>
+<b class="nc"><i>762</i>&nbsp;							g2d.draw(roi.getShape());</b>
+<b class="nc"><i>763</i>&nbsp;						else if (roi.isPoint()) {</b>
+<b class="nc"><i>764</i>&nbsp;							for (var p : roi.getAllPoints()) {</b>
+<b class="nc"><i>765</i>&nbsp;								int x = (int)((p.getX() - request.getX()) / downsampleFactor);</b>
+<b class="nc"><i>766</i>&nbsp;								int y = (int)((p.getY() - request.getY()) / downsampleFactor);</b>
+<b class="nc"><i>767</i>&nbsp;								if (x &gt;= 0 &amp;&amp; x &lt; width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; height) {</b>
+<b class="nc"><i>768</i>&nbsp;									raster.setSample(x, y, 0, 255);</b>
+<i>769</i>&nbsp;								}
+<b class="nc"><i>770</i>&nbsp;							}</b>
+<i>771</i>&nbsp;						}
+<i>772</i>&nbsp;					}
+<b class="nc"><i>773</i>&nbsp;				}</b>
+<b class="nc"><i>774</i>&nbsp;			}</b>
+<b class="nc"><i>775</i>&nbsp;			for (var entry : params.boundaryLabels.entrySet()) {</b>
+<b class="nc"><i>776</i>&nbsp;				if (entry.getValue() != label)</b>
+<b class="nc"><i>777</i>&nbsp;					continue;</b>
+<b class="nc"><i>778</i>&nbsp;				for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>779</i>&nbsp;					var pathClass = getPathClass(pathObject);</b>
+<b class="nc"><i>780</i>&nbsp;					if (params.labels.containsKey(pathClass)) { // &amp;&amp; !PathClassTools.isIgnoredClass(pathObject.getPathClass())) {</b>
+<b class="nc"><i>781</i>&nbsp;						var roi = params.roiFunction.apply(pathObject);</b>
+<b class="nc"><i>782</i>&nbsp;						if (roi.isArea()) {</b>
+<b class="nc"><i>783</i>&nbsp;							var shape = roi.getShape();</b>
+<b class="nc"><i>784</i>&nbsp;							g2d.draw(shape);</b>
+<i>785</i>&nbsp;						}
+<i>786</i>&nbsp;					}
+<b class="nc"><i>787</i>&nbsp;				}</b>
+<b class="nc"><i>788</i>&nbsp;			}</b>
+<i>789</i>&nbsp;		}
+<i>790</i>&nbsp;		
+<b class="nc"><i>791</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>792</i>&nbsp;		return img;</b>
+<i>793</i>&nbsp;	}
+<i>794</i>&nbsp;	
+<i>795</i>&nbsp;	
+<i>796</i>&nbsp;	private static Color getColorForLabel(int label, boolean doRGB) {
+<b class="nc"><i>797</i>&nbsp;		if (doRGB)</b>
+<b class="nc"><i>798</i>&nbsp;			return new Color(label, false);</b>
+<b class="nc"><i>799</i>&nbsp;		return ColorToolsAwt.getCachedColor(label, label, label);</b>
+<i>800</i>&nbsp;	}
+<i>801</i>&nbsp;	
+<i>802</i>&nbsp;	
+<i>803</i>&nbsp;	private BufferedImage createIndexedColorTile(TileRequest tileRequest, Collection&lt;PathObject&gt; pathObjects) {
+<i>804</i>&nbsp;
+<b class="nc"><i>805</i>&nbsp;		RegionRequest request = tileRequest.getRegionRequest();</b>
+<i>806</i>&nbsp;
+<b class="nc"><i>807</i>&nbsp;		double downsampleFactor = request.getDownsample();</b>
+<i>808</i>&nbsp;
+<i>809</i>&nbsp;		// Fill in the background color
+<b class="nc"><i>810</i>&nbsp;		int width = tileRequest.getTileWidth();</b>
+<b class="nc"><i>811</i>&nbsp;		int height = tileRequest.getTileHeight();</b>
+<b class="nc"><i>812</i>&nbsp;		boolean doRGB = maxLabel &gt; 255;</b>
+<i>813</i>&nbsp;		// If we have &gt; 255 labels, we can only use Graphics2D if we pretend to have an RGB image
+<b class="nc"><i>814</i>&nbsp;		BufferedImage img = doRGB ? new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB) : new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);</b>
+<b class="nc"><i>815</i>&nbsp;		WritableRaster raster = img.getRaster();</b>
+<i>816</i>&nbsp;		
+<b class="nc"><i>817</i>&nbsp;		Graphics2D g2d = img.createGraphics();</b>
+<b class="nc"><i>818</i>&nbsp;		int bgLabel = params.labels.get(params.unannotatedClass);</b>
+<b class="nc"><i>819</i>&nbsp;		Color color = getColorForLabel(bgLabel, doRGB);</b>
+<b class="nc"><i>820</i>&nbsp;		g2d.setColor(color);</b>
+<b class="nc"><i>821</i>&nbsp;		g2d.fillRect(0, 0, width, height);</b>
+<i>822</i>&nbsp;
+<b class="nc"><i>823</i>&nbsp;		if (!pathObjects.isEmpty()) {</b>
+<b class="nc"><i>824</i>&nbsp;			g2d.setClip(0, 0, width, height);</b>
+<b class="nc"><i>825</i>&nbsp;			double scale = 1.0/downsampleFactor;</b>
+<b class="nc"><i>826</i>&nbsp;			g2d.scale(scale, scale);</b>
+<b class="nc"><i>827</i>&nbsp;			g2d.translate(-request.getX(), -request.getY());</b>
+<i>828</i>&nbsp;			
+<b class="nc"><i>829</i>&nbsp;			BasicStroke stroke = new BasicStroke((float)(params.lineThickness * tileRequest.getDownsample()));</b>
+<b class="nc"><i>830</i>&nbsp;			g2d.setStroke(stroke);</b>
+<i>831</i>&nbsp;			
+<i>832</i>&nbsp;			// We want to order consistently to avoid confusing overlaps
+<b class="nc"><i>833</i>&nbsp;			for (var entry : params.labels.entrySet()) {</b>
+<b class="nc"><i>834</i>&nbsp;				var pathClass = getPathClass(entry.getKey());</b>
+<b class="nc"><i>835</i>&nbsp;				int c = entry.getValue();</b>
+<b class="nc"><i>836</i>&nbsp;				color = getColorForLabel(c, doRGB);</b>
+<b class="nc"><i>837</i>&nbsp;				for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>838</i>&nbsp;					if (getPathClass(pathObject) == pathClass) {</b>
+<b class="nc"><i>839</i>&nbsp;						var roi = params.roiFunction.apply(pathObject);</b>
+<b class="nc"><i>840</i>&nbsp;						g2d.setColor(color);</b>
+<b class="nc"><i>841</i>&nbsp;						if (roi.isArea())</b>
+<b class="nc"><i>842</i>&nbsp;							g2d.fill(roi.getShape());</b>
+<b class="nc"><i>843</i>&nbsp;						else if (roi.isLine())</b>
+<b class="nc"><i>844</i>&nbsp;							g2d.draw(roi.getShape());</b>
+<b class="nc"><i>845</i>&nbsp;						else if (roi.isPoint()) {</b>
+<b class="nc"><i>846</i>&nbsp;							for (var p : roi.getAllPoints()) {</b>
+<b class="nc"><i>847</i>&nbsp;								int x = (int)((p.getX() - request.getX()) / downsampleFactor);</b>
+<b class="nc"><i>848</i>&nbsp;								int y = (int)((p.getY() - request.getY()) / downsampleFactor);</b>
+<b class="nc"><i>849</i>&nbsp;								if (x &gt;= 0 &amp;&amp; x &lt; width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; height) {</b>
+<b class="nc"><i>850</i>&nbsp;									if (doRGB)</b>
+<b class="nc"><i>851</i>&nbsp;										img.setRGB(x, y, color.getRGB());</b>
+<i>852</i>&nbsp;									else
+<b class="nc"><i>853</i>&nbsp;										raster.setSample(x, y, 0, c);</b>
+<i>854</i>&nbsp;								}
+<b class="nc"><i>855</i>&nbsp;							}</b>
+<i>856</i>&nbsp;						}
+<i>857</i>&nbsp;					}
+<b class="nc"><i>858</i>&nbsp;				}</b>
+<b class="nc"><i>859</i>&nbsp;			}</b>
+<b class="nc"><i>860</i>&nbsp;			for (var entry : params.boundaryLabels.entrySet()) {</b>
+<b class="nc"><i>861</i>&nbsp;				int c = entry.getValue();</b>
+<b class="nc"><i>862</i>&nbsp;				color = getColorForLabel(c, doRGB);</b>
+<b class="nc"><i>863</i>&nbsp;				for (var pathObject : pathObjects) {</b>
+<i>864</i>&nbsp;//					if (pathObject.getPathClass() == pathClass) {
+<b class="nc"><i>865</i>&nbsp;					var pathClass = getPathClass(pathObject);</b>
+<b class="nc"><i>866</i>&nbsp;					if (params.labels.containsKey(pathClass)) {// &amp;&amp; !PathClassTools.isIgnoredClass(pathObject.getPathClass())) {</b>
+<b class="nc"><i>867</i>&nbsp;						var roi = params.roiFunction.apply(pathObject);</b>
+<b class="nc"><i>868</i>&nbsp;						if (roi.isArea()) {</b>
+<b class="nc"><i>869</i>&nbsp;							g2d.setColor(color);</b>
+<b class="nc"><i>870</i>&nbsp;							g2d.draw(roi.getShape());</b>
+<i>871</i>&nbsp;						}
+<i>872</i>&nbsp;					}
+<b class="nc"><i>873</i>&nbsp;				}</b>
+<b class="nc"><i>874</i>&nbsp;			}</b>
+<i>875</i>&nbsp;		}
+<b class="nc"><i>876</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>877</i>&nbsp;		if (doRGB) {</b>
+<i>878</i>&nbsp;			// Resort to RGB if we have to
+<b class="nc"><i>879</i>&nbsp;			if (maxLabel &gt;= 65536)</b>
+<b class="nc"><i>880</i>&nbsp;				return img;			</b>
+<i>881</i>&nbsp;			// Convert to unsigned short if we can
+<b class="nc"><i>882</i>&nbsp;			var shortRaster = WritableRaster.createBandedRaster(DataBuffer.TYPE_USHORT, width, height, 1, null);</b>
+<b class="nc"><i>883</i>&nbsp;			int[] samples = img.getRGB(0, 0, width, height, null, 0, width);</b>
+<b class="nc"><i>884</i>&nbsp;			shortRaster.setSamples(0, 0, width, height, 0, samples);</b>
+<i>885</i>&nbsp;//			System.err.println(&quot;Before: &quot; + Arrays.stream(samples).summaryStatistics());
+<b class="nc"><i>886</i>&nbsp;			raster = shortRaster;</b>
+<b class="nc"><i>887</i>&nbsp;			samples = raster.getSamples(0, 0, width, height, 0, (int[])null);</b>
+<i>888</i>&nbsp;//			System.err.println(&quot;After: &quot; + Arrays.stream(samples).summaryStatistics());
+<i>889</i>&nbsp;		}
+<b class="nc"><i>890</i>&nbsp;		return new BufferedImage((IndexColorModel)colorModel, raster, false, null);</b>
+<i>891</i>&nbsp;	}
+<i>892</i>&nbsp;	
+<i>893</i>&nbsp;
+<i>894</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

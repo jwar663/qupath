@@ -1,0 +1,511 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathIntensityClassifierPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.ml.legacy</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathIntensityClassifierPane (qupath.process.gui.ml.legacy)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathIntensityClassifierPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 119)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PathIntensityClassifierPane$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 125)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.process.gui.ml.legacy;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Arrays;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.function.Predicate;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import org.slf4j.Logger;
+<i>32</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import javafx.beans.property.ReadOnlyObjectProperty;
+<i>35</i>&nbsp;import javafx.collections.FXCollections;
+<i>36</i>&nbsp;import javafx.collections.ObservableList;
+<i>37</i>&nbsp;import javafx.collections.transformation.FilteredList;
+<i>38</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>39</i>&nbsp;import javafx.scene.control.Label;
+<i>40</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>41</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>42</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>43</i>&nbsp;import javafx.scene.layout.Pane;
+<i>44</i>&nbsp;import javafx.scene.layout.Priority;
+<i>45</i>&nbsp;import javafx.scene.paint.Color;
+<i>46</i>&nbsp;import qupath.lib.analysis.stats.Histogram;
+<i>47</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>48</i>&nbsp;import qupath.lib.analysis.stats.StatisticsHelper;
+<i>49</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>50</i>&nbsp;import qupath.lib.classifiers.PathObjectClassifier;
+<i>51</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>52</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX;
+<i>53</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX.ThresholdedChartWrapper;
+<i>54</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>55</i>&nbsp;import qupath.lib.images.ImageData;
+<i>56</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>57</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>58</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
+<i>59</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>60</i>&nbsp;import qupath.lib.plugins.parameters.ParameterChangeListener;
+<i>61</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;/**
+<i>65</i>&nbsp; * 
+<i>66</i>&nbsp; * Panel for adjusting intensity classification thresholds.
+<i>67</i>&nbsp; * &lt;p&gt;
+<i>68</i>&nbsp; * Other objects can register as a change listener to be notified when anything happens, e.g. a slider moves or a different measurement is selected -
+<i>69</i>&nbsp; * however this is deprecated, and may be removed in the future.
+<i>70</i>&nbsp; * &lt;p&gt;
+<i>71</i>&nbsp; * The reason for this is that the current implementation is a bit clumsy... rather than use a ParameterList for everything, it uses it for most features but
+<i>72</i>&nbsp; * a separate combo box for the intensity feature - because the selection objects can change regularly depending upon the measurements that are present.
+<i>73</i>&nbsp; * &lt;p&gt;
+<i>74</i>&nbsp; * In the future, it is (tentatively) planned to address this and support ParameterChangeListeners instead.
+<i>75</i>&nbsp; * 
+<i>76</i>&nbsp; * @author Pete Bankhead
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; */
+<b class="nc"><i>79</i>&nbsp;class PathIntensityClassifierPane implements PathObjectSelectionListener {</b>
+<i>80</i>&nbsp;	
+<b class="nc"><i>81</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathIntensityClassifierPane.class);</b>
+<i>82</i>&nbsp;	
+<b class="nc"><i>83</i>&nbsp;	private GridPane pane = new GridPane();</b>
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	private ParameterPanelFX panelParameters;
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;	private QuPathGUI qupath;
+<i>88</i>&nbsp;	private ParameterList paramsIntensity;
+<i>89</i>&nbsp;	
+<b class="nc"><i>90</i>&nbsp;	private ObservableList&lt;String&gt; availableMeasurements = FXCollections.observableArrayList();</b>
+<b class="nc"><i>91</i>&nbsp;	private FilteredList&lt;String&gt; filteredAvailableMeasurements = new FilteredList&lt;&gt;(availableMeasurements);</b>
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	private ComboBox&lt;String&gt; comboIntensities;
+<i>94</i>&nbsp;	private HistogramPanelFX panelHistogram;
+<i>95</i>&nbsp;	private ThresholdedChartWrapper thresholdWrapper;
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Constructor.
+<i>99</i>&nbsp;	 * @param qupath QuPath instance.
+<i>100</i>&nbsp;	 */
+<b class="nc"><i>101</i>&nbsp;	public PathIntensityClassifierPane(final QuPathGUI qupath) {</b>
+<b class="nc"><i>102</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>103</i>&nbsp;		initialize();</b>
+<b class="nc"><i>104</i>&nbsp;		setFilter(s -&gt; {</b>
+<b class="nc"><i>105</i>&nbsp;			String sl = s.toLowerCase();</b>
+<b class="nc"><i>106</i>&nbsp;			return (sl.contains(&quot;mean&quot;) || sl.contains(&quot;max&quot;)) &amp;&amp; !sl.contains(&quot;smoothed&quot;);</b>
+<i>107</i>&nbsp;		});
+<b class="nc"><i>108</i>&nbsp;		setAvailableMeasurements(Collections.emptyList());</b>
+<i>109</i>&nbsp;	}
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;	private PathObjectHierarchy getHierarchy() {
+<b class="nc"><i>113</i>&nbsp;		ImageData&lt;?&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>114</i>&nbsp;		return imageData == null ? null : imageData.getHierarchy();</b>
+<i>115</i>&nbsp;	}
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	private void updateIntensityHistogram() {
+<b class="nc"><i>119</i>&nbsp;		String selected = comboIntensities.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>120</i>&nbsp;		PathObjectHierarchy hierarchy = getHierarchy();</b>
+<i>121</i>&nbsp;//		if (!&quot;None&quot;.equals(selected) || hierarchy == null)
+<b class="nc"><i>122</i>&nbsp;		if (&quot;None&quot;.equals(selected) || hierarchy == null) {</b>
+<b class="nc"><i>123</i>&nbsp;			if (panelHistogram != null)</b>
+<b class="nc"><i>124</i>&nbsp;				panelHistogram.getHistogramData().clear();</b>
+<i>125</i>&nbsp;			return;
+<i>126</i>&nbsp;		}
+<i>127</i>&nbsp;		// Try to make a histogram &amp; set it in the panel
+<i>128</i>&nbsp;//		PathObject pathObjectSelected = hierarchy.getSelectionModel().getSelectedPathObject();
+<i>129</i>&nbsp;		// For now, always use all objects (not direct descendants only)
+<b class="nc"><i>130</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = null;</b>
+<i>131</i>&nbsp;//		if (pathObjectSelected == null || !pathObjectSelected.hasChildren())
+<b class="nc"><i>132</i>&nbsp;			pathObjects = hierarchy.getDetectionObjects();</b>
+<i>133</i>&nbsp;//		else
+<i>134</i>&nbsp;//			pathObjects = hierarchy.getDescendantObjects(pathObjectSelected, pathObjects, PathDetectionObject.class);			
+<i>135</i>&nbsp;			
+<i>136</i>&nbsp;//		Histogram histogram = Histogram.makeMeasurementHistogram(pathObjects, (String)selected, 256);
+<i>137</i>&nbsp;		
+<b class="nc"><i>138</i>&nbsp;		double[] values = Histogram.getMeasurementValues(pathObjects, (String)selected);</b>
+<b class="nc"><i>139</i>&nbsp;		Histogram histogram = new Histogram(values, 128);</b>
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;		// Compute quartile values
+<b class="nc"><i>142</i>&nbsp;		Arrays.sort(values);</b>
+<b class="nc"><i>143</i>&nbsp;		int nNaNs = 0;</b>
+<i>144</i>&nbsp;		// NaNs should be at the end of the list
+<b class="nc"><i>145</i>&nbsp;		for (int i = values.length-1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>146</i>&nbsp;			if (Double.isNaN(values[i]))</b>
+<b class="nc"><i>147</i>&nbsp;				nNaNs++;</b>
+<i>148</i>&nbsp;			else
+<i>149</i>&nbsp;				break;
+<i>150</i>&nbsp;		}
+<b class="nc"><i>151</i>&nbsp;		int nValues = values.length - nNaNs; // Should be same as histogram.getCountSum() ?</b>
+<b class="nc"><i>152</i>&nbsp;		assert nValues == histogram.getCountSum();</b>
+<b class="nc"><i>153</i>&nbsp;		if (nValues &gt; 0) {</b>
+<b class="nc"><i>154</i>&nbsp;			double median = values[nValues/2];</b>
+<b class="nc"><i>155</i>&nbsp;			double quartile1 = values[(int)(nValues/4 + .5)];</b>
+<b class="nc"><i>156</i>&nbsp;			double quartile3 = values[(int)(nValues*3/4 + .5)];</b>
+<b class="nc"><i>157</i>&nbsp;			logger.info(String.format(&quot;%s Quartile 1: %.4f&quot;, selected, quartile1));</b>
+<b class="nc"><i>158</i>&nbsp;			logger.info(String.format(&quot;%s Median: %.4f&quot;, selected, median));</b>
+<b class="nc"><i>159</i>&nbsp;			logger.info(String.format(&quot;%s Quartile 3: %.4f&quot;, selected, quartile3));</b>
+<b class="nc"><i>160</i>&nbsp;			RunningStatistics stats = StatisticsHelper.computeRunningStatistics(values);</b>
+<b class="nc"><i>161</i>&nbsp;			logger.info(String.format(&quot;%s Mean: %.4f&quot;, selected, stats.getMean()));</b>
+<b class="nc"><i>162</i>&nbsp;			logger.info(String.format(&quot;%s Std.Dev.: %.4f&quot;, selected, stats.getStdDev()));</b>
+<b class="nc"><i>163</i>&nbsp;			panelHistogram.getHistogramData().setAll(HistogramPanelFX.createHistogramData(histogram, true, (Integer)null));</b>
+<b class="nc"><i>164</i>&nbsp;		} else</b>
+<b class="nc"><i>165</i>&nbsp;			panelHistogram.getHistogramData().clear();</b>
+<i>166</i>&nbsp;		
+<b class="nc"><i>167</i>&nbsp;		updateHistogramThresholdLines();</b>
+<i>168</i>&nbsp;	}
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;	
+<i>171</i>&nbsp;	private void updateHistogramThresholdLines() {
+<b class="nc"><i>172</i>&nbsp;		if (panelHistogram == null)</b>
+<i>173</i>&nbsp;			return;
+<i>174</i>&nbsp;		double[] x;
+<b class="nc"><i>175</i>&nbsp;		if (paramsIntensity.getBooleanParameterValue(&quot;single_threshold&quot;))</b>
+<b class="nc"><i>176</i>&nbsp;			x = new double[]{paramsIntensity.getDoubleParameterValue(&quot;threshold_1&quot;)};</b>
+<i>177</i>&nbsp;		else
+<b class="nc"><i>178</i>&nbsp;			x = new double[]{</b>
+<b class="nc"><i>179</i>&nbsp;				paramsIntensity.getDoubleParameterValue(&quot;threshold_1&quot;),</b>
+<b class="nc"><i>180</i>&nbsp;				paramsIntensity.getDoubleParameterValue(&quot;threshold_2&quot;),</b>
+<b class="nc"><i>181</i>&nbsp;				paramsIntensity.getDoubleParameterValue(&quot;threshold_3&quot;)};</b>
+<b class="nc"><i>182</i>&nbsp;		thresholdWrapper.setThresholds(Color.rgb(0, 0, 0, 0.25), x);</b>
+<i>183</i>&nbsp;//		panelHistogram.setVerticalLines(x, null);
+<i>184</i>&nbsp;	}
+<i>185</i>&nbsp;	
+<i>186</i>&nbsp;	
+<i>187</i>&nbsp;	private void initialize() {
+<b class="nc"><i>188</i>&nbsp;		panelHistogram = new HistogramPanelFX();</b>
+<b class="nc"><i>189</i>&nbsp;		panelHistogram.setShowTickLabels(false);</b>
+<b class="nc"><i>190</i>&nbsp;		panelHistogram.getChart().getXAxis().setVisible(false);</b>
+<b class="nc"><i>191</i>&nbsp;		panelHistogram.getChart().getXAxis().setTickMarkVisible(false);</b>
+<b class="nc"><i>192</i>&nbsp;		panelHistogram.getChart().getYAxis().setVisible(false);</b>
+<b class="nc"><i>193</i>&nbsp;		panelHistogram.getChart().getYAxis().setTickMarkVisible(false);</b>
+<b class="nc"><i>194</i>&nbsp;		panelHistogram.getChart().setMinHeight(10);</b>
+<b class="nc"><i>195</i>&nbsp;		panelHistogram.getChart().setMinWidth(10);</b>
+<b class="nc"><i>196</i>&nbsp;		panelHistogram.getChart().setVisible(false);</b>
+<b class="nc"><i>197</i>&nbsp;		panelHistogram.getChart().setAnimated(false);</b>
+<b class="nc"><i>198</i>&nbsp;		thresholdWrapper = new ThresholdedChartWrapper(panelHistogram.getChart());</b>
+<i>199</i>&nbsp;		
+<b class="nc"><i>200</i>&nbsp;		comboIntensities = new ComboBox&lt;&gt;();</b>
+<b class="nc"><i>201</i>&nbsp;		comboIntensities.setOnAction(e -&gt; {</b>
+<b class="nc"><i>202</i>&nbsp;				String selected = comboIntensities.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>203</i>&nbsp;				logger.trace(&quot;Intensities selected: {}&quot;, selected);</b>
+<b class="nc"><i>204</i>&nbsp;				updateIntensityHistogram();</b>
+<i>205</i>&nbsp;		});
+<b class="nc"><i>206</i>&nbsp;		comboIntensities.setTooltip(new Tooltip(&quot;Select an intensity feature for thresholding, e.g. to sub-classify objects according to levels of positive staining&quot;));</b>
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;		double threshold_1 = 0.2;</b>
+<b class="nc"><i>209</i>&nbsp;		double threshold_2 = 0.4;</b>
+<b class="nc"><i>210</i>&nbsp;		double threshold_3 = 0.6;</b>
+<b class="nc"><i>211</i>&nbsp;		paramsIntensity = new ParameterList()</b>
+<b class="nc"><i>212</i>&nbsp;				.addDoubleParameter(&quot;threshold_1&quot;, &quot;Threshold 1+&quot;, threshold_1, null, 0, 1.5, &quot;Set first intensity threshold, if required (lowest)&quot;)</b>
+<b class="nc"><i>213</i>&nbsp;				.addDoubleParameter(&quot;threshold_2&quot;, &quot;Threshold 2+&quot;, threshold_2, null, 0, 1.5, &quot;Set second intensity threshold, if required (intermediate)&quot;)</b>
+<b class="nc"><i>214</i>&nbsp;				.addDoubleParameter(&quot;threshold_3&quot;, &quot;Threshold 3+&quot;, threshold_3, null, 0, 1.5, &quot;Set third intensity threshold, if required (highest)&quot;)</b>
+<b class="nc"><i>215</i>&nbsp;				.addBooleanParameter(&quot;single_threshold&quot;, &quot;Use single threshold&quot;, false, &quot;Use only the first intensity threshold to separate positive &amp; negative objects&quot;);</b>
+<i>216</i>&nbsp;		
+<b class="nc"><i>217</i>&nbsp;		pane.add(new Label(&quot;Intensity feature: &quot;), 0, 0);</b>
+<b class="nc"><i>218</i>&nbsp;		pane.add(comboIntensities, 1, 0);</b>
+<b class="nc"><i>219</i>&nbsp;		comboIntensities.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>220</i>&nbsp;		GridPane.setHgrow(comboIntensities, Priority.ALWAYS);</b>
+<i>221</i>&nbsp;		
+<b class="nc"><i>222</i>&nbsp;		this.panelParameters = new ParameterPanelFX(paramsIntensity);</b>
+<b class="nc"><i>223</i>&nbsp;		this.panelParameters.addParameterChangeListener(new ParameterChangeListener() {</b>
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;			@Override
+<i>226</i>&nbsp;			public void parameterChanged(ParameterList parameterList, String key, boolean isAdjusting) {
+<b class="nc"><i>227</i>&nbsp;				if (&quot;single_threshold&quot;.equals(key)) {</b>
+<b class="nc"><i>228</i>&nbsp;					boolean single = paramsIntensity.getBooleanParameterValue(&quot;single_threshold&quot;);</b>
+<b class="nc"><i>229</i>&nbsp;					panelParameters.setParameterEnabled(&quot;threshold_2&quot;, !single);</b>
+<b class="nc"><i>230</i>&nbsp;					panelParameters.setParameterEnabled(&quot;threshold_3&quot;, !single);</b>
+<i>231</i>&nbsp;				}
+<b class="nc"><i>232</i>&nbsp;				updateHistogramThresholdLines();</b>
+<i>233</i>&nbsp;			}
+<i>234</i>&nbsp;			
+<i>235</i>&nbsp;		});
+<i>236</i>&nbsp;//		pane.add(panelParameters.getPane(), 0, 1, 2, 1);
+<i>237</i>&nbsp;//		GridPane.setFillWidth(panelParameters.getPane(), Boolean.FALSE);
+<i>238</i>&nbsp;//		
+<i>239</i>&nbsp;//		pane.add(thresholdWrapper.getPane(), 2, 1, 1, 1);
+<i>240</i>&nbsp;////		thresholdWrapper.getPane().setMinSize(10, 10);
+<i>241</i>&nbsp;////		GridPane.setHgrow(thresholdWrapper.getPane(), Priority.ALWAYS);
+<i>242</i>&nbsp;//		GridPane.setFillHeight(thresholdWrapper.getPane(), Boolean.TRUE);
+<i>243</i>&nbsp;		
+<i>244</i>&nbsp;		
+<b class="nc"><i>245</i>&nbsp;		BorderPane paneBorder = new BorderPane();</b>
+<b class="nc"><i>246</i>&nbsp;		paneBorder.setLeft(panelParameters.getPane());</b>
+<b class="nc"><i>247</i>&nbsp;		paneBorder.setCenter(thresholdWrapper.getPane());</b>
+<b class="nc"><i>248</i>&nbsp;		pane.add(paneBorder, 0, 1, 2, 1);</b>
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;		
+<b class="nc"><i>251</i>&nbsp;		pane.setVgap(5);</b>
+<b class="nc"><i>252</i>&nbsp;		pane.setHgap(5);</b>
+<i>253</i>&nbsp;//		if (addTitle)
+<i>254</i>&nbsp;//			setBorder(BorderFactory.createTitledBorder(&quot;Intensity feature&quot;));
+<i>255</i>&nbsp;	}
+<i>256</i>&nbsp;	
+<i>257</i>&nbsp;	
+<i>258</i>&nbsp;	Pane getPane() {
+<b class="nc"><i>259</i>&nbsp;		return pane;</b>
+<i>260</i>&nbsp;	}
+<i>261</i>&nbsp;	
+<i>262</i>&nbsp;	
+<i>263</i>&nbsp;	
+<i>264</i>&nbsp;	/**
+<i>265</i>&nbsp;	 * Returns a PathIntensityClassifier, or null if none was requested by the user&#39;s interactions with this JPanel.
+<i>266</i>&nbsp;	 * @return
+<i>267</i>&nbsp;	 */
+<i>268</i>&nbsp;	public PathObjectClassifier getIntensityClassifier() {
+<b class="nc"><i>269</i>&nbsp;		String intensityMeasurement = comboIntensities.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>270</i>&nbsp;		PathObjectClassifier intensityClassifier = null;</b>
+<b class="nc"><i>271</i>&nbsp;		if (intensityMeasurement != null &amp;&amp; !intensityMeasurement.equals(&quot;None&quot;)) {</b>
+<b class="nc"><i>272</i>&nbsp;			boolean singleThreshold = paramsIntensity.getBooleanParameterValue(&quot;single_threshold&quot;);</b>
+<b class="nc"><i>273</i>&nbsp;			double t1 = paramsIntensity.getDoubleParameterValue(&quot;threshold_1&quot;);</b>
+<i>274</i>&nbsp;//			PathClass baseClass = PathClassFactory.getDefaultPathClass(PathClassFactory.PathClasses.TUMOR);
+<b class="nc"><i>275</i>&nbsp;			PathClass baseClass = null;</b>
+<b class="nc"><i>276</i>&nbsp;			if (singleThreshold) {</b>
+<b class="nc"><i>277</i>&nbsp;				intensityClassifier = PathClassifierTools.createIntensityClassifier(</b>
+<i>278</i>&nbsp;						baseClass,
+<i>279</i>&nbsp;						intensityMeasurement, t1);
+<i>280</i>&nbsp;			} else {
+<b class="nc"><i>281</i>&nbsp;				double t2 = Math.max(t1, paramsIntensity.getDoubleParameterValue(&quot;threshold_2&quot;));</b>
+<b class="nc"><i>282</i>&nbsp;				double t3 = Math.max(t2, paramsIntensity.getDoubleParameterValue(&quot;threshold_3&quot;));</b>
+<b class="nc"><i>283</i>&nbsp;				intensityClassifier = PathClassifierTools.createIntensityClassifier(</b>
+<i>284</i>&nbsp;						baseClass,
+<i>285</i>&nbsp;						intensityMeasurement,
+<i>286</i>&nbsp;						t1, t2, t3);
+<i>287</i>&nbsp;			}
+<i>288</i>&nbsp;		}
+<b class="nc"><i>289</i>&nbsp;		return intensityClassifier;</b>
+<i>290</i>&nbsp;	}
+<i>291</i>&nbsp;	
+<i>292</i>&nbsp;	
+<i>293</i>&nbsp;	void addThresholdParameterChangeListener(final ParameterChangeListener listener) {
+<b class="nc"><i>294</i>&nbsp;		this.panelParameters.addParameterChangeListener(listener);</b>
+<i>295</i>&nbsp;	}
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;	void removeThresholdParameterChangeListener(final ParameterChangeListener listener) {
+<b class="nc"><i>298</i>&nbsp;		this.panelParameters.removeParameterChangeListener(listener);</b>
+<i>299</i>&nbsp;	}
+<i>300</i>&nbsp;	
+<i>301</i>&nbsp;	ReadOnlyObjectProperty&lt;String&gt; intensityFeatureProperty() {
+<b class="nc"><i>302</i>&nbsp;		return comboIntensities.getSelectionModel().selectedItemProperty();</b>
+<i>303</i>&nbsp;	}
+<i>304</i>&nbsp;	
+<i>305</i>&nbsp;	
+<i>306</i>&nbsp;	/**
+<i>307</i>&nbsp;	 * Set a filter to display only a subset of the available measurements.
+<i>308</i>&nbsp;	 * 
+<i>309</i>&nbsp;	 * By default, the current filter shows only measurements with &#39;mean&#39; or &#39;max&#39; in their name, and not &#39;smoothed&#39;.
+<i>310</i>&nbsp;	 * 
+<i>311</i>&nbsp;	 * This default behavior may change, so if there is any particular required filter it is better to set it explicitly.
+<i>312</i>&nbsp;	 * 
+<i>313</i>&nbsp;	 * @param filter
+<i>314</i>&nbsp;	 */
+<i>315</i>&nbsp;	public void setFilter(final Predicate&lt;String&gt; filter) {
+<b class="nc"><i>316</i>&nbsp;		if (filter == null)</b>
+<b class="nc"><i>317</i>&nbsp;			filteredAvailableMeasurements.setPredicate(null);</b>
+<i>318</i>&nbsp;		else {
+<b class="nc"><i>319</i>&nbsp;			if (filter.test(&quot;None&quot;))</b>
+<b class="nc"><i>320</i>&nbsp;				filteredAvailableMeasurements.setPredicate(filter);</b>
+<i>321</i>&nbsp;			else
+<i>322</i>&nbsp;				// Always accept &quot;None&quot; as well
+<b class="nc"><i>323</i>&nbsp;				filteredAvailableMeasurements.setPredicate(filter.or(s -&gt; &quot;None&quot;.equals(s)));</b>
+<i>324</i>&nbsp;		}
+<i>325</i>&nbsp;	}
+<i>326</i>&nbsp;	
+<i>327</i>&nbsp;	
+<i>328</i>&nbsp;	/**
+<i>329</i>&nbsp;	 * Set the available measurements, optionally filtering them to permit only measurements containing the text filter (case insensitive).
+<i>330</i>&nbsp;	 * 
+<i>331</i>&nbsp;	 * @param measurements
+<i>332</i>&nbsp;	 */
+<i>333</i>&nbsp;	public void setAvailableMeasurements(final Collection&lt;String&gt; measurements) {
+<i>334</i>&nbsp;		
+<b class="nc"><i>335</i>&nbsp;		String selected = comboIntensities.getSelectionModel().getSelectedItem();</b>
+<i>336</i>&nbsp;		
+<b class="nc"><i>337</i>&nbsp;		availableMeasurements.setAll(measurements);</b>
+<i>338</i>&nbsp;		
+<i>339</i>&nbsp;//		if (filter != null) {
+<i>340</i>&nbsp;//			String[] filterLower = new String[filter.length];
+<i>341</i>&nbsp;//			for (int i = 0; i &lt; filter.length; i++)
+<i>342</i>&nbsp;//				filterLower[i] = filter[i].toLowerCase();
+<i>343</i>&nbsp;//			
+<i>344</i>&nbsp;//			List&lt;String&gt; listPossible = new ArrayList&lt;&gt;();
+<i>345</i>&nbsp;//			for (String m : measurements) {
+<i>346</i>&nbsp;//				String mLower = m.toLowerCase();
+<i>347</i>&nbsp;//				for (String f : filterLower) {
+<i>348</i>&nbsp;//					if (mLower.contains(f)) {
+<i>349</i>&nbsp;//						listPossible.add(m);
+<i>350</i>&nbsp;//						break;
+<i>351</i>&nbsp;//					}
+<i>352</i>&nbsp;//				}
+<i>353</i>&nbsp;////				if (m.toLowerCase().contains(filterLower))
+<i>354</i>&nbsp;////					listPossible.add(m);
+<i>355</i>&nbsp;//			}
+<i>356</i>&nbsp;//			comboIntensities.getItems().setAll(listPossible);
+<i>357</i>&nbsp;//		} else
+<i>358</i>&nbsp;//			comboIntensities.getItems().setAll(measurements);
+<i>359</i>&nbsp;		
+<i>360</i>&nbsp;		// Ensure we have &#39;none&#39;
+<b class="nc"><i>361</i>&nbsp;		if (availableMeasurements.isEmpty() || !availableMeasurements.get(0).equals(&quot;None&quot;))</b>
+<b class="nc"><i>362</i>&nbsp;			availableMeasurements.add(0, &quot;None&quot;);</b>
+<i>363</i>&nbsp;		
+<b class="nc"><i>364</i>&nbsp;		if (filteredAvailableMeasurements.contains(selected))</b>
+<b class="nc"><i>365</i>&nbsp;			comboIntensities.getSelectionModel().select(selected);</b>
+<i>366</i>&nbsp;		else
+<b class="nc"><i>367</i>&nbsp;			comboIntensities.getSelectionModel().select(&quot;None&quot;);</b>
+<i>368</i>&nbsp;
+<i>369</i>&nbsp;		
+<b class="nc"><i>370</i>&nbsp;		comboIntensities.setItems(filteredAvailableMeasurements);</b>
+<i>371</i>&nbsp;		
+<i>372</i>&nbsp;//		// Update the choice parameter
+<i>373</i>&nbsp;//		parameterSelectedFeature = new ChoiceParameter&lt;&gt;(&quot;Intensity feature&quot;, modelIntensities.selectedFeature, modelIntensities.measurements, &quot;Choose intensity feature&quot;);
+<i>374</i>&nbsp;	}
+<i>375</i>&nbsp;	
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;//	@Override
+<i>379</i>&nbsp;//	public void featureListChanged(PathClassifierData classifierData) {
+<i>380</i>&nbsp;//		modelIntensities.setAvailableMeasurements(classifierData.getAvailableFeatureNames());
+<i>381</i>&nbsp;//	}
+<i>382</i>&nbsp;//
+<i>383</i>&nbsp;//
+<i>384</i>&nbsp;//	@Override
+<i>385</i>&nbsp;//	public void imageDataChanged(PathClassifierData classifierData, ImageData imageDataOld, ImageData imageDataNew) {
+<i>386</i>&nbsp;//		if (imageDataOld == imageDataNew)
+<i>387</i>&nbsp;//			return;
+<i>388</i>&nbsp;//		if (imageDataOld != null &amp;&amp; imageDataOld.getHierarchy() != null) {
+<i>389</i>&nbsp;//			imageDataOld.getHierarchy().getSelectionModel().removePathObjectSelectionListener(this);
+<i>390</i>&nbsp;//		}
+<i>391</i>&nbsp;//		if (imageDataNew != null &amp;&amp; imageDataNew.getHierarchy() != null) {
+<i>392</i>&nbsp;//			imageDataNew.getHierarchy().getSelectionModel().addPathObjectSelectionListener(this);
+<i>393</i>&nbsp;//		}
+<i>394</i>&nbsp;//	}
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;	@Override
+<i>398</i>&nbsp;	public void selectedPathObjectChanged(final PathObject pathObjectSelected, final PathObject previousObject, Collection&lt;PathObject&gt; allSelected) {
+<b class="nc"><i>399</i>&nbsp;		updateIntensityHistogram();</b>
+<i>400</i>&nbsp;	}
+<i>401</i>&nbsp;	
+<i>402</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

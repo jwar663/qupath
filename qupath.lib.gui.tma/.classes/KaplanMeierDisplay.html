@@ -1,0 +1,1419 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KaplanMeierDisplay</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tma</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KaplanMeierDisplay (qupath.lib.gui.tma)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KaplanMeierDisplay</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 486)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KaplanMeierDisplay$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KaplanMeierDisplay$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KaplanMeierDisplay$2$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KaplanMeierDisplay$KaplanMeierTableModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 77)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">KaplanMeierDisplay$ScoreData</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 45)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 596)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.tma;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.text.DecimalFormat;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Arrays;
+<i>29</i>&nbsp;import java.util.HashSet;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Set;
+<i>33</i>&nbsp;import java.util.TreeMap;
+<i>34</i>&nbsp;import java.util.Map.Entry;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.apache.commons.math3.distribution.NormalDistribution;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import javafx.application.Platform;
+<i>41</i>&nbsp;import javafx.beans.property.DoubleProperty;
+<i>42</i>&nbsp;import javafx.beans.property.SimpleDoubleProperty;
+<i>43</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>44</i>&nbsp;import javafx.beans.value.ObservableNumberValue;
+<i>45</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>46</i>&nbsp;import javafx.collections.FXCollections;
+<i>47</i>&nbsp;import javafx.collections.ObservableList;
+<i>48</i>&nbsp;import javafx.geometry.Insets;
+<i>49</i>&nbsp;import javafx.scene.Parent;
+<i>50</i>&nbsp;import javafx.scene.Scene;
+<i>51</i>&nbsp;import javafx.scene.chart.LineChart;
+<i>52</i>&nbsp;import javafx.scene.chart.NumberAxis;
+<i>53</i>&nbsp;import javafx.scene.chart.XYChart;
+<i>54</i>&nbsp;import javafx.scene.chart.XYChart.Data;
+<i>55</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>56</i>&nbsp;import javafx.scene.control.Menu;
+<i>57</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>58</i>&nbsp;import javafx.scene.control.RadioMenuItem;
+<i>59</i>&nbsp;import javafx.scene.control.TableCell;
+<i>60</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>61</i>&nbsp;import javafx.scene.control.TableView;
+<i>62</i>&nbsp;import javafx.scene.control.TitledPane;
+<i>63</i>&nbsp;import javafx.scene.control.ToggleGroup;
+<i>64</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>65</i>&nbsp;import javafx.scene.control.TableColumn.CellDataFeatures;
+<i>66</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>67</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>68</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>69</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>70</i>&nbsp;import javafx.scene.layout.Pane;
+<i>71</i>&nbsp;import javafx.scene.layout.Priority;
+<i>72</i>&nbsp;import javafx.scene.layout.StackPane;
+<i>73</i>&nbsp;import javafx.scene.paint.Color;
+<i>74</i>&nbsp;import javafx.stage.Stage;
+<i>75</i>&nbsp;import javafx.stage.Window;
+<i>76</i>&nbsp;import javafx.util.Callback;
+<i>77</i>&nbsp;import qupath.lib.analysis.stats.Histogram;
+<i>78</i>&nbsp;import qupath.lib.analysis.stats.StatisticsHelper;
+<i>79</i>&nbsp;import qupath.lib.analysis.stats.survival.KaplanMeierData;
+<i>80</i>&nbsp;import qupath.lib.analysis.stats.survival.LogRankTest;
+<i>81</i>&nbsp;import qupath.lib.analysis.stats.survival.LogRankTest.LogRankResult;
+<i>82</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>83</i>&nbsp;import qupath.lib.gui.charts.ChartTools;
+<i>84</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX;
+<i>85</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX.ThresholdedChartWrapper;
+<i>86</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>87</i>&nbsp;import qupath.lib.gui.tools.ColorToolsFX;
+<i>88</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>89</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>90</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>91</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>92</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>93</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>94</i>&nbsp;import qupath.lib.plugins.parameters.IntParameter;
+<i>95</i>&nbsp;import qupath.lib.plugins.parameters.ParameterChangeListener;
+<i>96</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;/**
+<i>99</i>&nbsp; * Create an manage a display component for survival data.
+<i>100</i>&nbsp; * 
+<i>101</i>&nbsp; * @author Pete Bankhead
+<i>102</i>&nbsp; *
+<i>103</i>&nbsp; */
+<i>104</i>&nbsp;class KaplanMeierDisplay implements ParameterChangeListener, PathObjectHierarchyListener {
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(KaplanMeierDisplay.class);</b>
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;	// Flag to enable/disable calculating all P-values, and allowing threshold to be set to the lowest
+<b class="nc"><i>109</i>&nbsp;	private boolean calculateAllPValues = true;</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<i>112</i>&nbsp;	private HistogramPanelFX histogramPanel;
+<i>113</i>&nbsp;	private ThresholdedChartWrapper histogramWrapper;
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;	private LineChart&lt;Number, Number&gt; chartPValues;
+<i>116</i>&nbsp;	private ThresholdedChartWrapper pValuesWrapper;
+<i>117</i>&nbsp;	private KaplanMeierChartWrapper plotter;
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	private ParameterList params;
+<i>120</i>&nbsp;	private ParameterPanelFX panelParams;
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;	private BorderPane paneMain = new BorderPane();</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;	private TableView&lt;Integer&gt; table = new TableView&lt;&gt;();</b>
+<b class="nc"><i>125</i>&nbsp;	private KaplanMeierTableModel tableModel = new KaplanMeierTableModel(table);</b>
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;	private String scoreColumn;
+<i>128</i>&nbsp;	private KaplanMeierDisplay.ScoreData scoreData;
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;	// P-value computations are relatively expensive... so cache the results for possible reuse
+<b class="nc"><i>131</i>&nbsp;	private double lastPValueCensorThreshold = Double.NaN;</b>
+<b class="nc"><i>132</i>&nbsp;	private double[] pValues = null;</b>
+<b class="nc"><i>133</i>&nbsp;	private double[] pValuesSmoothed = null;</b>
+<b class="nc"><i>134</i>&nbsp;	private double[] pValueThresholds = null;</b>
+<b class="nc"><i>135</i>&nbsp;	private boolean[] pValueThresholdsObserved = null;</b>
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;	// Wrapper class for storing score data - helps to reduce (relatively) expensive p-value computations
+<i>138</i>&nbsp;	private static class ScoreData {
+<i>139</i>&nbsp;		@Override
+<i>140</i>&nbsp;		public int hashCode() {
+<b class="nc"><i>141</i>&nbsp;			final int prime = 31;</b>
+<b class="nc"><i>142</i>&nbsp;			int result = 1;</b>
+<i>143</i>&nbsp;			//			long temp;
+<i>144</i>&nbsp;			//			temp = Double.doubleToLongBits(censorTime);
+<i>145</i>&nbsp;			//			result = prime * result + (int) (temp ^ (temp &gt;&gt;&gt; 32));
+<b class="nc"><i>146</i>&nbsp;			result = prime * result + Arrays.hashCode(censored);</b>
+<b class="nc"><i>147</i>&nbsp;			result = prime * result + Arrays.hashCode(scores);</b>
+<b class="nc"><i>148</i>&nbsp;			result = prime * result + Arrays.hashCode(survival);</b>
+<b class="nc"><i>149</i>&nbsp;			return result;</b>
+<i>150</i>&nbsp;		}
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;		@Override
+<i>153</i>&nbsp;		public boolean equals(Object obj) {
+<b class="nc"><i>154</i>&nbsp;			if (this == obj)</b>
+<b class="nc"><i>155</i>&nbsp;				return true;</b>
+<b class="nc"><i>156</i>&nbsp;			if (obj == null)</b>
+<b class="nc"><i>157</i>&nbsp;				return false;</b>
+<b class="nc"><i>158</i>&nbsp;			if (getClass() != obj.getClass())</b>
+<b class="nc"><i>159</i>&nbsp;				return false;</b>
+<b class="nc"><i>160</i>&nbsp;			KaplanMeierDisplay.ScoreData other = (KaplanMeierDisplay.ScoreData) obj;</b>
+<i>161</i>&nbsp;			//			if (Double.doubleToLongBits(censorTime) != Double.doubleToLongBits(other.censorTime))
+<i>162</i>&nbsp;			//				return false;
+<b class="nc"><i>163</i>&nbsp;			if (!Arrays.equals(censored, other.censored))</b>
+<b class="nc"><i>164</i>&nbsp;				return false;</b>
+<b class="nc"><i>165</i>&nbsp;			if (!Arrays.equals(scores, other.scores))</b>
+<b class="nc"><i>166</i>&nbsp;				return false;</b>
+<b class="nc"><i>167</i>&nbsp;			if (!Arrays.equals(survival, other.survival))</b>
+<b class="nc"><i>168</i>&nbsp;				return false;</b>
+<b class="nc"><i>169</i>&nbsp;			return true;</b>
+<i>170</i>&nbsp;		}
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;		double[] scores;
+<i>173</i>&nbsp;		double[] survival;
+<i>174</i>&nbsp;		boolean[] censored;
+<i>175</i>&nbsp;		//		double censorTime;
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;		ScoreData(final double[] scores, final double[] survival, final boolean[] censored) {</b>
+<b class="nc"><i>178</i>&nbsp;			this.scores = scores;</b>
+<b class="nc"><i>179</i>&nbsp;			this.survival = survival;</b>
+<b class="nc"><i>180</i>&nbsp;			this.censored = censored;</b>
+<i>181</i>&nbsp;		}
+<i>182</i>&nbsp;
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;	}
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;	// Threshold properties, used for displaying on 
+<b class="nc"><i>187</i>&nbsp;	private DoubleProperty[] threshProperties = new DoubleProperty[]{new SimpleDoubleProperty(Double.NaN), new SimpleDoubleProperty(Double.NaN), new SimpleDoubleProperty(Double.NaN)};</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;	private String survivalColumn;
+<i>190</i>&nbsp;	private String censoredColumn;
+<i>191</i>&nbsp;
+<b class="nc"><i>192</i>&nbsp;	public KaplanMeierDisplay(final PathObjectHierarchy hierarchy, final String scoreColumn, final String survivalColumn, final String censoredColumn) {</b>
+<b class="nc"><i>193</i>&nbsp;		this.hierarchy = hierarchy;</b>
+<b class="nc"><i>194</i>&nbsp;		if (this.hierarchy != null)</b>
+<b class="nc"><i>195</i>&nbsp;			this.hierarchy.addPathObjectListener(this);</b>
+<b class="nc"><i>196</i>&nbsp;		this.scoreColumn = scoreColumn;</b>
+<b class="nc"><i>197</i>&nbsp;		this.survivalColumn = survivalColumn;</b>
+<b class="nc"><i>198</i>&nbsp;		this.censoredColumn = censoredColumn;</b>
+<b class="nc"><i>199</i>&nbsp;		initialize();</b>
+<i>200</i>&nbsp;	}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;	private void initialize() {
+<b class="nc"><i>203</i>&nbsp;		generatePlot();</b>
+<i>204</i>&nbsp;	}
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;	public Parent getView() {
+<b class="nc"><i>208</i>&nbsp;		return paneMain;</b>
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;	private Stage createStage(final Window parent, final String title) {
+<b class="nc"><i>213</i>&nbsp;		Stage frame = new Stage();</b>
+<b class="nc"><i>214</i>&nbsp;		if (parent != null)</b>
+<b class="nc"><i>215</i>&nbsp;			frame.initOwner(parent);</b>
+<b class="nc"><i>216</i>&nbsp;		frame.setTitle(&quot;Kaplan Meier: &quot; + title);</b>
+<i>217</i>&nbsp;
+<b class="nc"><i>218</i>&nbsp;		frame.setOnCloseRequest(e -&gt; {</b>
+<b class="nc"><i>219</i>&nbsp;			if (hierarchy != null)</b>
+<b class="nc"><i>220</i>&nbsp;				hierarchy.removePathObjectListener(KaplanMeierDisplay.this);</b>
+<b class="nc"><i>221</i>&nbsp;			panelParams.removeParameterChangeListener(KaplanMeierDisplay.this);</b>
+<b class="nc"><i>222</i>&nbsp;			frame.hide();</b>
+<i>223</i>&nbsp;		});
+<i>224</i>&nbsp;
+<b class="nc"><i>225</i>&nbsp;		Scene scene = new Scene(getView(), 600, 400);</b>
+<b class="nc"><i>226</i>&nbsp;		frame.setScene(scene);</b>
+<b class="nc"><i>227</i>&nbsp;		frame.setMinWidth(600);</b>
+<b class="nc"><i>228</i>&nbsp;		frame.setMinHeight(400);</b>
+<b class="nc"><i>229</i>&nbsp;		return frame;</b>
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;	/**
+<i>233</i>&nbsp;	 * Show in own window, with optional parent window specified.
+<i>234</i>&nbsp;	 * 
+<i>235</i>&nbsp;	 * @param parent
+<i>236</i>&nbsp;	 * @param title
+<i>237</i>&nbsp;	 * @return
+<i>238</i>&nbsp;	 */
+<i>239</i>&nbsp;	public Stage show(final Window parent, final String title) {
+<b class="nc"><i>240</i>&nbsp;		Stage frame = createStage(parent, title);</b>
+<b class="nc"><i>241</i>&nbsp;		frame.show();</b>
+<b class="nc"><i>242</i>&nbsp;		return frame;</b>
+<i>243</i>&nbsp;	}
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;	@Override
+<i>246</i>&nbsp;	public void hierarchyChanged(PathObjectHierarchyEvent event) {
+<b class="nc"><i>247</i>&nbsp;		if (!Platform.isFxApplicationThread())</b>
+<b class="nc"><i>248</i>&nbsp;			Platform.runLater(() -&gt; hierarchyChanged(event));</b>
+<i>249</i>&nbsp;		else
+<b class="nc"><i>250</i>&nbsp;			generatePlot();</b>
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;	/**
+<i>255</i>&nbsp;	 * Set a new hierarchy, updating the plot accordingly.
+<i>256</i>&nbsp;	 * 
+<i>257</i>&nbsp;	 * @param hierarchy
+<i>258</i>&nbsp;	 * @param survivalKey 
+<i>259</i>&nbsp;	 * @param censoredKey 
+<i>260</i>&nbsp;	 */
+<i>261</i>&nbsp;	public void setHierarchy(final PathObjectHierarchy hierarchy, final String survivalKey, final String censoredKey) {
+<b class="nc"><i>262</i>&nbsp;		if (this.hierarchy != null)</b>
+<b class="nc"><i>263</i>&nbsp;			this.hierarchy.removePathObjectListener(this);</b>
+<b class="nc"><i>264</i>&nbsp;		this.survivalColumn = survivalKey;</b>
+<b class="nc"><i>265</i>&nbsp;		this.censoredColumn = censoredKey;</b>
+<b class="nc"><i>266</i>&nbsp;		this.hierarchy = hierarchy;</b>
+<b class="nc"><i>267</i>&nbsp;		if (this.hierarchy != null)</b>
+<b class="nc"><i>268</i>&nbsp;			this.hierarchy.addPathObjectListener(this);</b>
+<b class="nc"><i>269</i>&nbsp;		generatePlot();</b>
+<i>270</i>&nbsp;	}
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;	public String getScoreColumn() {
+<b class="nc"><i>275</i>&nbsp;		return scoreColumn;</b>
+<i>276</i>&nbsp;	}
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;	public void setScoreColumn(final String scoreColumn) {
+<b class="nc"><i>279</i>&nbsp;		this.scoreColumn = scoreColumn;</b>
+<b class="nc"><i>280</i>&nbsp;		refresh();</b>
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;	public void refresh() {
+<b class="nc"><i>284</i>&nbsp;		generatePlot();</b>
+<i>285</i>&nbsp;	}
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>289</i>&nbsp;	private void generatePlot() {
+<i>290</i>&nbsp;
+<b class="nc"><i>291</i>&nbsp;		KaplanMeierDisplay.ScoreData newScoreData = scoreData;</b>
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;		// If we have a hierarchy, update the scores with the most recent data
+<b class="nc"><i>294</i>&nbsp;		if (hierarchy != null) {</b>
+<b class="nc"><i>295</i>&nbsp;			List&lt;TMACoreObject&gt; cores = PathObjectTools.getTMACoreObjects(hierarchy, false);</b>
+<b class="nc"><i>296</i>&nbsp;			double[] survival = new double[cores.size()];</b>
+<b class="nc"><i>297</i>&nbsp;			boolean[] censored = new boolean[cores.size()];</b>
+<b class="nc"><i>298</i>&nbsp;			double[] scores = new double[cores.size()];</b>
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;			//				// Optionally sort by scores... helps a bit when debugging e.g. p-values, Hazard ratios etc.
+<i>301</i>&nbsp;			//				cores.sort((c1, c2) -&gt; Double.compare(c1.getMeasurementList().getMeasurementValue(scoreColumn), c2.getMeasurementList().getMeasurementValue(scoreColumn)));
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;			//				scoreColumn = &quot;Positive %&quot;;
+<i>304</i>&nbsp;			//			scoreColumn = &quot;RoughScore&quot;;
+<b class="nc"><i>305</i>&nbsp;			for (int i = 0; i &lt; cores.size(); i++) {</b>
+<b class="nc"><i>306</i>&nbsp;				TMACoreObject core = cores.get(i);</b>
+<b class="nc"><i>307</i>&nbsp;				MeasurementList ml = core.getMeasurementList();</b>
+<b class="nc"><i>308</i>&nbsp;				survival[i] = core.getMeasurementList().getMeasurementValue(survivalColumn);</b>
+<b class="nc"><i>309</i>&nbsp;				double censoredValue = core.getMeasurementList().getMeasurementValue(censoredColumn);</b>
+<b class="nc"><i>310</i>&nbsp;				boolean hasCensoredValue = !Double.isNaN(censoredValue) &amp;&amp; (censoredValue == 0 || censoredValue == 1);</b>
+<b class="nc"><i>311</i>&nbsp;				censored[i] = censoredValue != 0;</b>
+<b class="nc"><i>312</i>&nbsp;				if (!hasCensoredValue) {</b>
+<i>313</i>&nbsp;					// If we don&#39;t have a censored value, ensure we mask out everything else
+<b class="nc"><i>314</i>&nbsp;					scores[i] = Double.NaN;</b>
+<b class="nc"><i>315</i>&nbsp;					survival[i] = Double.NaN;</b>
+<b class="nc"><i>316</i>&nbsp;				} else if (ml.containsNamedMeasurement(scoreColumn))</b>
+<i>317</i>&nbsp;					// Get the score if we can
+<b class="nc"><i>318</i>&nbsp;					scores[i] = ml.getMeasurementValue(scoreColumn);</b>
+<i>319</i>&nbsp;				else {
+<i>320</i>&nbsp;//					// Try to compute score if we need to
+<i>321</i>&nbsp;//					Map&lt;String, Number&gt; map = ROIMeaningfulMeasurements.getPathClassSummaryMeasurements(core.getChildObjects(), true);
+<i>322</i>&nbsp;//					Number value = map.get(scoreColumn);
+<i>323</i>&nbsp;//					if (value == null)
+<b class="nc"><i>324</i>&nbsp;						scores[i] = Double.NaN;</b>
+<i>325</i>&nbsp;//					else
+<i>326</i>&nbsp;//						scores[i] = value.doubleValue();
+<i>327</i>&nbsp;				}
+<i>328</i>&nbsp;			}
+<i>329</i>&nbsp;			// Mask out any scores that don&#39;t have associated survival data
+<b class="nc"><i>330</i>&nbsp;			for (int i = 0; i &lt; survival.length; i++) {</b>
+<b class="nc"><i>331</i>&nbsp;				if (Double.isNaN(survival[i]))</b>
+<b class="nc"><i>332</i>&nbsp;					scores[i] = Double.NaN;</b>
+<i>333</i>&nbsp;			}
+<i>334</i>&nbsp;
+<b class="nc"><i>335</i>&nbsp;			newScoreData = new ScoreData(scores, survival, censored);</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;		}
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;
+<b class="nc"><i>340</i>&nbsp;		if (newScoreData == null || newScoreData.scores.length == 0)</b>
+<i>341</i>&nbsp;			return;
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;		//			KaplanMeier kmHigh = new KaplanMeier(&quot;Above threshold&quot;);
+<i>344</i>&nbsp;		//			KaplanMeier kmLow = new KaplanMeier(&quot;Below threshold&quot;);
+<i>345</i>&nbsp;
+<b class="nc"><i>346</i>&nbsp;		double[] quartiles = StatisticsHelper.getQuartiles(newScoreData.scores);</b>
+<b class="nc"><i>347</i>&nbsp;		double q1 = quartiles[0];</b>
+<b class="nc"><i>348</i>&nbsp;		double median = quartiles[1];</b>
+<b class="nc"><i>349</i>&nbsp;		double q3 = quartiles[2];</b>
+<i>350</i>&nbsp;		double[] thresholds;
+<b class="nc"><i>351</i>&nbsp;		if (params != null) {</b>
+<b class="nc"><i>352</i>&nbsp;			Object thresholdMethod = params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;);</b>
+<b class="nc"><i>353</i>&nbsp;			if (thresholdMethod.equals(&quot;Median&quot;)) {</b>
+<i>354</i>&nbsp;				//					panelParams.setNumericParameterValue(&quot;scoreThreshold&quot;, median);
+<i>355</i>&nbsp;				//					((DoubleParameter)params.getParameters().get(&quot;scoreThreshold&quot;)).setValue(median); // TODO: UPDATE DIALOG!
+<b class="nc"><i>356</i>&nbsp;				thresholds = new double[]{median};</b>
+<b class="nc"><i>357</i>&nbsp;			} else if (thresholdMethod.equals(&quot;Tertiles&quot;)) {</b>
+<i>358</i>&nbsp;				//						((DoubleParameter)params.getParameters().get(&quot;scoreThreshold&quot;)).setValue(median); // TODO: UPDATE DIALOG!
+<b class="nc"><i>359</i>&nbsp;				thresholds = StatisticsHelper.getTertiles(newScoreData.scores);</b>
+<b class="nc"><i>360</i>&nbsp;			} else if (thresholdMethod.equals(&quot;Quartiles&quot;)) {</b>
+<i>361</i>&nbsp;				//					((DoubleParameter)params.getParameters().get(&quot;scoreThreshold&quot;)).setValue(median); // TODO: UPDATE DIALOG!
+<b class="nc"><i>362</i>&nbsp;				thresholds = new double[]{q1, median, q3};</b>
+<b class="nc"><i>363</i>&nbsp;			} else if (thresholdMethod.equals(&quot;Manual (1)&quot;)) {</b>
+<b class="nc"><i>364</i>&nbsp;				thresholds = new double[]{params.getDoubleParameterValue(&quot;threshold1&quot;)};</b>
+<b class="nc"><i>365</i>&nbsp;			} else if (thresholdMethod.equals(&quot;Manual (2)&quot;)) {</b>
+<b class="nc"><i>366</i>&nbsp;				thresholds = new double[]{params.getDoubleParameterValue(&quot;threshold1&quot;), params.getDoubleParameterValue(&quot;threshold2&quot;)};</b>
+<i>367</i>&nbsp;			} else //if (thresholdMethod.equals(&quot;Manual (3)&quot;)) {
+<b class="nc"><i>368</i>&nbsp;				thresholds = new double[]{params.getDoubleParameterValue(&quot;threshold1&quot;), params.getDoubleParameterValue(&quot;threshold2&quot;), params.getDoubleParameterValue(&quot;threshold3&quot;)};</b>
+<b class="nc"><i>369</i>&nbsp;		} else</b>
+<b class="nc"><i>370</i>&nbsp;			thresholds = new double[]{median};			</b>
+<i>371</i>&nbsp;
+<b class="nc"><i>372</i>&nbsp;		double minVal = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>373</i>&nbsp;		double maxVal = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>374</i>&nbsp;		int numNonNaN = 0;</b>
+<b class="nc"><i>375</i>&nbsp;		for (double d : newScoreData.scores) {</b>
+<b class="nc"><i>376</i>&nbsp;			if (Double.isNaN(d))</b>
+<b class="nc"><i>377</i>&nbsp;				continue;</b>
+<b class="nc"><i>378</i>&nbsp;			if (d &lt; minVal)</b>
+<b class="nc"><i>379</i>&nbsp;				minVal = d;</b>
+<b class="nc"><i>380</i>&nbsp;			if (d &gt; maxVal)</b>
+<b class="nc"><i>381</i>&nbsp;				maxVal = d;</b>
+<b class="nc"><i>382</i>&nbsp;			numNonNaN++;</b>
+<i>383</i>&nbsp;		}
+<b class="nc"><i>384</i>&nbsp;		boolean scoresValid = maxVal &gt; minVal; // If not this, we don&#39;t have valid scores that we can work with</b>
+<i>385</i>&nbsp;
+<b class="nc"><i>386</i>&nbsp;		double maxTimePoint = 0;</b>
+<b class="nc"><i>387</i>&nbsp;		for (double d : newScoreData.survival) {</b>
+<b class="nc"><i>388</i>&nbsp;			if (Double.isNaN(d))</b>
+<b class="nc"><i>389</i>&nbsp;				continue;</b>
+<b class="nc"><i>390</i>&nbsp;			if (d &gt; maxTimePoint)</b>
+<b class="nc"><i>391</i>&nbsp;				maxTimePoint = d;</b>
+<i>392</i>&nbsp;		}
+<b class="nc"><i>393</i>&nbsp;		if (panelParams != null &amp;&amp; maxTimePoint &gt; ((IntParameter)params.getParameters().get(&quot;censorTimePoints&quot;)).getUpperBound()) {</b>
+<b class="nc"><i>394</i>&nbsp;			panelParams.setNumericParameterValueRange(&quot;censorTimePoints&quot;, 0, Math.ceil(maxTimePoint));</b>
+<i>395</i>&nbsp;		}
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;		// Optionally censor at specified time
+<b class="nc"><i>398</i>&nbsp;		double censorThreshold = params == null ? maxTimePoint : params.getIntParameterValue(&quot;censorTimePoints&quot;);</b>
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;		// Compute log-rank p-values for *all* possible thresholds
+<i>401</i>&nbsp;		// Simultaneously determine the threshold that yields the lowest p-value, 
+<i>402</i>&nbsp;		// resolving ties in favour of a more even split between high/low numbers of events
+<b class="nc"><i>403</i>&nbsp;		boolean pValuesChanged = false;</b>
+<b class="nc"><i>404</i>&nbsp;		if (calculateAllPValues) {</b>
+<b class="nc"><i>405</i>&nbsp;			if (!(pValues != null &amp;&amp; pValueThresholds != null &amp;&amp; newScoreData.equals(scoreData) &amp;&amp; censorThreshold == lastPValueCensorThreshold)) {</b>
+<b class="nc"><i>406</i>&nbsp;				Map&lt;Double, Double&gt; mapLogRank = new TreeMap&lt;&gt;();</b>
+<b class="nc"><i>407</i>&nbsp;				Set&lt;Double&gt; setObserved = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>408</i>&nbsp;				for (int i = 0; i &lt; newScoreData.scores.length; i++) {</b>
+<b class="nc"><i>409</i>&nbsp;					Double d = newScoreData.scores[i];</b>
+<b class="nc"><i>410</i>&nbsp;					boolean observed = !newScoreData.censored[i] &amp;&amp; newScoreData.survival[i] &lt; censorThreshold;</b>
+<b class="nc"><i>411</i>&nbsp;					if (observed)</b>
+<b class="nc"><i>412</i>&nbsp;						setObserved.add(d);</b>
+<b class="nc"><i>413</i>&nbsp;					if (mapLogRank.containsKey(d))</b>
+<b class="nc"><i>414</i>&nbsp;						continue;</b>
+<b class="nc"><i>415</i>&nbsp;					List&lt;KaplanMeierData&gt; kmsTemp = splitByThresholds(newScoreData, new double[]{d}, censorThreshold, false);</b>
+<i>416</i>&nbsp;					//					if (kmsTemp.get(1).nObserved() == 0 || kmsTemp.get(1).nObserved() == 0)
+<i>417</i>&nbsp;					//						continue;
+<b class="nc"><i>418</i>&nbsp;					LogRankResult test = LogRankTest.computeLogRankTest(kmsTemp.get(0), kmsTemp.get(1));</b>
+<b class="nc"><i>419</i>&nbsp;					double pValue = test.getPValue();</b>
+<i>420</i>&nbsp;					//						double pValue = test.hazardRatio &lt; 1 ? test.hazardRatio : 1.0/test.hazardRatio; // Checking usefulness of Hazard ratios...
+<b class="nc"><i>421</i>&nbsp;					if (!Double.isFinite(pValue))</b>
+<b class="nc"><i>422</i>&nbsp;						continue;</b>
+<i>423</i>&nbsp;					//					if (!Double.isFinite(test.getHazardRatio())) {
+<i>424</i>&nbsp;					////						continue;
+<i>425</i>&nbsp;					//						pValue = Double.NaN;
+<i>426</i>&nbsp;					//					}
+<b class="nc"><i>427</i>&nbsp;					mapLogRank.put(d, pValue);</b>
+<i>428</i>&nbsp;				}
+<b class="nc"><i>429</i>&nbsp;				pValueThresholds = new double[mapLogRank.size()];</b>
+<b class="nc"><i>430</i>&nbsp;				pValues = new double[mapLogRank.size()];</b>
+<b class="nc"><i>431</i>&nbsp;				pValueThresholdsObserved = new boolean[mapLogRank.size()];</b>
+<b class="nc"><i>432</i>&nbsp;				int count = 0;</b>
+<b class="nc"><i>433</i>&nbsp;				for (Entry&lt;Double, Double&gt; entry : mapLogRank.entrySet()) {</b>
+<b class="nc"><i>434</i>&nbsp;					pValueThresholds[count] = entry.getKey();</b>
+<b class="nc"><i>435</i>&nbsp;					pValues[count] = entry.getValue();</b>
+<b class="nc"><i>436</i>&nbsp;					if (setObserved.contains(entry.getKey()))</b>
+<b class="nc"><i>437</i>&nbsp;						pValueThresholdsObserved[count] = true;</b>
+<b class="nc"><i>438</i>&nbsp;					count++;</b>
+<b class="nc"><i>439</i>&nbsp;				}</b>
+<i>440</i>&nbsp;
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;				// Find the longest &#39;significant&#39; stretch
+<b class="nc"><i>444</i>&nbsp;				int maxSigCount = 0;</b>
+<b class="nc"><i>445</i>&nbsp;				int maxSigInd = -1;</b>
+<b class="nc"><i>446</i>&nbsp;				int sigCurrent = 0;</b>
+<b class="nc"><i>447</i>&nbsp;				int[] sigCount = new int[pValues.length];</b>
+<b class="nc"><i>448</i>&nbsp;				for (int i = 0; i &lt; pValues.length; i++) {</b>
+<b class="nc"><i>449</i>&nbsp;					if (pValues[i] &lt; 0.05) {</b>
+<b class="nc"><i>450</i>&nbsp;						sigCurrent++;</b>
+<b class="nc"><i>451</i>&nbsp;						sigCount[i] = sigCurrent;</b>
+<b class="nc"><i>452</i>&nbsp;						if (sigCurrent &gt; maxSigCount) {</b>
+<b class="nc"><i>453</i>&nbsp;							maxSigCount = sigCurrent;</b>
+<b class="nc"><i>454</i>&nbsp;							maxSigInd = i;</b>
+<i>455</i>&nbsp;						}
+<i>456</i>&nbsp;					} else
+<b class="nc"><i>457</i>&nbsp;						sigCurrent = 0;</b>
+<i>458</i>&nbsp;				}
+<b class="nc"><i>459</i>&nbsp;				if (maxSigCount == 0) {</b>
+<b class="nc"><i>460</i>&nbsp;					logger.info(&quot;No p-values &lt; 0.05&quot;);</b>
+<i>461</i>&nbsp;				} else {
+<b class="nc"><i>462</i>&nbsp;					double minThresh = maxSigInd-maxSigCount &lt; 0 ? pValueThresholds[0]-0.0000001 : pValueThresholds[maxSigInd-maxSigCount];</b>
+<b class="nc"><i>463</i>&nbsp;					double maxThresh = pValueThresholds[maxSigInd];</b>
+<b class="nc"><i>464</i>&nbsp;					int nBetween = 0;</b>
+<b class="nc"><i>465</i>&nbsp;					int nBetweenObserved = 0;</b>
+<b class="nc"><i>466</i>&nbsp;					for (int i = 0; i &lt; newScoreData.scores.length; i++) {</b>
+<b class="nc"><i>467</i>&nbsp;						if (newScoreData.scores[i] &gt; minThresh &amp;&amp; newScoreData.scores[i] &lt;= maxThresh) {</b>
+<b class="nc"><i>468</i>&nbsp;							nBetween++;</b>
+<b class="nc"><i>469</i>&nbsp;							if (newScoreData.survival[i] &lt; censorThreshold &amp;&amp; !newScoreData.censored[i])</b>
+<b class="nc"><i>470</i>&nbsp;								nBetweenObserved++;</b>
+<i>471</i>&nbsp;						}
+<i>472</i>&nbsp;					}
+<b class="nc"><i>473</i>&nbsp;					logger.info(&quot;Longest stretch of p-values &lt; 0.05: {} - {} ({} entries, {} observed)&quot;, minThresh, maxThresh, nBetween, nBetweenObserved);						</b>
+<i>474</i>&nbsp;				}
+<i>475</i>&nbsp;
+<i>476</i>&nbsp;
+<i>477</i>&nbsp;
+<i>478</i>&nbsp;
+<b class="nc"><i>479</i>&nbsp;				pValuesSmoothed = new double[pValues.length];</b>
+<b class="nc"><i>480</i>&nbsp;				Arrays.fill(pValuesSmoothed, Double.NaN);</b>
+<b class="nc"><i>481</i>&nbsp;				int n = (pValues.length / 20) * 2 + 1;</b>
+<b class="nc"><i>482</i>&nbsp;				logger.info(&quot;Smoothing log-rank test p-values by &quot; + n);</b>
+<b class="nc"><i>483</i>&nbsp;				for (int i = n/2; i &lt; pValues.length-n/2; i++) {</b>
+<b class="nc"><i>484</i>&nbsp;					double sum = 0;</b>
+<b class="nc"><i>485</i>&nbsp;					for (int k = i-n/2; k &lt; i-n/2+n; k++) {</b>
+<b class="nc"><i>486</i>&nbsp;						sum += pValues[k];</b>
+<i>487</i>&nbsp;					}
+<b class="nc"><i>488</i>&nbsp;					pValuesSmoothed[i] = sum/n;</b>
+<i>489</i>&nbsp;				}
+<i>490</i>&nbsp;				//					for (int i = 0; i &lt; pValues.length; i++) {
+<i>491</i>&nbsp;				//						double sum = 0;
+<i>492</i>&nbsp;				//						for (int k = Math.max(0, i-n/2); k &lt; Math.min(pValues.length, i-n/2+n); k++) {
+<i>493</i>&nbsp;				//							sum += pValues[k];
+<i>494</i>&nbsp;				//						}
+<i>495</i>&nbsp;				//						pValuesSmoothed[i] = sum/n;
+<i>496</i>&nbsp;				//					}
+<i>497</i>&nbsp;				//					pValues = pValuesSmoothed;
+<i>498</i>&nbsp;
+<i>499</i>&nbsp;
+<b class="nc"><i>500</i>&nbsp;				lastPValueCensorThreshold = censorThreshold;</b>
+<b class="nc"><i>501</i>&nbsp;				pValuesChanged = true;</b>
+<b class="nc"><i>502</i>&nbsp;			}</b>
+<i>503</i>&nbsp;		} else {
+<b class="nc"><i>504</i>&nbsp;			lastPValueCensorThreshold = Double.NaN;</b>
+<b class="nc"><i>505</i>&nbsp;			pValueThresholds = null;</b>
+<b class="nc"><i>506</i>&nbsp;			pValues = null;</b>
+<i>507</i>&nbsp;		}
+<i>508</i>&nbsp;
+<i>509</i>&nbsp;
+<i>510</i>&nbsp;		//				if (params != null &amp;&amp; !Double.isNaN(bestThreshold) &amp;&amp; (params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;).equals(&quot;Lowest p-value&quot;)))
+<b class="nc"><i>511</i>&nbsp;		if (params != null &amp;&amp; (params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;).equals(&quot;Lowest p-value&quot;))) {</b>
+<b class="nc"><i>512</i>&nbsp;			int bestIdx = -1;</b>
+<b class="nc"><i>513</i>&nbsp;			double bestPValue = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>514</i>&nbsp;			for (int i = pValueThresholds.length/10; i &lt; pValueThresholds.length*9/10; i++) {</b>
+<b class="nc"><i>515</i>&nbsp;				if (pValues[i] &lt; bestPValue) {</b>
+<b class="nc"><i>516</i>&nbsp;					bestIdx = i;</b>
+<b class="nc"><i>517</i>&nbsp;					bestPValue = pValues[i];</b>
+<i>518</i>&nbsp;				}
+<i>519</i>&nbsp;			}
+<b class="nc"><i>520</i>&nbsp;			thresholds = bestIdx &gt;= 0 ? new double[]{pValueThresholds[bestIdx]} : new double[0];</b>
+<b class="nc"><i>521</i>&nbsp;		} else if (params != null &amp;&amp; (params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;).equals(&quot;Lowest smoothed p-value&quot;))) {</b>
+<b class="nc"><i>522</i>&nbsp;			int bestIdx = -1;</b>
+<b class="nc"><i>523</i>&nbsp;			double bestPValue = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>524</i>&nbsp;			for (int i = pValueThresholds.length/10; i &lt; pValueThresholds.length*9/10; i++) {</b>
+<b class="nc"><i>525</i>&nbsp;				if (pValuesSmoothed[i] &lt; bestPValue) {</b>
+<b class="nc"><i>526</i>&nbsp;					bestIdx = i;</b>
+<b class="nc"><i>527</i>&nbsp;					bestPValue = pValuesSmoothed[i];</b>
+<i>528</i>&nbsp;				}
+<i>529</i>&nbsp;			}
+<b class="nc"><i>530</i>&nbsp;			thresholds = bestIdx &gt;= 0 ? new double[]{pValueThresholds[bestIdx]} : new double[0];</b>
+<i>531</i>&nbsp;		}
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;		// Split into different curves using the provided thresholds
+<b class="nc"><i>535</i>&nbsp;		List&lt;KaplanMeierData&gt; kms = splitByThresholds(newScoreData, thresholds, censorThreshold, params != null &amp;&amp; &quot;Quartiles&quot;.equals(params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;)));</b>
+<i>536</i>&nbsp;
+<i>537</i>&nbsp;		//			for (KaplanMeier km : kms)
+<i>538</i>&nbsp;		//				km.censorAtTime(censorThreshold);
+<i>539</i>&nbsp;		////			kmHigh.censorAtTime(censorThreshold);
+<i>540</i>&nbsp;		////			kmLow.censorAtTime(censorThreshold);
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;		//			logger.info(&quot;High: &quot; + kmHigh.toString());
+<i>543</i>&nbsp;		//			logger.info(&quot;Low: &quot; + kmLow.toString());
+<i>544</i>&nbsp;		//			logger.info(&quot;Log rank comparison: {}&quot;, LogRankTest.computeLogRankTest(kmLow, kmHigh));
+<i>545</i>&nbsp;
+<b class="nc"><i>546</i>&nbsp;		if (plotter == null) {</b>
+<b class="nc"><i>547</i>&nbsp;			plotter = new KaplanMeierChartWrapper(survivalColumn + &quot; time&quot;);</b>
+<i>548</i>&nbsp;			//				plotter.setBorder(BorderFactory.createTitledBorder(&quot;Survival plot&quot;));
+<i>549</i>&nbsp;			//				plotter.getCanvas().setWidth(300);
+<i>550</i>&nbsp;			//				plotter.getCanvas().setHeight(300);
+<i>551</i>&nbsp;		}
+<b class="nc"><i>552</i>&nbsp;		KaplanMeierData[] kmArray = new KaplanMeierData[kms.size()];</b>
+<b class="nc"><i>553</i>&nbsp;		plotter.setKaplanMeierCurves(survivalColumn + &quot; time&quot;, kms.toArray(kmArray));</b>
+<b class="nc"><i>554</i>&nbsp;		tableModel.setSurvivalCurves(thresholds, params != null &amp;&amp; params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;).equals(&quot;Lowest p-value&quot;), kmArray);</b>
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;
+<i>557</i>&nbsp;		// Bar width determined using &#39;Freedman and Diaconis&#39; rule&#39; (but overridden if this gives &lt; 16 bins...)
+<b class="nc"><i>558</i>&nbsp;		double barWidth = (2 * q3-q1) * Math.pow(numNonNaN, -1.0/3.0);</b>
+<b class="nc"><i>559</i>&nbsp;		int nBins = 100;</b>
+<b class="nc"><i>560</i>&nbsp;		if (!Double.isNaN(barWidth))</b>
+<b class="nc"><i>561</i>&nbsp;			barWidth = (int)Math.max(16, Math.ceil((maxVal - minVal) / barWidth));</b>
+<b class="nc"><i>562</i>&nbsp;		Histogram histogram = scoresValid ? new Histogram(newScoreData.scores, nBins) : null;</b>
+<b class="nc"><i>563</i>&nbsp;		if (histogramPanel == null) {</b>
+<b class="nc"><i>564</i>&nbsp;			GridPane paneHistogram = new GridPane();</b>
+<b class="nc"><i>565</i>&nbsp;			histogramPanel = new HistogramPanelFX();</b>
+<b class="nc"><i>566</i>&nbsp;			histogramPanel.getChart().setAnimated(false);</b>
+<b class="nc"><i>567</i>&nbsp;			histogramWrapper = new ThresholdedChartWrapper(histogramPanel.getChart());</b>
+<b class="nc"><i>568</i>&nbsp;			for (ObservableNumberValue val : threshProperties)</b>
+<b class="nc"><i>569</i>&nbsp;				histogramWrapper.addThreshold(val, ColorToolsFX.getCachedColor(240, 0, 0, 128));</b>
+<b class="nc"><i>570</i>&nbsp;			histogramWrapper.getPane().setPrefHeight(150);</b>
+<b class="nc"><i>571</i>&nbsp;			paneHistogram.add(histogramWrapper.getPane(), 0, 0);</b>
+<b class="nc"><i>572</i>&nbsp;			Tooltip.install(histogramPanel.getChart(), new Tooltip(&quot;Distribution of scores&quot;));</b>
+<b class="nc"><i>573</i>&nbsp;			GridPane.setHgrow(histogramWrapper.getPane(), Priority.ALWAYS);</b>
+<b class="nc"><i>574</i>&nbsp;			GridPane.setVgrow(histogramWrapper.getPane(), Priority.ALWAYS);</b>
+<i>575</i>&nbsp;
+<b class="nc"><i>576</i>&nbsp;			NumberAxis xAxis = new NumberAxis();</b>
+<b class="nc"><i>577</i>&nbsp;			xAxis.setLabel(&quot;Score threshold&quot;);</b>
+<b class="nc"><i>578</i>&nbsp;			NumberAxis yAxis = new NumberAxis();</b>
+<b class="nc"><i>579</i>&nbsp;			yAxis.setLowerBound(0);</b>
+<b class="nc"><i>580</i>&nbsp;			yAxis.setUpperBound(1);</b>
+<b class="nc"><i>581</i>&nbsp;			yAxis.setTickUnit(0.1);</b>
+<b class="nc"><i>582</i>&nbsp;			yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>583</i>&nbsp;			yAxis.setLabel(&quot;P-value&quot;);</b>
+<b class="nc"><i>584</i>&nbsp;			chartPValues = new LineChart&lt;&gt;(xAxis, yAxis);</b>
+<b class="nc"><i>585</i>&nbsp;			chartPValues.setAnimated(false);</b>
+<b class="nc"><i>586</i>&nbsp;			chartPValues.setLegendVisible(false);</b>
+<i>587</i>&nbsp;
+<i>588</i>&nbsp;			// Make chart so it can be navigated
+<b class="nc"><i>589</i>&nbsp;			ChartTools.makeChartInteractive(chartPValues, xAxis, yAxis);</b>
+<b class="nc"><i>590</i>&nbsp;			pValuesChanged = true;</b>
+<b class="nc"><i>591</i>&nbsp;			Tooltip.install(chartPValues, new Tooltip(&quot;Distribution of p-values (log-rank test) comparing low vs. high for all possible score thresholds&quot;));</b>
+<i>592</i>&nbsp;			//				chartPValues.getYAxis().setAutoRanging(false);
+<b class="nc"><i>593</i>&nbsp;			pValuesWrapper = new ThresholdedChartWrapper(chartPValues);</b>
+<b class="nc"><i>594</i>&nbsp;			for (ObservableNumberValue val : threshProperties)</b>
+<b class="nc"><i>595</i>&nbsp;				pValuesWrapper.addThreshold(val, ColorToolsFX.getCachedColor(240, 0, 0, 128));</b>
+<i>596</i>&nbsp;
+<b class="nc"><i>597</i>&nbsp;			pValuesWrapper.getPane().setPrefHeight(150);</b>
+<b class="nc"><i>598</i>&nbsp;			paneHistogram.add(pValuesWrapper.getPane(), 0, 1);</b>
+<b class="nc"><i>599</i>&nbsp;			GridPane.setHgrow(pValuesWrapper.getPane(), Priority.ALWAYS);</b>
+<b class="nc"><i>600</i>&nbsp;			GridPane.setVgrow(pValuesWrapper.getPane(), Priority.ALWAYS);</b>
+<i>601</i>&nbsp;
+<b class="nc"><i>602</i>&nbsp;			ContextMenu popup = new ContextMenu();</b>
+<b class="nc"><i>603</i>&nbsp;			ChartTools.addChartExportMenu(chartPValues, popup);</b>
+<i>604</i>&nbsp;
+<b class="nc"><i>605</i>&nbsp;			RadioMenuItem miZoomY1 = new RadioMenuItem(&quot;0-1&quot;);</b>
+<b class="nc"><i>606</i>&nbsp;			miZoomY1.setOnAction(e -&gt; {</b>
+<b class="nc"><i>607</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>608</i>&nbsp;				yAxis.setUpperBound(1);</b>
+<b class="nc"><i>609</i>&nbsp;				yAxis.setTickUnit(0.2);</b>
+<i>610</i>&nbsp;			});
+<b class="nc"><i>611</i>&nbsp;			RadioMenuItem miZoomY05 = new RadioMenuItem(&quot;0-0.5&quot;);</b>
+<b class="nc"><i>612</i>&nbsp;			miZoomY05.setOnAction(e -&gt; {</b>
+<b class="nc"><i>613</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>614</i>&nbsp;				yAxis.setUpperBound(0.5);</b>
+<b class="nc"><i>615</i>&nbsp;				yAxis.setTickUnit(0.1);</b>
+<i>616</i>&nbsp;			});
+<b class="nc"><i>617</i>&nbsp;			RadioMenuItem miZoomY02 = new RadioMenuItem(&quot;0-0.2&quot;);</b>
+<b class="nc"><i>618</i>&nbsp;			miZoomY02.setOnAction(e -&gt; {</b>
+<b class="nc"><i>619</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>620</i>&nbsp;				yAxis.setUpperBound(0.2);</b>
+<b class="nc"><i>621</i>&nbsp;				yAxis.setTickUnit(0.05);</b>
+<i>622</i>&nbsp;			});
+<b class="nc"><i>623</i>&nbsp;			RadioMenuItem miZoomY01 = new RadioMenuItem(&quot;0-0.1&quot;);</b>
+<b class="nc"><i>624</i>&nbsp;			miZoomY01.setOnAction(e -&gt; {</b>
+<b class="nc"><i>625</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>626</i>&nbsp;				yAxis.setUpperBound(0.1);</b>
+<b class="nc"><i>627</i>&nbsp;				yAxis.setTickUnit(0.05);</b>
+<i>628</i>&nbsp;			});
+<b class="nc"><i>629</i>&nbsp;			RadioMenuItem miZoomY005 = new RadioMenuItem(&quot;0-0.05&quot;);</b>
+<b class="nc"><i>630</i>&nbsp;			miZoomY005.setOnAction(e -&gt; {</b>
+<b class="nc"><i>631</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>632</i>&nbsp;				yAxis.setUpperBound(0.05);</b>
+<b class="nc"><i>633</i>&nbsp;				yAxis.setTickUnit(0.01);</b>
+<i>634</i>&nbsp;			});
+<b class="nc"><i>635</i>&nbsp;			RadioMenuItem miZoomY001 = new RadioMenuItem(&quot;0-0.01&quot;);</b>
+<b class="nc"><i>636</i>&nbsp;			miZoomY001.setOnAction(e -&gt; {</b>
+<b class="nc"><i>637</i>&nbsp;				yAxis.setAutoRanging(false);</b>
+<b class="nc"><i>638</i>&nbsp;				yAxis.setUpperBound(0.01);</b>
+<b class="nc"><i>639</i>&nbsp;				yAxis.setTickUnit(0.005);</b>
+<i>640</i>&nbsp;			});
+<b class="nc"><i>641</i>&nbsp;			ToggleGroup tgZoom = new ToggleGroup();</b>
+<b class="nc"><i>642</i>&nbsp;			miZoomY1.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>643</i>&nbsp;			miZoomY05.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>644</i>&nbsp;			miZoomY02.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>645</i>&nbsp;			miZoomY01.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>646</i>&nbsp;			miZoomY005.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>647</i>&nbsp;			miZoomY001.setToggleGroup(tgZoom);</b>
+<b class="nc"><i>648</i>&nbsp;			Menu menuZoomY = new Menu(&quot;Set y-axis range&quot;);</b>
+<b class="nc"><i>649</i>&nbsp;			menuZoomY.getItems().addAll(miZoomY1, miZoomY05, miZoomY02, miZoomY01, miZoomY005, miZoomY001);</b>
+<i>650</i>&nbsp;
+<b class="nc"><i>651</i>&nbsp;			MenuItem miCopyData = new MenuItem(&quot;Copy chart data&quot;);</b>
+<b class="nc"><i>652</i>&nbsp;			miCopyData.setOnAction(e -&gt; {</b>
+<b class="nc"><i>653</i>&nbsp;				String dataString = ChartTools.getChartDataAsString(chartPValues);</b>
+<b class="nc"><i>654</i>&nbsp;				ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>655</i>&nbsp;				content.putString(dataString);</b>
+<b class="nc"><i>656</i>&nbsp;				Clipboard.getSystemClipboard().setContent(content);</b>
+<i>657</i>&nbsp;			});
+<i>658</i>&nbsp;
+<b class="nc"><i>659</i>&nbsp;			popup.getItems().addAll(miCopyData, menuZoomY);</b>
+<b class="nc"><i>660</i>&nbsp;			chartPValues.setOnContextMenuRequested(e -&gt; {</b>
+<b class="nc"><i>661</i>&nbsp;				popup.show(chartPValues, e.getScreenX(), e.getScreenY());</b>
+<i>662</i>&nbsp;			});
+<i>663</i>&nbsp;
+<b class="nc"><i>664</i>&nbsp;			for (int col = 0; col &lt; tableModel.getColumnCount(); col++) {</b>
+<b class="nc"><i>665</i>&nbsp;				TableColumn&lt;Integer, String&gt; column = new TableColumn&lt;&gt;(tableModel.getColumnName(col));</b>
+<b class="nc"><i>666</i>&nbsp;				int colNumber = col;</b>
+<b class="nc"><i>667</i>&nbsp;				column.setCellValueFactory(new Callback&lt;CellDataFeatures&lt;Integer, String&gt;, ObservableValue&lt;String&gt;&gt;() {</b>
+<i>668</i>&nbsp;					@Override
+<i>669</i>&nbsp;					public ObservableValue&lt;String&gt; call(CellDataFeatures&lt;Integer, String&gt; p) {
+<b class="nc"><i>670</i>&nbsp;						return new SimpleStringProperty((String)tableModel.getValueAt(p.getValue(), colNumber));</b>
+<i>671</i>&nbsp;					}
+<i>672</i>&nbsp;				});
+<i>673</i>&nbsp;
+<b class="nc"><i>674</i>&nbsp;				column.setCellFactory(new Callback&lt;TableColumn&lt;Integer, String&gt;, TableCell&lt;Integer, String&gt;&gt;() {</b>
+<i>675</i>&nbsp;
+<i>676</i>&nbsp;					@Override
+<i>677</i>&nbsp;					public TableCell&lt;Integer, String&gt; call(TableColumn&lt;Integer, String&gt; param) {
+<b class="nc"><i>678</i>&nbsp;						TableCell&lt;Integer, String&gt; cell = new TableCell&lt;Integer, String&gt;() {</b>
+<i>679</i>&nbsp;							@Override
+<i>680</i>&nbsp;							protected void updateItem(String item, boolean empty) {
+<b class="nc"><i>681</i>&nbsp;								super.updateItem(item, empty);</b>
+<b class="nc"><i>682</i>&nbsp;								setText(item);</b>
+<b class="nc"><i>683</i>&nbsp;								setTooltip(new Tooltip(item));</b>
+<i>684</i>&nbsp;							}
+<i>685</i>&nbsp;						};
+<b class="nc"><i>686</i>&nbsp;						return cell;</b>
+<i>687</i>&nbsp;					}
+<i>688</i>&nbsp;				});
+<i>689</i>&nbsp;
+<i>690</i>&nbsp;
+<b class="nc"><i>691</i>&nbsp;				table.getColumns().add(column);</b>
+<i>692</i>&nbsp;			}
+<b class="nc"><i>693</i>&nbsp;			table.setPrefHeight(250);</b>
+<b class="nc"><i>694</i>&nbsp;			table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<b class="nc"><i>695</i>&nbsp;			table.maxHeightProperty().bind(table.prefHeightProperty());</b>
+<i>696</i>&nbsp;
+<b class="nc"><i>697</i>&nbsp;			params = new ParameterList();</b>
+<i>698</i>&nbsp;			//			maxTimePoint = 0;
+<i>699</i>&nbsp;			//			for (TMACoreObject core : hierarchy.getTMAGrid().getTMACoreList()) {
+<i>700</i>&nbsp;			//				double os = core.getMeasurementList().getMeasurementValue(TMACoreObject.KEY_OVERALL_SURVIVAL);
+<i>701</i>&nbsp;			//				double rfs = core.getMeasurementList().getMeasurementValue(TMACoreObject.KEY_RECURRENCE_FREE_SURVIVAL);
+<i>702</i>&nbsp;			//				if (os &gt; maxTimePoint)
+<i>703</i>&nbsp;			//					maxTimePoint = os;
+<i>704</i>&nbsp;			//				if (rfs &gt; maxTimePoint)
+<i>705</i>&nbsp;			//					maxTimePoint = rfs;
+<i>706</i>&nbsp;			//			}
+<b class="nc"><i>707</i>&nbsp;			params.addIntParameter(&quot;censorTimePoints&quot;, &quot;Max censored time&quot;, (int)(censorThreshold + 0.5), null, 0, (int)Math.ceil(maxTimePoint), &quot;Latest time point beyond which data will be censored&quot;);</b>
+<i>708</i>&nbsp;			//				params.addChoiceParameter(&quot;scoreThresholdMethod&quot;, &quot;Threshold method&quot;, &quot;Manual&quot;, Arrays.asList(&quot;Manual&quot;, &quot;Median&quot;, &quot;Log-rank test&quot;));
+<b class="nc"><i>709</i>&nbsp;			if (calculateAllPValues)</b>
+<i>710</i>&nbsp;				// Don&#39;t include &quot;Lowest smoothed p-value&quot; - it&#39;s not an established method and open to misinterpretation...
+<b class="nc"><i>711</i>&nbsp;				params.addChoiceParameter(&quot;scoreThresholdMethod&quot;, &quot;Threshold method&quot;, &quot;Median&quot;, Arrays.asList(&quot;Manual (1)&quot;, &quot;Manual (2)&quot;, &quot;Manual (3)&quot;, &quot;Median&quot;, &quot;Tertiles&quot;, &quot;Quartiles&quot;, &quot;Lowest p-value&quot;));</b>
+<i>712</i>&nbsp;//				params.addChoiceParameter(&quot;scoreThresholdMethod&quot;, &quot;Threshold method&quot;, &quot;Median&quot;, Arrays.asList(&quot;Manual (1)&quot;, &quot;Manual (2)&quot;, &quot;Manual (3)&quot;, &quot;Median&quot;, &quot;Tertiles&quot;, &quot;Quartiles&quot;, &quot;Lowest p-value&quot;, &quot;Lowest smoothed p-value&quot;));
+<i>713</i>&nbsp;			else
+<b class="nc"><i>714</i>&nbsp;				params.addChoiceParameter(&quot;scoreThresholdMethod&quot;, &quot;Threshold method&quot;, &quot;Median&quot;, Arrays.asList(&quot;Manual (1)&quot;, &quot;Manual (2)&quot;, &quot;Manual (3)&quot;, &quot;Median&quot;, &quot;Tertiles&quot;, &quot;Quartiles&quot;));</b>
+<b class="nc"><i>715</i>&nbsp;			params.addDoubleParameter(&quot;threshold1&quot;, &quot;Threshold 1&quot;, thresholds.length &gt; 0 ? thresholds[0] : (minVal + maxVal)/2, null, &quot;Threshold to distinguish between patient groups&quot;);</b>
+<b class="nc"><i>716</i>&nbsp;			params.addDoubleParameter(&quot;threshold2&quot;, &quot;Threshold 2&quot;, thresholds.length &gt; 1 ? thresholds[1] : (minVal + maxVal)/2, null, &quot;Threshold to distinguish between patient groups&quot;);</b>
+<b class="nc"><i>717</i>&nbsp;			params.addDoubleParameter(&quot;threshold3&quot;, &quot;Threshold 3&quot;, thresholds.length &gt; 2 ? thresholds[2] : (minVal + maxVal)/2, null, &quot;Threshold to distinguish between patient groups&quot;);</b>
+<b class="nc"><i>718</i>&nbsp;			params.addBooleanParameter(&quot;showAtRisk&quot;, &quot;Show at risk&quot;, plotter.getShowAtRisk(), &quot;Show number of patients at risk below the plot&quot;);</b>
+<b class="nc"><i>719</i>&nbsp;			params.addBooleanParameter(&quot;showTicks&quot;, &quot;Show censored ticks&quot;, plotter.getShowCensoredTicks(), &quot;Show ticks to indicate censored data&quot;);</b>
+<b class="nc"><i>720</i>&nbsp;			params.addBooleanParameter(&quot;showKey&quot;, &quot;Show key&quot;, plotter.getShowKey(), &quot;Show key indicating display of each curve&quot;);</b>
+<i>721</i>&nbsp;			//				params.addBooleanParameter(&quot;useColor&quot;, &quot;Use color&quot;, plotter.getUseColor(), &quot;Show each curve in a different color&quot;);
+<i>722</i>&nbsp;			//			params.addBooleanParameter(&quot;useStrokes&quot;, &quot;Use strokes&quot;, plotter.getUseStrokes(), &quot;Show each curve with a differed line stroke&quot;);
+<i>723</i>&nbsp;			// Hide threshold parameters if threshold can&#39;t be used
+<b class="nc"><i>724</i>&nbsp;			if (!scoresValid) {</b>
+<i>725</i>&nbsp;				//					params.setHiddenParameters(true, &quot;scoreThresholdMethod&quot;, &quot;scoreThreshold&quot;);
+<b class="nc"><i>726</i>&nbsp;				histogramPanel.getChart().setVisible(false);</b>
+<i>727</i>&nbsp;			}
+<b class="nc"><i>728</i>&nbsp;			panelParams = new ParameterPanelFX(params);</b>
+<b class="nc"><i>729</i>&nbsp;			panelParams.addParameterChangeListener(this);</b>
+<b class="nc"><i>730</i>&nbsp;			updateThresholdsEnabled();</b>
+<i>731</i>&nbsp;
+<i>732</i>&nbsp;
+<b class="nc"><i>733</i>&nbsp;			for (int i = 0; i &lt; threshProperties.length; i++) {</b>
+<b class="nc"><i>734</i>&nbsp;				String p = &quot;threshold&quot; + (i + 1);</b>
+<b class="nc"><i>735</i>&nbsp;				threshProperties[i].addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>736</i>&nbsp;					if (interactiveThresholds()) {</b>
+<i>737</i>&nbsp;						// Need to do a decent double check with tolerance to text field value changing while typing
+<b class="nc"><i>738</i>&nbsp;						if (!GeneralTools.almostTheSame(params.getDoubleParameterValue(p), n.doubleValue(), 0.0001))</b>
+<b class="nc"><i>739</i>&nbsp;							panelParams.setNumericParameterValue(p, n);</b>
+<i>740</i>&nbsp;					}
+<i>741</i>&nbsp;				});
+<i>742</i>&nbsp;			}
+<i>743</i>&nbsp;
+<i>744</i>&nbsp;
+<b class="nc"><i>745</i>&nbsp;			BorderPane paneBottom = new BorderPane();</b>
+<b class="nc"><i>746</i>&nbsp;			TitledPane paneOptions = new TitledPane(&quot;Options&quot;, panelParams.getPane());</b>
+<i>747</i>&nbsp;			//				paneOptions.setCollapsible(false);
+<b class="nc"><i>748</i>&nbsp;			Pane paneCanvas = new StackPane();</b>
+<b class="nc"><i>749</i>&nbsp;			paneCanvas.getChildren().add(plotter.getCanvas());</b>
+<i>750</i>&nbsp;
+<b class="nc"><i>751</i>&nbsp;			GridPane paneLeft = new GridPane();</b>
+<b class="nc"><i>752</i>&nbsp;			paneLeft.add(paneOptions, 0, 0);</b>
+<b class="nc"><i>753</i>&nbsp;			paneLeft.add(table, 0, 1);</b>
+<b class="nc"><i>754</i>&nbsp;			GridPane.setHgrow(paneOptions, Priority.ALWAYS);</b>
+<b class="nc"><i>755</i>&nbsp;			GridPane.setHgrow(table, Priority.ALWAYS);</b>
+<b class="nc"><i>756</i>&nbsp;			paneBottom.setLeft(paneLeft);</b>
+<b class="nc"><i>757</i>&nbsp;			paneBottom.setCenter(paneHistogram);</b>
+<i>758</i>&nbsp;
+<b class="nc"><i>759</i>&nbsp;			paneMain.setCenter(paneCanvas);	</b>
+<b class="nc"><i>760</i>&nbsp;			paneMain.setBottom(paneBottom);</b>
+<i>761</i>&nbsp;
+<b class="nc"><i>762</i>&nbsp;			paneMain.setPadding(new Insets(10, 10, 10, 10));</b>
+<b class="nc"><i>763</i>&nbsp;		} else if (thresholds.length &gt; 0) {</b>
+<i>764</i>&nbsp;			// Ensure the sliders/text fields are set sensibly
+<b class="nc"><i>765</i>&nbsp;			if (!GeneralTools.almostTheSame(thresholds[0], params.getDoubleParameterValue(&quot;threshold1&quot;), 0.0001)) {</b>
+<b class="nc"><i>766</i>&nbsp;				panelParams.setNumericParameterValue(&quot;threshold1&quot;, thresholds[0]);</b>
+<i>767</i>&nbsp;			}
+<b class="nc"><i>768</i>&nbsp;			if (thresholds.length &gt; 1 &amp;&amp; !GeneralTools.almostTheSame(thresholds[1], params.getDoubleParameterValue(&quot;threshold2&quot;), 0.0001)) {</b>
+<b class="nc"><i>769</i>&nbsp;				panelParams.setNumericParameterValue(&quot;threshold2&quot;, thresholds[1]);</b>
+<i>770</i>&nbsp;			}
+<b class="nc"><i>771</i>&nbsp;			if (thresholds.length &gt; 2 &amp;&amp; !GeneralTools.almostTheSame(thresholds[2], params.getDoubleParameterValue(&quot;threshold3&quot;), 0.0001)) {</b>
+<b class="nc"><i>772</i>&nbsp;				panelParams.setNumericParameterValue(&quot;threshold3&quot;, thresholds[2]);</b>
+<i>773</i>&nbsp;			}
+<i>774</i>&nbsp;		}
+<i>775</i>&nbsp;
+<b class="nc"><i>776</i>&nbsp;		if (histogram != null) {</b>
+<b class="nc"><i>777</i>&nbsp;			histogramPanel.getHistogramData().setAll(HistogramPanelFX.createHistogramData(histogram, false, (Color)null));</b>
+<b class="nc"><i>778</i>&nbsp;			histogramPanel.getChart().getXAxis().setLabel(scoreColumn);</b>
+<b class="nc"><i>779</i>&nbsp;			histogramPanel.getChart().getYAxis().setLabel(&quot;Count&quot;);</b>
+<i>780</i>&nbsp;
+<b class="nc"><i>781</i>&nbsp;			ChartTools.addChartExportMenu(histogramPanel.getChart(), null);</b>
+<i>782</i>&nbsp;
+<i>783</i>&nbsp;			//				histogramWrapper.setVerticalLines(thresholds, ColorToolsFX.getCachedColor(240, 0, 0, 128));
+<i>784</i>&nbsp;			// Deal with threshold adjustment
+<i>785</i>&nbsp;			//				histogramWrapper.getThresholds().addListener((Observable o) -&gt; generatePlot());
+<i>786</i>&nbsp;		}
+<i>787</i>&nbsp;
+<b class="nc"><i>788</i>&nbsp;		if (pValues != null) {</b>
+<i>789</i>&nbsp;			// TODO: Raise earlier where p-value calculation is
+<b class="nc"><i>790</i>&nbsp;			if (pValuesChanged) {</b>
+<b class="nc"><i>791</i>&nbsp;				ObservableList&lt;XYChart.Data&lt;Number, Number&gt;&gt; data = FXCollections.observableArrayList();</b>
+<b class="nc"><i>792</i>&nbsp;				for (int i = 0; i &lt; pValueThresholds.length; i++) {</b>
+<b class="nc"><i>793</i>&nbsp;					double pValue = pValues[i];</b>
+<b class="nc"><i>794</i>&nbsp;					if (Double.isNaN(pValue))</b>
+<b class="nc"><i>795</i>&nbsp;						continue;</b>
+<b class="nc"><i>796</i>&nbsp;					data.add(new XYChart.Data&lt;&gt;(pValueThresholds[i], pValue, pValueThresholdsObserved[i]));</b>
+<i>797</i>&nbsp;				}
+<i>798</i>&nbsp;
+<b class="nc"><i>799</i>&nbsp;				ObservableList&lt;XYChart.Data&lt;Number, Number&gt;&gt; dataSmoothed = null;</b>
+<b class="nc"><i>800</i>&nbsp;				if (pValuesSmoothed != null) {</b>
+<b class="nc"><i>801</i>&nbsp;					dataSmoothed = FXCollections.observableArrayList();</b>
+<b class="nc"><i>802</i>&nbsp;					for (int i = 0; i &lt; pValueThresholds.length; i++) {</b>
+<b class="nc"><i>803</i>&nbsp;						double pValueSmoothed = pValuesSmoothed[i];</b>
+<b class="nc"><i>804</i>&nbsp;						if (Double.isNaN(pValueSmoothed))</b>
+<b class="nc"><i>805</i>&nbsp;							continue;</b>
+<b class="nc"><i>806</i>&nbsp;						dataSmoothed.add(new XYChart.Data&lt;&gt;(pValueThresholds[i], pValueSmoothed));</b>
+<i>807</i>&nbsp;					}
+<i>808</i>&nbsp;				}
+<i>809</i>&nbsp;
+<i>810</i>&nbsp;
+<i>811</i>&nbsp;				// Don&#39;t bother showing the smoothed data... it tends to get in the way...
+<i>812</i>&nbsp;				//				if (dataSmoothed != null)
+<i>813</i>&nbsp;				//					chartPValues.getData().setAll(new XYChart.Series&lt;&gt;(&quot;P-values&quot;, data), new XYChart.Series&lt;&gt;(&quot;Smoothed P-values&quot;, dataSmoothed));
+<i>814</i>&nbsp;				//				else
+<b class="nc"><i>815</i>&nbsp;				chartPValues.getData().setAll(new XYChart.Series&lt;&gt;(&quot;P-values&quot;, data));</b>
+<i>816</i>&nbsp;
+<i>817</i>&nbsp;				// Add line to show 0.05 significance threshold
+<b class="nc"><i>818</i>&nbsp;				if (pValueThresholds.length &gt; 1) {</b>
+<b class="nc"><i>819</i>&nbsp;					Data&lt;Number, Number&gt; sigData1 = new Data&lt;&gt;(pValueThresholds[0], 0.05);</b>
+<b class="nc"><i>820</i>&nbsp;					Data&lt;Number, Number&gt; sigData2 = new Data&lt;&gt;(pValueThresholds[pValueThresholds.length-1], 0.05);</b>
+<b class="nc"><i>821</i>&nbsp;					XYChart.Series&lt;Number, Number&gt; dataSignificant = new XYChart.Series&lt;&gt;(&quot;Significance 0.05&quot;, FXCollections.observableArrayList(</b>
+<i>822</i>&nbsp;							sigData1,
+<i>823</i>&nbsp;							sigData2
+<i>824</i>&nbsp;							));
+<b class="nc"><i>825</i>&nbsp;					chartPValues.getData().add(dataSignificant);</b>
+<b class="nc"><i>826</i>&nbsp;					sigData1.getNode().setVisible(false);</b>
+<b class="nc"><i>827</i>&nbsp;					sigData2.getNode().setVisible(false);</b>
+<i>828</i>&nbsp;				}
+<i>829</i>&nbsp;
+<i>830</i>&nbsp;
+<i>831</i>&nbsp;				//					chartPValues.getData().get(0).getNode().setVisible(true);
+<i>832</i>&nbsp;
+<i>833</i>&nbsp;				//					pValuesWrapper.clearThresholds();
+<b class="nc"><i>834</i>&nbsp;				for (XYChart.Data&lt;Number, Number&gt; dataPoint : data) {</b>
+<b class="nc"><i>835</i>&nbsp;					if (!Boolean.TRUE.equals(dataPoint.getExtraValue()))</b>
+<b class="nc"><i>836</i>&nbsp;						dataPoint.getNode().setVisible(false);</b>
+<b class="nc"><i>837</i>&nbsp;				}</b>
+<i>838</i>&nbsp;				//				if (dataSmoothed != null) {
+<i>839</i>&nbsp;				//					for (XYChart.Data&lt;Number, Number&gt; dataPoint : dataSmoothed) {
+<i>840</i>&nbsp;				//						dataPoint.getNode().setVisible(false);
+<i>841</i>&nbsp;				//					}
+<i>842</i>&nbsp;				//					chartPValues.getData().get(1).getNode().setOpacity(0.5);
+<i>843</i>&nbsp;				//				}
+<i>844</i>&nbsp;
+<i>845</i>&nbsp;				//					int count = 0;					
+<i>846</i>&nbsp;				//					for (int i = 0; i &lt; pValueThresholds.length; i++) {
+<i>847</i>&nbsp;				//						double pValue = pValues[i];
+<i>848</i>&nbsp;				//						if (Double.isNaN(pValue))
+<i>849</i>&nbsp;				//							continue;
+<i>850</i>&nbsp;				//						boolean observed = pValueThresholdsObserved[i];
+<i>851</i>&nbsp;				////						if (observed)
+<i>852</i>&nbsp;				////							pValuesWrapper.addThreshold(new ReadOnlyDoubleWrapper(pValueThresholds[i]), Color.rgb(0, 0, 0, 0.05));
+<i>853</i>&nbsp;				//						
+<i>854</i>&nbsp;				//						if (!observed) {
+<i>855</i>&nbsp;				////							StackPane pane = (StackPane)data.get(count).getNode();
+<i>856</i>&nbsp;				////							pane.setEffect(new DropShadow());
+<i>857</i>&nbsp;				//							data.get(count).getNode().setVisible(false);
+<i>858</i>&nbsp;				//						}
+<i>859</i>&nbsp;				//						count++;
+<i>860</i>&nbsp;				//					}
+<i>861</i>&nbsp;			}
+<i>862</i>&nbsp;
+<i>863</i>&nbsp;
+<b class="nc"><i>864</i>&nbsp;			for (int i = 0; i &lt; threshProperties.length; i++) {</b>
+<b class="nc"><i>865</i>&nbsp;				if (i &lt; thresholds.length)</b>
+<b class="nc"><i>866</i>&nbsp;					threshProperties[i].set(thresholds[i]);</b>
+<i>867</i>&nbsp;				else
+<b class="nc"><i>868</i>&nbsp;					threshProperties[i].set(Double.NaN);</b>
+<i>869</i>&nbsp;			}
+<b class="nc"><i>870</i>&nbsp;			boolean isInteractive = interactiveThresholds();</b>
+<b class="nc"><i>871</i>&nbsp;			histogramWrapper.setIsInteractive(isInteractive);</b>
+<b class="nc"><i>872</i>&nbsp;			pValuesWrapper.setIsInteractive(isInteractive);</b>
+<i>873</i>&nbsp;
+<b class="nc"><i>874</i>&nbsp;			chartPValues.setVisible(true);</b>
+<i>875</i>&nbsp;		}
+<i>876</i>&nbsp;		//			else
+<i>877</i>&nbsp;		//				chartPValues.setVisible(false);
+<i>878</i>&nbsp;
+<i>879</i>&nbsp;
+<i>880</i>&nbsp;		// Store values for next time
+<b class="nc"><i>881</i>&nbsp;		scoreData = newScoreData;</b>
+<i>882</i>&nbsp;	}
+<i>883</i>&nbsp;
+<i>884</i>&nbsp;	static List&lt;KaplanMeierData&gt; splitByThresholds(final KaplanMeierDisplay.ScoreData scoreData, final double[] thresholds, final double censorThreshold, final boolean usesQuartiles) {
+<b class="nc"><i>885</i>&nbsp;		List&lt;KaplanMeierData&gt; kms = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>886</i>&nbsp;		int nThresholds = thresholds.length;</b>
+<i>887</i>&nbsp;		// Ensure thresholds are sorted
+<b class="nc"><i>888</i>&nbsp;		double[] sortedThresholds = thresholds.clone();</b>
+<b class="nc"><i>889</i>&nbsp;		Arrays.sort(sortedThresholds);</b>
+<b class="nc"><i>890</i>&nbsp;		for (int i = 0; i &lt;= nThresholds; i++) {</b>
+<b class="nc"><i>891</i>&nbsp;			if (nThresholds == 0)</b>
+<b class="nc"><i>892</i>&nbsp;				kms.add(new KaplanMeierData(&quot;All&quot;));</b>
+<b class="nc"><i>893</i>&nbsp;			else if (nThresholds == 1) {</b>
+<b class="nc"><i>894</i>&nbsp;				kms.add(new KaplanMeierData(i == 0 ? &quot;Low&quot; : &quot;High&quot;));</b>
+<b class="nc"><i>895</i>&nbsp;			} else if (nThresholds == 2 &amp;&amp; sortedThresholds[0] &lt; sortedThresholds[1]) {</b>
+<b class="nc"><i>896</i>&nbsp;				kms.add(new KaplanMeierData(i == 0 ? &quot;Low&quot; : (i == 1 ? &quot;Moderate&quot; : &quot;High&quot;)));</b>
+<b class="nc"><i>897</i>&nbsp;			} else if (usesQuartiles) {</b>
+<b class="nc"><i>898</i>&nbsp;				kms.add(new KaplanMeierData(&quot;Quartile &quot; + (i + 1)));					</b>
+<i>899</i>&nbsp;			}
+<i>900</i>&nbsp;			else {
+<b class="nc"><i>901</i>&nbsp;				if (i == 0)</b>
+<b class="nc"><i>902</i>&nbsp;					kms.add(new KaplanMeierData(String.format(&quot;x &lt; %.2f&quot;, sortedThresholds[i])));</b>
+<b class="nc"><i>903</i>&nbsp;				else if (i == nThresholds)</b>
+<b class="nc"><i>904</i>&nbsp;					kms.add(new KaplanMeierData(String.format(&quot;x &gt;= %.2f&quot;, sortedThresholds[i-1])));</b>
+<i>905</i>&nbsp;				else
+<b class="nc"><i>906</i>&nbsp;					kms.add(new KaplanMeierData(String.format(&quot;%.2f &lt;= x &lt; %.2f&quot;, sortedThresholds[i-1], sortedThresholds[i])));</b>
+<i>907</i>&nbsp;			}
+<i>908</i>&nbsp;		}
+<i>909</i>&nbsp;
+<b class="nc"><i>910</i>&nbsp;		for (int i = 0; i &lt; scoreData.survival.length; i++) {</b>
+<b class="nc"><i>911</i>&nbsp;			double s = scoreData.scores[i];</b>
+<b class="nc"><i>912</i>&nbsp;			if (Double.isNaN(s))</b>
+<b class="nc"><i>913</i>&nbsp;				continue;</b>
+<b class="nc"><i>914</i>&nbsp;			double surv = scoreData.survival[i];</b>
+<b class="nc"><i>915</i>&nbsp;			if (Double.isNaN(surv))</b>
+<b class="nc"><i>916</i>&nbsp;				continue;</b>
+<b class="nc"><i>917</i>&nbsp;			int t = sortedThresholds.length;</b>
+<b class="nc"><i>918</i>&nbsp;			while (t &gt; 0) {</b>
+<b class="nc"><i>919</i>&nbsp;				if (s &gt;= sortedThresholds[t-1])</b>
+<b class="nc"><i>920</i>&nbsp;					break;</b>
+<b class="nc"><i>921</i>&nbsp;				t--;</b>
+<i>922</i>&nbsp;			}
+<i>923</i>&nbsp;			// Can be used to omit the exact threshold from contributing
+<i>924</i>&nbsp;			//				if (t &gt; 0 &amp;&amp; s == sortedThresholds[t-1]) {
+<i>925</i>&nbsp;			//					continue;
+<i>926</i>&nbsp;			//				}
+<i>927</i>&nbsp;			// Create an event, optionally censoring on a particular time if needed
+<b class="nc"><i>928</i>&nbsp;			if (censorThreshold &gt; 0 &amp;&amp; surv &gt; censorThreshold)</b>
+<b class="nc"><i>929</i>&nbsp;				kms.get(t).addEvent(censorThreshold, true);</b>
+<i>930</i>&nbsp;			else
+<b class="nc"><i>931</i>&nbsp;				kms.get(t).addEvent(surv, scoreData.censored[i]);</b>
+<i>932</i>&nbsp;		}
+<b class="nc"><i>933</i>&nbsp;		return kms;</b>
+<i>934</i>&nbsp;	}
+<i>935</i>&nbsp;
+<i>936</i>&nbsp;
+<i>937</i>&nbsp;
+<i>938</i>&nbsp;	/**
+<i>939</i>&nbsp;	 * Helper method to calculate best splits (in terms of log-rank test) used to identify extreme positive &amp; negative phenotypes.
+<i>940</i>&nbsp;	 * 
+<i>941</i>&nbsp;	 * This is useful when looking at P53.
+<i>942</i>&nbsp;	 * 
+<i>943</i>&nbsp;	 * @param scoreData
+<i>944</i>&nbsp;	 * @param censorThreshold
+<i>945</i>&nbsp;	 * @return
+<i>946</i>&nbsp;	 */
+<i>947</i>&nbsp;	static double[] calculateOptimalExtremePositiveNegativeThresholds(final KaplanMeierDisplay.ScoreData scoreData, final double censorThreshold) {
+<b class="nc"><i>948</i>&nbsp;		double[] thresholds = scoreData.scores.clone();</b>
+<b class="nc"><i>949</i>&nbsp;		Arrays.sort(thresholds);</b>
+<b class="nc"><i>950</i>&nbsp;		double t1Optimal = Double.NaN;</b>
+<b class="nc"><i>951</i>&nbsp;		double t2Optimal = Double.NaN;</b>
+<b class="nc"><i>952</i>&nbsp;		double bestP = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>953</i>&nbsp;		double bestPSplit = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>954</i>&nbsp;		int g1 = 0;</b>
+<b class="nc"><i>955</i>&nbsp;		int g2 = 0;</b>
+<b class="nc"><i>956</i>&nbsp;		int g3 = 0;</b>
+<i>957</i>&nbsp;		//			int skip = scoreData.scores.length/10;
+<b class="nc"><i>958</i>&nbsp;		int skip = thresholds.length/10;</b>
+<b class="nc"><i>959</i>&nbsp;		double median = thresholds[thresholds.length/2];</b>
+<b class="nc"><i>960</i>&nbsp;		for (int i = skip; i &lt; thresholds.length-skip; i++) {</b>
+<b class="nc"><i>961</i>&nbsp;			double t1 = thresholds[i];</b>
+<b class="nc"><i>962</i>&nbsp;			if (t1 &gt; median)</b>
+<b class="nc"><i>963</i>&nbsp;				break;</b>
+<b class="nc"><i>964</i>&nbsp;			for (int j = i+1; j &lt; thresholds.length-skip; j++) {</b>
+<b class="nc"><i>965</i>&nbsp;				double t2 = thresholds[j];</b>
+<b class="nc"><i>966</i>&nbsp;				if (t2 &lt; median)</b>
+<b class="nc"><i>967</i>&nbsp;					continue;</b>
+<b class="nc"><i>968</i>&nbsp;				List&lt;KaplanMeierData&gt; kmsTemp = splitByThresholds(scoreData, new double[]{t1, t2}, censorThreshold, false);</b>
+<i>969</i>&nbsp;				// Add extreme positive event list to extreme negative
+<b class="nc"><i>970</i>&nbsp;				kmsTemp.get(0).addEvents(kmsTemp.get(2).getEvents());</b>
+<b class="nc"><i>971</i>&nbsp;				LogRankResult test = LogRankTest.computeLogRankTest(kmsTemp.get(0), kmsTemp.get(1));</b>
+<b class="nc"><i>972</i>&nbsp;				double pValue = test.getPValue();</b>
+<b class="nc"><i>973</i>&nbsp;				if (pValue &lt; bestP) {</b>
+<b class="nc"><i>974</i>&nbsp;					double split = (double)kmsTemp.get(0).nEvents() / (kmsTemp.get(0).nEvents() + kmsTemp.get(1).nEvents());</b>
+<b class="nc"><i>975</i>&nbsp;					if (Math.abs(split - 0.5) &lt; bestPSplit) {</b>
+<b class="nc"><i>976</i>&nbsp;						bestP = pValue;</b>
+<b class="nc"><i>977</i>&nbsp;						bestPSplit = split;</b>
+<b class="nc"><i>978</i>&nbsp;						t1Optimal = t1;</b>
+<b class="nc"><i>979</i>&nbsp;						t2Optimal = t2;</b>
+<b class="nc"><i>980</i>&nbsp;						g3 = kmsTemp.get(2).getEvents().size();</b>
+<b class="nc"><i>981</i>&nbsp;						g2 = kmsTemp.get(1).getEvents().size();</b>
+<b class="nc"><i>982</i>&nbsp;						g1 = kmsTemp.get(0).getEvents().size() - g3; // Remember we added here...</b>
+<i>983</i>&nbsp;					}
+<i>984</i>&nbsp;				}
+<i>985</i>&nbsp;			}
+<i>986</i>&nbsp;		}
+<b class="nc"><i>987</i>&nbsp;		logger.info(&quot;Optimal split thresholds: {} and {} (p-value {}; group sizes {}, {} and {})&quot;,</b>
+<b class="nc"><i>988</i>&nbsp;				t1Optimal, t2Optimal, bestP, g1, g2, g3);</b>
+<b class="nc"><i>989</i>&nbsp;		return new double[]{bestP, t1Optimal, t2Optimal};</b>
+<i>990</i>&nbsp;	}
+<i>991</i>&nbsp;
+<i>992</i>&nbsp;
+<i>993</i>&nbsp;
+<i>994</i>&nbsp;
+<i>995</i>&nbsp;	/**
+<i>996</i>&nbsp;	 * Returns true if the thresholds are interactive (i.e. not set based on stats)
+<i>997</i>&nbsp;	 * 
+<i>998</i>&nbsp;	 * @return
+<i>999</i>&nbsp;	 */
+<i>1000</i>&nbsp;	private boolean interactiveThresholds() {
+<b class="nc"><i>1001</i>&nbsp;		return params != null &amp;&amp; Arrays.asList(&quot;Manual (1)&quot;, &quot;Manual (2)&quot;, &quot;Manual (3)&quot;).contains(params.getChoiceParameterValue(&quot;scoreThresholdMethod&quot;));</b>
+<i>1002</i>&nbsp;	}
+<i>1003</i>&nbsp;
+<i>1004</i>&nbsp;
+<i>1005</i>&nbsp;	@Override
+<i>1006</i>&nbsp;	public void parameterChanged(ParameterList parameterList, String key, boolean isAdjusting) {
+<b class="nc"><i>1007</i>&nbsp;		if (&quot;showTicks&quot;.equals(key)) {</b>
+<b class="nc"><i>1008</i>&nbsp;			plotter.setShowCensoredTicks(parameterList.getBooleanParameterValue(&quot;showTicks&quot;));</b>
+<i>1009</i>&nbsp;			return;
+<i>1010</i>&nbsp;		}
+<i>1011</i>&nbsp;		//		if (&quot;useColor&quot;.equals(key)) {
+<i>1012</i>&nbsp;		//			plotter.setUseColor(parameterList.getBooleanParameterValue(&quot;useColor&quot;));
+<i>1013</i>&nbsp;		//			return;
+<i>1014</i>&nbsp;		//		}
+<i>1015</i>&nbsp;		//		if (&quot;useStrokes&quot;.equals(key)) {
+<i>1016</i>&nbsp;		//			plotter.setUseStrokes(parameterList.getBooleanParameterValue(&quot;useStrokes&quot;));
+<i>1017</i>&nbsp;		//			return;
+<i>1018</i>&nbsp;		//		}
+<b class="nc"><i>1019</i>&nbsp;		if (&quot;showKey&quot;.equals(key)) {</b>
+<b class="nc"><i>1020</i>&nbsp;			plotter.setShowKey(parameterList.getBooleanParameterValue(&quot;showKey&quot;));</b>
+<i>1021</i>&nbsp;			return;
+<i>1022</i>&nbsp;		}
+<i>1023</i>&nbsp;		
+<b class="nc"><i>1024</i>&nbsp;		if (&quot;showAtRisk&quot;.equals(key)) {</b>
+<b class="nc"><i>1025</i>&nbsp;			plotter.setShowAtRisk(parameterList.getBooleanParameterValue(&quot;showAtRisk&quot;));</b>
+<i>1026</i>&nbsp;			return;
+<i>1027</i>&nbsp;		}
+<i>1028</i>&nbsp;
+<i>1029</i>&nbsp;		// Enable/disable manual slider as required
+<b class="nc"><i>1030</i>&nbsp;		if (&quot;scoreThresholdMethod&quot;.equals(key)) {</b>
+<b class="nc"><i>1031</i>&nbsp;			updateThresholdsEnabled();</b>
+<i>1032</i>&nbsp;		}
+<i>1033</i>&nbsp;
+<b class="nc"><i>1034</i>&nbsp;		generatePlot();</b>
+<i>1035</i>&nbsp;	}
+<i>1036</i>&nbsp;
+<i>1037</i>&nbsp;
+<i>1038</i>&nbsp;
+<i>1039</i>&nbsp;	private void updateThresholdsEnabled() {
+<b class="nc"><i>1040</i>&nbsp;		Object value = panelParams.getParameters().getChoiceParameterValue(&quot;scoreThresholdMethod&quot;);</b>
+<b class="nc"><i>1041</i>&nbsp;		if (&quot;Manual (1)&quot;.equals(value)) {</b>
+<b class="nc"><i>1042</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold1&quot;, true);</b>
+<b class="nc"><i>1043</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold2&quot;, false);</b>
+<b class="nc"><i>1044</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold3&quot;, false);</b>
+<b class="nc"><i>1045</i>&nbsp;		} else if (&quot;Manual (2)&quot;.equals(value)) {</b>
+<b class="nc"><i>1046</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold1&quot;, true);</b>
+<b class="nc"><i>1047</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold2&quot;, true);</b>
+<b class="nc"><i>1048</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold3&quot;, false);</b>
+<b class="nc"><i>1049</i>&nbsp;		} else if (&quot;Manual (3)&quot;.equals(value)) {</b>
+<b class="nc"><i>1050</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold1&quot;, true);</b>
+<b class="nc"><i>1051</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold2&quot;, true);</b>
+<b class="nc"><i>1052</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold3&quot;, true);</b>
+<i>1053</i>&nbsp;		} else {
+<b class="nc"><i>1054</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold1&quot;, false);</b>
+<b class="nc"><i>1055</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold2&quot;, false);</b>
+<b class="nc"><i>1056</i>&nbsp;			panelParams.setParameterEnabled(&quot;threshold3&quot;, false);</b>
+<i>1057</i>&nbsp;		}
+<i>1058</i>&nbsp;	}
+<i>1059</i>&nbsp;
+<i>1060</i>&nbsp;
+<i>1061</i>&nbsp;
+<i>1062</i>&nbsp;
+<i>1063</i>&nbsp;	static String getLogRankComparisonName(final String conditionA, final String conditionB) {
+<b class="nc"><i>1064</i>&nbsp;		return String.format(&quot;%s vs %s log-rank (HR)&quot;, conditionA, conditionB);</b>
+<i>1065</i>&nbsp;	}
+<i>1066</i>&nbsp;
+<i>1067</i>&nbsp;
+<i>1068</i>&nbsp;
+<i>1069</i>&nbsp;	// TODO: Fix this horrible, Swing-inspired design (a remnant of Swing days, not yet fully transferred)
+<i>1070</i>&nbsp;	static class KaplanMeierTableModel {
+<i>1071</i>&nbsp;
+<i>1072</i>&nbsp;		//			private static DecimalFormat df1 = new DecimalFormat(&quot;#.#&quot;);
+<b class="nc"><i>1073</i>&nbsp;		private static DecimalFormat df2 = new DecimalFormat(&quot;#.##&quot;);</b>
+<b class="nc"><i>1074</i>&nbsp;		private static DecimalFormat df4 = new DecimalFormat(&quot;#.####&quot;);</b>
+<i>1075</i>&nbsp;
+<b class="nc"><i>1076</i>&nbsp;		private List&lt;String&gt; names = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1077</i>&nbsp;		private List&lt;String&gt; values = new ArrayList&lt;&gt;();</b>
+<i>1078</i>&nbsp;
+<i>1079</i>&nbsp;		private TableView&lt;Integer&gt; table;
+<i>1080</i>&nbsp;
+<b class="nc"><i>1081</i>&nbsp;		KaplanMeierTableModel(final TableView&lt;Integer&gt; table) {</b>
+<b class="nc"><i>1082</i>&nbsp;			this.table = table;</b>
+<i>1083</i>&nbsp;		}
+<i>1084</i>&nbsp;
+<i>1085</i>&nbsp;		void setSurvivalCurves(final double[] thresholds, final boolean correctPValues, final KaplanMeierData...kms) {
+<b class="nc"><i>1086</i>&nbsp;			names.clear();</b>
+<b class="nc"><i>1087</i>&nbsp;			values.clear();</b>
+<b class="nc"><i>1088</i>&nbsp;			if (kms.length == 0)</b>
+<i>1089</i>&nbsp;				return;
+<b class="nc"><i>1090</i>&nbsp;			boolean multipleThresholds = thresholds.length &gt; 1;</b>
+<b class="nc"><i>1091</i>&nbsp;			int count = 0;</b>
+<b class="nc"><i>1092</i>&nbsp;			for (double t : thresholds) {</b>
+<b class="nc"><i>1093</i>&nbsp;				count++;</b>
+<b class="nc"><i>1094</i>&nbsp;				if (multipleThresholds)</b>
+<b class="nc"><i>1095</i>&nbsp;					names.add(&quot;Score threshold &quot; + count);</b>
+<i>1096</i>&nbsp;				else
+<b class="nc"><i>1097</i>&nbsp;					names.add(&quot;Score threshold&quot;);</b>
+<b class="nc"><i>1098</i>&nbsp;				values.add(df2.format(t));</b>
+<i>1099</i>&nbsp;			}
+<i>1100</i>&nbsp;
+<b class="nc"><i>1101</i>&nbsp;			names.add(&quot;Max time&quot;);</b>
+<b class="nc"><i>1102</i>&nbsp;			double maxTime = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>1103</i>&nbsp;			int nEvents = 0;</b>
+<b class="nc"><i>1104</i>&nbsp;			int nObserved = 0;</b>
+<b class="nc"><i>1105</i>&nbsp;			int nCensored = 0;</b>
+<b class="nc"><i>1106</i>&nbsp;			for (KaplanMeierData km : kms) {</b>
+<b class="nc"><i>1107</i>&nbsp;				maxTime = Math.max(maxTime, km.getMaxTime());</b>
+<b class="nc"><i>1108</i>&nbsp;				nEvents += km.nEvents();</b>
+<b class="nc"><i>1109</i>&nbsp;				nObserved += km.nObserved();</b>
+<b class="nc"><i>1110</i>&nbsp;				nCensored += km.nCensored();</b>
+<i>1111</i>&nbsp;			}
+<b class="nc"><i>1112</i>&nbsp;			values.add(df2.format(maxTime));</b>
+<i>1113</i>&nbsp;
+<b class="nc"><i>1114</i>&nbsp;			names.add(&quot;Total events&quot;);</b>
+<b class="nc"><i>1115</i>&nbsp;			values.add(Integer.toString(nEvents));</b>
+<b class="nc"><i>1116</i>&nbsp;			names.add(&quot;Num observed&quot;);</b>
+<b class="nc"><i>1117</i>&nbsp;			values.add(Integer.toString(nObserved));</b>
+<b class="nc"><i>1118</i>&nbsp;			names.add(&quot;Num censored&quot;);</b>
+<b class="nc"><i>1119</i>&nbsp;			values.add(Integer.toString(nCensored));</b>
+<i>1120</i>&nbsp;
+<b class="nc"><i>1121</i>&nbsp;			for (KaplanMeierData km : kms) {</b>
+<b class="nc"><i>1122</i>&nbsp;				names.add(km.getName());</b>
+<b class="nc"><i>1123</i>&nbsp;				values.add(km.nEvents() + &quot; (&quot; + km.nObserved() + &quot; observed)&quot;);</b>
+<i>1124</i>&nbsp;				//					values.add(km.nEvents() + &quot; (&quot; + df1.format(km.nEvents()*100.0/nEvents) + &quot;%)&quot;);
+<i>1125</i>&nbsp;			}
+<i>1126</i>&nbsp;
+<i>1127</i>&nbsp;			// Add pairwise log-rank tests
+<b class="nc"><i>1128</i>&nbsp;			for (int i = 0; i &lt; kms.length; i++) {</b>
+<b class="nc"><i>1129</i>&nbsp;				for (int j = i+1; j &lt; kms.length; j++) {</b>
+<b class="nc"><i>1130</i>&nbsp;					KaplanMeierData km1 = kms[i];</b>
+<b class="nc"><i>1131</i>&nbsp;					KaplanMeierData km2 = kms[j];</b>
+<b class="nc"><i>1132</i>&nbsp;					LogRankResult logRankResult = LogRankTest.computeLogRankTest(km1, km2);</b>
+<i>1133</i>&nbsp;
+<i>1134</i>&nbsp;					//						if (!Double.isNaN(pValue)) {
+<b class="nc"><i>1135</i>&nbsp;					names.add(getLogRankComparisonName(km1.getName(), km2.getName()));</b>
+<b class="nc"><i>1136</i>&nbsp;					values.add(logRankResult.getResultString());</b>
+<i>1137</i>&nbsp;
+<i>1138</i>&nbsp;					//							names.add(&quot;Log-rank (&quot; + km1.getName() + &quot; vs. &quot; + km2.getName() + &quot;)&quot;);
+<b class="nc"><i>1139</i>&nbsp;					double pValue = logRankResult.getPValue();</b>
+<i>1140</i>&nbsp;					//							if (Double.isNaN(pValue))
+<i>1141</i>&nbsp;					//								values.add(&quot;NaN&quot;);
+<i>1142</i>&nbsp;					//							else if (pValue &gt; 1e-3)
+<i>1143</i>&nbsp;					//								values.add(df4.format(pValue));					
+<i>1144</i>&nbsp;					//							else if (pValue &gt; 1e-4)
+<i>1145</i>&nbsp;					//								values.add(GeneralTools.getFormatter(5).format(pValue));					
+<i>1146</i>&nbsp;					//							else if (pValue &gt; 1e-5)
+<i>1147</i>&nbsp;					//								values.add(GeneralTools.getFormatter(6).format(pValue));					
+<i>1148</i>&nbsp;					//							else if (pValue &gt; 1e-6)
+<i>1149</i>&nbsp;					//								values.add(GeneralTools.getFormatter(7).format(pValue));					
+<i>1150</i>&nbsp;					//							else
+<i>1151</i>&nbsp;					//								values.add(GeneralTools.getFormatter(8).format(pValue));					
+<i>1152</i>&nbsp;					////						}
+<i>1153</i>&nbsp;
+<i>1154</i>&nbsp;
+<b class="nc"><i>1155</i>&nbsp;					if (correctPValues) {</b>
+<b class="nc"><i>1156</i>&nbsp;						names.add(&quot;Log-rank (corrected P-value, e=0.1)&quot;);</b>
+<i>1157</i>&nbsp;
+<i>1158</i>&nbsp;						//								pValue = 0.012;
+<i>1159</i>&nbsp;
+<b class="nc"><i>1160</i>&nbsp;						double pValueAdjustedQuick = -1.63*pValue*(1 + 2.35*Math.log(pValue)); // For e = 10%</b>
+<i>1161</i>&nbsp;						//								double pValueAdjustedQuick = -3.13*pValue*(1 + 1.65*Math.log(pValue)); // For e = 5%
+<i>1162</i>&nbsp;
+<i>1163</i>&nbsp;						//								pValue = -1.63*pValue*(1 + 2.35*Math.log(pValue));
+<i>1164</i>&nbsp;						//								pValue = -3.13*pValue*(1 + 1.65*Math.log(pValue));
+<i>1165</i>&nbsp;
+<b class="nc"><i>1166</i>&nbsp;						double epsilon = 0.1;</b>
+<i>1167</i>&nbsp;						//								pValue = 0.037; // For checking with Altman&#39;s paper...
+<b class="nc"><i>1168</i>&nbsp;						double z = (1 - pValue/2);</b>
+<b class="nc"><i>1169</i>&nbsp;						NormalDistribution dist = new NormalDistribution();</b>
+<b class="nc"><i>1170</i>&nbsp;						z = dist.inverseCumulativeProbability(1 - pValue/2);</b>
+<b class="nc"><i>1171</i>&nbsp;						double phi = dist.density(z);</b>
+<i>1172</i>&nbsp;						//								System.err.println(&quot;PHI: &quot; + phi + &quot; for &quot; + z);
+<b class="nc"><i>1173</i>&nbsp;						double pValueAdjusted = phi * (z - 1/z) * Math.log((1 - epsilon)*(1 - epsilon)/(epsilon*epsilon)) + 4 * phi/z;</b>
+<i>1174</i>&nbsp;
+<b class="nc"><i>1175</i>&nbsp;						values.add(df4.format(pValueAdjusted));	</b>
+<i>1176</i>&nbsp;
+<b class="nc"><i>1177</i>&nbsp;						logger.info(&quot;Original P-value: {}&quot;, pValue);</b>
+<b class="nc"><i>1178</i>&nbsp;						logger.info(&quot;Quick adjusted P-value (epsilon = {}): {}&quot;, epsilon, pValueAdjustedQuick);</b>
+<b class="nc"><i>1179</i>&nbsp;						logger.info(&quot;Full adjusted P-value (epsilon = {}): {}&quot;, epsilon, pValueAdjusted);</b>
+<i>1180</i>&nbsp;					}
+<i>1181</i>&nbsp;
+<i>1182</i>&nbsp;
+<i>1183</i>&nbsp;					//							// Add Hazard ratio, if available
+<i>1184</i>&nbsp;					//							if (!Double.isNaN(pValue) &amp;&amp; Double.isFinite(logRankResult.hazardRatio)) {
+<i>1185</i>&nbsp;					//								names.add(&quot;Hazard ratio (&quot; + km1.getName() + &quot; vs. &quot; + km2.getName() + &quot;)&quot;);
+<i>1186</i>&nbsp;					//								values.add(String.format(&quot;%.3f (%.3f-%.3f)&quot;, logRankResult.hazardRatio, logRankResult.hazardRatioLowerConfidence, logRankResult.hazardRatioUpperConfidence));	
+<i>1187</i>&nbsp;					//							}
+<i>1188</i>&nbsp;
+<i>1189</i>&nbsp;				}
+<i>1190</i>&nbsp;			}
+<i>1191</i>&nbsp;
+<i>1192</i>&nbsp;			// If we have exactly 3 thresholds, try comparing extremes (useful for P53)
+<b class="nc"><i>1193</i>&nbsp;			if (kms.length == 3) {</b>
+<b class="nc"><i>1194</i>&nbsp;				KaplanMeierData kmExtreme = new KaplanMeierData(&quot;Low+High&quot;);</b>
+<b class="nc"><i>1195</i>&nbsp;				kmExtreme.addEvents(kms[0].getEvents());</b>
+<b class="nc"><i>1196</i>&nbsp;				kmExtreme.addEvents(kms[2].getEvents());</b>
+<b class="nc"><i>1197</i>&nbsp;				LogRankResult logRankResult = LogRankTest.computeLogRankTest(kmExtreme, kms[1]);</b>
+<b class="nc"><i>1198</i>&nbsp;				names.add(getLogRankComparisonName(kmExtreme.getName(), kms[1].getName()));</b>
+<b class="nc"><i>1199</i>&nbsp;				values.add(logRankResult.getResultString());</b>
+<i>1200</i>&nbsp;			}
+<i>1201</i>&nbsp;
+<i>1202</i>&nbsp;
+<i>1203</i>&nbsp;			// Notify listeners
+<b class="nc"><i>1204</i>&nbsp;			List&lt;Integer&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1205</i>&nbsp;			for (int i = 0; i &lt; getRowCount(); i++)</b>
+<b class="nc"><i>1206</i>&nbsp;				list.add(i);</b>
+<b class="nc"><i>1207</i>&nbsp;			table.getItems().setAll(list);</b>
+<i>1208</i>&nbsp;		}
+<i>1209</i>&nbsp;
+<i>1210</i>&nbsp;
+<i>1211</i>&nbsp;		public int getRowCount() {
+<b class="nc"><i>1212</i>&nbsp;			return names.size();</b>
+<i>1213</i>&nbsp;		}
+<i>1214</i>&nbsp;
+<i>1215</i>&nbsp;		public int getColumnCount() {
+<b class="nc"><i>1216</i>&nbsp;			return 2;</b>
+<i>1217</i>&nbsp;		}
+<i>1218</i>&nbsp;
+<i>1219</i>&nbsp;		public String getColumnName(int columnIndex) {
+<b class="nc"><i>1220</i>&nbsp;			if (columnIndex == 0)</b>
+<b class="nc"><i>1221</i>&nbsp;				return &quot;Name&quot;;</b>
+<i>1222</i>&nbsp;			else
+<b class="nc"><i>1223</i>&nbsp;				return &quot;Value&quot;;</b>
+<i>1224</i>&nbsp;		}
+<i>1225</i>&nbsp;		public String getValueAt(int rowIndex, int columnIndex) {
+<b class="nc"><i>1226</i>&nbsp;			if (columnIndex == 0)</b>
+<b class="nc"><i>1227</i>&nbsp;				return names.get(rowIndex);</b>
+<i>1228</i>&nbsp;			else
+<b class="nc"><i>1229</i>&nbsp;				return values.get(rowIndex);</b>
+<i>1230</i>&nbsp;		}
+<i>1231</i>&nbsp;
+<i>1232</i>&nbsp;	}
+<i>1233</i>&nbsp;
+<i>1234</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

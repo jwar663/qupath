@@ -1,0 +1,111 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TileListener</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.images.stores</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TileListener (qupath.lib.gui.images.stores)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">TileListener</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.images.stores;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * Interface for anything that needs to know when image tiles become available.
+<i>30</i>&nbsp; * 
+<i>31</i>&nbsp; * @author Pete Bankhead
+<i>32</i>&nbsp; *
+<i>33</i>&nbsp; * @param &lt;T&gt;
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public interface TileListener&lt;T&gt; {
+<i>36</i>&nbsp;	
+<i>37</i>&nbsp;	/**
+<i>38</i>&nbsp;	 * Notify a listener that an image tile has been received read &amp;amp; is available.
+<i>39</i>&nbsp;	 * 
+<i>40</i>&nbsp;	 * @param serverPath
+<i>41</i>&nbsp;	 * @param region
+<i>42</i>&nbsp;	 * @param tile
+<i>43</i>&nbsp;	 */
+<i>44</i>&nbsp;	public void tileAvailable(String serverPath, ImageRegion region, T tile);
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;	/**
+<i>47</i>&nbsp;	 * Check if the listener requires a particular tile.
+<i>48</i>&nbsp;	 * This is primarily designed to deal with asynchronous tile requests;
+<i>49</i>&nbsp;	 * by the time the server is ready to process the the request, it might be out of date
+<i>50</i>&nbsp;	 * (e.g. if the user has panned to a different part of the image).
+<i>51</i>&nbsp;	 * 
+<i>52</i>&nbsp;	 * A server *may* make use of this function to do a last minute poll of all listeners to
+<i>53</i>&nbsp;	 * check if the region is required.
+<i>54</i>&nbsp;	 * Any implementation should return quickly (erring conservatively on the side of &#39;true&#39; if
+<i>55</i>&nbsp;	 * the calculations would be prohibitively expensive), since otherwise it doesn&#39;t save time
+<i>56</i>&nbsp;	 * in seeking the tile itself.
+<i>57</i>&nbsp;	 * 
+<i>58</i>&nbsp;	 * @param serverPath
+<i>59</i>&nbsp;	 * @param region
+<i>60</i>&nbsp;	 * @return
+<i>61</i>&nbsp;	 */
+<i>62</i>&nbsp;	public boolean requiresTileRegion(String serverPath, ImageRegion region);
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,513 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ProjectCommands</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ProjectCommands (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProjectCommands</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 101)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProjectCommands$LegacyProject</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCommands$LegacyProjectEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCommands$LegacyProjectTask</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 150)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.File;
+<i>26</i>&nbsp;import java.io.FileReader;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.PrintWriter;
+<i>29</i>&nbsp;import java.net.URI;
+<i>30</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Collection;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.Set;
+<i>35</i>&nbsp;import java.util.TreeSet;
+<i>36</i>&nbsp;import java.util.stream.Collectors;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javax.imageio.ImageIO;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import org.controlsfx.dialog.ProgressDialog;
+<i>41</i>&nbsp;import org.slf4j.Logger;
+<i>42</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import javafx.concurrent.Task;
+<i>45</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>46</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>47</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>48</i>&nbsp;import qupath.lib.images.ImageData.ImageType;
+<i>49</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>50</i>&nbsp;import qupath.lib.images.servers.ImageServerProvider;
+<i>51</i>&nbsp;import qupath.lib.io.GsonTools;
+<i>52</i>&nbsp;import qupath.lib.io.PathIO;
+<i>53</i>&nbsp;import qupath.lib.projects.Project;
+<i>54</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>55</i>&nbsp;import qupath.lib.projects.Projects;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;/**
+<i>58</i>&nbsp; * Helper class implementing simple &#39;single-method&#39; commands related to projects.
+<i>59</i>&nbsp; * 
+<i>60</i>&nbsp; * @author Pete Bankhead
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; */
+<b class="nc"><i>63</i>&nbsp;public class ProjectCommands {</b>
+<i>64</i>&nbsp;	
+<b class="nc"><i>65</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ProjectCommands.class);</b>
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;	/**
+<i>68</i>&nbsp;	 * Check the URIs within a project, prompting the user to correct any broken links if required.
+<i>69</i>&nbsp;	 * @param project the project containing URIs to check
+<i>70</i>&nbsp;	 * @param onlyIfMissing if true, only display a prompt if some links are broken
+<i>71</i>&nbsp;	 * @return true if the dialog was shown and closed successfully, false if it was cancelled
+<i>72</i>&nbsp;	 * @throws IOException
+<i>73</i>&nbsp;	 */
+<i>74</i>&nbsp;	public static boolean promptToCheckURIs(Project&lt;?&gt; project, boolean onlyIfMissing) throws IOException {
+<b class="nc"><i>75</i>&nbsp;		var manager = new ProjectCheckUris.ProjectUriManager(project);</b>
+<b class="nc"><i>76</i>&nbsp;		if (!onlyIfMissing || manager.countOriginalItems(ProjectCheckUris.UriStatus.MISSING) &gt; 0) {</b>
+<b class="nc"><i>77</i>&nbsp;			return manager.showDialog();</b>
+<i>78</i>&nbsp;		}
+<b class="nc"><i>79</i>&nbsp;		return true;</b>
+<i>80</i>&nbsp;	}
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Show prompt for the user to select images to import into the current project in QuPath.
+<i>84</i>&nbsp;	 * @param qupath the QuPath instance
+<i>85</i>&nbsp;	 * @param defaultPaths image paths to include when the dialog is shown (useful when the dialog is shown with some paths already known)
+<i>86</i>&nbsp;	 * @return a list of project entries for all images that were successfully added to the project
+<i>87</i>&nbsp;	 */
+<i>88</i>&nbsp;	public static List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; promptToImportImages(QuPathGUI qupath, String... defaultPaths) {
+<b class="nc"><i>89</i>&nbsp;		return ProjectImportImagesCommand.promptToImportImages(qupath, defaultPaths);</b>
+<i>90</i>&nbsp;	}
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	/**
+<i>93</i>&nbsp;	 * Add a single image to a project.
+<i>94</i>&nbsp;	 * @param project the project
+<i>95</i>&nbsp;	 * @param server the image to add
+<i>96</i>&nbsp;	 * @param type optional image type, if known
+<i>97</i>&nbsp;	 * @return an entry corresponding to the image that was added
+<i>98</i>&nbsp;	 */
+<i>99</i>&nbsp;	public static ProjectImageEntry&lt;BufferedImage&gt; addSingleImageToProject(Project&lt;BufferedImage&gt; project, ImageServer&lt;BufferedImage&gt; server, ImageType type) {
+<b class="nc"><i>100</i>&nbsp;		return ProjectImportImagesCommand.addSingleImageToProject(project, server, type);</b>
+<i>101</i>&nbsp;	}
+<i>102</i>&nbsp;	
+<i>103</i>&nbsp;	/**
+<i>104</i>&nbsp;	 * Get an RGB thumbnail for an image server, suitable for showing as a project thumbnail.
+<i>105</i>&nbsp;	 * @param server
+<i>106</i>&nbsp;	 * @return an RGB thumbnail for server
+<i>107</i>&nbsp;	 * @throws IOException
+<i>108</i>&nbsp;	 */
+<i>109</i>&nbsp;	public static BufferedImage getThumbnailRGB(ImageServer&lt;BufferedImage&gt; server) throws IOException {
+<b class="nc"><i>110</i>&nbsp;		return ProjectImportImagesCommand.getThumbnailRGB(server, null);</b>
+<i>111</i>&nbsp;	}
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	/**
+<i>114</i>&nbsp;	 * Show the metadata editor for the specified project.
+<i>115</i>&nbsp;	 * @param project
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public static void showProjectMetadataEditor(Project&lt;?&gt; project) {
+<b class="nc"><i>118</i>&nbsp;		ProjectMetadataEditorCommand.showProjectMetadataEditor(project);</b>
+<i>119</i>&nbsp;	}
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	/**
+<i>122</i>&nbsp;	 * Prompt to export a text file containing a list of image paths for a project.
+<i>123</i>&nbsp;	 * @param project
+<i>124</i>&nbsp;	 */
+<i>125</i>&nbsp;	public static void promptToExportImageList(Project&lt;?&gt; project) {
+<b class="nc"><i>126</i>&nbsp;		var title = &quot;Export image list&quot;;</b>
+<b class="nc"><i>127</i>&nbsp;		if (project == null) {</b>
+<b class="nc"><i>128</i>&nbsp;			Dialogs.showNoProjectError(title);</b>
+<i>129</i>&nbsp;			return;
+<i>130</i>&nbsp;		}
+<i>131</i>&nbsp;		// Try to get a project directory
+<b class="nc"><i>132</i>&nbsp;		File dirBase = Projects.getBaseDirectory(project);</b>
+<i>133</i>&nbsp;		
+<i>134</i>&nbsp;		// Prompt for where to save
+<b class="nc"><i>135</i>&nbsp;		File fileOutput = Dialogs.promptToSaveFile(title, dirBase, null, &quot;Text files&quot;, &quot;.txt&quot;);</b>
+<b class="nc"><i>136</i>&nbsp;		if (fileOutput == null)</b>
+<i>137</i>&nbsp;			return;
+<i>138</i>&nbsp;		
+<i>139</i>&nbsp;		// Write out image paths, along with metadata values
+<b class="nc"><i>140</i>&nbsp;		Set&lt;String&gt; keys = new TreeSet&lt;&gt;();</b>
+<b class="nc"><i>141</i>&nbsp;		for (ProjectImageEntry&lt;?&gt; entry : project.getImageList()) {</b>
+<b class="nc"><i>142</i>&nbsp;			keys.addAll(entry.getMetadataKeys());</b>
+<b class="nc"><i>143</i>&nbsp;		}</b>
+<i>144</i>&nbsp;		
+<b class="nc"><i>145</i>&nbsp;		String delim = PathPrefs.tableDelimiterProperty().get();</b>
+<b class="nc"><i>146</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<b class="nc"><i>147</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>148</i>&nbsp;		try (PrintWriter writer = new PrintWriter(fileOutput, StandardCharsets.UTF_8)) {</b>
+<b class="nc"><i>149</i>&nbsp;			writer.print(&quot;Name&quot;);</b>
+<b class="nc"><i>150</i>&nbsp;			writer.print(delim);</b>
+<b class="nc"><i>151</i>&nbsp;			writer.print(&quot;ID&quot;);</b>
+<b class="nc"><i>152</i>&nbsp;			writer.print(delim);</b>
+<b class="nc"><i>153</i>&nbsp;			writer.print(&quot;URIs&quot;);</b>
+<b class="nc"><i>154</i>&nbsp;			for (String key : keys) {</b>
+<b class="nc"><i>155</i>&nbsp;				writer.print(delim);</b>
+<b class="nc"><i>156</i>&nbsp;				writer.print(key);</b>
+<b class="nc"><i>157</i>&nbsp;			}</b>
+<b class="nc"><i>158</i>&nbsp;			writer.println();</b>
+<i>159</i>&nbsp;			
+<b class="nc"><i>160</i>&nbsp;			for (ProjectImageEntry&lt;?&gt; entry : project.getImageList()) {</b>
+<i>161</i>&nbsp;				try {
+<b class="nc"><i>162</i>&nbsp;					Collection&lt;URI&gt; uris = entry.getServerURIs();</b>
+<b class="nc"><i>163</i>&nbsp;					String path = String.join(&quot; &quot;, uris.stream().map(u -&gt; u.toString()).collect(Collectors.toList()));</b>
+<i>164</i>&nbsp;	//				String path = entry.getServerPath();
+<b class="nc"><i>165</i>&nbsp;					writer.print(entry.getImageName());</b>
+<b class="nc"><i>166</i>&nbsp;					writer.print(delim);				</b>
+<b class="nc"><i>167</i>&nbsp;					writer.print(entry.getID());</b>
+<b class="nc"><i>168</i>&nbsp;					writer.print(delim);				</b>
+<b class="nc"><i>169</i>&nbsp;					writer.print(path);</b>
+<b class="nc"><i>170</i>&nbsp;					for (String key : keys) {</b>
+<b class="nc"><i>171</i>&nbsp;						writer.print(delim);</b>
+<b class="nc"><i>172</i>&nbsp;						String value = entry.getMetadataValue(key);</b>
+<b class="nc"><i>173</i>&nbsp;						if (value != null)</b>
+<b class="nc"><i>174</i>&nbsp;							writer.print(value);</b>
+<b class="nc"><i>175</i>&nbsp;					}</b>
+<b class="nc"><i>176</i>&nbsp;					writer.println();</b>
+<b class="nc"><i>177</i>&nbsp;					n++;</b>
+<b class="nc"><i>178</i>&nbsp;					logger.debug(path);</b>
+<b class="nc"><i>179</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>180</i>&nbsp;					logger.error(&quot;Error reading URIs from &quot; + entry, e);</b>
+<b class="nc"><i>181</i>&nbsp;				}</b>
+<b class="nc"><i>182</i>&nbsp;			}		</b>
+<b class="nc"><i>183</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>184</i>&nbsp;			Dialogs.showErrorMessage(title, fileOutput.getAbsolutePath() + &quot; not found!&quot;);</b>
+<b class="nc"><i>185</i>&nbsp;		}</b>
+<b class="nc"><i>186</i>&nbsp;		long endTime = System.currentTimeMillis();</b>
+<b class="nc"><i>187</i>&nbsp;		logger.debug(&quot;Exported {} images in {} ms&quot;, n, endTime - startTime);</b>
+<i>188</i>&nbsp;		
+<i>189</i>&nbsp;	}
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;	/**
+<i>193</i>&nbsp;	 * Prompt the user to select a legacy project file, and then import the images into 
+<i>194</i>&nbsp;	 * the current project.
+<i>195</i>&nbsp;	 * &lt;p&gt;
+<i>196</i>&nbsp;	 * In this case &#39;legacy&#39; means QuPath v0.1.2 or earlier.
+<i>197</i>&nbsp;	 * Such projects contain a &quot;data&quot; subdirectory, containing data files in the form &quot;name.qpdata&quot;.
+<i>198</i>&nbsp;	 * &lt;p&gt;
+<i>199</i>&nbsp;	 * Note that the paths to the images need to be correct, because it is necessary to 
+<i>200</i>&nbsp;	 * open each image during import.
+<i>201</i>&nbsp;	 * 
+<i>202</i>&nbsp;	 * @param qupath the current instance of QuPath
+<i>203</i>&nbsp;	 * @return true if changes were made to the current project, false otherwise
+<i>204</i>&nbsp;	 */
+<i>205</i>&nbsp;	public static boolean promptToImportLegacyProject(QuPathGUI qupath) {
+<b class="nc"><i>206</i>&nbsp;		var project = qupath.getProject();</b>
+<b class="nc"><i>207</i>&nbsp;		String title = &quot;Import legacy project&quot;;</b>
+<b class="nc"><i>208</i>&nbsp;		if (project == null) {</b>
+<b class="nc"><i>209</i>&nbsp;			Dialogs.showNoProjectError(title);</b>
+<b class="nc"><i>210</i>&nbsp;			return false;</b>
+<i>211</i>&nbsp;		}
+<i>212</i>&nbsp;		
+<i>213</i>&nbsp;		// Prompt for the old project
+<b class="nc"><i>214</i>&nbsp;		var file = Dialogs.promptForFile(title, null, &quot;Project (v0.1.2)&quot;, &quot;.qpproj&quot;);</b>
+<b class="nc"><i>215</i>&nbsp;		if (file == null)</b>
+<b class="nc"><i>216</i>&nbsp;		    return false;</b>
+<i>217</i>&nbsp;		
+<i>218</i>&nbsp;		
+<i>219</i>&nbsp;		// Read the entries
+<i>220</i>&nbsp;		LegacyProject oldProject;
+<b class="nc"><i>221</i>&nbsp;		try (var reader = new FileReader(file)) {</b>
+<b class="nc"><i>222</i>&nbsp;			oldProject = GsonTools.getInstance().fromJson(reader, LegacyProject.class);			</b>
+<b class="nc"><i>223</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>224</i>&nbsp;			logger.error(&quot;Error reading file: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>225</i>&nbsp;			return false;</b>
+<b class="nc"><i>226</i>&nbsp;		}</b>
+<b class="nc"><i>227</i>&nbsp;		if (oldProject.getEntries().isEmpty()) {</b>
+<b class="nc"><i>228</i>&nbsp;			logger.warn(&quot;No images found in project {}&quot;, file.getAbsolutePath());</b>
+<b class="nc"><i>229</i>&nbsp;			return false;</b>
+<i>230</i>&nbsp;		}
+<i>231</i>&nbsp;		
+<b class="nc"><i>232</i>&nbsp;		var dirData = new File(file.getParent(), &quot;data&quot;);</b>
+<b class="nc"><i>233</i>&nbsp;		if (!dirData.exists()) {</b>
+<b class="nc"><i>234</i>&nbsp;		    Dialogs.showErrorMessage(title, &quot;No data directory found for the legacy project!&quot;);</b>
+<b class="nc"><i>235</i>&nbsp;		    return false;</b>
+<i>236</i>&nbsp;		}
+<i>237</i>&nbsp;		
+<b class="nc"><i>238</i>&nbsp;		var task = new LegacyProjectTask(project, oldProject.getEntries(), file.getParentFile());</b>
+<b class="nc"><i>239</i>&nbsp;		int nImages = oldProject.getEntries().size();</b>
+<b class="nc"><i>240</i>&nbsp;		var dialog = new ProgressDialog(task);</b>
+<b class="nc"><i>241</i>&nbsp;		dialog.setTitle(title);</b>
+<b class="nc"><i>242</i>&nbsp;		if (nImages == 1)</b>
+<b class="nc"><i>243</i>&nbsp;			dialog.setContentText(&quot;Importing 1 image...&quot;);</b>
+<i>244</i>&nbsp;		else
+<b class="nc"><i>245</i>&nbsp;			dialog.setContentText(&quot;Importing &quot; + nImages + &quot; images...&quot;);</b>
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;		qupath.submitShortTask(task);</b>
+<b class="nc"><i>248</i>&nbsp;		dialog.showAndWait();</b>
+<b class="nc"><i>249</i>&nbsp;		Integer nCompleted = task.getValue();</b>
+<b class="nc"><i>250</i>&nbsp;		if (nCompleted == null)</b>
+<b class="nc"><i>251</i>&nbsp;			nCompleted = 0;</b>
+<b class="nc"><i>252</i>&nbsp;		if (nCompleted &lt; nImages)</b>
+<b class="nc"><i>253</i>&nbsp;			Dialogs.showWarningNotification(title, nCompleted + &quot;/&quot; + nImages + &quot; imported successfully&quot;);</b>
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		try {
+<b class="nc"><i>256</i>&nbsp;			project.syncChanges();</b>
+<b class="nc"><i>257</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>258</i>&nbsp;			logger.error(&quot;Error syncing project: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>259</i>&nbsp;		}</b>
+<b class="nc"><i>260</i>&nbsp;		qupath.refreshProject();</b>
+<b class="nc"><i>261</i>&nbsp;		return true;</b>
+<i>262</i>&nbsp;	}
+<i>263</i>&nbsp;	
+<i>264</i>&nbsp;	
+<i>265</i>&nbsp;	
+<i>266</i>&nbsp;	private static class LegacyProjectTask extends Task&lt;Integer&gt; {
+<i>267</i>&nbsp;		
+<i>268</i>&nbsp;		private Project&lt;BufferedImage&gt; project;
+<i>269</i>&nbsp;		
+<i>270</i>&nbsp;		private File dirLegacy;
+<i>271</i>&nbsp;		private List&lt;LegacyProjectEntry&gt; legacyEntries;
+<i>272</i>&nbsp;		
+<b class="nc"><i>273</i>&nbsp;		LegacyProjectTask(Project&lt;BufferedImage&gt; project, List&lt;LegacyProjectEntry&gt; legacyEntries, File dirLegacy) {</b>
+<b class="nc"><i>274</i>&nbsp;			this.project = project;</b>
+<b class="nc"><i>275</i>&nbsp;			this.legacyEntries = legacyEntries;</b>
+<b class="nc"><i>276</i>&nbsp;			this.dirLegacy = dirLegacy;</b>
+<i>277</i>&nbsp;		}
+<i>278</i>&nbsp;
+<i>279</i>&nbsp;		@Override
+<i>280</i>&nbsp;		protected Integer call() throws Exception {
+<b class="nc"><i>281</i>&nbsp;			var dirThumbnails = new File(dirLegacy, &quot;thumbnails&quot;);</b>
+<b class="nc"><i>282</i>&nbsp;			var dirData = new File(dirLegacy, &quot;data&quot;);</b>
+<b class="nc"><i>283</i>&nbsp;			int count = 0;</b>
+<b class="nc"><i>284</i>&nbsp;			int max = legacyEntries.size();</b>
+<b class="nc"><i>285</i>&nbsp;			List&lt;LegacyProjectEntry&gt; failed = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>286</i>&nbsp;			for (var oldEntry : legacyEntries) {</b>
+<i>287</i>&nbsp;			    try {
+<i>288</i>&nbsp;			        // Check for a data file
+<b class="nc"><i>289</i>&nbsp;			        var name = oldEntry.getName();</b>
+<b class="nc"><i>290</i>&nbsp;			        var fileData = new File(dirData, name + &quot;.qpdata&quot;);</b>
+<b class="nc"><i>291</i>&nbsp;			        var split = oldEntry.getPath().split(&quot;::&quot;);</b>
+<b class="nc"><i>292</i>&nbsp;			        String path = split[0];</b>
+<i>293</i>&nbsp;			        ImageServer&lt;BufferedImage&gt; server;
+<b class="nc"><i>294</i>&nbsp;			        if (split.length &gt; 1)</b>
+<b class="nc"><i>295</i>&nbsp;			        	server = ImageServerProvider.buildServer(path, BufferedImage.class, &quot;--name&quot;, split[1]);</b>
+<i>296</i>&nbsp;			        else
+<b class="nc"><i>297</i>&nbsp;			        	server = ImageServerProvider.buildServer(path, BufferedImage.class);</b>
+<b class="nc"><i>298</i>&nbsp;			        var entry = project.addImage(server.getBuilder());</b>
+<b class="nc"><i>299</i>&nbsp;			        entry.setImageName(name);</b>
+<i>300</i>&nbsp;			        // Save the data if needed
+<b class="nc"><i>301</i>&nbsp;			        if (fileData.exists()) {</b>
+<b class="nc"><i>302</i>&nbsp;			            logger.debug(&quot;Reading image data found for {}&quot;, name);</b>
+<b class="nc"><i>303</i>&nbsp;			            var imageData = PathIO.readImageData(fileData, null, server, BufferedImage.class);</b>
+<b class="nc"><i>304</i>&nbsp;			            entry.saveImageData(imageData);</b>
+<b class="nc"><i>305</i>&nbsp;			        } else {</b>
+<b class="nc"><i>306</i>&nbsp;			            logger.warn(&quot;No image data found for {}&quot;, name);</b>
+<i>307</i>&nbsp;			        }
+<i>308</i>&nbsp;			        // Read or generate a thumbnail
+<b class="nc"><i>309</i>&nbsp;			        var fileThumbnail = new File(dirThumbnails, &quot;thumbnails&quot;);</b>
+<b class="nc"><i>310</i>&nbsp;			        BufferedImage imgThumbnail = null;</b>
+<b class="nc"><i>311</i>&nbsp;			        if (fileThumbnail.exists())</b>
+<b class="nc"><i>312</i>&nbsp;			            imgThumbnail = ImageIO.read(fileThumbnail);</b>
+<b class="nc"><i>313</i>&nbsp;			        if (imgThumbnail == null)</b>
+<b class="nc"><i>314</i>&nbsp;			            imgThumbnail = ProjectCommands.getThumbnailRGB(server);</b>
+<b class="nc"><i>315</i>&nbsp;			        entry.setThumbnail(imgThumbnail);</b>
+<b class="nc"><i>316</i>&nbsp;			        count++;</b>
+<b class="nc"><i>317</i>&nbsp;			    } catch (Exception e) {</b>
+<b class="nc"><i>318</i>&nbsp;			    	failed.add(oldEntry);</b>
+<b class="nc"><i>319</i>&nbsp;			        logger.error(&quot;Error adding entry: {}&quot;, e.getLocalizedMessage());</b>
+<i>320</i>&nbsp;			    } finally {
+<b class="nc"><i>321</i>&nbsp;			        updateProgress(count, max);</b>
+<b class="nc"><i>322</i>&nbsp;			    }</b>
+<b class="nc"><i>323</i>&nbsp;			}</b>
+<b class="nc"><i>324</i>&nbsp;			if (!failed.isEmpty()) {</b>
+<b class="nc"><i>325</i>&nbsp;				logger.error(&quot;Unable to import the following image(s):\n  {}&quot;, </b>
+<b class="nc"><i>326</i>&nbsp;						failed.stream().map(LegacyProjectEntry::toString).collect(Collectors.joining(&quot;\n  &quot;))</b>
+<i>327</i>&nbsp;						);
+<i>328</i>&nbsp;			}
+<b class="nc"><i>329</i>&nbsp;			return count;</b>
+<i>330</i>&nbsp;		}
+<i>331</i>&nbsp;		
+<i>332</i>&nbsp;	}
+<i>333</i>&nbsp;	
+<i>334</i>&nbsp;	
+<b class="nc"><i>335</i>&nbsp;	private static class LegacyProject {</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;		private List&lt;LegacyProjectEntry&gt; images;
+<i>338</i>&nbsp;	    
+<i>339</i>&nbsp;	    List&lt;LegacyProjectEntry&gt; getEntries() {
+<b class="nc"><i>340</i>&nbsp;	    	return images;</b>
+<i>341</i>&nbsp;	    }
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;	}
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;
+<b class="nc"><i>346</i>&nbsp;	private class LegacyProjectEntry {</b>
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;	    private String path;
+<i>349</i>&nbsp;	    private String name;
+<i>350</i>&nbsp;	    
+<i>351</i>&nbsp;	    String getPath() {
+<b class="nc"><i>352</i>&nbsp;	    	return path;</b>
+<i>353</i>&nbsp;	    }
+<i>354</i>&nbsp;	    
+<i>355</i>&nbsp;	    String getName() {
+<b class="nc"><i>356</i>&nbsp;	    	return name;</b>
+<i>357</i>&nbsp;	    }
+<i>358</i>&nbsp;	    
+<i>359</i>&nbsp;	    @Override
+<i>360</i>&nbsp;	    public String toString() {
+<b class="nc"><i>361</i>&nbsp;	    	return name + &quot; (&quot; + path + &quot;)&quot;;</b>
+<i>362</i>&nbsp;	    }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;	}
+<i>365</i>&nbsp;	
+<i>366</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,582 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SimpleTissueDetection2</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.tissue</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SimpleTissueDetection2 (qupath.imagej.detect.tissue)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SimpleTissueDetection2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 108)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SimpleTissueDetection2$GlobalThresholder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 80)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 188)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.tissue;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Rectangle;
+<i>27</i>&nbsp;import java.awt.geom.Area;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.io.IOException;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.Iterator;
+<i>34</i>&nbsp;import java.util.List;
+<i>35</i>&nbsp;import java.util.stream.Collectors;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+<i>38</i>&nbsp;import org.slf4j.Logger;
+<i>39</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import ij.ImagePlus;
+<i>42</i>&nbsp;import ij.gui.PolygonRoi;
+<i>43</i>&nbsp;import ij.gui.Roi;
+<i>44</i>&nbsp;import ij.gui.Wand;
+<i>45</i>&nbsp;import ij.measure.Calibration;
+<i>46</i>&nbsp;import ij.plugin.filter.RankFilters;
+<i>47</i>&nbsp;import ij.process.Blitter;
+<i>48</i>&nbsp;import ij.process.ByteProcessor;
+<i>49</i>&nbsp;import ij.process.ImageProcessor;
+<i>50</i>&nbsp;import qupath.imagej.processing.MorphologicalReconstruction;
+<i>51</i>&nbsp;import qupath.imagej.processing.RoiLabeling;
+<i>52</i>&nbsp;import qupath.imagej.processing.SimpleThresholding;
+<i>53</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>54</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>55</i>&nbsp;import qupath.lib.images.ImageData;
+<i>56</i>&nbsp;import qupath.lib.images.PathImage;
+<i>57</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>58</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>59</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>60</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>61</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>62</i>&nbsp;import qupath.lib.objects.PathRootObject;
+<i>63</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>64</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>65</i>&nbsp;import qupath.lib.plugins.AbstractDetectionPlugin;
+<i>66</i>&nbsp;import qupath.lib.plugins.DetectionPluginTools;
+<i>67</i>&nbsp;import qupath.lib.plugins.ObjectDetector;
+<i>68</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>69</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>70</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>71</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>72</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>73</i>&nbsp;import qupath.lib.roi.ShapeSimplifier;
+<i>74</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>75</i>&nbsp;import qupath.lib.roi.RoiTools.CombineOp;
+<i>76</i>&nbsp;import qupath.lib.roi.PolygonROI;
+<i>77</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;/**
+<i>80</i>&nbsp; * Very basic global thresholding command to identify tissue regions.
+<i>81</i>&nbsp; * 
+<i>82</i>&nbsp; * Uses fixed approach to downsampling images &amp;amp; global threshold applied to RGB images only.
+<i>83</i>&nbsp; * 
+<i>84</i>&nbsp; * TODO: Provide choice of channels to threshold
+<i>85</i>&nbsp; * TODO: Support 16-bit data
+<i>86</i>&nbsp; * 
+<i>87</i>&nbsp; * @author Pete Bankhead
+<i>88</i>&nbsp; *
+<i>89</i>&nbsp; */
+<i>90</i>&nbsp;public class SimpleTissueDetection2 extends AbstractDetectionPlugin&lt;BufferedImage&gt; {
+<i>91</i>&nbsp;	
+<b class="nc"><i>92</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(SimpleTissueDetection2.class);</b>
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	private ParameterList params;
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;	private String lastResults = null;</b>
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	/**
+<i>99</i>&nbsp;	 * Constructor.
+<i>100</i>&nbsp;	 */
+<b class="nc"><i>101</i>&nbsp;	public SimpleTissueDetection2() {</b>
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		params = new ParameterList().</b>
+<b class="nc"><i>104</i>&nbsp;				addIntParameter(&quot;threshold&quot;, &quot;Threshold&quot;, 127, null, 0, 255, &quot;Global threshold to use - defined in the range 0-255&quot;);</b>
+<i>105</i>&nbsp;		
+<b class="nc"><i>106</i>&nbsp;		params.addDoubleParameter(&quot;requestedPixelSizeMicrons&quot;, &quot;Requested pixel size&quot;, 20, GeneralTools.micrometerSymbol(), &quot;Requested pixel size for detection resolution - higher values mean a less detailed (but faster) result.\nNote that if the resolution is set too high (leading to a huge image) it will be adjusted automatically.&quot;);</b>
+<b class="nc"><i>107</i>&nbsp;		params.addDoubleParameter(&quot;minAreaMicrons&quot;, &quot;Minimum area&quot;, 10000, GeneralTools.micrometerSymbol()+&quot;^2&quot;, &quot;The minimum area for a detected region - smaller regions will be discarded&quot;);</b>
+<b class="nc"><i>108</i>&nbsp;		params.addDoubleParameter(&quot;maxHoleAreaMicrons&quot;, &quot;Max fill area&quot;, 1000000, GeneralTools.micrometerSymbol()+&quot;^2&quot;, &quot;&#39;Holes&#39; occurring within the detected regions that are smaller than this will be filled in&quot;);</b>
+<i>109</i>&nbsp;		
+<b class="nc"><i>110</i>&nbsp;		params.addDoubleParameter(&quot;requestedDownsample&quot;, &quot;Downsample&quot;, 50, null, &quot;Amount to downsample the image - higher values indicate smaller images (and less detection).\nNote that if the downsample is set too low (leading to a huge image) it will be adjusted automatically.&quot;);</b>
+<b class="nc"><i>111</i>&nbsp;		params.addDoubleParameter(&quot;minAreaPixels&quot;, &quot;Minimum area&quot;, 100000, &quot;px^2&quot;, &quot;The minimum area for a detected region - smaller regions will be discarded&quot;);</b>
+<b class="nc"><i>112</i>&nbsp;		params.addDoubleParameter(&quot;maxHoleAreaPixels&quot;, &quot;Max fill area&quot;, 500, &quot;px^2&quot;, &quot;&#39;Holes&#39; occurring within the detected regions that are smaller than this will be filled in&quot;);</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;		params.addBooleanParameter(&quot;darkBackground&quot;, &quot;Dark background&quot;, false, &quot;Choose this option if the background is darker (e.g. in a fluorescence image) rather than brighter than the tissue&quot;);</b>
+<b class="nc"><i>116</i>&nbsp;		params.addBooleanParameter(&quot;smoothImage&quot;, &quot;Smooth image&quot;, true, &quot;Apply 3x3 mean filter to (downsampled) image to reduce noise before thresholding&quot;);</b>
+<b class="nc"><i>117</i>&nbsp;		params.addBooleanParameter(&quot;medianCleanup&quot;, &quot;Cleanup with median filter&quot;, true, &quot;Apply median filter to thresholded image to reduce small variations&quot;);</b>
+<b class="nc"><i>118</i>&nbsp;		params.addBooleanParameter(&quot;dilateBoundaries&quot;, &quot;Expand boundaries&quot;, false, &quot;Apply 3x3 maximum filter to binary image to increase region sizes&quot;);</b>
+<b class="nc"><i>119</i>&nbsp;		params.addBooleanParameter(&quot;smoothCoordinates&quot;, &quot;Smooth coordinates&quot;, true, &quot;Apply smoothing to region boundaries, to reduce &#39;blocky&#39; appearance&quot;);</b>
+<b class="nc"><i>120</i>&nbsp;		params.addBooleanParameter(&quot;excludeOnBoundary&quot;, &quot;Exclude on boundary&quot;, false, &quot;Discard detection regions that touch the image boundary&quot;);</b>
+<i>121</i>&nbsp;		
+<b class="nc"><i>122</i>&nbsp;		params.addBooleanParameter(&quot;singleAnnotation&quot;, &quot;Single annotation&quot;, true, &quot;Create a single annotation object from all (possibly-disconnected) regions&quot;);</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;	}</b>
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	
+<i>127</i>&nbsp;	
+<b class="nc"><i>128</i>&nbsp;	class GlobalThresholder implements ObjectDetector&lt;BufferedImage&gt; {</b>
+<i>129</i>&nbsp;		
+<i>130</i>&nbsp;		@Override
+<i>131</i>&nbsp;		public Collection&lt;PathObject&gt; runDetection(final ImageData&lt;BufferedImage&gt; imageData, final ParameterList params, final ROI pathROI) throws IOException {
+<i>132</i>&nbsp;			
+<b class="nc"><i>133</i>&nbsp;			ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<i>134</i>&nbsp;			
+<i>135</i>&nbsp;			double downsample;
+<b class="nc"><i>136</i>&nbsp;			PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>137</i>&nbsp;			if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>138</i>&nbsp;				downsample = params.getDoubleParameterValue(&quot;requestedPixelSizeMicrons&quot;) / cal.getAveragedPixelSizeMicrons();</b>
+<i>139</i>&nbsp;			} else
+<b class="nc"><i>140</i>&nbsp;				downsample = params.getDoubleParameterValue(&quot;requestedDownsample&quot;);</b>
+<i>141</i>&nbsp;			
+<b class="nc"><i>142</i>&nbsp;			double maxDim = pathROI == null ? Math.max(server.getWidth(), server.getHeight()) : Math.max(pathROI.getBoundsWidth(), pathROI.getBoundsHeight());</b>
+<b class="nc"><i>143</i>&nbsp;			double maxDimLimit = 4000;</b>
+<b class="nc"><i>144</i>&nbsp;			if (!(maxDim / downsample &lt;= maxDimLimit)) {</b>
+<b class="nc"><i>145</i>&nbsp;				logger.warn(&quot;Invalid requested downsample {} - will use {} instead&quot;, downsample, maxDim / maxDimLimit);</b>
+<b class="nc"><i>146</i>&nbsp;				downsample = maxDim / maxDimLimit;</b>
+<i>147</i>&nbsp;			}
+<i>148</i>&nbsp;			
+<i>149</i>&nbsp;//				Rectangle bounds = pathROI != null ? pathROI.getBounds() : new Rectangle(0, 0, server.getWidth(), server.getHeight());
+<i>150</i>&nbsp;//				RegionRequest request = RegionRequest.createInstance(server.getPath(), downsample, bounds);
+<i>151</i>&nbsp;				
+<i>152</i>&nbsp;				RegionRequest request;
+<b class="nc"><i>153</i>&nbsp;				if (!RoiTools.isShapeROI(pathROI)) {</b>
+<b class="nc"><i>154</i>&nbsp;					request = RegionRequest.createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight());</b>
+<i>155</i>&nbsp;				} else
+<b class="nc"><i>156</i>&nbsp;					request = RegionRequest.createInstance(server.getPath(), downsample, pathROI);</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;				
+<b class="nc"><i>159</i>&nbsp;				PathImage&lt;ImagePlus&gt; pathImage = IJTools.convertToImagePlus(server, request); // TODO: Implement z-stack support</b>
+<i>160</i>&nbsp;			
+<b class="nc"><i>161</i>&nbsp;			double threshold = params.getIntParameterValue(&quot;threshold&quot;);</b>
+<b class="nc"><i>162</i>&nbsp;			double minAreaMicrons = 1, maxHoleAreaMicrons = 1, minAreaPixels = 1, maxHoleAreaPixels = 1;</b>
+<b class="nc"><i>163</i>&nbsp;			if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>164</i>&nbsp;				minAreaMicrons = params.getDoubleParameterValue(&quot;minAreaMicrons&quot;);</b>
+<b class="nc"><i>165</i>&nbsp;				maxHoleAreaMicrons = params.getDoubleParameterValue(&quot;maxHoleAreaMicrons&quot;);</b>
+<i>166</i>&nbsp;			} else {
+<b class="nc"><i>167</i>&nbsp;				minAreaPixels = params.getDoubleParameterValue(&quot;minAreaPixels&quot;);</b>
+<b class="nc"><i>168</i>&nbsp;				maxHoleAreaPixels = params.getDoubleParameterValue(&quot;maxHoleAreaPixels&quot;);			</b>
+<i>169</i>&nbsp;			}
+<b class="nc"><i>170</i>&nbsp;			boolean smoothImage = params.getBooleanParameterValue(&quot;smoothImage&quot;);</b>
+<b class="nc"><i>171</i>&nbsp;			boolean darkBackground = params.getBooleanParameterValue(&quot;darkBackground&quot;);</b>
+<b class="nc"><i>172</i>&nbsp;			boolean smoothCoordinates = params.getBooleanParameterValue(&quot;smoothCoordinates&quot;);</b>
+<b class="nc"><i>173</i>&nbsp;			boolean medianCleanup = params.getBooleanParameterValue(&quot;medianCleanup&quot;);</b>
+<b class="nc"><i>174</i>&nbsp;			boolean excludeOnBoundary = params.getBooleanParameterValue(&quot;excludeOnBoundary&quot;);</b>
+<b class="nc"><i>175</i>&nbsp;			boolean dilateBoundaries = params.getBooleanParameterValue(&quot;dilateBoundaries&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;			boolean singleAnnotation = Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;singleAnnotation&quot;));</b>
+<i>177</i>&nbsp;			
+<i>178</i>&nbsp;			// Create a ByteProcessor
+<b class="nc"><i>179</i>&nbsp;			ImagePlus imp = pathImage.getImage();</b>
+<b class="nc"><i>180</i>&nbsp;			ByteProcessor bp = imp.getProcessor().convertToByteProcessor();</b>
+<i>181</i>&nbsp;			
+<b class="nc"><i>182</i>&nbsp;			if (smoothImage)</b>
+<b class="nc"><i>183</i>&nbsp;				bp.smooth();</b>
+<i>184</i>&nbsp;	//		new ImagePlus(&quot;Binary&quot;, bp.duplicate()).show();
+<i>185</i>&nbsp;	
+<i>186</i>&nbsp;			// Apply threshold
+<b class="nc"><i>187</i>&nbsp;			if (darkBackground)</b>
+<b class="nc"><i>188</i>&nbsp;				bp = SimpleThresholding.thresholdAbove(bp, (float)threshold);</b>
+<i>189</i>&nbsp;			else
+<b class="nc"><i>190</i>&nbsp;				bp = SimpleThresholding.thresholdBelow(bp, (float)threshold);</b>
+<i>191</i>&nbsp;					
+<b class="nc"><i>192</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>193</i>&nbsp;				return null;</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;			
+<i>196</i>&nbsp;			// Apply small median filter to clean up
+<b class="nc"><i>197</i>&nbsp;			if (medianCleanup) {</b>
+<b class="nc"><i>198</i>&nbsp;				RankFilters rf = new RankFilters();</b>
+<b class="nc"><i>199</i>&nbsp;				rf.rank(bp, 1, RankFilters.MEDIAN);</b>
+<i>200</i>&nbsp;			}
+<i>201</i>&nbsp;			
+<i>202</i>&nbsp;			// Apply maximum filter, if required
+<b class="nc"><i>203</i>&nbsp;			if (dilateBoundaries)</b>
+<b class="nc"><i>204</i>&nbsp;				bp.filter(ImageProcessor.MAX);</b>
+<i>205</i>&nbsp;			
+<i>206</i>&nbsp;	//		bp.resetMinAndMax();
+<i>207</i>&nbsp;	//		new ImagePlus(&quot;&quot;, bp.duplicate()).show();
+<i>208</i>&nbsp;			
+<i>209</i>&nbsp;			// If there is a ROI, clear everything outside
+<b class="nc"><i>210</i>&nbsp;			Roi roiIJ = null;</b>
+<b class="nc"><i>211</i>&nbsp;			if (pathROI != null) {</b>
+<b class="nc"><i>212</i>&nbsp;				roiIJ = IJTools.convertToIJRoi(pathROI, imp.getCalibration(), downsample);</b>
+<b class="nc"><i>213</i>&nbsp;				RoiLabeling.clearOutside(bp, roiIJ);</b>
+<i>214</i>&nbsp;			}
+<i>215</i>&nbsp;			
+<i>216</i>&nbsp;			// Exclude on image boundary now, if required
+<i>217</i>&nbsp;			// This needs to be done before getting ROIs, because filled ROIs are requested - which can result in the whole image being filled in if the boundary covers everything
+<b class="nc"><i>218</i>&nbsp;			if (excludeOnBoundary) {</b>
+<b class="nc"><i>219</i>&nbsp;				ByteProcessor bpMarker = new ByteProcessor(bp.getWidth(), bp.getHeight());</b>
+<b class="nc"><i>220</i>&nbsp;				bpMarker.setValue(255);</b>
+<b class="nc"><i>221</i>&nbsp;				bpMarker.drawRect(0, 0, bp.getWidth(), bp.getHeight());</b>
+<b class="nc"><i>222</i>&nbsp;				if (roiIJ != null)</b>
+<b class="nc"><i>223</i>&nbsp;					bpMarker.draw(roiIJ);</b>
+<b class="nc"><i>224</i>&nbsp;				bpMarker.copyBits(bp, 0, 0, Blitter.AND);</b>
+<b class="nc"><i>225</i>&nbsp;				ByteProcessor bpBoundary = MorphologicalReconstruction.binaryReconstruction(bpMarker, bp, false);</b>
+<b class="nc"><i>226</i>&nbsp;				bp.copyBits(bpBoundary, 0, 0, Blitter.SUBTRACT);</b>
+<i>227</i>&nbsp;			}
+<i>228</i>&nbsp;			
+<b class="nc"><i>229</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>230</i>&nbsp;				return null;</b>
+<i>231</i>&nbsp;			
+<i>232</i>&nbsp;			// Convert to objects
+<i>233</i>&nbsp;			double minArea, maxHoleArea;
+<b class="nc"><i>234</i>&nbsp;			if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>235</i>&nbsp;				double areaScale = 1.0 / (cal.getAveragedPixelSizeMicrons() * cal.getAveragedPixelSizeMicrons() * downsample * downsample);</b>
+<b class="nc"><i>236</i>&nbsp;				minArea = minAreaMicrons * areaScale;</b>
+<b class="nc"><i>237</i>&nbsp;				maxHoleArea = maxHoleAreaMicrons * areaScale;</b>
+<b class="nc"><i>238</i>&nbsp;			} else {</b>
+<b class="nc"><i>239</i>&nbsp;				minArea = minAreaPixels / (downsample * downsample);</b>
+<b class="nc"><i>240</i>&nbsp;				maxHoleArea = maxHoleAreaPixels / (downsample * downsample);			</b>
+<i>241</i>&nbsp;			}
+<b class="nc"><i>242</i>&nbsp;			logger.debug(&quot;Min area: {}&quot;, minArea);</b>
+<b class="nc"><i>243</i>&nbsp;			logger.debug(&quot;Max hole area: {}&quot;, maxHoleArea);</b>
+<i>244</i>&nbsp;			
+<b class="nc"><i>245</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>246</i>&nbsp;				return null;</b>
+<i>247</i>&nbsp;			
+<b class="nc"><i>248</i>&nbsp;			bp.setThreshold(127, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>249</i>&nbsp;			List&lt;PathObject&gt; pathObjects = convertToPathObjects(bp, minArea, smoothCoordinates, imp.getCalibration(), downsample, maxHoleArea, excludeOnBoundary, singleAnnotation, pathImage.getImageRegion().getPlane(), null);</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>252</i>&nbsp;				return null;</b>
+<i>253</i>&nbsp;			
+<b class="nc"><i>254</i>&nbsp;			if (pathObjects == null || pathObjects.isEmpty())</b>
+<b class="nc"><i>255</i>&nbsp;				lastResults =  &quot;No regions detected!&quot;;</b>
+<b class="nc"><i>256</i>&nbsp;			else if (pathObjects.size() == 1)</b>
+<b class="nc"><i>257</i>&nbsp;				lastResults =  &quot;1 region detected&quot;;</b>
+<i>258</i>&nbsp;			else
+<b class="nc"><i>259</i>&nbsp;				lastResults =  pathObjects.size() + &quot; regions detected&quot;;</b>
+<i>260</i>&nbsp;			
+<b class="nc"><i>261</i>&nbsp;			return pathObjects;</b>
+<i>262</i>&nbsp;		}
+<i>263</i>&nbsp;		
+<i>264</i>&nbsp;		
+<i>265</i>&nbsp;		@Override
+<i>266</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>267</i>&nbsp;			return lastResults;</b>
+<i>268</i>&nbsp;		}
+<i>269</i>&nbsp;		
+<i>270</i>&nbsp;		
+<i>271</i>&nbsp;	}
+<i>272</i>&nbsp;	
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;	
+<i>275</i>&nbsp;	
+<i>276</i>&nbsp;	private static List&lt;PathObject&gt; convertToPathObjects(ByteProcessor bp, double minArea, boolean smoothCoordinates, Calibration cal, double downsample, double maxHoleArea, boolean excludeOnBoundary, boolean singleAnnotation, ImagePlane plane, List&lt;PathObject&gt; pathObjects) {
+<i>277</i>&nbsp;//		
+<i>278</i>&nbsp;//		var roiIJ = new ThresholdToSelection().convert(bp);
+<i>279</i>&nbsp;//		var roi = IJTools.convertToROI(roiIJ, cal, downsample, plane);
+<i>280</i>&nbsp;//		roi = RoiTools.removeSmallPieces(roi, minArea, maxHoleArea);
+<i>281</i>&nbsp;//		List&lt;PathObject&gt; annotations = new ArrayList&lt;&gt;();
+<i>282</i>&nbsp;//		if (singleAnnotation)
+<i>283</i>&nbsp;//			annotations.add(PathObjects.createAnnotationObject(roi));
+<i>284</i>&nbsp;//		else {
+<i>285</i>&nbsp;//			for (var roi2 : RoiTools.splitROI(roi)) {
+<i>286</i>&nbsp;//				annotations.add(PathObjects.createAnnotationObject(roi2));				
+<i>287</i>&nbsp;//			}
+<i>288</i>&nbsp;//		}
+<i>289</i>&nbsp;//		for (var annotation : annotations)
+<i>290</i>&nbsp;//			annotation.setLocked(true);
+<i>291</i>&nbsp;//		return annotations;
+<i>292</i>&nbsp;//			
+<i>293</i>&nbsp;		
+<b class="nc"><i>294</i>&nbsp;		List&lt;PolygonRoi&gt; rois = RoiLabeling.getFilledPolygonROIs(bp, Wand.FOUR_CONNECTED);</b>
+<b class="nc"><i>295</i>&nbsp;		if (pathObjects == null)</b>
+<b class="nc"><i>296</i>&nbsp;			pathObjects = new ArrayList&lt;&gt;(rois.size());</b>
+<i>297</i>&nbsp;		
+<i>298</i>&nbsp;		// We might need a copy of the original image
+<b class="nc"><i>299</i>&nbsp;		boolean fillAllHoles = maxHoleArea &lt;= 0;</b>
+<b class="nc"><i>300</i>&nbsp;		ByteProcessor bpOrig = !fillAllHoles ? (ByteProcessor)bp.duplicate() : null;</b>
+<i>301</i>&nbsp;		
+<b class="nc"><i>302</i>&nbsp;		bp.setValue(255);</b>
+<b class="nc"><i>303</i>&nbsp;		for (PolygonRoi r : rois) {</b>
+<i>304</i>&nbsp;			// Check for boundary overlap
+<b class="nc"><i>305</i>&nbsp;			if (excludeOnBoundary) {</b>
+<b class="nc"><i>306</i>&nbsp;				Rectangle bounds = r.getBounds();</b>
+<b class="nc"><i>307</i>&nbsp;				if (bounds.x &lt;= 0 || bounds.y &lt;= 0 ||</b>
+<b class="nc"><i>308</i>&nbsp;						bounds.x + bounds.width &gt;= bp.getWidth()-1 || </b>
+<b class="nc"><i>309</i>&nbsp;						bounds.y + bounds.height &gt;= bp.getHeight()-1)</b>
+<b class="nc"><i>310</i>&nbsp;					continue;</b>
+<i>311</i>&nbsp;			}
+<b class="nc"><i>312</i>&nbsp;			bp.setRoi(r);</b>
+<b class="nc"><i>313</i>&nbsp;			if (bp.getStatistics().area &lt; minArea)</b>
+<b class="nc"><i>314</i>&nbsp;				continue;</b>
+<i>315</i>&nbsp;						
+<b class="nc"><i>316</i>&nbsp;			bp.fill(r); // Fill holes as we go - it might matter later</b>
+<i>317</i>&nbsp;//			if (smoothCoordinates) {
+<i>318</i>&nbsp;////				r = new PolygonRoi(r.getInterpolatedPolygon(2.5, false), Roi.POLYGON);
+<i>319</i>&nbsp;//				r = new PolygonRoi(r.getInterpolatedPolygon(Math.min(2.5, r.getNCoordinates()*0.1), false), Roi.POLYGON); // TODO: Check this smoothing - it can be troublesome, causing nuclei to be outside cells
+<i>320</i>&nbsp;//			}
+<i>321</i>&nbsp;			
+<b class="nc"><i>322</i>&nbsp;			PolygonROI pathPolygon = IJTools.convertToPolygonROI(r, cal, downsample, plane);</b>
+<i>323</i>&nbsp;//			if (pathPolygon.getArea() &lt; minArea)
+<i>324</i>&nbsp;//				continue;
+<i>325</i>&nbsp;			// Smooth the coordinates, if we downsampled quite a lot
+<b class="nc"><i>326</i>&nbsp;			if (smoothCoordinates) {</b>
+<b class="nc"><i>327</i>&nbsp;				pathPolygon = ROIs.createPolygonROI(ShapeSimplifier.smoothPoints(pathPolygon.getAllPoints()), ImagePlane.getPlaneWithChannel(pathPolygon));</b>
+<b class="nc"><i>328</i>&nbsp;				pathPolygon = ShapeSimplifier.simplifyPolygon(pathPolygon, downsample/2);</b>
+<i>329</i>&nbsp;			}
+<b class="nc"><i>330</i>&nbsp;			pathObjects.add(PathObjects.createAnnotationObject(pathPolygon));</b>
+<b class="nc"><i>331</i>&nbsp;		}</b>
+<i>332</i>&nbsp;		
+<i>333</i>&nbsp;		
+<b class="nc"><i>334</i>&nbsp;		if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>335</i>&nbsp;			return null;</b>
+<i>336</i>&nbsp;		
+<i>337</i>&nbsp;		// TODO: Optimise this - the many &#39;containsObject&#39; calls are a (potentially easy-to-fix) bottleneck
+<b class="nc"><i>338</i>&nbsp;		if (!fillAllHoles) {</b>
+<i>339</i>&nbsp;			// Get the holes alone
+<b class="nc"><i>340</i>&nbsp;			bp.copyBits(bpOrig, 0, 0, Blitter.DIFFERENCE);</b>
+<i>341</i>&nbsp;//			new ImagePlus(&quot;Binary&quot;, bp).show();
+<b class="nc"><i>342</i>&nbsp;			bp.setThreshold(127, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<i>343</i>&nbsp;			
+<b class="nc"><i>344</i>&nbsp;			List&lt;PathObject&gt; holes = convertToPathObjects(bp, maxHoleArea, smoothCoordinates, cal, downsample, 0, false, false, plane, null);</b>
+<i>345</i>&nbsp;			
+<i>346</i>&nbsp;			// For each object, fill in any associated holes
+<b class="nc"><i>347</i>&nbsp;			List&lt;Area&gt; areaList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>348</i>&nbsp;			for (int ind = 0; ind &lt; pathObjects.size(); ind++) {</b>
+<b class="nc"><i>349</i>&nbsp;				if (holes.isEmpty())</b>
+<b class="nc"><i>350</i>&nbsp;					break;</b>
+<i>351</i>&nbsp;				
+<b class="nc"><i>352</i>&nbsp;				PathObject pathObject = pathObjects.get(ind);</b>
+<b class="nc"><i>353</i>&nbsp;				var geom = PreparedGeometryFactory.prepare(pathObject.getROI().getGeometry());</b>
+<b class="nc"><i>354</i>&nbsp;				areaList.clear();</b>
+<b class="nc"><i>355</i>&nbsp;				Iterator&lt;PathObject&gt; iter = holes.iterator();</b>
+<b class="nc"><i>356</i>&nbsp;				while (iter.hasNext()) {</b>
+<b class="nc"><i>357</i>&nbsp;					PathObject hole = iter.next();</b>
+<b class="nc"><i>358</i>&nbsp;					if (geom.covers(hole.getROI().getGeometry())) {</b>
+<b class="nc"><i>359</i>&nbsp;						areaList.add(RoiTools.getArea(hole.getROI()));</b>
+<b class="nc"><i>360</i>&nbsp;						iter.remove();</b>
+<i>361</i>&nbsp;					}
+<b class="nc"><i>362</i>&nbsp;				}</b>
+<b class="nc"><i>363</i>&nbsp;				if (areaList.isEmpty())</b>
+<b class="nc"><i>364</i>&nbsp;					continue;</b>
+<i>365</i>&nbsp;				
+<i>366</i>&nbsp;				// If we have some areas, combine them
+<i>367</i>&nbsp;				// TODO: FIX MAJOR BOTTLENECK HERE!!!
+<b class="nc"><i>368</i>&nbsp;				Area hole = areaList.get(0);</b>
+<b class="nc"><i>369</i>&nbsp;				for (int i = 1; i &lt; areaList.size(); i++) {</b>
+<b class="nc"><i>370</i>&nbsp;					hole.add(areaList.get(i));</b>
+<b class="nc"><i>371</i>&nbsp;					if (i % 100 == 0) {</b>
+<b class="nc"><i>372</i>&nbsp;						logger.debug(&quot;Added hole &quot; + i + &quot;/&quot; + areaList.size());</b>
+<b class="nc"><i>373</i>&nbsp;						if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>374</i>&nbsp;							return null;</b>
+<i>375</i>&nbsp;					}
+<i>376</i>&nbsp;				}
+<i>377</i>&nbsp;				
+<i>378</i>&nbsp;				// Now subtract &amp; create a new object
+<b class="nc"><i>379</i>&nbsp;				ROI pathROI = pathObject.getROI();</b>
+<b class="nc"><i>380</i>&nbsp;				if (RoiTools.isShapeROI(pathROI)) {</b>
+<b class="nc"><i>381</i>&nbsp;					Area areaMain = RoiTools.getArea(pathROI);</b>
+<b class="nc"><i>382</i>&nbsp;					areaMain.subtract(hole);</b>
+<b class="nc"><i>383</i>&nbsp;					pathROI = RoiTools.getShapeROI(areaMain, pathROI.getImagePlane());</b>
+<b class="nc"><i>384</i>&nbsp;					pathObjects.set(ind, PathObjects.createAnnotationObject(pathROI));</b>
+<i>385</i>&nbsp;				}
+<i>386</i>&nbsp;			}
+<i>387</i>&nbsp;		}
+<i>388</i>&nbsp;		
+<i>389</i>&nbsp;		
+<i>390</i>&nbsp;		// This is a clumsy way to do it...
+<b class="nc"><i>391</i>&nbsp;		if (singleAnnotation) {</b>
+<b class="nc"><i>392</i>&nbsp;			ROI roi = null;</b>
+<b class="nc"><i>393</i>&nbsp;			for (PathObject annotation : pathObjects) {</b>
+<b class="nc"><i>394</i>&nbsp;				ROI currentShape = annotation.getROI();</b>
+<b class="nc"><i>395</i>&nbsp;				if (roi == null)</b>
+<b class="nc"><i>396</i>&nbsp;					roi = currentShape;</b>
+<i>397</i>&nbsp;				else
+<b class="nc"><i>398</i>&nbsp;					roi = RoiTools.combineROIs(roi, currentShape, CombineOp.ADD);</b>
+<b class="nc"><i>399</i>&nbsp;			}</b>
+<b class="nc"><i>400</i>&nbsp;			pathObjects.clear();</b>
+<b class="nc"><i>401</i>&nbsp;			if (roi != null)</b>
+<b class="nc"><i>402</i>&nbsp;				pathObjects.add(PathObjects.createAnnotationObject(roi));</b>
+<i>403</i>&nbsp;		}
+<i>404</i>&nbsp;		
+<i>405</i>&nbsp;		
+<i>406</i>&nbsp;		
+<i>407</i>&nbsp;		// Lock the objects
+<b class="nc"><i>408</i>&nbsp;		for (PathObject pathObject : pathObjects)</b>
+<b class="nc"><i>409</i>&nbsp;			((PathAnnotationObject)pathObject).setLocked(true);</b>
+<i>410</i>&nbsp;		
+<b class="nc"><i>411</i>&nbsp;		return pathObjects;</b>
+<i>412</i>&nbsp;	}
+<i>413</i>&nbsp;	
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;	@Override
+<i>416</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>417</i>&nbsp;		boolean micronsKnown = imageData.getServer().getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>418</i>&nbsp;		params.setHiddenParameters(!micronsKnown, &quot;requestedPixelSizeMicrons&quot;, &quot;minAreaMicrons&quot;, &quot;maxHoleAreaMicrons&quot;);</b>
+<b class="nc"><i>419</i>&nbsp;		params.setHiddenParameters(micronsKnown, &quot;requestedDownsample&quot;, &quot;minAreaPixels&quot;, &quot;maxHoleAreaPixels&quot;);</b>
+<b class="nc"><i>420</i>&nbsp;		return params;</b>
+<i>421</i>&nbsp;	}
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;	@Override
+<i>424</i>&nbsp;	public String getName() {
+<b class="nc"><i>425</i>&nbsp;		return &quot;Simple tissue detection&quot;;</b>
+<i>426</i>&nbsp;	}
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;	@Override
+<i>429</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>430</i>&nbsp;		return lastResults;</b>
+<i>431</i>&nbsp;	}
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;	@Override
+<i>435</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>436</i>&nbsp;		return &quot;Detect one or more regions of interest by applying a global threshold&quot;;</b>
+<i>437</i>&nbsp;	}
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;	@Override
+<i>441</i>&nbsp;	protected void addRunnableTasks(ImageData&lt;BufferedImage&gt; imageData, PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<b class="nc"><i>442</i>&nbsp;		tasks.add(DetectionPluginTools.createRunnableTask(new GlobalThresholder(), getParameterList(imageData), imageData, parentObject));</b>
+<b class="nc"><i>443</i>&nbsp;	}</b>
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;	@Override
+<i>447</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<i>448</i>&nbsp;		
+<b class="nc"><i>449</i>&nbsp;		PathObjectHierarchy hierarchy = getHierarchy(runner);</b>
+<b class="nc"><i>450</i>&nbsp;		if (hierarchy.getTMAGrid() == null)</b>
+<b class="nc"><i>451</i>&nbsp;			return Collections.singleton(hierarchy.getRootObject());</b>
+<i>452</i>&nbsp;		
+<b class="nc"><i>453</i>&nbsp;		return hierarchy.getSelectionModel().getSelectedObjects().stream().filter(p -&gt; p.isTMACore()).collect(Collectors.toList());</b>
+<i>454</i>&nbsp;//		PathObjectHierarchy hierarchy = runner.getImageData().getHierarchy();
+<i>455</i>&nbsp;//		PathObject pathObjectSelected = runner.getSelectedObject();
+<i>456</i>&nbsp;//		if (pathObjectSelected instanceof PathAnnotationObject || pathObjectSelected instanceof TMACoreObject)
+<i>457</i>&nbsp;//			return Collections.singleton(pathObjectSelected);
+<i>458</i>&nbsp;//		return Collections.singleton(hierarchy.getRootObject());
+<i>459</i>&nbsp;	}
+<i>460</i>&nbsp;
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;	@Override
+<i>463</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<i>464</i>&nbsp;		// TODO: Re-allow taking an object as input in order to limit bounds
+<i>465</i>&nbsp;		// Temporarily disabled so as to avoid asking annoying questions when run repeatedly
+<b class="nc"><i>466</i>&nbsp;		List&lt;Class&lt;? extends PathObject&gt;&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>467</i>&nbsp;		list.add(TMACoreObject.class);</b>
+<i>468</i>&nbsp;//		list.add(PathAnnotationObject.class);
+<b class="nc"><i>469</i>&nbsp;		list.add(PathRootObject.class);</b>
+<b class="nc"><i>470</i>&nbsp;		return list;</b>
+<i>471</i>&nbsp;	}
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

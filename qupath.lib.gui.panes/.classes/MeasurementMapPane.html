@@ -1,0 +1,548 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MeasurementMapPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.panes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MeasurementMapPane (qupath.lib.gui.panes)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MeasurementMapPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 172)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">MeasurementMapPane$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 182)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.panes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.HashMap;
+<i>29</i>&nbsp;import java.util.Map;
+<i>30</i>&nbsp;import java.util.Set;
+<i>31</i>&nbsp;import org.slf4j.Logger;
+<i>32</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>35</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>36</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>37</i>&nbsp;import javafx.collections.FXCollections;
+<i>38</i>&nbsp;import javafx.collections.ObservableList;
+<i>39</i>&nbsp;import javafx.collections.transformation.FilteredList;
+<i>40</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>41</i>&nbsp;import javafx.geometry.Insets;
+<i>42</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>43</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>44</i>&nbsp;import javafx.scene.control.Button;
+<i>45</i>&nbsp;import javafx.scene.control.CheckBox;
+<i>46</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>47</i>&nbsp;import javafx.scene.control.Label;
+<i>48</i>&nbsp;import javafx.scene.control.ListView;
+<i>49</i>&nbsp;import javafx.scene.control.Slider;
+<i>50</i>&nbsp;import javafx.scene.control.TextField;
+<i>51</i>&nbsp;import javafx.scene.control.ToggleButton;
+<i>52</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>53</i>&nbsp;import javafx.scene.image.Image;
+<i>54</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>55</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>56</i>&nbsp;import javafx.scene.layout.Pane;
+<i>57</i>&nbsp;import javafx.scene.layout.VBox;
+<i>58</i>&nbsp;import javafx.scene.text.TextAlignment;
+<i>59</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>60</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>61</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>62</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>63</i>&nbsp;import qupath.lib.gui.tools.MeasurementMapper;
+<i>64</i>&nbsp;import qupath.lib.gui.tools.MeasurementMapper.ColorMapper;
+<i>65</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>66</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>67</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>68</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;/**
+<i>72</i>&nbsp; * Component used for displaying measurement maps, whereby detection objects are recolored 
+<i>73</i>&nbsp; * according to measurement values.
+<i>74</i>&nbsp; * 
+<i>75</i>&nbsp; * @author Pete Bankhead
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; */
+<i>78</i>&nbsp;public class MeasurementMapPane {
+<i>79</i>&nbsp;	
+<b class="nc"><i>80</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(MeasurementMapPane.class);</b>
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	private QuPathGUI qupath;
+<i>83</i>&nbsp;	
+<b class="nc"><i>84</i>&nbsp;	private Map&lt;String, MeasurementMapper&gt; mapperMap = new HashMap&lt;&gt;();</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;	private BorderPane pane = new BorderPane();</b>
+<i>87</i>&nbsp;	
+<b class="nc"><i>88</i>&nbsp;	private ObservableList&lt;ColorMapper&gt; colorMappers = FXCollections.observableArrayList(MeasurementMapper.loadColorMappers());</b>
+<i>89</i>&nbsp;	private ObservableValue&lt;ColorMapper&gt; selectedColorMapper;
+<i>90</i>&nbsp;	
+<b class="nc"><i>91</i>&nbsp;	private ObservableList&lt;String&gt; baseList = FXCollections.observableArrayList();</b>
+<b class="nc"><i>92</i>&nbsp;	private FilteredList&lt;String&gt; filteredList = new FilteredList&lt;&gt;(baseList);</b>
+<b class="nc"><i>93</i>&nbsp;	private ListView&lt;String&gt; listMeasurements = new ListView&lt;&gt;(filteredList);</b>
+<i>94</i>&nbsp;	
+<b class="nc"><i>95</i>&nbsp;	private Slider sliderMin = new Slider(0, 1, 0);</b>
+<b class="nc"><i>96</i>&nbsp;	private Slider sliderMax = new Slider(0, 1, 1);</b>
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	// For not painting values outside the mapper range
+<b class="nc"><i>99</i>&nbsp;	private CheckBox cbExcludeOutside = new CheckBox(&quot;Exclude outside range&quot;);</b>
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	private Canvas colorMapperKey;
+<i>102</i>&nbsp;	private Image colorMapperKeyImage;
+<i>103</i>&nbsp;	
+<b class="nc"><i>104</i>&nbsp;	private Label labelMin = new Label(&quot;&quot;);</b>
+<b class="nc"><i>105</i>&nbsp;	private Label labelMax = new Label(&quot;&quot;);</b>
+<i>106</i>&nbsp;	
+<b class="nc"><i>107</i>&nbsp;	private MeasurementMapper mapper = null;</b>
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	private BooleanProperty showMap;
+<b class="nc"><i>110</i>&nbsp;	private boolean updatingSliders = false;</b>
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	
+<b class="nc"><i>113</i>&nbsp;	private static StringProperty preferredMapperName = PathPrefs.createPersistentPreference(&quot;measurementMapperLUT&quot;, &quot;viridis&quot;);</b>
+<i>114</i>&nbsp;	
+<i>115</i>&nbsp;	/**
+<i>116</i>&nbsp;	 * Constructor.
+<i>117</i>&nbsp;	 * @param qupath the current QuPath instance
+<i>118</i>&nbsp;	 */
+<b class="nc"><i>119</i>&nbsp;	public MeasurementMapPane(final QuPathGUI qupath) {</b>
+<b class="nc"><i>120</i>&nbsp;		this.qupath = qupath;</b>
+<i>121</i>&nbsp;		
+<b class="nc"><i>122</i>&nbsp;		logger.trace(&quot;Creating Measurement Map Pane&quot;);</b>
+<i>123</i>&nbsp;		
+<b class="nc"><i>124</i>&nbsp;		updateMeasurements();</b>
+<i>125</i>&nbsp;		
+<b class="nc"><i>126</i>&nbsp;		cbExcludeOutside.setSelected(false);</b>
+<i>127</i>&nbsp;		
+<b class="nc"><i>128</i>&nbsp;		final ToggleButton toggleShowMap = new ToggleButton(&quot;Show map&quot;);</b>
+<b class="nc"><i>129</i>&nbsp;		toggleShowMap.setTooltip(new Tooltip(&quot;Show/hide the map&quot;));</b>
+<b class="nc"><i>130</i>&nbsp;		toggleShowMap.setSelected(true);</b>
+<b class="nc"><i>131</i>&nbsp;		showMap = toggleShowMap.selectedProperty();</b>
+<b class="nc"><i>132</i>&nbsp;		showMap.addListener((v, o, n) -&gt; updateMap());</b>
+<i>133</i>&nbsp;		
+<b class="nc"><i>134</i>&nbsp;		listMeasurements.getSelectionModel().selectedItemProperty().addListener((e, f, g) -&gt; updateMap());</b>
+<b class="nc"><i>135</i>&nbsp;		listMeasurements.setTooltip(new Tooltip(&quot;List of available measurements&quot;));</b>
+<i>136</i>&nbsp;		
+<b class="nc"><i>137</i>&nbsp;		pane.setCenter(listMeasurements);</b>
+<i>138</i>&nbsp;		
+<b class="nc"><i>139</i>&nbsp;		cbExcludeOutside.selectedProperty().addListener((e, f, g) -&gt; updateDisplay());</b>
+<i>140</i>&nbsp;		
+<b class="nc"><i>141</i>&nbsp;		sliderMin.valueProperty().addListener((e, f, g) -&gt; updateDisplay());</b>
+<b class="nc"><i>142</i>&nbsp;		sliderMax.valueProperty().addListener((e, f, g) -&gt; updateDisplay());</b>
+<i>143</i>&nbsp;		
+<b class="nc"><i>144</i>&nbsp;		sliderMin.setTooltip(new Tooltip(&quot;Min display value&quot;));</b>
+<b class="nc"><i>145</i>&nbsp;		sliderMax.setTooltip(new Tooltip(&quot;Max display value&quot;));</b>
+<i>146</i>&nbsp;		
+<b class="nc"><i>147</i>&nbsp;		BorderPane panelLabels = new BorderPane();</b>
+<b class="nc"><i>148</i>&nbsp;		labelMax.setTextAlignment(TextAlignment.RIGHT);</b>
+<b class="nc"><i>149</i>&nbsp;		labelMin.setTextAlignment(TextAlignment.LEFT);</b>
+<b class="nc"><i>150</i>&nbsp;		labelMin.addEventFilter(MouseEvent.MOUSE_CLICKED, e -&gt; setSliderValue(sliderMin, &quot;Set minimum display&quot;));</b>
+<b class="nc"><i>151</i>&nbsp;		labelMax.addEventFilter(MouseEvent.MOUSE_CLICKED, e -&gt; setSliderValue(sliderMax, &quot;Set maximum display&quot;));</b>
+<i>152</i>&nbsp;//		labelMin.setOnMouseClicked(e -&gt; {
+<i>153</i>&nbsp;//			if (e.getClickCount() == 2) {
+<i>154</i>&nbsp;//				String input = DisplayHelpers.showInputDialog(&quot;Set minimum value&quot;, &quot;Enter the minimum value for the measurement map&quot;, Double.toString(sliderMin.getValue()));
+<i>155</i>&nbsp;//				if (input == null || input.trim().isEmpty())
+<i>156</i>&nbsp;//					return;
+<i>157</i>&nbsp;//				try {
+<i>158</i>&nbsp;//					double val = Double.parseDouble(input);
+<i>159</i>&nbsp;//					sliderMin.setValue(val);
+<i>160</i>&nbsp;//				} catch (NumberFormatException ex) {
+<i>161</i>&nbsp;//					logger.error(&quot;Unable to parse number from {}&quot;, input);
+<i>162</i>&nbsp;//				}
+<i>163</i>&nbsp;//			}
+<i>164</i>&nbsp;//		});
+<b class="nc"><i>165</i>&nbsp;		panelLabels.setLeft(labelMin);</b>
+<b class="nc"><i>166</i>&nbsp;		panelLabels.setRight(labelMax);</b>
+<i>167</i>&nbsp;		
+<b class="nc"><i>168</i>&nbsp;		Button btnRefresh = new Button(&quot;Update map&quot;);</b>
+<b class="nc"><i>169</i>&nbsp;		btnRefresh.setTooltip(new Tooltip(&quot;Update map data &amp; recompute the min/max settings used to display colors&quot;));</b>
+<b class="nc"><i>170</i>&nbsp;		btnRefresh.setOnAction(e -&gt; {</b>
+<b class="nc"><i>171</i>&nbsp;			updateMeasurements();</b>
+<b class="nc"><i>172</i>&nbsp;			mapperMap.clear();</b>
+<b class="nc"><i>173</i>&nbsp;			updateMap();</b>
+<i>174</i>&nbsp;		}
+<i>175</i>&nbsp;				);
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;		double canvasHeight = 10;</b>
+<b class="nc"><i>178</i>&nbsp;		colorMapperKey = new Canvas() {</b>
+<i>179</i>&nbsp;			@Override
+<i>180</i>&nbsp;			public double minHeight(double width) {
+<b class="nc"><i>181</i>&nbsp;			    return canvasHeight;</b>
+<i>182</i>&nbsp;			}
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;			@Override
+<i>185</i>&nbsp;			public double maxHeight(double width) {
+<b class="nc"><i>186</i>&nbsp;			    return canvasHeight;</b>
+<i>187</i>&nbsp;			}
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;			@Override
+<i>190</i>&nbsp;			public double prefHeight(double width) {
+<b class="nc"><i>191</i>&nbsp;			    return canvasHeight;</b>
+<i>192</i>&nbsp;			}
+<i>193</i>&nbsp;			
+<i>194</i>&nbsp;			@Override
+<i>195</i>&nbsp;			public double minWidth(double width) {
+<b class="nc"><i>196</i>&nbsp;				return 0;</b>
+<i>197</i>&nbsp;			}
+<i>198</i>&nbsp;			
+<i>199</i>&nbsp;			@Override
+<i>200</i>&nbsp;			public double maxWidth(double width) {
+<b class="nc"><i>201</i>&nbsp;				return Double.MAX_VALUE;</b>
+<i>202</i>&nbsp;			}
+<i>203</i>&nbsp;			
+<i>204</i>&nbsp;			@Override
+<i>205</i>&nbsp;			public boolean isResizable() {
+<b class="nc"><i>206</i>&nbsp;				return true;</b>
+<i>207</i>&nbsp;			}
+<i>208</i>&nbsp;			
+<i>209</i>&nbsp;			@Override
+<i>210</i>&nbsp;			public void resize(double width, double height)	{
+<b class="nc"><i>211</i>&nbsp;			    super.setWidth(width);</b>
+<b class="nc"><i>212</i>&nbsp;			    super.setHeight(height);</b>
+<b class="nc"><i>213</i>&nbsp;			    updateColorMapperKey();</b>
+<i>214</i>&nbsp;			}
+<i>215</i>&nbsp;		};
+<b class="nc"><i>216</i>&nbsp;		Tooltip.install(colorMapperKey, new Tooltip(&quot;Measurement map key&quot;));</b>
+<i>217</i>&nbsp;		
+<i>218</i>&nbsp;		// Filter to reduce visible measurements
+<b class="nc"><i>219</i>&nbsp;		TextField tfFilter = new TextField();</b>
+<b class="nc"><i>220</i>&nbsp;		tfFilter.setTooltip(new Tooltip(&quot;Enter text to filter measurement list&quot;));</b>
+<b class="nc"><i>221</i>&nbsp;		tfFilter.setPromptText(&quot;Filter measurement list&quot;);</b>
+<b class="nc"><i>222</i>&nbsp;		tfFilter.textProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>223</i>&nbsp;			String val = n.trim().toLowerCase();			</b>
+<b class="nc"><i>224</i>&nbsp;			filteredList.setPredicate(s -&gt; {</b>
+<b class="nc"><i>225</i>&nbsp;				if (val.isEmpty())</b>
+<b class="nc"><i>226</i>&nbsp;					return true;</b>
+<b class="nc"><i>227</i>&nbsp;				return s.toLowerCase().contains(val);</b>
+<i>228</i>&nbsp;			});
+<i>229</i>&nbsp;		});
+<b class="nc"><i>230</i>&nbsp;		BorderPane paneFilter = new BorderPane();</b>
+<b class="nc"><i>231</i>&nbsp;		paneFilter.setPadding(new Insets(5, 0, 10, 0));</b>
+<b class="nc"><i>232</i>&nbsp;		paneFilter.setCenter(tfFilter);</b>
+<i>233</i>&nbsp;		
+<i>234</i>&nbsp;		// Create a color mapper combobox
+<b class="nc"><i>235</i>&nbsp;		ComboBox&lt;ColorMapper&gt; comboMapper = new ComboBox&lt;&gt;(colorMappers);</b>
+<b class="nc"><i>236</i>&nbsp;		selectedColorMapper = comboMapper.getSelectionModel().selectedItemProperty();</b>
+<b class="nc"><i>237</i>&nbsp;		String name = preferredMapperName.get();</b>
+<b class="nc"><i>238</i>&nbsp;		if (name != null) {</b>
+<b class="nc"><i>239</i>&nbsp;			for (var mapper : colorMappers) {</b>
+<b class="nc"><i>240</i>&nbsp;				if (name.equalsIgnoreCase(mapper.getName())) {</b>
+<b class="nc"><i>241</i>&nbsp;					comboMapper.getSelectionModel().select(mapper);</b>
+<b class="nc"><i>242</i>&nbsp;					break;</b>
+<i>243</i>&nbsp;				}
+<b class="nc"><i>244</i>&nbsp;			}</b>
+<i>245</i>&nbsp;		}
+<b class="nc"><i>246</i>&nbsp;		if (comboMapper.getSelectionModel().isEmpty() &amp;&amp; !comboMapper.getItems().isEmpty())</b>
+<b class="nc"><i>247</i>&nbsp;			comboMapper.getSelectionModel().selectFirst();</b>
+<b class="nc"><i>248</i>&nbsp;		comboMapper.setTooltip(new Tooltip(&quot;Select color map&quot;));</b>
+<b class="nc"><i>249</i>&nbsp;		selectedColorMapper.addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>250</i>&nbsp;			updateMap();</b>
+<b class="nc"><i>251</i>&nbsp;			if (n != null)</b>
+<b class="nc"><i>252</i>&nbsp;				preferredMapperName.set(n.getName());</b>
+<i>253</i>&nbsp;		});
+<b class="nc"><i>254</i>&nbsp;		comboMapper.setMaxWidth(Double.MAX_VALUE);</b>
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;		VBox vbButtons = new VBox(</b>
+<i>257</i>&nbsp;				paneFilter,
+<i>258</i>&nbsp;				comboMapper,
+<i>259</i>&nbsp;				sliderMin,
+<i>260</i>&nbsp;				sliderMax,
+<i>261</i>&nbsp;				colorMapperKey,
+<i>262</i>&nbsp;				panelLabels,
+<i>263</i>&nbsp;				btnRefresh,
+<i>264</i>&nbsp;				toggleShowMap
+<i>265</i>&nbsp;				);
+<i>266</i>&nbsp;		
+<b class="nc"><i>267</i>&nbsp;		vbButtons.setSpacing(2);</b>
+<i>268</i>&nbsp;		
+<b class="nc"><i>269</i>&nbsp;		sliderMin.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>270</i>&nbsp;		sliderMax.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>271</i>&nbsp;		panelLabels.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>272</i>&nbsp;		btnRefresh.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>273</i>&nbsp;		toggleShowMap.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>274</i>&nbsp;		vbButtons.setFillWidth(true);</b>
+<i>275</i>&nbsp;		
+<i>276</i>&nbsp;//		GridPane.setHgrow(colorMapperKey, Priority.ALWAYS);
+<i>277</i>&nbsp;		
+<b class="nc"><i>278</i>&nbsp;		pane.setBottom(vbButtons);</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;		pane.setPadding(new Insets(10, 10, 10, 10));</b>
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;	
+<i>284</i>&nbsp;	static void setSliderValue(Slider slider, String message) {
+<b class="nc"><i>285</i>&nbsp;		Double val = Dialogs.showInputDialog(&quot;Measurement mapper&quot;, message, slider.getValue());</b>
+<b class="nc"><i>286</i>&nbsp;		if (val != null &amp;&amp; Double.isFinite(val)) {</b>
+<b class="nc"><i>287</i>&nbsp;			if (val &gt; slider.getMax())</b>
+<b class="nc"><i>288</i>&nbsp;				slider.setMax(val);</b>
+<b class="nc"><i>289</i>&nbsp;			else if (val &lt; slider.getMin())</b>
+<b class="nc"><i>290</i>&nbsp;				slider.setMin(val);</b>
+<b class="nc"><i>291</i>&nbsp;			slider.setValue(val);</b>
+<i>292</i>&nbsp;		}
+<i>293</i>&nbsp;	}
+<i>294</i>&nbsp;	
+<i>295</i>&nbsp;	/**
+<i>296</i>&nbsp;	 * Get the pane, which can be added to a scene for display.
+<i>297</i>&nbsp;	 * @return
+<i>298</i>&nbsp;	 */
+<i>299</i>&nbsp;	public Pane getPane() {
+<b class="nc"><i>300</i>&nbsp;		return pane;</b>
+<i>301</i>&nbsp;	}
+<i>302</i>&nbsp;	
+<i>303</i>&nbsp;	
+<i>304</i>&nbsp;	private void updateMap() {
+<b class="nc"><i>305</i>&nbsp;		if (showMap.get())</b>
+<b class="nc"><i>306</i>&nbsp;			showMap();</b>
+<i>307</i>&nbsp;		else
+<b class="nc"><i>308</i>&nbsp;			hideMap();</b>
+<i>309</i>&nbsp;	}
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;	private void showMap() {
+<b class="nc"><i>312</i>&nbsp;		String measurement = listMeasurements.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>313</i>&nbsp;		QuPathViewer viewer = qupath.getViewer();</b>
+<b class="nc"><i>314</i>&nbsp;		if (viewer == null || measurement == null)</b>
+<i>315</i>&nbsp;			return;
+<i>316</i>&nbsp;		// Reuse mappers if we can
+<b class="nc"><i>317</i>&nbsp;		mapper = mapperMap.get(measurement);</b>
+<b class="nc"><i>318</i>&nbsp;		var colorMapper = selectedColorMapper.getValue();</b>
+<b class="nc"><i>319</i>&nbsp;		if (mapper == null) {</b>
+<b class="nc"><i>320</i>&nbsp;			mapper = new MeasurementMapper(colorMapper, measurement, viewer.getHierarchy().getObjects(null, null));</b>
+<b class="nc"><i>321</i>&nbsp;			if (mapper.isValid())</b>
+<b class="nc"><i>322</i>&nbsp;				mapperMap.put(measurement, mapper);</b>
+<b class="nc"><i>323</i>&nbsp;		} else if (colorMapper != null) {</b>
+<b class="nc"><i>324</i>&nbsp;			mapper.setColorMapper(colorMapper);</b>
+<i>325</i>&nbsp;		}
+<b class="nc"><i>326</i>&nbsp;		if (mapper != null &amp;&amp; mapper.isValid()) {</b>
+<b class="nc"><i>327</i>&nbsp;			updatingSliders = true;</b>
+<b class="nc"><i>328</i>&nbsp;			sliderMin.setMin(Math.min(mapper.getDataMinValue(), mapper.getDisplayMinValue()));</b>
+<b class="nc"><i>329</i>&nbsp;			sliderMin.setMax(Math.max(mapper.getDataMaxValue(), mapper.getDisplayMaxValue()));</b>
+<b class="nc"><i>330</i>&nbsp;			sliderMin.setValue(mapper.getDisplayMinValue());</b>
+<b class="nc"><i>331</i>&nbsp;			sliderMin.setBlockIncrement((sliderMin.getMax() - sliderMin.getMin()) / 100);</b>
+<i>332</i>&nbsp;			
+<b class="nc"><i>333</i>&nbsp;			sliderMax.setMin(Math.min(mapper.getDataMinValue(), mapper.getDisplayMinValue()));</b>
+<b class="nc"><i>334</i>&nbsp;			sliderMax.setMax(Math.max(mapper.getDataMaxValue(), mapper.getDisplayMaxValue()));</b>
+<b class="nc"><i>335</i>&nbsp;			sliderMax.setValue(mapper.getDisplayMaxValue());		</b>
+<b class="nc"><i>336</i>&nbsp;			sliderMax.setBlockIncrement((sliderMax.getMax() - sliderMax.getMin()) / 100);</b>
+<b class="nc"><i>337</i>&nbsp;			updatingSliders = false;</b>
+<i>338</i>&nbsp;		}
+<i>339</i>&nbsp;
+<b class="nc"><i>340</i>&nbsp;		colorMapperKeyImage = createPanelKey(mapper.getColorMapper());</b>
+<b class="nc"><i>341</i>&nbsp;		updateColorMapperKey();</b>
+<b class="nc"><i>342</i>&nbsp;		mapper.setExcludeOutsideRange(cbExcludeOutside.isSelected());</b>
+<b class="nc"><i>343</i>&nbsp;		viewer.forceOverlayUpdate();</b>
+<b class="nc"><i>344</i>&nbsp;		updateMapperBrightnessContrast();</b>
+<b class="nc"><i>345</i>&nbsp;		OverlayOptions overlayOptions = viewer.getOverlayOptions();</b>
+<b class="nc"><i>346</i>&nbsp;		if (overlayOptions != null)</b>
+<b class="nc"><i>347</i>&nbsp;			overlayOptions.setMeasurementMapper(mapper);		</b>
+<i>348</i>&nbsp;	}
+<i>349</i>&nbsp;	
+<i>350</i>&nbsp;	
+<i>351</i>&nbsp;	private void updateColorMapperKey() {
+<b class="nc"><i>352</i>&nbsp;		GraphicsContext gc = colorMapperKey.getGraphicsContext2D();</b>
+<b class="nc"><i>353</i>&nbsp;		double w = colorMapperKey.getWidth();</b>
+<b class="nc"><i>354</i>&nbsp;		double h = colorMapperKey.getHeight();</b>
+<b class="nc"><i>355</i>&nbsp;		gc.clearRect(0, 0, w, h);</b>
+<b class="nc"><i>356</i>&nbsp;		if (colorMapperKeyImage != null)</b>
+<b class="nc"><i>357</i>&nbsp;			gc.drawImage(colorMapperKeyImage,</b>
+<b class="nc"><i>358</i>&nbsp;					0, 0, colorMapperKeyImage.getWidth(), colorMapperKeyImage.getHeight(),</b>
+<i>359</i>&nbsp;					0, 0, w, h);
+<i>360</i>&nbsp;	}
+<i>361</i>&nbsp;	
+<i>362</i>&nbsp;	
+<i>363</i>&nbsp;	private void updateMapperBrightnessContrast() {
+<b class="nc"><i>364</i>&nbsp;		if (mapper == null || updatingSliders)</b>
+<i>365</i>&nbsp;			return;
+<i>366</i>&nbsp;		
+<b class="nc"><i>367</i>&nbsp;		double minValue = sliderMin.getValue();</b>
+<b class="nc"><i>368</i>&nbsp;		double maxValue = sliderMax.getValue();</b>
+<i>369</i>&nbsp;		
+<b class="nc"><i>370</i>&nbsp;		labelMin.setText(String.format(&quot;%.2f&quot;, minValue));</b>
+<b class="nc"><i>371</i>&nbsp;		labelMax.setText(String.format(&quot;%.2f&quot;, maxValue));</b>
+<i>372</i>&nbsp;		
+<b class="nc"><i>373</i>&nbsp;		mapper.setDisplayMinValue(minValue);</b>
+<b class="nc"><i>374</i>&nbsp;		mapper.setDisplayMaxValue(maxValue);</b>
+<b class="nc"><i>375</i>&nbsp;		mapper.setExcludeOutsideRange(cbExcludeOutside.isSelected());</b>
+<i>376</i>&nbsp;	}
+<i>377</i>&nbsp;	
+<i>378</i>&nbsp;	
+<i>379</i>&nbsp;	
+<i>380</i>&nbsp;	private void hideMap() {
+<b class="nc"><i>381</i>&nbsp;		QuPathViewer viewer = qupath.getViewer();</b>
+<b class="nc"><i>382</i>&nbsp;		if (viewer != null) {</b>
+<b class="nc"><i>383</i>&nbsp;			OverlayOptions overlayOptions = viewer.getOverlayOptions();</b>
+<b class="nc"><i>384</i>&nbsp;			if (overlayOptions != null)</b>
+<b class="nc"><i>385</i>&nbsp;				overlayOptions.resetMeasurementMapper();</b>
+<i>386</i>&nbsp;//			viewer.resetMeasurementMapper();
+<i>387</i>&nbsp;		}
+<i>388</i>&nbsp;	}
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;	/**
+<i>391</i>&nbsp;	 * Update the measurements according to the current image
+<i>392</i>&nbsp;	 */
+<i>393</i>&nbsp;	public void updateMeasurements() {
+<b class="nc"><i>394</i>&nbsp;		QuPathViewer viewer = qupath.getViewer();</b>
+<b class="nc"><i>395</i>&nbsp;		PathObjectHierarchy hierarchy = viewer.getHierarchy();</b>
+<b class="nc"><i>396</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="nc"><i>397</i>&nbsp;			baseList.clear();</b>
+<i>398</i>&nbsp;			return;
+<i>399</i>&nbsp;		}
+<i>400</i>&nbsp;		
+<b class="nc"><i>401</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = hierarchy.getDetectionObjects();</b>
+<b class="nc"><i>402</i>&nbsp;		Set&lt;String&gt; measurements = PathClassifierTools.getAvailableFeatures(pathObjects);</b>
+<b class="nc"><i>403</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>404</i>&nbsp;			if (!Double.isNaN(pathObject.getClassProbability())) {</b>
+<b class="nc"><i>405</i>&nbsp;				measurements.add(&quot;Class probability&quot;);</b>
+<b class="nc"><i>406</i>&nbsp;				break;</b>
+<i>407</i>&nbsp;			}
+<b class="nc"><i>408</i>&nbsp;		}</b>
+<i>409</i>&nbsp;		
+<i>410</i>&nbsp;		// Apply any changes
+<b class="nc"><i>411</i>&nbsp;		baseList.setAll(measurements);</b>
+<i>412</i>&nbsp;	}
+<i>413</i>&nbsp;	
+<i>414</i>&nbsp;	
+<i>415</i>&nbsp;	
+<i>416</i>&nbsp;	private void updateDisplay() {
+<b class="nc"><i>417</i>&nbsp;		updateMapperBrightnessContrast();</b>
+<b class="nc"><i>418</i>&nbsp;		for (var viewer : qupath.getViewers())</b>
+<b class="nc"><i>419</i>&nbsp;			viewer.forceOverlayUpdate();</b>
+<i>420</i>&nbsp;//		viewer.repaint();
+<i>421</i>&nbsp;	}
+<i>422</i>&nbsp;	
+<i>423</i>&nbsp;	
+<i>424</i>&nbsp;	
+<i>425</i>&nbsp;	private static Image createPanelKey(final ColorMapper colorMapper) {
+<b class="nc"><i>426</i>&nbsp;		BufferedImage imgKey = new BufferedImage(255, 10, BufferedImage.TYPE_INT_ARGB);</b>
+<b class="nc"><i>427</i>&nbsp;		if (colorMapper != null) {</b>
+<b class="nc"><i>428</i>&nbsp;			for (int i = 0; i &lt; imgKey.getWidth(); i++) {</b>
+<b class="nc"><i>429</i>&nbsp;				Integer rgb = colorMapper.getColor(i, 0, 254);</b>
+<b class="nc"><i>430</i>&nbsp;				for (int j = 0; j &lt; imgKey.getHeight(); j++) {</b>
+<b class="nc"><i>431</i>&nbsp;					imgKey.setRGB(i, j, rgb);</b>
+<i>432</i>&nbsp;				}
+<i>433</i>&nbsp;			}
+<i>434</i>&nbsp;		}
+<b class="nc"><i>435</i>&nbsp;		Image img = SwingFXUtils.toFXImage(imgKey, null);</b>
+<b class="nc"><i>436</i>&nbsp;		return img;</b>
+<i>437</i>&nbsp;	}
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

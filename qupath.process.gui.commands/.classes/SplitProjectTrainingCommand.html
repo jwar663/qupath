@@ -1,0 +1,392 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SplitProjectTrainingCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SplitProjectTrainingCommand (qupath.process.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SplitProjectTrainingCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    23.5%
+  </span>
+  <span class="absValue">
+    (4/ 17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SplitProjectTrainingCommand$TrainTestSplitter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 81)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.1%
+  </span>
+  <span class="absValue">
+    (4/ 98)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.File;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.slf4j.Logger;
+<i>31</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>34</i>&nbsp;import javafx.scene.control.Dialog;
+<i>35</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>36</i>&nbsp;import javafx.scene.layout.Pane;
+<i>37</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>38</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>39</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>40</i>&nbsp;import qupath.lib.gui.panes.ProjectBrowser;
+<i>41</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>42</i>&nbsp;import qupath.lib.projects.Project;
+<i>43</i>&nbsp;import qupath.lib.projects.ProjectIO;
+<i>44</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * Divide a project into training, validation and test sets but flagging individual image entries.
+<i>48</i>&nbsp; * 
+<i>49</i>&nbsp; * @author Pete Bankhead
+<i>50</i>&nbsp; *
+<i>51</i>&nbsp; */
+<i>52</i>&nbsp;public class SplitProjectTrainingCommand implements Runnable {
+<i>53</i>&nbsp;	
+<b class="fc"><i>54</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(SplitProjectTrainingCommand.class);</b>
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	/**
+<i>57</i>&nbsp;	 * Metadata key for the flag indicating the image type (Train, Validation, Test or None).
+<i>58</i>&nbsp;	 */
+<i>59</i>&nbsp;	public static final String TRAIN_VALIDATION_TEST_METADATA_KEY = &quot;Train/Validation/Test type&quot;;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;	/**
+<i>62</i>&nbsp;	 * Metadata value for training images.
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	public static final String VALUE_TRAINING = &quot;Train&quot;;
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * Metadata value for validation images.
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	public static final String VALUE_VALIDATION = &quot;Validation&quot;;
+<i>70</i>&nbsp;	
+<i>71</i>&nbsp;	/**
+<i>72</i>&nbsp;	 * Metadata value for test images.
+<i>73</i>&nbsp;	 */
+<i>74</i>&nbsp;	public static final String VALUE_TEST = &quot;Test&quot;;
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Metadata value for unassigned images.
+<i>78</i>&nbsp;	 */
+<i>79</i>&nbsp;	public static final String VALUE_NONE = &quot;None&quot;;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;	private final QuPathGUI qupath;
+<i>82</i>&nbsp;	private TrainTestSplitter splitter;
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	/**
+<i>85</i>&nbsp;	 * Constructor.
+<i>86</i>&nbsp;	 * @param qupath
+<i>87</i>&nbsp;	 */
+<b class="fc"><i>88</i>&nbsp;	public SplitProjectTrainingCommand(final QuPathGUI qupath) {</b>
+<b class="fc"><i>89</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>90</i>&nbsp;	}</b>
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;	@Override
+<i>93</i>&nbsp;	public void run() {
+<b class="nc"><i>94</i>&nbsp;		Project&lt;BufferedImage&gt; project = qupath.getProject();</b>
+<b class="nc"><i>95</i>&nbsp;		if (project == null) {</b>
+<b class="nc"><i>96</i>&nbsp;			Dialogs.showErrorMessage(&quot;Split project&quot;, &quot;No project available!&quot;);</b>
+<b class="nc"><i>97</i>&nbsp;			return;</b>
+<i>98</i>&nbsp;		}
+<b class="nc"><i>99</i>&nbsp;		Dialog&lt;ButtonType&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc"><i>100</i>&nbsp;		if (splitter == null)</b>
+<b class="nc"><i>101</i>&nbsp;			splitter = new TrainTestSplitter();</b>
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		dialog.setTitle(&quot;Train/Validation/Test split&quot;);</b>
+<b class="nc"><i>104</i>&nbsp;		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);</b>
+<b class="nc"><i>105</i>&nbsp;		dialog.getDialogPane().setContent(splitter.getPane());</b>
+<i>106</i>&nbsp;		
+<b class="nc"><i>107</i>&nbsp;		if (dialog.showAndWait().orElse(ButtonType.CANCEL).equals(ButtonType.OK)) {</b>
+<b class="nc"><i>108</i>&nbsp;			splitter.doSplit(project);</b>
+<i>109</i>&nbsp;		}
+<i>110</i>&nbsp;		
+<b class="nc"><i>111</i>&nbsp;	}</b>
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;	static class TrainTestSplitter {
+<i>115</i>&nbsp;		
+<b class="nc"><i>116</i>&nbsp;		private BorderPane pane = new BorderPane();</b>
+<i>117</i>&nbsp;		private ParameterList params;
+<i>118</i>&nbsp;		
+<b class="nc"><i>119</i>&nbsp;		TrainTestSplitter() {</b>
+<b class="nc"><i>120</i>&nbsp;			init();</b>
+<i>121</i>&nbsp;		}
+<i>122</i>&nbsp;		
+<i>123</i>&nbsp;		private void init() {
+<i>124</i>&nbsp;
+<b class="nc"><i>125</i>&nbsp;			params = new ParameterList()</b>
+<b class="nc"><i>126</i>&nbsp;					.addIntParameter(&quot;nTrain&quot;, &quot;Training set size&quot;, 50, null, &quot;Choose number of images in the training set&quot;)</b>
+<b class="nc"><i>127</i>&nbsp;					.addIntParameter(&quot;nValidation&quot;, &quot;Validation set size&quot;, 25, null, &quot;Choose number of images in the validation set&quot;)</b>
+<b class="nc"><i>128</i>&nbsp;					.addIntParameter(&quot;nTest&quot;, &quot;Test set size&quot;, 25, null, &quot;Choose number of images in the test set&quot;)</b>
+<b class="nc"><i>129</i>&nbsp;					.addBooleanParameter(&quot;fixedCounts&quot;, &quot;Use absolute set sizes&quot;, false, </b>
+<i>130</i>&nbsp;							&quot;If checked, use the exact numbers of images specified for each set&quot;)
+<b class="nc"><i>131</i>&nbsp;					.addBooleanParameter(&quot;generateProjects&quot;, &quot;Generate separate projects&quot;, false, </b>
+<i>132</i>&nbsp;							&quot;If checked, create new .qpproj files if necessary for train/validation/test splits&quot;)
+<i>133</i>&nbsp;					;
+<i>134</i>&nbsp;			
+<i>135</i>&nbsp;//			params = new ParameterList()
+<i>136</i>&nbsp;//					.addIntParameter(&quot;nTrain&quot;, &quot;Training set size&quot;, 0, null, 0, nImages, &quot;Choose number of images in the training set&quot;)
+<i>137</i>&nbsp;//					.addIntParameter(&quot;nValidation&quot;, &quot;Validation set size&quot;, 0, null, 0, nImages, &quot;Choose number of images in the valiation set&quot;)
+<i>138</i>&nbsp;//					.addIntParameter(&quot;nTest&quot;, &quot;Test set size&quot;, 0, null, 0, nImages, &quot;Choose number of images in the test set&quot;)
+<i>139</i>&nbsp;//					.addBooleanParameter(&quot;fixedCounts&quot;, &quot;Use absolute set sizes&quot;, false, 
+<i>140</i>&nbsp;//							&quot;If checked, use the exact numbers of images specified for each set&quot;)
+<i>141</i>&nbsp;//					.addBooleanParameter(&quot;generateProjects&quot;, &quot;Generate separate projects&quot;, false, 
+<i>142</i>&nbsp;//							&quot;If checked, create new .qpproj files if necessary for train/validation/test splits&quot;)
+<i>143</i>&nbsp;//					;
+<i>144</i>&nbsp;			
+<i>145</i>&nbsp;			
+<b class="nc"><i>146</i>&nbsp;			ParameterPanelFX panel = new ParameterPanelFX(params);</b>
+<b class="nc"><i>147</i>&nbsp;			pane.setCenter(panel.getPane());</b>
+<i>148</i>&nbsp;		}
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		void doSplit(final Project&lt;BufferedImage&gt; project) {
+<b class="nc"><i>151</i>&nbsp;			if (project == null) {</b>
+<b class="nc"><i>152</i>&nbsp;				logger.warn(&quot;Attempted to split null project!&quot;);</b>
+<i>153</i>&nbsp;				return;
+<i>154</i>&nbsp;			}
+<i>155</i>&nbsp;			// Get a list of the project entries
+<b class="nc"><i>156</i>&nbsp;			List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; entries = project.getImageList();</b>
+<b class="nc"><i>157</i>&nbsp;			if (entries.isEmpty()) {</b>
+<b class="nc"><i>158</i>&nbsp;				Dialogs.showWarningNotification(&quot;Train/test split&quot;, &quot;No images in the project!&quot;);</b>
+<i>159</i>&nbsp;				return;
+<i>160</i>&nbsp;			}
+<i>161</i>&nbsp;			
+<i>162</i>&nbsp;			// Parse arguments
+<b class="nc"><i>163</i>&nbsp;			int nTrain = params.getIntParameterValue(&quot;nTrain&quot;);</b>
+<b class="nc"><i>164</i>&nbsp;			int nValidation = params.getIntParameterValue(&quot;nValidation&quot;);</b>
+<b class="nc"><i>165</i>&nbsp;			int nTest = params.getIntParameterValue(&quot;nTest&quot;);</b>
+<i>166</i>&nbsp;			
+<i>167</i>&nbsp;			// -1 means &#39;everything else&#39;
+<b class="nc"><i>168</i>&nbsp;			int nImages = entries.size();</b>
+<b class="nc"><i>169</i>&nbsp;			if (nTrain &lt; 0) {</b>
+<b class="nc"><i>170</i>&nbsp;				if (nValidation &lt; 0 || nTest &lt; 0) {</b>
+<b class="nc"><i>171</i>&nbsp;					Dialogs.showErrorMessage(&quot;Train/test split&quot;, &quot;Only one set can be &lt; 0 (meaning &#39;all other images&#39;)!&quot;);</b>
+<i>172</i>&nbsp;					return;
+<i>173</i>&nbsp;				} else
+<b class="nc"><i>174</i>&nbsp;					nTrain = nImages - nValidation - nTest;</b>
+<b class="nc"><i>175</i>&nbsp;			} else if (nValidation &lt; 0) {</b>
+<b class="nc"><i>176</i>&nbsp;				if (nTest &lt; 0) {</b>
+<b class="nc"><i>177</i>&nbsp;					Dialogs.showErrorMessage(&quot;Train/test split&quot;, &quot;Only one set can be &lt; 0 (meaning &#39;all other images&#39;)!&quot;);</b>
+<i>178</i>&nbsp;					return;
+<i>179</i>&nbsp;				} else
+<b class="nc"><i>180</i>&nbsp;					nValidation = nImages - nTrain - nTest;</b>
+<b class="nc"><i>181</i>&nbsp;			} else if (nTest &lt; 0) {</b>
+<b class="nc"><i>182</i>&nbsp;				nTest = nImages - nTrain - nValidation;</b>
+<i>183</i>&nbsp;			}
+<b class="nc"><i>184</i>&nbsp;			int nRequested = nTrain + nValidation + nTest;</b>
+<b class="nc"><i>185</i>&nbsp;			boolean fixedCounts = params.getBooleanParameterValue(&quot;fixedCounts&quot;);</b>
+<i>186</i>&nbsp;			
+<i>187</i>&nbsp;			// Check if we have enough
+<b class="nc"><i>188</i>&nbsp;			if (fixedCounts &amp;&amp; nRequested &gt; entries.size()) {</b>
+<b class="nc"><i>189</i>&nbsp;				Dialogs.showErrorMessage(&quot;Train/test split&quot;, </b>
+<b class="nc"><i>190</i>&nbsp;						String.format(&quot;Not enough images in project!\n%d available, %d requested.&quot;, entries.size(), nRequested));</b>
+<i>191</i>&nbsp;				return;
+<i>192</i>&nbsp;			}
+<i>193</i>&nbsp;			
+<i>194</i>&nbsp;			// See how much to increment the counter each time
+<b class="nc"><i>195</i>&nbsp;			double inc = fixedCounts ? 1 : (double)nRequested / entries.size();</b>
+<i>196</i>&nbsp;				
+<i>197</i>&nbsp;			// Shuffle the entries in a new list
+<b class="nc"><i>198</i>&nbsp;			entries = new ArrayList&lt;&gt;(entries);</b>
+<b class="nc"><i>199</i>&nbsp;			Collections.shuffle(entries);</b>
+<i>200</i>&nbsp;			
+<i>201</i>&nbsp;			// Collect the different entries in case we need to generate projects
+<b class="nc"><i>202</i>&nbsp;			List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; trainEntries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>203</i>&nbsp;			List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; validationEntries = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>204</i>&nbsp;			List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; testEntries = new ArrayList&lt;&gt;();</b>
+<i>205</i>&nbsp;			
+<i>206</i>&nbsp;			// Set the training flag
+<b class="nc"><i>207</i>&nbsp;			int count = 0;</b>
+<b class="nc"><i>208</i>&nbsp;			while (count * inc &lt; nTrain &amp;&amp; count &lt; entries.size()) {</b>
+<b class="nc"><i>209</i>&nbsp;				entries.get(count).putMetadataValue(TRAIN_VALIDATION_TEST_METADATA_KEY, VALUE_TRAINING);</b>
+<b class="nc"><i>210</i>&nbsp;				trainEntries.add(entries.get(count));</b>
+<b class="nc"><i>211</i>&nbsp;				count++;</b>
+<i>212</i>&nbsp;			}
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;			// Set the validation flag
+<b class="nc"><i>215</i>&nbsp;			while (count * inc &lt; nTrain + nValidation &amp;&amp; count &lt; entries.size()) {</b>
+<b class="nc"><i>216</i>&nbsp;				entries.get(count).putMetadataValue(TRAIN_VALIDATION_TEST_METADATA_KEY, VALUE_VALIDATION);</b>
+<b class="nc"><i>217</i>&nbsp;				validationEntries.add(entries.get(count));</b>
+<b class="nc"><i>218</i>&nbsp;				count++;</b>
+<i>219</i>&nbsp;			}
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;			// Set the test flag
+<b class="nc"><i>222</i>&nbsp;			while (count * inc &lt; nTrain + nValidation + nTest &amp;&amp; count &lt; entries.size()) {</b>
+<b class="nc"><i>223</i>&nbsp;				entries.get(count).putMetadataValue(TRAIN_VALIDATION_TEST_METADATA_KEY, VALUE_TEST);</b>
+<b class="nc"><i>224</i>&nbsp;				testEntries.add(entries.get(count));</b>
+<b class="nc"><i>225</i>&nbsp;				count++;</b>
+<i>226</i>&nbsp;			}
+<i>227</i>&nbsp;			
+<i>228</i>&nbsp;			// Clear flag for any others
+<b class="nc"><i>229</i>&nbsp;			while (count &lt; entries.size()) {</b>
+<b class="nc"><i>230</i>&nbsp;				entries.get(count).putMetadataValue(TRAIN_VALIDATION_TEST_METADATA_KEY, VALUE_NONE);</b>
+<b class="nc"><i>231</i>&nbsp;				count++;</b>
+<i>232</i>&nbsp;			}
+<i>233</i>&nbsp;			
+<i>234</i>&nbsp;			// Save projects if we need to
+<b class="nc"><i>235</i>&nbsp;			if (Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;generateProjects&quot;))) {</b>
+<i>236</i>&nbsp;				
+<b class="nc"><i>237</i>&nbsp;				String ext = ProjectIO.getProjectExtension(true);</b>
+<i>238</i>&nbsp;				File fileOrig;
+<b class="nc"><i>239</i>&nbsp;				if (&quot;file&quot;.equals(project.getURI().getScheme()))</b>
+<b class="nc"><i>240</i>&nbsp;					fileOrig = new File(project.getURI());</b>
+<i>241</i>&nbsp;				else {
+<b class="nc"><i>242</i>&nbsp;					fileOrig = Dialogs.promptToSaveFile(&quot;Project file&quot;, null, null, &quot;QuPath project&quot;, ext);</b>
+<b class="nc"><i>243</i>&nbsp;					if (fileOrig == null) {</b>
+<i>244</i>&nbsp;						// Save the main project
+<b class="nc"><i>245</i>&nbsp;						ProjectBrowser.syncProject(project);</b>
+<i>246</i>&nbsp;						return;
+<i>247</i>&nbsp;					}
+<i>248</i>&nbsp;				}
+<i>249</i>&nbsp;				
+<b class="nc"><i>250</i>&nbsp;				String baseName = fileOrig.getName();</b>
+<b class="nc"><i>251</i>&nbsp;				if (baseName.toLowerCase().endsWith(ext))</b>
+<b class="nc"><i>252</i>&nbsp;					baseName = baseName.substring(0, baseName.length()-ext.length());</b>
+<i>253</i>&nbsp;
+<b class="nc"><i>254</i>&nbsp;				String nameTrain = baseName + &quot;-train&quot;;</b>
+<b class="nc"><i>255</i>&nbsp;				String nameValidation = baseName + &quot;-validation&quot;;</b>
+<b class="nc"><i>256</i>&nbsp;				String nameTest = baseName + &quot;-test&quot;;</b>
+<b class="nc"><i>257</i>&nbsp;				if (!trainEntries.isEmpty()) {</b>
+<b class="nc"><i>258</i>&nbsp;					Project&lt;BufferedImage&gt; projectTemp = project.createSubProject(nameTrain, trainEntries);</b>
+<b class="nc"><i>259</i>&nbsp;					ProjectBrowser.syncProject(projectTemp);</b>
+<i>260</i>&nbsp;				}
+<b class="nc"><i>261</i>&nbsp;				if (!validationEntries.isEmpty()) {</b>
+<b class="nc"><i>262</i>&nbsp;					Project&lt;BufferedImage&gt; projectTemp = project.createSubProject(nameValidation, validationEntries);</b>
+<b class="nc"><i>263</i>&nbsp;					ProjectBrowser.syncProject(projectTemp);</b>
+<i>264</i>&nbsp;				}
+<b class="nc"><i>265</i>&nbsp;				if (!testEntries.isEmpty()) {</b>
+<b class="nc"><i>266</i>&nbsp;					Project&lt;BufferedImage&gt; projectTemp = project.createSubProject(nameTest, testEntries);</b>
+<b class="nc"><i>267</i>&nbsp;					ProjectBrowser.syncProject(projectTemp);</b>
+<i>268</i>&nbsp;				}
+<i>269</i>&nbsp;			}
+<i>270</i>&nbsp;			
+<i>271</i>&nbsp;			// Save the main project
+<b class="nc"><i>272</i>&nbsp;			ProjectBrowser.syncProject(project);</b>
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;		}
+<i>275</i>&nbsp;		
+<i>276</i>&nbsp;		public Pane getPane() {
+<b class="nc"><i>277</i>&nbsp;			return pane;</b>
+<i>278</i>&nbsp;		}
+<i>279</i>&nbsp;		
+<i>280</i>&nbsp;	}
+<i>281</i>&nbsp;	
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

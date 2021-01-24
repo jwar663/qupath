@@ -1,0 +1,418 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OpenslideImageServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers.openslide</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OpenslideImageServer (qupath.lib.images.servers.openslide)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OpenslideImageServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 121)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images.servers.openslide;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Color;
+<i>27</i>&nbsp;import java.awt.Graphics2D;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.awt.image.DataBufferInt;
+<i>30</i>&nbsp;import java.io.File;
+<i>31</i>&nbsp;import java.io.IOException;
+<i>32</i>&nbsp;import java.net.URI;
+<i>33</i>&nbsp;import java.util.ArrayList;
+<i>34</i>&nbsp;import java.util.Arrays;
+<i>35</i>&nbsp;import java.util.Collection;
+<i>36</i>&nbsp;import java.util.Collections;
+<i>37</i>&nbsp;import java.util.List;
+<i>38</i>&nbsp;import java.util.Map;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import org.openslide.AssociatedImage;
+<i>41</i>&nbsp;import org.openslide.OpenSlide;
+<i>42</i>&nbsp;import org.slf4j.Logger;
+<i>43</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import com.google.gson.GsonBuilder;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>48</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>49</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>50</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ImageResolutionLevel;
+<i>51</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>52</i>&nbsp;import qupath.lib.images.servers.TileRequest;
+<i>53</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.DefaultImageServerBuilder;
+<i>54</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * ImageServer implementation using OpenSlide.
+<i>58</i>&nbsp; * 
+<i>59</i>&nbsp; * @author Pete Bankhead
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; */
+<i>62</i>&nbsp;public class OpenslideImageServer extends AbstractTileableImageServer {
+<i>63</i>&nbsp;	
+<b class="nc"><i>64</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(OpenslideImageServer.class);</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;	private static boolean useBoundingBoxes = true;</b>
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;	private List&lt;String&gt; associatedImageList = null;</b>
+<b class="nc"><i>71</i>&nbsp;	private Map&lt;String, AssociatedImage&gt; associatedImages = null;</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	private OpenSlide osr;
+<i>74</i>&nbsp;	private Color backgroundColor;
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	private int boundsX, boundsY, boundsWidth, boundsHeight;
+<i>77</i>&nbsp;	
+<i>78</i>&nbsp;	private URI uri;
+<i>79</i>&nbsp;	private String[] args;
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	private static double readNumericPropertyOrDefault(Map&lt;String, String&gt; properties, String name, double defaultValue) {
+<i>83</i>&nbsp;		// Try to read a tile size
+<b class="nc"><i>84</i>&nbsp;		String value = properties.get(name);</b>
+<b class="nc"><i>85</i>&nbsp;		if (value == null) {</b>
+<b class="nc"><i>86</i>&nbsp;			logger.warn(&quot;Openslide: Property &#39;{}&#39; not available, will return default value {}&quot;, name, defaultValue);</b>
+<b class="nc"><i>87</i>&nbsp;			return defaultValue;</b>
+<i>88</i>&nbsp;		}
+<i>89</i>&nbsp;		try {
+<b class="nc"><i>90</i>&nbsp;			return Double.parseDouble(value);</b>
+<b class="nc"><i>91</i>&nbsp;		} catch (NumberFormatException e) {</b>
+<b class="nc"><i>92</i>&nbsp;			logger.error(&quot;Openslide: Could not parse property &#39;{}&#39; with value {} as a number, will return default value {}&quot;, name, value, defaultValue);</b>
+<b class="nc"><i>93</i>&nbsp;			return defaultValue;</b>
+<i>94</i>&nbsp;		}
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Create an ImageServer using OpenSlide for the specified file.
+<i>99</i>&nbsp;	 * &lt;p&gt;
+<i>100</i>&nbsp;	 * The only supported arg is {@code --no-crop}, to specify that any bounding box should not be 
+<i>101</i>&nbsp;	 * applied (which was the default in QuPath &amp;lt;= v0.1.2).
+<i>102</i>&nbsp;	 * 
+<i>103</i>&nbsp;	 * @param uri
+<i>104</i>&nbsp;	 * @param args
+<i>105</i>&nbsp;	 * @throws IOException
+<i>106</i>&nbsp;	 */
+<i>107</i>&nbsp;	public OpenslideImageServer(URI uri, String...args) throws IOException {
+<b class="nc"><i>108</i>&nbsp;		super();</b>
+<b class="nc"><i>109</i>&nbsp;		this.uri = uri;</b>
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;		// Ensure the garbage collector has run - otherwise any previous attempts to load the required native library
+<i>112</i>&nbsp;		// from different classloader are likely to cause an error (although upon first further investigation it seems this doesn&#39;t really solve the problem...)
+<b class="nc"><i>113</i>&nbsp;		System.gc();</b>
+<b class="nc"><i>114</i>&nbsp;		File file = new File(uri);</b>
+<b class="nc"><i>115</i>&nbsp;		osr = new OpenSlide(file);</b>
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;		// Parse the parameters
+<b class="nc"><i>118</i>&nbsp;		int width = (int)osr.getLevel0Width();</b>
+<b class="nc"><i>119</i>&nbsp;		int height = (int)osr.getLevel0Height();</b>
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;		Map&lt;String, String&gt; properties = osr.getProperties();</b>
+<i>122</i>&nbsp;		
+<b class="nc"><i>123</i>&nbsp;		boolean applyBounds = useBoundingBoxes;</b>
+<b class="nc"><i>124</i>&nbsp;		for (String arg : args) {</b>
+<b class="nc"><i>125</i>&nbsp;			if (&quot;--no-crop&quot;.equals(arg))</b>
+<b class="nc"><i>126</i>&nbsp;				applyBounds = false;</b>
+<i>127</i>&nbsp;		}
+<i>128</i>&nbsp;		
+<i>129</i>&nbsp;		// Read bounds
+<b class="nc"><i>130</i>&nbsp;		boolean isCropped = false;</b>
+<b class="nc"><i>131</i>&nbsp;		if (applyBounds &amp;&amp; properties.keySet().containsAll(</b>
+<b class="nc"><i>132</i>&nbsp;				Arrays.asList(</b>
+<i>133</i>&nbsp;						OpenSlide.PROPERTY_NAME_BOUNDS_X,
+<i>134</i>&nbsp;						OpenSlide.PROPERTY_NAME_BOUNDS_Y,
+<i>135</i>&nbsp;						OpenSlide.PROPERTY_NAME_BOUNDS_WIDTH,
+<i>136</i>&nbsp;						OpenSlide.PROPERTY_NAME_BOUNDS_HEIGHT
+<i>137</i>&nbsp;						)
+<i>138</i>&nbsp;				)) {
+<i>139</i>&nbsp;			try {
+<b class="nc"><i>140</i>&nbsp;				boundsX = Integer.parseInt(properties.get(OpenSlide.PROPERTY_NAME_BOUNDS_X));</b>
+<b class="nc"><i>141</i>&nbsp;				boundsY = Integer.parseInt(properties.get(OpenSlide.PROPERTY_NAME_BOUNDS_Y));</b>
+<b class="nc"><i>142</i>&nbsp;				boundsWidth = Integer.parseInt(properties.get(OpenSlide.PROPERTY_NAME_BOUNDS_WIDTH));</b>
+<b class="nc"><i>143</i>&nbsp;				boundsHeight = Integer.parseInt(properties.get(OpenSlide.PROPERTY_NAME_BOUNDS_HEIGHT));</b>
+<b class="nc"><i>144</i>&nbsp;				isCropped = boundsWidth != width &amp;&amp; boundsHeight != height;</b>
+<b class="nc"><i>145</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>146</i>&nbsp;				boundsX = 0;</b>
+<b class="nc"><i>147</i>&nbsp;				boundsY = 0;</b>
+<b class="nc"><i>148</i>&nbsp;				boundsWidth = width;</b>
+<b class="nc"><i>149</i>&nbsp;				boundsHeight = height;</b>
+<b class="nc"><i>150</i>&nbsp;			}</b>
+<i>151</i>&nbsp;		} else {
+<b class="nc"><i>152</i>&nbsp;			boundsWidth = width;</b>
+<b class="nc"><i>153</i>&nbsp;			boundsHeight = height;</b>
+<i>154</i>&nbsp;		}
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;		// Try to read a tile size
+<b class="nc"><i>157</i>&nbsp;		int tileWidth = (int)readNumericPropertyOrDefault(properties, &quot;openslide.level[0].tile-width&quot;, 256);</b>
+<b class="nc"><i>158</i>&nbsp;		int tileHeight = (int)readNumericPropertyOrDefault(properties, &quot;openslide.level[0].tile-height&quot;, 256);</b>
+<i>159</i>&nbsp;		// Read other properties
+<b class="nc"><i>160</i>&nbsp;		double pixelWidth = readNumericPropertyOrDefault(properties, OpenSlide.PROPERTY_NAME_MPP_X, Double.NaN);</b>
+<b class="nc"><i>161</i>&nbsp;		double pixelHeight = readNumericPropertyOrDefault(properties, OpenSlide.PROPERTY_NAME_MPP_Y, Double.NaN);</b>
+<b class="nc"><i>162</i>&nbsp;		double magnification = readNumericPropertyOrDefault(properties, OpenSlide.PROPERTY_NAME_OBJECTIVE_POWER, Double.NaN);</b>
+<i>163</i>&nbsp;		
+<i>164</i>&nbsp;		// Make sure the pixel sizes are valid
+<b class="nc"><i>165</i>&nbsp;		if (pixelWidth &lt;= 0 || pixelHeight &lt;= 0 || Double.isInfinite(pixelWidth) || Double.isInfinite(pixelHeight)) {</b>
+<b class="nc"><i>166</i>&nbsp;			logger.warn(&quot;Invalid pixel sizes {} and {}, will use default&quot;, pixelWidth, pixelHeight);</b>
+<b class="nc"><i>167</i>&nbsp;			pixelWidth = Double.NaN;</b>
+<b class="nc"><i>168</i>&nbsp;			pixelHeight = Double.NaN;</b>
+<i>169</i>&nbsp;		}
+<i>170</i>&nbsp;		
+<i>171</i>&nbsp;		// Loop through the series again &amp; determine downsamples - assume the image is not cropped for now
+<b class="nc"><i>172</i>&nbsp;		int levelCount = (int)osr.getLevelCount();</b>
+<b class="nc"><i>173</i>&nbsp;		var resolutionBuilder = new ImageResolutionLevel.Builder(width, height);</b>
+<b class="nc"><i>174</i>&nbsp;		for (int i = 0; i &lt; levelCount; i++) {</b>
+<i>175</i>&nbsp;			// When requesting downsamples from OpenSlide, these seem to be averaged from the width &amp; height ratios:
+<i>176</i>&nbsp;			// https://github.com/openslide/openslide/blob/7b99a8604f38280d14a34db6bda7a916563f96e1/src/openslide.c#L272
+<i>177</i>&nbsp;			// However this can result in inexact floating point values whenever the &#39;true&#39; downsample is 
+<i>178</i>&nbsp;			// almost certainly an integer value, therefore we prefer to use our own calculation.
+<i>179</i>&nbsp;			// Other ImageServer implementations can also draw on our calculation for consistency (or override it if they can do better).
+<b class="nc"><i>180</i>&nbsp;			int w = (int)osr.getLevelWidth(i);</b>
+<b class="nc"><i>181</i>&nbsp;			int h = (int)osr.getLevelHeight(i);</b>
+<b class="nc"><i>182</i>&nbsp;			resolutionBuilder.addLevel(w, h);</b>
+<i>183</i>&nbsp;		}
+<b class="nc"><i>184</i>&nbsp;		var levels = resolutionBuilder.build();</b>
+<i>185</i>&nbsp;		
+<b class="nc"><i>186</i>&nbsp;		String path = uri.toString();</b>
+<i>187</i>&nbsp;		
+<i>188</i>&nbsp;		// If the image is cropped, create a new list of resolution levels based on the cropped values
+<i>189</i>&nbsp;		// (We do it this elaborate way as we&#39;d like to keep the default downsample calculations based on the full image)
+<b class="nc"><i>190</i>&nbsp;		if (isCropped) {</b>
+<b class="nc"><i>191</i>&nbsp;			var resolutionBuilderCropped = new ImageResolutionLevel.Builder(boundsWidth, boundsHeight);</b>
+<b class="nc"><i>192</i>&nbsp;			for (var level : levels)</b>
+<b class="nc"><i>193</i>&nbsp;				resolutionBuilderCropped.addLevelByDownsample(level.getDownsample());</b>
+<b class="nc"><i>194</i>&nbsp;			levels = resolutionBuilderCropped.build();</b>
+<b class="nc"><i>195</i>&nbsp;			path = String.format(&quot;%s [x=%d,y=%d,w=%d,h=%d]&quot;, path, boundsX, boundsY, boundsWidth, boundsHeight);</b>
+<i>196</i>&nbsp;		}
+<i>197</i>&nbsp;		
+<i>198</i>&nbsp;		// Create metadata objects
+<b class="nc"><i>199</i>&nbsp;		this.args = args;</b>
+<b class="nc"><i>200</i>&nbsp;		originalMetadata = new ImageServerMetadata.Builder(getClass(),</b>
+<i>201</i>&nbsp;				path, boundsWidth, boundsHeight).
+<b class="nc"><i>202</i>&nbsp;				channels(ImageChannel.getDefaultRGBChannels()). // Assume 3 channels (RGB)</b>
+<b class="nc"><i>203</i>&nbsp;				name(file.getName()).</b>
+<b class="nc"><i>204</i>&nbsp;				rgb(true).</b>
+<i>205</i>&nbsp;//				args(args).
+<b class="nc"><i>206</i>&nbsp;				pixelType(PixelType.UINT8).</b>
+<b class="nc"><i>207</i>&nbsp;				preferredTileSize(tileWidth, tileHeight).</b>
+<b class="nc"><i>208</i>&nbsp;				pixelSizeMicrons(pixelWidth, pixelHeight).</b>
+<b class="nc"><i>209</i>&nbsp;				magnification(magnification).</b>
+<b class="nc"><i>210</i>&nbsp;				levels(levels).</b>
+<b class="nc"><i>211</i>&nbsp;				build();</b>
+<i>212</i>&nbsp;		
+<i>213</i>&nbsp;		/*
+<i>214</i>&nbsp;		 * TODO: Determine associated image names
+<i>215</i>&nbsp;		 * This works, but need to come up with a better way of returning usable servers
+<i>216</i>&nbsp;		 * based on the associated images
+<i>217</i>&nbsp;		 */
+<b class="nc"><i>218</i>&nbsp;		associatedImages = osr.getAssociatedImages();</b>
+<b class="nc"><i>219</i>&nbsp;		associatedImageList = new ArrayList&lt;&gt;(associatedImages.keySet());</b>
+<b class="nc"><i>220</i>&nbsp;		associatedImageList = Collections.unmodifiableList(associatedImageList);</b>
+<i>221</i>&nbsp;		
+<i>222</i>&nbsp;		// Try to get a background color
+<i>223</i>&nbsp;		try {
+<b class="nc"><i>224</i>&nbsp;			String bg = properties.get(OpenSlide.PROPERTY_NAME_BACKGROUND_COLOR);</b>
+<b class="nc"><i>225</i>&nbsp;			if (bg != null) {</b>
+<b class="nc"><i>226</i>&nbsp;				if (!bg.startsWith(&quot;#&quot;))</b>
+<b class="nc"><i>227</i>&nbsp;					bg = &quot;#&quot; + bg;</b>
+<b class="nc"><i>228</i>&nbsp;				backgroundColor = Color.decode(bg);</b>
+<i>229</i>&nbsp;			}
+<b class="nc"><i>230</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>231</i>&nbsp;			backgroundColor = null;</b>
+<b class="nc"><i>232</i>&nbsp;			logger.debug(&quot;Unable to find background color: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>233</i>&nbsp;		}</b>
+<i>234</i>&nbsp;		
+<i>235</i>&nbsp;		// Try reading a thumbnail... the point being that if this is going to fail,
+<i>236</i>&nbsp;		// we want it to fail quickly so that it may yet be possible to try another server
+<i>237</i>&nbsp;		// This can occur with corrupt .svs (.tif) files that Bioformats is able to handle better
+<i>238</i>&nbsp;		try {
+<b class="nc"><i>239</i>&nbsp;			logger.debug(&quot;Test reading thumbnail with openslide: passed (&quot; + getDefaultThumbnail(0, 0).toString() + &quot;)&quot;);</b>
+<b class="nc"><i>240</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>241</i>&nbsp;			logger.error(&quot;Unable to read thumbnail using OpenSlide: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>242</i>&nbsp;			throw(e);</b>
+<b class="nc"><i>243</i>&nbsp;		}</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;	
+<i>246</i>&nbsp;	@Override
+<i>247</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="nc"><i>248</i>&nbsp;		return Collections.singletonList(uri);</b>
+<i>249</i>&nbsp;	}
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	@Override
+<i>252</i>&nbsp;	protected String createID() {
+<b class="nc"><i>253</i>&nbsp;		return getClass().getName() + &quot;: &quot; + uri.toString();</b>
+<i>254</i>&nbsp;	}
+<i>255</i>&nbsp;	
+<i>256</i>&nbsp;	@Override
+<i>257</i>&nbsp;	public void close() {
+<b class="nc"><i>258</i>&nbsp;		if (osr != null)</b>
+<b class="nc"><i>259</i>&nbsp;			osr.close();</b>
+<i>260</i>&nbsp;	}
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;	/**
+<i>263</i>&nbsp;	 * Retrieve a JSON string representation of the properties, as stored as key-value pairs by OpenSlide.
+<i>264</i>&nbsp;	 * 
+<i>265</i>&nbsp;	 * @return
+<i>266</i>&nbsp;	 */
+<i>267</i>&nbsp;	public String dumpMetadata() {
+<b class="nc"><i>268</i>&nbsp;		return new GsonBuilder().setPrettyPrinting().create().toJson(osr.getProperties());</b>
+<i>269</i>&nbsp;	}
+<i>270</i>&nbsp;	
+<i>271</i>&nbsp;	@Override
+<i>272</i>&nbsp;	public String getServerType() {
+<b class="nc"><i>273</i>&nbsp;		return &quot;OpenSlide&quot;;</b>
+<i>274</i>&nbsp;	}
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;	@Override
+<i>277</i>&nbsp;	public BufferedImage readTile(TileRequest tileRequest) throws IOException {
+<i>278</i>&nbsp;		
+<b class="nc"><i>279</i>&nbsp;		int tileX = tileRequest.getImageX()  + boundsX;</b>
+<b class="nc"><i>280</i>&nbsp;		int tileY = tileRequest.getImageY()  + boundsY;</b>
+<b class="nc"><i>281</i>&nbsp;		int tileWidth = tileRequest.getTileWidth();</b>
+<b class="nc"><i>282</i>&nbsp;		int tileHeight = tileRequest.getTileHeight();</b>
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;//		double downsampleFactor = getPreferredDownsamplesArray()[downsampleInd];
+<b class="nc"><i>285</i>&nbsp;		BufferedImage img = new BufferedImage(tileWidth, tileHeight, BufferedImage.TYPE_INT_ARGB_PRE);</b>
+<b class="nc"><i>286</i>&nbsp;        int data[] = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();</b>
+<i>287</i>&nbsp;        
+<i>288</i>&nbsp;		// Create a thumbnail for the region
+<i>289</i>&nbsp;//        	osr.paintRegionOfLevel(g, dx, dy, sx, sy, w, h, level);
+<b class="nc"><i>290</i>&nbsp;		osr.paintRegionARGB(data, tileX, tileY, tileRequest.getLevel(), tileWidth, tileHeight);</b>
+<i>291</i>&nbsp;		
+<i>292</i>&nbsp;		// Previously tried to take shortcut and only repaint if needed - 
+<i>293</i>&nbsp;		// but transparent pixels happened too often, and it&#39;s really needed to repaint every time
+<i>294</i>&nbsp;//			if (backgroundColor == null &amp;&amp; GeneralTools.almostTheSame(downsample, downsampleFactor, 0.001))
+<i>295</i>&nbsp;//				return img;
+<i>296</i>&nbsp;		
+<b class="nc"><i>297</i>&nbsp;		BufferedImage img2 = new BufferedImage(tileWidth, tileHeight, BufferedImage.TYPE_INT_RGB);</b>
+<b class="nc"><i>298</i>&nbsp;		Graphics2D g2d = img2.createGraphics();</b>
+<b class="nc"><i>299</i>&nbsp;		if (backgroundColor != null) {</b>
+<b class="nc"><i>300</i>&nbsp;			g2d.setColor(backgroundColor);</b>
+<b class="nc"><i>301</i>&nbsp;			g2d.fillRect(0, 0, tileWidth, tileHeight);</b>
+<i>302</i>&nbsp;		}
+<b class="nc"><i>303</i>&nbsp;		g2d.drawImage(img, 0, 0, tileWidth, tileHeight, null);</b>
+<b class="nc"><i>304</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>305</i>&nbsp;		return img2;</b>
+<i>306</i>&nbsp;	}
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;	@Override
+<i>309</i>&nbsp;	public List&lt;String&gt; getAssociatedImageList() {
+<b class="nc"><i>310</i>&nbsp;		if (associatedImageList == null)</b>
+<b class="nc"><i>311</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>312</i>&nbsp;		return associatedImageList;</b>
+<i>313</i>&nbsp;	}
+<i>314</i>&nbsp;	
+<i>315</i>&nbsp;	@Override
+<i>316</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>317</i>&nbsp;		return DefaultImageServerBuilder.createInstance(OpenslideServerBuilder.class, getMetadata(), uri, args);</b>
+<i>318</i>&nbsp;	}
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;	@Override
+<i>321</i>&nbsp;	public BufferedImage getAssociatedImage(String name) {
+<i>322</i>&nbsp;		try {
+<b class="nc"><i>323</i>&nbsp;			return associatedImages.get(name).toBufferedImage();</b>
+<b class="nc"><i>324</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>325</i>&nbsp;			logger.error(&quot;Error requesting associated image &quot; + name, e);</b>
+<i>326</i>&nbsp;		}
+<b class="nc"><i>327</i>&nbsp;		throw new IllegalArgumentException(&quot;Unable to find sub-image with the name &quot; + name);</b>
+<i>328</i>&nbsp;	}
+<i>329</i>&nbsp;	
+<i>330</i>&nbsp;	@Override
+<i>331</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="nc"><i>332</i>&nbsp;		return originalMetadata;</b>
+<i>333</i>&nbsp;	}
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

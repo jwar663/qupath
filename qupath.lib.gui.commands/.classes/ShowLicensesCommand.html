@@ -1,0 +1,462 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShowLicensesCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShowLicensesCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShowLicensesCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 75)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShowLicensesCommand$FileFirstComparator</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ShowLicensesCommand$FileTreeCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ShowLicensesCommand$LicenseFileTreeItem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 134)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.net.URISyntaxException;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Comparator;
+<i>31</i>&nbsp;import java.util.stream.Collectors;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javafx.collections.ObservableList;
+<i>37</i>&nbsp;import javafx.scene.Scene;
+<i>38</i>&nbsp;import javafx.scene.control.Button;
+<i>39</i>&nbsp;import javafx.scene.control.Tab;
+<i>40</i>&nbsp;import javafx.scene.control.TabPane;
+<i>41</i>&nbsp;import javafx.scene.control.TabPane.TabClosingPolicy;
+<i>42</i>&nbsp;import javafx.scene.control.TextArea;
+<i>43</i>&nbsp;import javafx.scene.control.TreeCell;
+<i>44</i>&nbsp;import javafx.scene.control.TreeItem;
+<i>45</i>&nbsp;import javafx.scene.control.TreeView;
+<i>46</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>47</i>&nbsp;import javafx.scene.layout.Pane;
+<i>48</i>&nbsp;import javafx.stage.Modality;
+<i>49</i>&nbsp;import javafx.stage.Stage;
+<i>50</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>51</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>52</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;/**
+<i>55</i>&nbsp; * Command to show license info for QuPath and any third-party dependencies.
+<i>56</i>&nbsp; * 
+<i>57</i>&nbsp; * @author Pete Bankhead
+<i>58</i>&nbsp; *
+<i>59</i>&nbsp; */
+<b class="nc"><i>60</i>&nbsp;class ShowLicensesCommand {</b>
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ShowLicensesCommand.class);</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;	public static Stage createLicensesDialog(QuPathGUI qupath) {
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;		// Create a suitable String to show for QuPath generally
+<b class="nc"><i>67</i>&nbsp;		StringBuilder sbQuPath = new StringBuilder();</b>
+<b class="nc"><i>68</i>&nbsp;		String buildString = qupath.getBuildString();</b>
+<b class="nc"><i>69</i>&nbsp;		if (buildString != null &amp;&amp; !buildString.trim().isEmpty()) {</b>
+<b class="nc"><i>70</i>&nbsp;			sbQuPath.append(&quot;QuPath&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>71</i>&nbsp;			sbQuPath.append(buildString).append(&quot;\n\n&quot;);</b>
+<i>72</i>&nbsp;		}
+<i>73</i>&nbsp;		try {
+<b class="nc"><i>74</i>&nbsp;			String licenseText = GeneralTools.readInputStreamAsString(ShowLicensesCommand.class.getResourceAsStream(&quot;/license/QuPathLicenseDescription.txt&quot;));</b>
+<b class="nc"><i>75</i>&nbsp;			sbQuPath.append(licenseText);</b>
+<b class="nc"><i>76</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>77</i>&nbsp;			sbQuPath.append(&quot;Error reading license information!\n\n&quot;);</b>
+<b class="nc"><i>78</i>&nbsp;			sbQuPath.append(&quot;For the most up-to-date QuPath license information, see http://github.com/qupath/&quot;);</b>
+<b class="nc"><i>79</i>&nbsp;			logger.error(&quot;Cannot read license information&quot;, e);</b>
+<b class="nc"><i>80</i>&nbsp;		}</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;		// Try to get license file location
+<i>83</i>&nbsp;		// We assume it&#39;s in a license directory, located one level up from the current Jar
+<b class="nc"><i>84</i>&nbsp;		File currentFile = null;</b>
+<i>85</i>&nbsp;		try {
+<b class="nc"><i>86</i>&nbsp;			currentFile = new File(ShowLicensesCommand.class.getProtectionDomain().getCodeSource().getLocation().toURI());</b>
+<b class="nc"><i>87</i>&nbsp;			logger.info(&quot;Running file: {}&quot;, currentFile);</b>
+<b class="nc"><i>88</i>&nbsp;		} catch (URISyntaxException e) {</b>
+<b class="nc"><i>89</i>&nbsp;			logger.error(&quot;Error identifying running file&quot;, e);</b>
+<b class="nc"><i>90</i>&nbsp;		}</b>
+<b class="nc"><i>91</i>&nbsp;		File fileLicenses = null;</b>
+<b class="nc"><i>92</i>&nbsp;		if (currentFile != null &amp;&amp; currentFile.getName().toLowerCase().endsWith(&quot;.jar&quot;)) {</b>
+<b class="nc"><i>93</i>&nbsp;			File dirBase = currentFile;</b>
+<b class="nc"><i>94</i>&nbsp;			if (new File(dirBase, &quot;licenses&quot;).isDirectory())</b>
+<b class="nc"><i>95</i>&nbsp;				fileLicenses = new File(dirBase, &quot;THIRD-PARTY.txt&quot;);</b>
+<b class="nc"><i>96</i>&nbsp;			else if (new File(dirBase.getParentFile(), &quot;licenses&quot;).isDirectory())</b>
+<b class="nc"><i>97</i>&nbsp;				fileLicenses = new File(new File(dirBase.getParentFile(), &quot;licenses&quot;), &quot;THIRD-PARTY.txt&quot;);</b>
+<b class="nc"><i>98</i>&nbsp;			logger.debug(&quot;License file: {}&quot;, fileLicenses);</b>
+<i>99</i>&nbsp;		}
+<i>100</i>&nbsp;		
+<i>101</i>&nbsp;		// Create a QuPath tab
+<b class="nc"><i>102</i>&nbsp;		TextArea textAreaQuPath = getTextArea(sbQuPath.toString());</b>
+<b class="nc"><i>103</i>&nbsp;		Tab tabQuPath = new Tab(&quot;QuPath&quot;, textAreaQuPath);</b>
+<i>104</i>&nbsp;		
+<i>105</i>&nbsp;		// Create a TabPane
+<b class="nc"><i>106</i>&nbsp;		TabPane tabPane = new TabPane(tabQuPath);</b>
+<b class="nc"><i>107</i>&nbsp;		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);</b>
+<i>108</i>&nbsp;		
+<i>109</i>&nbsp;		// Add extra tabs
+<b class="nc"><i>110</i>&nbsp;		if (fileLicenses == null) {</b>
+<i>111</i>&nbsp;			// Indicate no third-party info found - probably running from an IDE...?
+<b class="nc"><i>112</i>&nbsp;			tabPane.getTabs().add(new Tab(&quot;Third party&quot;, new TextArea(&quot;No license information could be found for third party dependencies.&quot;)));</b>
+<i>113</i>&nbsp;		} else {
+<i>114</i>&nbsp;			// Include a QuPath license more prominently as its own tab, if possible
+<b class="nc"><i>115</i>&nbsp;			File filePrimaryLicense = new File(new File(fileLicenses.getParentFile(), &quot;QuPath&quot;), &quot;LICENSE.txt&quot;);</b>
+<b class="nc"><i>116</i>&nbsp;			if (filePrimaryLicense.isFile()) {</b>
+<i>117</i>&nbsp;				try {
+<b class="nc"><i>118</i>&nbsp;					tabPane.getTabs().add(new Tab(&quot;License&quot;, new TextArea(GeneralTools.readFileAsString(filePrimaryLicense.getAbsolutePath()))));									</b>
+<b class="nc"><i>119</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>120</i>&nbsp;					logger.error(&quot;Could not show QuPath&#39;s primary license file&quot;);</b>
+<b class="nc"><i>121</i>&nbsp;				}</b>
+<i>122</i>&nbsp;			}
+<i>123</i>&nbsp;			// Create a third-party licenses tab
+<b class="nc"><i>124</i>&nbsp;			tabPane.getTabs().add(new Tab(&quot;Third party&quot;, createLicenseTreePane(fileLicenses.getParentFile())));</b>
+<i>125</i>&nbsp;		}
+<i>126</i>&nbsp;		
+<i>127</i>&nbsp;		// Create and show dialog
+<b class="nc"><i>128</i>&nbsp;		Stage dialog = new Stage();</b>
+<b class="nc"><i>129</i>&nbsp;		dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>130</i>&nbsp;		dialog.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc"><i>131</i>&nbsp;		dialog.setTitle(&quot;Licenses&quot;);</b>
+<b class="nc"><i>132</i>&nbsp;		dialog.setScene(new Scene(tabPane));</b>
+<b class="nc"><i>133</i>&nbsp;		return dialog;</b>
+<i>134</i>&nbsp;	}
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;	private static TextArea getTextArea(final String contents) {
+<b class="nc"><i>138</i>&nbsp;		TextArea textArea = new TextArea();</b>
+<b class="nc"><i>139</i>&nbsp;		textArea.setPrefColumnCount(60);</b>
+<b class="nc"><i>140</i>&nbsp;		textArea.setPrefRowCount(25);</b>
+<i>141</i>&nbsp;
+<b class="nc"><i>142</i>&nbsp;		textArea.setText(contents);</b>
+<b class="nc"><i>143</i>&nbsp;		textArea.setWrapText(true);</b>
+<b class="nc"><i>144</i>&nbsp;		textArea.positionCaret(0);</b>
+<b class="nc"><i>145</i>&nbsp;		textArea.setEditable(false);</b>
+<b class="nc"><i>146</i>&nbsp;		return textArea;</b>
+<i>147</i>&nbsp;	}
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;	/**
+<i>150</i>&nbsp;	 * Create a pane for displaying license information in a readable form.
+<i>151</i>&nbsp;	 * 
+<i>152</i>&nbsp;	 * @param dirBase
+<i>153</i>&nbsp;	 * @return
+<i>154</i>&nbsp;	 */
+<i>155</i>&nbsp;	private static Pane createLicenseTreePane(final File dirBase) {
+<b class="nc"><i>156</i>&nbsp;		TreeView&lt;File&gt; tree = new TreeView&lt;&gt;();</b>
+<b class="nc"><i>157</i>&nbsp;		tree.setRoot(new LicenseFileTreeItem(dirBase));</b>
+<b class="nc"><i>158</i>&nbsp;		tree.setShowRoot(false);</b>
+<i>159</i>&nbsp;		
+<b class="nc"><i>160</i>&nbsp;		TextArea textArea = new TextArea();</b>
+<b class="nc"><i>161</i>&nbsp;		textArea.setStyle(&quot;-fx-font-family: monospace&quot;);</b>
+<b class="nc"><i>162</i>&nbsp;		textArea.setWrapText(true);</b>
+<i>163</i>&nbsp;		
+<i>164</i>&nbsp;		// Show content for selected node
+<b class="nc"><i>165</i>&nbsp;		tree.getSelectionModel().selectedItemProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>166</i>&nbsp;			if (n instanceof LicenseFileTreeItem)</b>
+<b class="nc"><i>167</i>&nbsp;				textArea.setText(((LicenseFileTreeItem)n).getContents());</b>
+<i>168</i>&nbsp;		});
+<i>169</i>&nbsp;		
+<b class="nc"><i>170</i>&nbsp;		tree.setCellFactory(n -&gt; new FileTreeCell());</b>
+<i>171</i>&nbsp;		
+<b class="nc"><i>172</i>&nbsp;		Button btnThirdParty = new Button(&quot;Open licenses directory&quot;);</b>
+<b class="nc"><i>173</i>&nbsp;		File dirLicenses = dirBase;</b>
+<b class="nc"><i>174</i>&nbsp;		btnThirdParty.setOnAction(e -&gt; {</b>
+<b class="nc"><i>175</i>&nbsp;			GuiTools.openFile(dirLicenses);</b>
+<i>176</i>&nbsp;		});
+<b class="nc"><i>177</i>&nbsp;		btnThirdParty.setMaxWidth(Double.MAX_VALUE);</b>
+<i>178</i>&nbsp;		
+<i>179</i>&nbsp;
+<b class="nc"><i>180</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>181</i>&nbsp;		pane.setLeft(tree);</b>
+<b class="nc"><i>182</i>&nbsp;		pane.setCenter(textArea);</b>
+<b class="nc"><i>183</i>&nbsp;		pane.setBottom(btnThirdParty);</b>
+<i>184</i>&nbsp;		
+<b class="nc"><i>185</i>&nbsp;		return pane;</b>
+<i>186</i>&nbsp;	}
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;	
+<i>189</i>&nbsp;	/**
+<i>190</i>&nbsp;	 * Display a file by using its name (rather than absolute path).
+<i>191</i>&nbsp;	 */
+<b class="nc"><i>192</i>&nbsp;	static class FileTreeCell extends TreeCell&lt;File&gt; {</b>
+<i>193</i>&nbsp;		
+<i>194</i>&nbsp;		@Override
+<i>195</i>&nbsp;        public void updateItem(File item, boolean empty) {
+<b class="nc"><i>196</i>&nbsp;            super.updateItem(item, empty);</b>
+<b class="nc"><i>197</i>&nbsp;            if (empty) {</b>
+<b class="nc"><i>198</i>&nbsp;                setText(null);</b>
+<b class="nc"><i>199</i>&nbsp;                setGraphic(null);</b>
+<i>200</i>&nbsp;            } else {
+<b class="nc"><i>201</i>&nbsp;            	String name = item.getName();</b>
+<b class="nc"><i>202</i>&nbsp;            	if (&quot;THIRD-PARTY.txt&quot;.equals(name))</b>
+<b class="nc"><i>203</i>&nbsp;            		name = &quot;Summary&quot;;</b>
+<b class="nc"><i>204</i>&nbsp;                setText(name);</b>
+<b class="nc"><i>205</i>&nbsp;                setGraphic(null);</b>
+<i>206</i>&nbsp;            }
+<i>207</i>&nbsp;        }
+<i>208</i>&nbsp;		
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;	
+<i>211</i>&nbsp;	
+<i>212</i>&nbsp;	/**
+<i>213</i>&nbsp;	 * TreeItem to help with the display of license information.
+<i>214</i>&nbsp;	 */
+<i>215</i>&nbsp;	static class LicenseFileTreeItem extends TreeItem&lt;File&gt; {
+<i>216</i>&nbsp;		
+<b class="nc"><i>217</i>&nbsp;		private static FileFirstComparator comparator = new FileFirstComparator();</b>
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;		private boolean isDirectory;
+<i>220</i>&nbsp;		private boolean hasCheckedChildren;
+<i>221</i>&nbsp;		
+<i>222</i>&nbsp;		private String contents;
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;		LicenseFileTreeItem(final File file) {
+<b class="nc"><i>225</i>&nbsp;			super(file);</b>
+<b class="nc"><i>226</i>&nbsp;			isDirectory = file.isDirectory();</b>
+<b class="nc"><i>227</i>&nbsp;			hasCheckedChildren = !isDirectory;</b>
+<i>228</i>&nbsp;		}
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;		@Override
+<i>231</i>&nbsp;		public ObservableList&lt;TreeItem&lt;File&gt;&gt; getChildren() {
+<b class="nc"><i>232</i>&nbsp;			if (!hasCheckedChildren) {</b>
+<b class="nc"><i>233</i>&nbsp;				hasCheckedChildren = true;</b>
+<b class="nc"><i>234</i>&nbsp;				super.getChildren().setAll(</b>
+<b class="nc"><i>235</i>&nbsp;						Arrays.stream(getValue().listFiles())</b>
+<b class="nc"><i>236</i>&nbsp;							.filter(f -&gt; !f.isHidden())</b>
+<b class="nc"><i>237</i>&nbsp;							.sorted(comparator)</b>
+<b class="nc"><i>238</i>&nbsp;							.map(f -&gt; new LicenseFileTreeItem(f))</b>
+<b class="nc"><i>239</i>&nbsp;							.collect(Collectors.toList()));</b>
+<i>240</i>&nbsp;			}
+<b class="nc"><i>241</i>&nbsp;			return super.getChildren();</b>
+<i>242</i>&nbsp;		}
+<i>243</i>&nbsp;		
+<i>244</i>&nbsp;		public String getName() {
+<b class="nc"><i>245</i>&nbsp;			return getValue().getName();</b>
+<i>246</i>&nbsp;		}
+<i>247</i>&nbsp;		
+<i>248</i>&nbsp;		public String getContents() {
+<b class="nc"><i>249</i>&nbsp;			if (contents == null) {</b>
+<b class="nc"><i>250</i>&nbsp;				if (isDirectory) {</b>
+<b class="nc"><i>251</i>&nbsp;					StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>252</i>&nbsp;					for (TreeItem&lt;File&gt; child : getChildren()) {</b>
+<b class="nc"><i>253</i>&nbsp;						if (child instanceof LicenseFileTreeItem) {</b>
+<b class="nc"><i>254</i>&nbsp;							LicenseFileTreeItem item = (LicenseFileTreeItem)child;</b>
+<b class="nc"><i>255</i>&nbsp;							sb.append(item.getName());</b>
+<b class="nc"><i>256</i>&nbsp;							sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>257</i>&nbsp;							for (int i = 0; i &lt; item.getName().length(); i++)</b>
+<b class="nc"><i>258</i>&nbsp;								sb.append(&quot;=&quot;);</b>
+<b class="nc"><i>259</i>&nbsp;							sb.append(&quot;\n\n&quot;);</b>
+<b class="nc"><i>260</i>&nbsp;							sb.append(item.getContents());</b>
+<i>261</i>&nbsp;							// Don&#39;t add another END after a directory - will already be one after any previous files
+<b class="nc"><i>262</i>&nbsp;							if (!item.isDirectory) {</b>
+<b class="nc"><i>263</i>&nbsp;								sb.append(&quot;\n\n\n&quot;);</b>
+<b class="nc"><i>264</i>&nbsp;								sb.append(&quot;==========================&quot;);</b>
+<b class="nc"><i>265</i>&nbsp;								sb.append(&quot;END&quot;);</b>
+<b class="nc"><i>266</i>&nbsp;								sb.append(&quot;==========================&quot;);</b>
+<b class="nc"><i>267</i>&nbsp;								sb.append(&quot;\n\n&quot;);</b>
+<i>268</i>&nbsp;							}
+<i>269</i>&nbsp;						}
+<b class="nc"><i>270</i>&nbsp;					}</b>
+<b class="nc"><i>271</i>&nbsp;					contents = sb.toString();</b>
+<i>272</i>&nbsp;					
+<i>273</i>&nbsp;//					contents = &quot;Directory&quot;;
+<b class="nc"><i>274</i>&nbsp;				} else {</b>
+<i>275</i>&nbsp;					try {
+<b class="nc"><i>276</i>&nbsp;						contents = GeneralTools.readFileAsString(getValue().getAbsolutePath());</b>
+<b class="nc"><i>277</i>&nbsp;					} catch (IOException e) {</b>
+<b class="nc"><i>278</i>&nbsp;						contents = &quot;Unable to read from &quot; + getValue();</b>
+<b class="nc"><i>279</i>&nbsp;					}</b>
+<i>280</i>&nbsp;				}
+<i>281</i>&nbsp;			}
+<b class="nc"><i>282</i>&nbsp;			return contents;</b>
+<i>283</i>&nbsp;		}
+<i>284</i>&nbsp;
+<i>285</i>&nbsp;		@Override
+<i>286</i>&nbsp;		public boolean isLeaf() {
+<b class="nc"><i>287</i>&nbsp;			return !isDirectory;</b>
+<i>288</i>&nbsp;		}
+<i>289</i>&nbsp;		
+<i>290</i>&nbsp;		@Override
+<i>291</i>&nbsp;		public String toString() {
+<b class="nc"><i>292</i>&nbsp;			return getName();</b>
+<i>293</i>&nbsp;		}
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;	}
+<i>296</i>&nbsp;	
+<i>297</i>&nbsp;	/**
+<i>298</i>&nbsp;	 * Comparator that returns files before directories.
+<i>299</i>&nbsp;	 */
+<b class="nc"><i>300</i>&nbsp;	static class FileFirstComparator implements Comparator&lt;File&gt; {</b>
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;		@Override
+<i>303</i>&nbsp;		public int compare(File f1, File f2) {
+<b class="nc"><i>304</i>&nbsp;			if (f1.isFile()) {</b>
+<b class="nc"><i>305</i>&nbsp;				if (!f2.isFile())</b>
+<b class="nc"><i>306</i>&nbsp;					return -1;</b>
+<b class="nc"><i>307</i>&nbsp;			} else if (f2.isFile())</b>
+<b class="nc"><i>308</i>&nbsp;				return 1;</b>
+<b class="nc"><i>309</i>&nbsp;			return f1.compareTo(f2);</b>
+<i>310</i>&nbsp;		}
+<i>311</i>&nbsp;		
+<i>312</i>&nbsp;	}
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

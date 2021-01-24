@@ -1,0 +1,927 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ExportChartPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.charts</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ExportChartPane (qupath.lib.gui.charts)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ExportChartPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 267)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ExportChartPane$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ExportChartPane$ChartStrokeWidth</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ExportChartPane$ChartStyle</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ExportChartPane$ExportResolution</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 307)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.charts;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.ByteArrayInputStream;
+<i>27</i>&nbsp;import java.io.ByteArrayOutputStream;
+<i>28</i>&nbsp;import java.io.File;
+<i>29</i>&nbsp;import java.io.IOException;
+<i>30</i>&nbsp;import java.io.ObjectInputStream;
+<i>31</i>&nbsp;import java.io.ObjectOutputStream;
+<i>32</i>&nbsp;import java.io.Serializable;
+<i>33</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>34</i>&nbsp;import java.net.URL;
+<i>35</i>&nbsp;import java.util.ArrayList;
+<i>36</i>&nbsp;import java.util.LinkedHashMap;
+<i>37</i>&nbsp;import java.util.List;
+<i>38</i>&nbsp;import java.util.Map;
+<i>39</i>&nbsp;import javax.imageio.ImageIO;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.controlsfx.control.PropertySheet;
+<i>42</i>&nbsp;import org.controlsfx.control.PropertySheet.Item;
+<i>43</i>&nbsp;import org.controlsfx.control.PropertySheet.Mode;
+<i>44</i>&nbsp;import org.slf4j.Logger;
+<i>45</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>48</i>&nbsp;import javafx.beans.property.IntegerProperty;
+<i>49</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>50</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>51</i>&nbsp;import javafx.beans.property.SimpleIntegerProperty;
+<i>52</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>53</i>&nbsp;import javafx.collections.FXCollections;
+<i>54</i>&nbsp;import javafx.collections.ObservableList;
+<i>55</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>56</i>&nbsp;import javafx.geometry.Insets;
+<i>57</i>&nbsp;import javafx.geometry.Side;
+<i>58</i>&nbsp;import javafx.scene.Node;
+<i>59</i>&nbsp;import javafx.scene.Scene;
+<i>60</i>&nbsp;import javafx.scene.SnapshotParameters;
+<i>61</i>&nbsp;import javafx.scene.chart.Axis;
+<i>62</i>&nbsp;import javafx.scene.chart.Chart;
+<i>63</i>&nbsp;import javafx.scene.chart.LineChart;
+<i>64</i>&nbsp;import javafx.scene.chart.NumberAxis;
+<i>65</i>&nbsp;import javafx.scene.chart.XYChart;
+<i>66</i>&nbsp;import javafx.scene.chart.XYChart.Data;
+<i>67</i>&nbsp;import javafx.scene.chart.XYChart.Series;
+<i>68</i>&nbsp;import javafx.scene.control.Button;
+<i>69</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>70</i>&nbsp;import javafx.scene.control.ScrollPane;
+<i>71</i>&nbsp;import javafx.scene.control.TitledPane;
+<i>72</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>73</i>&nbsp;import javafx.scene.image.Image;
+<i>74</i>&nbsp;import javafx.scene.image.WritableImage;
+<i>75</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>76</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>77</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>78</i>&nbsp;import javafx.scene.layout.Pane;
+<i>79</i>&nbsp;import javafx.scene.transform.Transform;
+<i>80</i>&nbsp;import javafx.stage.Stage;
+<i>81</i>&nbsp;import javafx.util.Callback;
+<i>82</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>83</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>84</i>&nbsp;import qupath.lib.gui.panes.PreferencePane;
+<i>85</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>86</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;/**
+<i>89</i>&nbsp; * Class for displaying a chart in an export-friendly way.
+<i>90</i>&nbsp; * 
+<i>91</i>&nbsp; * Options are provided to adjust labels, legends etc. and to save or copy the chart
+<i>92</i>&nbsp; * as an image.
+<i>93</i>&nbsp; * 
+<i>94</i>&nbsp; * @author Pete Bankhead
+<i>95</i>&nbsp; *
+<i>96</i>&nbsp; */
+<i>97</i>&nbsp;class ExportChartPane {
+<i>98</i>&nbsp;
+<b class="nc"><i>99</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ExportChartPane.class);</b>
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;	public static enum ChartStyle {</b>
+<b class="nc"><i>102</i>&nbsp;		COLOR(&quot;Color&quot;), GRAY(&quot;Gray&quot;), BLACK(&quot;Black&quot;);</b>
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;		private String name;
+<i>105</i>&nbsp;
+<b class="nc"><i>106</i>&nbsp;		ChartStyle(final String name) {</b>
+<b class="nc"><i>107</i>&nbsp;			this.name = name;</b>
+<i>108</i>&nbsp;		}
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;		public String getName() {
+<b class="nc"><i>111</i>&nbsp;			return name;</b>
+<i>112</i>&nbsp;		}
+<i>113</i>&nbsp;		
+<i>114</i>&nbsp;		private String getResourceName() {
+<b class="nc"><i>115</i>&nbsp;			switch (this) {</b>
+<i>116</i>&nbsp;			case BLACK:
+<b class="nc"><i>117</i>&nbsp;				return &quot;css/charts/chart_style_black.css&quot;;</b>
+<i>118</i>&nbsp;			case COLOR:
+<b class="nc"><i>119</i>&nbsp;				return &quot;css/charts/chart_style_color.css&quot;;</b>
+<i>120</i>&nbsp;			case GRAY:
+<b class="nc"><i>121</i>&nbsp;				return &quot;css/charts/chart_style_gray.css&quot;;</b>
+<i>122</i>&nbsp;			default:
+<b class="nc"><i>123</i>&nbsp;				return null;</b>
+<i>124</i>&nbsp;			}
+<i>125</i>&nbsp;		}
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;		public String getStylesheet() {
+<b class="nc"><i>128</i>&nbsp;			return getClass().getClassLoader().getResource(getResourceName()).toExternalForm();</b>
+<i>129</i>&nbsp;		}
+<i>130</i>&nbsp;		
+<i>131</i>&nbsp;		
+<i>132</i>&nbsp;		/**
+<i>133</i>&nbsp;		 * Request a stylesheet adapted to support a specified number of series.
+<i>134</i>&nbsp;		 * 
+<i>135</i>&nbsp;		 * @param nSeries
+<i>136</i>&nbsp;		 * @return
+<i>137</i>&nbsp;		 */
+<i>138</i>&nbsp;		public String getStylesheet(final int nSeries) {
+<b class="nc"><i>139</i>&nbsp;			String resourceName = getResourceName();</b>
+<b class="nc"><i>140</i>&nbsp;			String alternative = resourceName.replace(&quot;.css&quot;, nSeries+&quot;.css&quot;);</b>
+<b class="nc"><i>141</i>&nbsp;			URL url = getClass().getClassLoader().getResource(alternative);</b>
+<b class="nc"><i>142</i>&nbsp;			if (url == null)</b>
+<b class="nc"><i>143</i>&nbsp;				return getStylesheet();</b>
+<i>144</i>&nbsp;			else
+<b class="nc"><i>145</i>&nbsp;				return url.toExternalForm();</b>
+<i>146</i>&nbsp;		}
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;		//		@Override
+<i>149</i>&nbsp;		//		public String toString() {
+<i>150</i>&nbsp;		//			return name;
+<i>151</i>&nbsp;		//		}
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;	};
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;	public static enum ChartStrokeWidth {</b>
+<b class="nc"><i>156</i>&nbsp;		NONE(&quot;None&quot;), THINNEST(&quot;Thinnest&quot;), THIN(&quot;Thin&quot;), MODERATE(&quot;Moderate&quot;), THICK(&quot;Thick&quot;), THICKEST(&quot;Thickest&quot;);</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;		private String name;
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;		ChartStrokeWidth(final String name) {</b>
+<b class="nc"><i>161</i>&nbsp;			this.name = name;</b>
+<i>162</i>&nbsp;		}
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;		public String getName() {
+<b class="nc"><i>165</i>&nbsp;			return name;</b>
+<i>166</i>&nbsp;		}
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;		public String getStylesheet() {
+<b class="nc"><i>169</i>&nbsp;			switch (this) {</b>
+<i>170</i>&nbsp;			case MODERATE:
+<b class="nc"><i>171</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_moderate.css&quot;).toExternalForm();</b>
+<i>172</i>&nbsp;			case NONE:
+<b class="nc"><i>173</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_none.css&quot;).toExternalForm();</b>
+<i>174</i>&nbsp;			case THICK:
+<b class="nc"><i>175</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_thick.css&quot;).toExternalForm();</b>
+<i>176</i>&nbsp;			case THICKEST:
+<b class="nc"><i>177</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_thickest.css&quot;).toExternalForm();</b>
+<i>178</i>&nbsp;			case THIN:
+<b class="nc"><i>179</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_thin.css&quot;).toExternalForm();</b>
+<i>180</i>&nbsp;			case THINNEST:
+<b class="nc"><i>181</i>&nbsp;				return getClass().getClassLoader().getResource(&quot;css/charts/chart_stroke_thinnest.css&quot;).toExternalForm();</b>
+<i>182</i>&nbsp;			default:
+<b class="nc"><i>183</i>&nbsp;				return null;</b>
+<i>184</i>&nbsp;			}
+<i>185</i>&nbsp;		}
+<i>186</i>&nbsp;		
+<i>187</i>&nbsp;		/**
+<i>188</i>&nbsp;		 * Request a stylesheet adapted to support a specified number of series.
+<i>189</i>&nbsp;		 * 
+<i>190</i>&nbsp;		 * (Currently, this always returns the same, default stylesheet.  But in the future it may not...)
+<i>191</i>&nbsp;		 * 
+<i>192</i>&nbsp;		 * @param nSeries
+<i>193</i>&nbsp;		 * @return
+<i>194</i>&nbsp;		 */
+<i>195</i>&nbsp;		public String getStylesheet(final int nSeries) {
+<b class="nc"><i>196</i>&nbsp;			return getStylesheet();</b>
+<i>197</i>&nbsp;		}
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;		//		@Override
+<i>200</i>&nbsp;		//		public String toString() {
+<i>201</i>&nbsp;		//			return name;
+<i>202</i>&nbsp;		//		}
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;	};
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;	public static enum ExportResolution {</b>
+<b class="nc"><i>207</i>&nbsp;		LOW(&quot;Low&quot;, 1), MEDIUM(&quot;Medium&quot;, 2), HIGH(&quot;High&quot;, 4), HIGHEST(&quot;Highest&quot;, 8);</b>
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;		private String name;
+<i>210</i>&nbsp;		private double scale;
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;		ExportResolution(final String name, final double scale) {</b>
+<b class="nc"><i>213</i>&nbsp;			this.name = name;</b>
+<b class="nc"><i>214</i>&nbsp;			this.scale = scale;</b>
+<i>215</i>&nbsp;		}
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;		public String getName() {
+<b class="nc"><i>218</i>&nbsp;			return name;</b>
+<i>219</i>&nbsp;		}
+<i>220</i>&nbsp;
+<i>221</i>&nbsp;		public double getScale() {
+<b class="nc"><i>222</i>&nbsp;			return scale;</b>
+<i>223</i>&nbsp;		}
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;		//		@Override
+<i>226</i>&nbsp;		//		public String toString() {
+<i>227</i>&nbsp;		//			return name;
+<i>228</i>&nbsp;		//		}
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;	};
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;	private static ObjectProperty&lt;Mode&gt; persistentModeProperty = new SimpleObjectProperty&lt;&gt;(Mode.NAME);</b>
+<b class="nc"><i>233</i>&nbsp;	private static BooleanProperty persistentSolidLinesProperty = new SimpleBooleanProperty(false);</b>
+<b class="nc"><i>234</i>&nbsp;	private static ObjectProperty&lt;ChartStyle&gt; persistentChartStyleProperty = new SimpleObjectProperty&lt;&gt;(ChartStyle.COLOR);</b>
+<b class="nc"><i>235</i>&nbsp;	private static ObjectProperty&lt;ChartStrokeWidth&gt; persistentStrokeWidthProperty = new SimpleObjectProperty&lt;&gt;(ChartStrokeWidth.MODERATE);</b>
+<b class="nc"><i>236</i>&nbsp;	private static IntegerProperty requestedWidthProperty = new SimpleIntegerProperty(); //PathPrefs.createPersistentPreference(&quot;chartRequestedWidth&quot;, 0);</b>
+<b class="nc"><i>237</i>&nbsp;	private static IntegerProperty requestedHeightProperty = new SimpleIntegerProperty(); //PathPrefs.createPersistentPreference(&quot;chartRequestedHeight&quot;, 0);</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;	private static ObservableList&lt;String&gt; storedPrefs = FXCollections.observableArrayList();</b>
+<i>240</i>&nbsp;	
+<b class="nc"><i>241</i>&nbsp;	private ObjectProperty&lt;ChartStrokeWidth&gt; strokeWidthProperty = new SimpleObjectProperty&lt;&gt;(ChartStrokeWidth.MODERATE);</b>
+<b class="nc"><i>242</i>&nbsp;	private ObjectProperty&lt;ChartStyle&gt; chartStyleProperty = new SimpleObjectProperty&lt;&gt;(persistentChartStyleProperty.get());</b>
+<b class="nc"><i>243</i>&nbsp;	private ObjectProperty&lt;ExportResolution&gt; exportResolutionProperty = new SimpleObjectProperty&lt;&gt;(ExportResolution.LOW);</b>
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;	private BorderPane pane = new BorderPane();</b>
+<i>246</i>&nbsp;	private ScrollPane scrollPane;
+<i>247</i>&nbsp;	private Chart chart;
+<b class="nc"><i>248</i>&nbsp;	PropertySheet sheet = new PropertySheet();</b>
+<i>249</i>&nbsp;
+<b class="nc"><i>250</i>&nbsp;	private IntegerProperty requestedWidth = new SimpleIntegerProperty(requestedWidthProperty.get());</b>
+<b class="nc"><i>251</i>&nbsp;	private IntegerProperty requestedHeight = new SimpleIntegerProperty(requestedHeightProperty.get());</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;	private static BooleanProperty useSolidLines = new SimpleBooleanProperty(persistentSolidLinesProperty.get());</b>
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;	public ExportChartPane(final Chart chart) {</b>
+<b class="nc"><i>256</i>&nbsp;		this.chart = chart;</b>
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;		//				Node node = chart2.lookup(&quot;.chart-legend&quot;);
+<i>259</i>&nbsp;		//				System.err.println(node);
+<i>260</i>&nbsp;		//				Node node = chart2.lookup(&quot;.chart-legend&quot;);
+<i>261</i>&nbsp;		//				System.err.println(((Region)node).getChildrenUnmodifiable());
+<i>262</i>&nbsp;
+<b class="nc"><i>263</i>&nbsp;		Button btnCopy = new Button(&quot;Copy&quot;);</b>
+<b class="nc"><i>264</i>&nbsp;		btnCopy.setOnAction(e -&gt; {</b>
+<b class="nc"><i>265</i>&nbsp;			Image img = getChartImage();</b>
+<b class="nc"><i>266</i>&nbsp;			ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>267</i>&nbsp;			content.putImage(img);</b>
+<b class="nc"><i>268</i>&nbsp;			Clipboard.getSystemClipboard().setContent(content);</b>
+<i>269</i>&nbsp;		});
+<i>270</i>&nbsp;
+<b class="nc"><i>271</i>&nbsp;		Button btnSave = new Button(&quot;Save&quot;);</b>
+<b class="nc"><i>272</i>&nbsp;		btnSave.setOnAction(e -&gt; {</b>
+<b class="nc"><i>273</i>&nbsp;			Image img = getChartImage();</b>
+<b class="nc"><i>274</i>&nbsp;			String title = chart.getTitle() == null || chart.getTitle().isEmpty() ? null : chart.getTitle();</b>
+<b class="nc"><i>275</i>&nbsp;			File fileOutput = Dialogs.getChooser(chart.getScene() == null ? null : chart.getScene().getWindow()).promptToSaveFile(&quot;Save chart&quot;, null, title, &quot;PNG&quot;, &quot;.png&quot;);</b>
+<b class="nc"><i>276</i>&nbsp;			if (fileOutput != null) {</b>
+<i>277</i>&nbsp;				try {
+<b class="nc"><i>278</i>&nbsp;					ImageIO.write(SwingFXUtils.fromFXImage(img, null), &quot;png&quot;, fileOutput);</b>
+<b class="nc"><i>279</i>&nbsp;				} catch (Exception e1) {</b>
+<b class="nc"><i>280</i>&nbsp;					Dialogs.showErrorMessage(&quot;Save chart error&quot;, e1);</b>
+<b class="nc"><i>281</i>&nbsp;				}</b>
+<i>282</i>&nbsp;			}
+<i>283</i>&nbsp;		});
+<i>284</i>&nbsp;
+<b class="nc"><i>285</i>&nbsp;		Pane paneButtons = PaneTools.createColumnGridControls(btnCopy, btnSave);</b>
+<b class="nc"><i>286</i>&nbsp;		paneButtons.setPadding(new Insets(5, 5, 5, 5));</b>
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;		// Listen for changes to stroke setting
+<b class="nc"><i>289</i>&nbsp;		useSolidLines.addListener(v -&gt; updateChartStyles());</b>
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;		//		chart.getStylesheets()
+<i>292</i>&nbsp;
+<b class="nc"><i>293</i>&nbsp;		scrollPane = new ScrollPane(chart);</b>
+<b class="nc"><i>294</i>&nbsp;		scrollPane.setStyle(&quot;-fx-background: white;&quot;);</b>
+<b class="nc"><i>295</i>&nbsp;		BorderPane paneMain = new BorderPane();</b>
+<b class="nc"><i>296</i>&nbsp;		paneMain.setCenter(scrollPane);</b>
+<b class="nc"><i>297</i>&nbsp;		paneMain.setBottom(paneButtons);</b>
+<b class="nc"><i>298</i>&nbsp;		pane.setCenter(paneMain);</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;		updateChartStyles();</b>
+<i>301</i>&nbsp;
+<b class="nc"><i>302</i>&nbsp;		requestedWidth.addListener(v -&gt; refreshChartDisplay());</b>
+<b class="nc"><i>303</i>&nbsp;		requestedHeight.addListener(v -&gt; refreshChartDisplay());</b>
+<i>304</i>&nbsp;
+<b class="nc"><i>305</i>&nbsp;		sheet.modeProperty().addListener((v, o, n) -&gt; persistentModeProperty.set(n));</b>
+<b class="nc"><i>306</i>&nbsp;		sheet.setPropertyEditorFactory(new PreferencePane.PropertyEditorFactory());</b>
+<i>307</i>&nbsp;		
+<b class="nc"><i>308</i>&nbsp;		sheet.getItems().addAll(</b>
+<b class="nc"><i>309</i>&nbsp;				PreferencePane.createPropertySheetItem(chartStyleProperty, ChartStyle.class).name(&quot;Style&quot;).description(&quot;Color style for chart display&quot;).category(&quot;Display&quot;),</b>
+<b class="nc"><i>310</i>&nbsp;				PreferencePane.createPropertySheetItem(chart.titleProperty(), String.class).name(&quot;Title&quot;).description(&quot;Chart title&quot;).category(&quot;Title&quot;),</b>
+<b class="nc"><i>311</i>&nbsp;				PreferencePane.createPropertySheetItem(chart.titleSideProperty(), Side.class).name(&quot;Title side&quot;).description(&quot;Location of title&quot;).category(&quot;Title&quot;),</b>
+<b class="nc"><i>312</i>&nbsp;				PreferencePane.createPropertySheetItem(chart.legendVisibleProperty(), Boolean.class).name(&quot;Show legend&quot;).description(&quot;Show chart legend&quot;).category(&quot;Legend&quot;),</b>
+<b class="nc"><i>313</i>&nbsp;				PreferencePane.createPropertySheetItem(chart.legendSideProperty(), Side.class).name(&quot;Legend position&quot;).description(&quot;Position to display legend, relative to the chart&quot;).category(&quot;Legend&quot;)</b>
+<i>314</i>&nbsp;				);
+<i>315</i>&nbsp;
+<b class="nc"><i>316</i>&nbsp;		if (chart instanceof LineChart&lt;?, ?&gt;) {</b>
+<b class="nc"><i>317</i>&nbsp;			LineChart&lt;?, ?&gt; lineChart = (LineChart&lt;?, ?&gt;)chart;</b>
+<b class="nc"><i>318</i>&nbsp;			sheet.getItems().addAll(</b>
+<b class="nc"><i>319</i>&nbsp;					PreferencePane.createPropertySheetItem(strokeWidthProperty, ChartStrokeWidth.class).name(&quot;Line width&quot;).description(&quot;Thickness of lines used to draw on the chart&quot;).category(&quot;Display&quot;),</b>
+<b class="nc"><i>320</i>&nbsp;					PreferencePane.createPropertySheetItem(useSolidLines, Boolean.class).name(&quot;Solid lines&quot;).description(&quot;Use solid (rather than dashed) lines for all series&quot;).category(&quot;Display&quot;),</b>
+<i>321</i>&nbsp;					// Warning! Toggling on and off symbols changes any special efforts that went into creating them,
+<i>322</i>&nbsp;					// e.g. censored ticks for survival curves
+<b class="nc"><i>323</i>&nbsp;					PreferencePane.createPropertySheetItem(lineChart.createSymbolsProperty(), Boolean.class).name(&quot;Use markers&quot;).description(&quot;Use markers to indicate each data point&quot;).category(&quot;Display&quot;)</b>
+<i>324</i>&nbsp;					);
+<i>325</i>&nbsp;		}
+<i>326</i>&nbsp;
+<b class="nc"><i>327</i>&nbsp;		if (chart instanceof XYChart) {</b>
+<b class="nc"><i>328</i>&nbsp;			XYChart&lt;?, ?&gt; xyChart = (XYChart&lt;?, ?&gt;)chart;</b>
+<i>329</i>&nbsp;
+<b class="nc"><i>330</i>&nbsp;			sheet.getItems().addAll(</b>
+<b class="nc"><i>331</i>&nbsp;					PreferencePane.createPropertySheetItem(xyChart.horizontalGridLinesVisibleProperty(), Boolean.class).name(&quot;Horizontal grid lines&quot;).description(&quot;Display horizontal grid lines&quot;).category(&quot;Grid&quot;),</b>
+<b class="nc"><i>332</i>&nbsp;					PreferencePane.createPropertySheetItem(xyChart.horizontalZeroLineVisibleProperty(), Boolean.class).name(&quot;Horizontal zero line&quot;).description(&quot;Display horizontal zero line&quot;).category(&quot;Grid&quot;),</b>
+<b class="nc"><i>333</i>&nbsp;					PreferencePane.createPropertySheetItem(xyChart.verticalGridLinesVisibleProperty(), Boolean.class).name(&quot;Vertical grid lines&quot;).description(&quot;Display vertical grid lines&quot;).category(&quot;Grid&quot;),</b>
+<b class="nc"><i>334</i>&nbsp;					PreferencePane.createPropertySheetItem(xyChart.verticalZeroLineVisibleProperty(), Boolean.class).name(&quot;Vertical zero line&quot;).description(&quot;Display vertical zero line&quot;).category(&quot;Grid&quot;)</b>
+<i>335</i>&nbsp;					);
+<i>336</i>&nbsp;
+<b class="nc"><i>337</i>&nbsp;			if (xyChart.getXAxis() instanceof NumberAxis) {</b>
+<b class="nc"><i>338</i>&nbsp;				NumberAxis axis = (NumberAxis)xyChart.getXAxis();</b>
+<b class="nc"><i>339</i>&nbsp;				sheet.getItems().addAll(</b>
+<b class="nc"><i>340</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.labelProperty(), String.class).name(&quot;X axis label&quot;).description(&quot;X axis label&quot;).category(&quot;X axis&quot;),</b>
+<b class="nc"><i>341</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.autoRangingProperty(), Boolean.class).name(&quot;X axis autorange&quot;).description(&quot;Set X axis range automatically&quot;).category(&quot;X axis&quot;),</b>
+<b class="nc"><i>342</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.lowerBoundProperty(), Double.class).name(&quot;X lower bound&quot;).description(&quot;X lower bound&quot;).category(&quot;X axis&quot;),</b>
+<b class="nc"><i>343</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.upperBoundProperty(), Double.class).name(&quot;X upper bound&quot;).description(&quot;X upper bound&quot;).category(&quot;X axis&quot;),</b>
+<b class="nc"><i>344</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.tickUnitProperty(), Double.class).name(&quot;X tick unit&quot;).description(&quot;Spacing between ticks on x axis&quot;).category(&quot;X axis&quot;)</b>
+<i>345</i>&nbsp;						);
+<i>346</i>&nbsp;
+<b class="nc"><i>347</i>&nbsp;				int counter = 0;</b>
+<b class="nc"><i>348</i>&nbsp;				for (Series&lt;?, ?&gt; series : xyChart.getData()) {</b>
+<b class="nc"><i>349</i>&nbsp;					counter++;</b>
+<b class="nc"><i>350</i>&nbsp;					if (!series.nameProperty().isBound()) {</b>
+<b class="nc"><i>351</i>&nbsp;						sheet.getItems().addAll(</b>
+<b class="nc"><i>352</i>&nbsp;								PreferencePane.createPropertySheetItem(series.nameProperty(), String.class).name(&quot;Series name &quot; + counter + &quot;:&quot;).description(&quot;Name of the data in the chart (will be used for legend)&quot;).category(&quot;Series&quot;)</b>
+<i>353</i>&nbsp;								);
+<i>354</i>&nbsp;					}
+<b class="nc"><i>355</i>&nbsp;				}</b>
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;
+<b class="nc"><i>358</i>&nbsp;			} else</b>
+<b class="nc"><i>359</i>&nbsp;				sheet.getItems().add(PreferencePane.createPropertySheetItem(xyChart.getXAxis().labelProperty(), String.class).name(&quot;X axis label&quot;).description(&quot;X axis label&quot;).category(&quot;X axis&quot;));</b>
+<i>360</i>&nbsp;
+<b class="nc"><i>361</i>&nbsp;			if (xyChart.getYAxis() instanceof NumberAxis) {</b>
+<b class="nc"><i>362</i>&nbsp;				NumberAxis axis = (NumberAxis)xyChart.getYAxis();</b>
+<b class="nc"><i>363</i>&nbsp;				sheet.getItems().addAll(</b>
+<b class="nc"><i>364</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.labelProperty(), String.class).name(&quot;Y axis label&quot;).description(&quot;Y axis label&quot;).category(&quot;Y axis&quot;),</b>
+<b class="nc"><i>365</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.autoRangingProperty(), Boolean.class).name(&quot;Y axis autorange&quot;).description(&quot;Set Y axis range automatically&quot;).category(&quot;Y axis&quot;),</b>
+<b class="nc"><i>366</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.lowerBoundProperty(), Double.class).name(&quot;Y lower bound&quot;).description(&quot;Y lower bound&quot;).category(&quot;Y axis&quot;),</b>
+<b class="nc"><i>367</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.upperBoundProperty(), Double.class).name(&quot;Y upper bound&quot;).description(&quot;Y upper bound&quot;).category(&quot;Y axis&quot;),</b>
+<b class="nc"><i>368</i>&nbsp;						PreferencePane.createPropertySheetItem(axis.tickUnitProperty(), Double.class).name(&quot;Y tick unit&quot;).description(&quot;Spacing between ticks on y axis&quot;).category(&quot;Y axis&quot;)</b>
+<i>369</i>&nbsp;						);
+<b class="nc"><i>370</i>&nbsp;			} else</b>
+<b class="nc"><i>371</i>&nbsp;				sheet.getItems().add(PreferencePane.createPropertySheetItem(xyChart.getYAxis().labelProperty(), String.class).name(&quot;Y axis label&quot;).description(&quot;Y axis label&quot;).category(&quot;Y axis&quot;));</b>
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;		}
+<i>374</i>&nbsp;
+<b class="nc"><i>375</i>&nbsp;		sheet.getItems().addAll(</b>
+<b class="nc"><i>376</i>&nbsp;				PreferencePane.createPropertySheetItem(exportResolutionProperty, ExportResolution.class).name(&quot;Export resolution&quot;).description(&quot;Resolution at which to copy/save the chart&quot;).category(&quot;Export&quot;),</b>
+<b class="nc"><i>377</i>&nbsp;				PreferencePane.createPropertySheetItem(requestedWidth, Integer.class).name(&quot;Width&quot;).description(&quot;Requested chart width&quot;).category(&quot;Export&quot;),</b>
+<b class="nc"><i>378</i>&nbsp;				PreferencePane.createPropertySheetItem(requestedHeight, Integer.class).name(&quot;Height&quot;).description(&quot;Requested chart height&quot;).category(&quot;Export&quot;)</b>
+<i>379</i>&nbsp;				);
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;		chartStyleProperty.addListener(o -&gt; updateChartStyles());</b>
+<b class="nc"><i>384</i>&nbsp;		strokeWidthProperty.addListener(o -&gt; updateChartStyles());</b>
+<i>385</i>&nbsp;
+<i>386</i>&nbsp;		//		sheet.setMode(Mode.CATEGORY);
+<i>387</i>&nbsp;
+<b class="nc"><i>388</i>&nbsp;		BorderPane paneLeft = new BorderPane();</b>
+<b class="nc"><i>389</i>&nbsp;		paneLeft.setTop(initializePrefsManager());</b>
+<b class="nc"><i>390</i>&nbsp;		paneLeft.setCenter(sheet);</b>
+<b class="nc"><i>391</i>&nbsp;		pane.setLeft(paneLeft);</b>
+<i>392</i>&nbsp;
+<b class="nc"><i>393</i>&nbsp;		refreshChartDisplay();</b>
+<i>394</i>&nbsp;		
+<b class="nc"><i>395</i>&nbsp;		updateStoredPrefs();</b>
+<i>396</i>&nbsp;	}
+<i>397</i>&nbsp;
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;
+<i>400</i>&nbsp;	/**
+<i>401</i>&nbsp;	 * Get a Image of the Chart, scaled according to the requested resolution as required.
+<i>402</i>&nbsp;	 * 
+<i>403</i>&nbsp;	 * @return
+<i>404</i>&nbsp;	 */
+<i>405</i>&nbsp;	public Image getChartImage() {
+<i>406</i>&nbsp;		// Create a snapshot at the requested resolution
+<b class="nc"><i>407</i>&nbsp;		double scale = exportResolutionProperty.get().getScale();</b>
+<b class="nc"><i>408</i>&nbsp;		int w = (int)(chart.getWidth() * scale + 0.5);</b>
+<b class="nc"><i>409</i>&nbsp;		int h = (int)(chart.getHeight() * scale + 0.5);</b>
+<b class="nc"><i>410</i>&nbsp;		SnapshotParameters params = new SnapshotParameters();</b>
+<b class="nc"><i>411</i>&nbsp;		params.setTransform(Transform.scale(scale, scale));</b>
+<b class="nc"><i>412</i>&nbsp;		return chart.snapshot(params, new WritableImage(w, h));</b>
+<i>413</i>&nbsp;	}
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;
+<i>417</i>&nbsp;	/**
+<i>418</i>&nbsp;	 * Create and display an export chart panel.
+<i>419</i>&nbsp;	 * 
+<i>420</i>&nbsp;	 * @param chart The chart to display.
+<i>421</i>&nbsp;	 * @param duplicator A duplicator (optional) to create a duplicate chart, rather than using the original.
+<i>422</i>&nbsp;	 * @return
+<i>423</i>&nbsp;	 */
+<i>424</i>&nbsp;	public static ExportChartPane showExportChartDialog(final Chart chart, final Callback&lt;Chart, Chart&gt; duplicator) {
+<b class="nc"><i>425</i>&nbsp;		ExportChartPane panel = new ExportChartPane(duplicator == null ? chart : duplicator.call(chart));</b>
+<b class="nc"><i>426</i>&nbsp;		Scene scene = new Scene(panel.getPane());</b>
+<b class="nc"><i>427</i>&nbsp;		Stage stage = new Stage();</b>
+<b class="nc"><i>428</i>&nbsp;		stage.setTitle(&quot;Export chart&quot;);</b>
+<b class="nc"><i>429</i>&nbsp;		stage.setScene(scene);</b>
+<b class="nc"><i>430</i>&nbsp;		stage.show();</b>
+<b class="nc"><i>431</i>&nbsp;		panel.refreshChartDisplay();</b>
+<b class="nc"><i>432</i>&nbsp;		return panel;</b>
+<i>433</i>&nbsp;	}
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;	/**
+<i>436</i>&nbsp;	 * Create and display an export chart panel.
+<i>437</i>&nbsp;	 * 
+<i>438</i>&nbsp;	 * The supplied chart will be duplicated first, if possible.
+<i>439</i>&nbsp;	 * 
+<i>440</i>&nbsp;	 * @param chart
+<i>441</i>&nbsp;	 */
+<i>442</i>&nbsp;	public static void showExportChartDialog
+<i>443</i>&nbsp;	(final XYChart&lt;Number, Number&gt; chart) {
+<i>444</i>&nbsp;		try {
+<b class="nc"><i>445</i>&nbsp;			XYChart&lt;Number, Number&gt; chart2 = copyChart(chart);</b>
+<b class="nc"><i>446</i>&nbsp;			showExportChartDialog(chart2, null);</b>
+<b class="nc"><i>447</i>&nbsp;		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException</b>
+<i>448</i>&nbsp;				| NoSuchMethodException | SecurityException e) {
+<b class="nc"><i>449</i>&nbsp;			Dialogs.showErrorNotification(&quot;Export chart display error&quot;, &quot;Unable to duplicate chart&quot;);</b>
+<b class="nc"><i>450</i>&nbsp;			logger.error(&quot;Error duplicating chart&quot;, e);</b>
+<b class="nc"><i>451</i>&nbsp;		}</b>
+<i>452</i>&nbsp;	}
+<i>453</i>&nbsp;
+<i>454</i>&nbsp;
+<i>455</i>&nbsp;	public void refreshChartDisplay() {
+<b class="nc"><i>456</i>&nbsp;		if (chart == null || chart.getScene() == null || chart.getScene().getWindow() == null) {</b>
+<b class="nc"><i>457</i>&nbsp;			if (chart != null)</b>
+<b class="nc"><i>458</i>&nbsp;				chart.autosize();</b>
+<i>459</i>&nbsp;			return;
+<i>460</i>&nbsp;		}
+<i>461</i>&nbsp;
+<b class="nc"><i>462</i>&nbsp;		int w = GeneralTools.clipValue(requestedWidth.get(), 5, 5000);</b>
+<b class="nc"><i>463</i>&nbsp;		int h = GeneralTools.clipValue(requestedHeight.get(), 5, 5000);</b>
+<i>464</i>&nbsp;
+<b class="nc"><i>465</i>&nbsp;		if (requestedWidth.get() &lt;= 0)</b>
+<b class="nc"><i>466</i>&nbsp;			scrollPane.setFitToWidth(true);</b>
+<i>467</i>&nbsp;		else {
+<b class="nc"><i>468</i>&nbsp;			scrollPane.setFitToWidth(false);</b>
+<b class="nc"><i>469</i>&nbsp;			chart.setPrefWidth(w);</b>
+<i>470</i>&nbsp;		}
+<i>471</i>&nbsp;
+<b class="nc"><i>472</i>&nbsp;		if (requestedHeight.get() &lt;= 0)</b>
+<b class="nc"><i>473</i>&nbsp;			scrollPane.setFitToHeight(true);</b>
+<i>474</i>&nbsp;		else {
+<b class="nc"><i>475</i>&nbsp;			scrollPane.setFitToHeight(false);</b>
+<b class="nc"><i>476</i>&nbsp;			chart.setPrefHeight(h);</b>
+<i>477</i>&nbsp;		}
+<i>478</i>&nbsp;
+<b class="nc"><i>479</i>&nbsp;		chart.autosize();</b>
+<b class="nc"><i>480</i>&nbsp;		chart.requestLayout();</b>
+<i>481</i>&nbsp;
+<i>482</i>&nbsp;		// Store for next time
+<b class="nc"><i>483</i>&nbsp;		requestedWidthProperty.set(requestedWidth.get());</b>
+<b class="nc"><i>484</i>&nbsp;		requestedHeightProperty.set(requestedHeight.get());</b>
+<i>485</i>&nbsp;
+<i>486</i>&nbsp;		////		chart.setLegendSide(value);
+<i>487</i>&nbsp;		//		Region legend = (Region)chart.lookup(&quot;.chart-legend&quot;);
+<i>488</i>&nbsp;		//		chart.setLegendVisible(true);
+<i>489</i>&nbsp;		//		double dx = -legend.getWidth()-5;
+<i>490</i>&nbsp;		////		if (dx != legend.getTranslateX()) {
+<i>491</i>&nbsp;		//			legend.setTranslateX(dx);
+<i>492</i>&nbsp;		//			chart.setLegendVisible(false);
+<i>493</i>&nbsp;		//			chart.requestLayout();
+<i>494</i>&nbsp;		//			chart.autosize();
+<i>495</i>&nbsp;		//			legend.setVisible(true);
+<i>496</i>&nbsp;		////			return;
+<i>497</i>&nbsp;		////		}
+<i>498</i>&nbsp;		////		legend.setTranslateY(legend.getHeight()-20);
+<i>499</i>&nbsp;		////		chart.requestLayout();
+<i>500</i>&nbsp;
+<i>501</i>&nbsp;
+<b class="nc"><i>502</i>&nbsp;		updateChartStyles();</b>
+<i>503</i>&nbsp;	}
+<i>504</i>&nbsp;
+<i>505</i>&nbsp;
+<i>506</i>&nbsp;	private void updateChartStyles() {
+<i>507</i>&nbsp;		
+<b class="nc"><i>508</i>&nbsp;		int n = chart instanceof XYChart&lt;?, ?&gt; ? ((XYChart&lt;?, ?&gt;)chart).getData().size() : 1;</b>
+<i>509</i>&nbsp;		
+<b class="nc"><i>510</i>&nbsp;		List&lt;String&gt; stylesheets = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>511</i>&nbsp;		stylesheets.add(getClass().getClassLoader().getResource(&quot;css/charts/chart_base.css&quot;).toExternalForm());</b>
+<b class="nc"><i>512</i>&nbsp;		stylesheets.add(chartStyleProperty.get().getStylesheet(n));</b>
+<b class="nc"><i>513</i>&nbsp;		stylesheets.add(strokeWidthProperty.get().getStylesheet(n));</b>
+<b class="nc"><i>514</i>&nbsp;		if (!useSolidLines.get())</b>
+<b class="nc"><i>515</i>&nbsp;			stylesheets.add(getClass().getClassLoader().getResource(&quot;css/charts/chart_strokes_dashed.css&quot;).toExternalForm());</b>
+<i>516</i>&nbsp;
+<i>517</i>&nbsp;
+<b class="nc"><i>518</i>&nbsp;		chart.getStylesheets().setAll(stylesheets);</b>
+<i>519</i>&nbsp;		
+<i>520</i>&nbsp;		// Set the legend to be more appropriate for a line chart
+<b class="nc"><i>521</i>&nbsp;		if (chart instanceof LineChart&lt;?, ?&gt; &amp;&amp; chart.isLegendVisible())</b>
+<b class="nc"><i>522</i>&nbsp;			ChartTools.setLineChartLegendLines(chart, 25);</b>
+<i>523</i>&nbsp;
+<b class="nc"><i>524</i>&nbsp;		persistentStrokeWidthProperty.set(strokeWidthProperty.get());</b>
+<b class="nc"><i>525</i>&nbsp;		persistentChartStyleProperty.set(chartStyleProperty.get());</b>
+<b class="nc"><i>526</i>&nbsp;		persistentSolidLinesProperty.set(useSolidLines.get());</b>
+<i>527</i>&nbsp;	}
+<i>528</i>&nbsp;
+<i>529</i>&nbsp;
+<i>530</i>&nbsp;	public Pane getPane() {
+<b class="nc"><i>531</i>&nbsp;		return pane;</b>
+<i>532</i>&nbsp;	}
+<i>533</i>&nbsp;
+<i>534</i>&nbsp;	
+<i>535</i>&nbsp;	private synchronized static void updateStoredPrefs() {
+<b class="nc"><i>536</i>&nbsp;		List&lt;String&gt; prefs = new ArrayList&lt;&gt;();</b>
+<i>537</i>&nbsp;		try {
+<b class="nc"><i>538</i>&nbsp;			PathPrefs.getUserPreferences().sync();</b>
+<b class="nc"><i>539</i>&nbsp;			for (String pref : PathPrefs.getUserPreferences().keys()) {</b>
+<b class="nc"><i>540</i>&nbsp;				if (pref.startsWith(EXPORT_CHART_PREFS_KEY))</b>
+<b class="nc"><i>541</i>&nbsp;					prefs.add(pref.substring(EXPORT_CHART_PREFS_KEY.length()));</b>
+<i>542</i>&nbsp;			}
+<b class="nc"><i>543</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>544</i>&nbsp;			logger.error(&quot;Problem reading preferences&quot;, e);</b>
+<b class="nc"><i>545</i>&nbsp;		}</b>
+<b class="nc"><i>546</i>&nbsp;		if (!storedPrefs.equals(prefs))</b>
+<b class="nc"><i>547</i>&nbsp;			storedPrefs.setAll(prefs);</b>
+<i>548</i>&nbsp;	}
+<i>549</i>&nbsp;	
+<i>550</i>&nbsp;
+<i>551</i>&nbsp;	public static XYChart&lt;Number, Number&gt; copyChart(final XYChart&lt;Number, Number&gt; chart) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;		@SuppressWarnings(&quot;unchecked&quot;)
+<b class="nc"><i>554</i>&nbsp;		XYChart&lt;Number, Number&gt; chart2 = (XYChart&lt;Number, Number&gt;)chart.getClass().getConstructor(Axis.class, Axis.class).newInstance(new NumberAxis(), new NumberAxis());</b>
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;		// Set the axis appropriately
+<b class="nc"><i>557</i>&nbsp;		setAxisProperties(chart.getXAxis(), chart2.getXAxis());</b>
+<b class="nc"><i>558</i>&nbsp;		setAxisProperties(chart.getYAxis(), chart2.getYAxis());</b>
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;		// Add all the data
+<b class="nc"><i>561</i>&nbsp;		for (Series&lt;Number, Number&gt; series : chart.getData()) {</b>
+<b class="nc"><i>562</i>&nbsp;			Series&lt;Number, Number&gt; series2 = new Series&lt;&gt;();</b>
+<b class="nc"><i>563</i>&nbsp;			series2.setName(series.getName());</b>
+<b class="nc"><i>564</i>&nbsp;			for (Data&lt;Number, Number&gt; data : series.getData()) {</b>
+<b class="nc"><i>565</i>&nbsp;				series2.getData().add(new Data&lt;Number, Number&gt;(data.getXValue(), data.getYValue(), data.getExtraValue()));</b>
+<b class="nc"><i>566</i>&nbsp;			}</b>
+<b class="nc"><i>567</i>&nbsp;			chart2.getData().add(series2);</b>
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;			//			// Set visibility of nodes, as required
+<i>570</i>&nbsp;			//			int counter = 0;
+<i>571</i>&nbsp;			//			for (Data&lt;Number, Number&gt; data : series.getData()) {
+<i>572</i>&nbsp;			//				if (data.getNode() != null &amp;&amp; series2.getData().get(counter).getNode() != null) {
+<i>573</i>&nbsp;			//					series2.getData().get(counter).getNode().setVisible(data.getNode().isVisible());
+<i>574</i>&nbsp;			//				}
+<i>575</i>&nbsp;			//			}
+<b class="nc"><i>576</i>&nbsp;		}</b>
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;		// Set other main properties
+<b class="nc"><i>579</i>&nbsp;		chart2.setTitle(chart.getTitle());</b>
+<b class="nc"><i>580</i>&nbsp;		chart2.setStyle(chart.getStyle());</b>
+<i>581</i>&nbsp;
+<b class="nc"><i>582</i>&nbsp;		return chart2;</b>
+<i>583</i>&nbsp;
+<i>584</i>&nbsp;	}
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;	private static void setAxisProperties(final Axis&lt;Number&gt; axisOrig, final Axis&lt;Number&gt; axisNew) {
+<b class="nc"><i>588</i>&nbsp;		if (axisOrig instanceof NumberAxis &amp;&amp; axisNew instanceof NumberAxis) {</b>
+<b class="nc"><i>589</i>&nbsp;			NumberAxis nAxisOrig = (NumberAxis)axisOrig;</b>
+<b class="nc"><i>590</i>&nbsp;			NumberAxis nAxisNew = (NumberAxis)axisNew;</b>
+<b class="nc"><i>591</i>&nbsp;			nAxisNew.setLowerBound(nAxisOrig.getLowerBound());</b>
+<b class="nc"><i>592</i>&nbsp;			nAxisNew.setUpperBound(nAxisOrig.getUpperBound());</b>
+<b class="nc"><i>593</i>&nbsp;			nAxisNew.setTickUnit(nAxisOrig.getTickUnit());</b>
+<i>594</i>&nbsp;		}
+<b class="nc"><i>595</i>&nbsp;		axisNew.setAutoRanging(axisOrig.isAutoRanging());</b>
+<b class="nc"><i>596</i>&nbsp;		axisNew.setLabel(axisOrig.getLabel());</b>
+<i>597</i>&nbsp;	}
+<i>598</i>&nbsp;
+<i>599</i>&nbsp;
+<i>600</i>&nbsp;
+<b class="nc"><i>601</i>&nbsp;	private static String EXPORT_CHART_PREFS_KEY = &quot;chart.export.&quot;;</b>
+<i>602</i>&nbsp;
+<i>603</i>&nbsp;	/**
+<i>604</i>&nbsp;	 * Save export preferences for another occasion.
+<i>605</i>&nbsp;	 * 
+<i>606</i>&nbsp;	 * @param items
+<i>607</i>&nbsp;	 * @param name
+<i>608</i>&nbsp;	 * @throws IOException
+<i>609</i>&nbsp;	 */
+<i>610</i>&nbsp;	static void saveExportPreferences(final List&lt;Item&gt; items, final String name) throws IOException {
+<b class="nc"><i>611</i>&nbsp;		Map&lt;String, Serializable&gt; map = getPreferenceMap(items);</b>
+<b class="nc"><i>612</i>&nbsp;		try (ByteArrayOutputStream b = new ByteArrayOutputStream()){</b>
+<b class="nc"><i>613</i>&nbsp;			try (ObjectOutputStream o = new ObjectOutputStream(b)){</b>
+<b class="nc"><i>614</i>&nbsp;				o.writeObject(map);</b>
+<b class="nc"><i>615</i>&nbsp;			}</b>
+<b class="nc"><i>616</i>&nbsp;			byte[] bytes = b.toByteArray();</b>
+<b class="nc"><i>617</i>&nbsp;			PathPrefs.getUserPreferences().putByteArray(EXPORT_CHART_PREFS_KEY + name, bytes);</b>
+<b class="nc"><i>618</i>&nbsp;		}</b>
+<i>619</i>&nbsp;	}
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;	/**
+<i>622</i>&nbsp;	 * Load &amp; apply previously-saved preferences
+<i>623</i>&nbsp;	 * 
+<i>624</i>&nbsp;	 * @param items
+<i>625</i>&nbsp;	 * @param name
+<i>626</i>&nbsp;	 * @throws IOException
+<i>627</i>&nbsp;	 */
+<i>628</i>&nbsp;	static boolean loadExportPreferences(final List&lt;Item&gt; items, final String name) throws IOException, ClassNotFoundException {
+<i>629</i>&nbsp;
+<b class="nc"><i>630</i>&nbsp;		byte[] prefsArray = PathPrefs.getUserPreferences().getByteArray(EXPORT_CHART_PREFS_KEY + name, null);</b>
+<b class="nc"><i>631</i>&nbsp;		if (prefsArray == null)</b>
+<b class="nc"><i>632</i>&nbsp;			return false;</b>
+<i>633</i>&nbsp;
+<b class="nc"><i>634</i>&nbsp;		Map&lt;?, ?&gt; map = null;</b>
+<b class="nc"><i>635</i>&nbsp;		try (ByteArrayInputStream b = new ByteArrayInputStream(prefsArray)){</b>
+<b class="nc"><i>636</i>&nbsp;			try (ObjectInputStream o = new ObjectInputStream(b)){</b>
+<b class="nc"><i>637</i>&nbsp;				Object object = o.readObject();</b>
+<b class="nc"><i>638</i>&nbsp;				if (object instanceof Map)</b>
+<b class="nc"><i>639</i>&nbsp;					map = (Map&lt;?, ?&gt;)object;</b>
+<b class="nc"><i>640</i>&nbsp;			}</b>
+<b class="nc"><i>641</i>&nbsp;		}</b>
+<b class="nc"><i>642</i>&nbsp;		if (map == null)</b>
+<b class="nc"><i>643</i>&nbsp;			return false;</b>
+<i>644</i>&nbsp;		
+<b class="nc"><i>645</i>&nbsp;		int count = 0;</b>
+<b class="nc"><i>646</i>&nbsp;		for (Item item : items) {</b>
+<i>647</i>&nbsp;			// Don&#39;t want to load Series properties - these might vary
+<b class="nc"><i>648</i>&nbsp;			if (&quot;Series&quot;.equals(item.getCategory()))</b>
+<b class="nc"><i>649</i>&nbsp;				continue;</b>
+<b class="nc"><i>650</i>&nbsp;			Object value = map.get(item.getName());</b>
+<b class="nc"><i>651</i>&nbsp;			if (value != null) {</b>
+<b class="nc"><i>652</i>&nbsp;				item.setValue(value);</b>
+<b class="nc"><i>653</i>&nbsp;				count++;</b>
+<i>654</i>&nbsp;			}
+<b class="nc"><i>655</i>&nbsp;		}</b>
+<b class="nc"><i>656</i>&nbsp;		logger.debug(&quot;{} preferences set&quot;, count);</b>
+<i>657</i>&nbsp;
+<b class="nc"><i>658</i>&nbsp;		return true;</b>
+<i>659</i>&nbsp;	}
+<i>660</i>&nbsp;
+<i>661</i>&nbsp;	
+<i>662</i>&nbsp;	
+<i>663</i>&nbsp;	
+<i>664</i>&nbsp;
+<i>665</i>&nbsp;	/**
+<i>666</i>&nbsp;	 * Get a map representing all the current export preferences with Serializable values.
+<i>667</i>&nbsp;	 * 
+<i>668</i>&nbsp;	 * @param items
+<i>669</i>&nbsp;	 * @return
+<i>670</i>&nbsp;	 */
+<i>671</i>&nbsp;	static Map&lt;String, Serializable&gt; getPreferenceMap(final List&lt;Item&gt; items) {
+<b class="nc"><i>672</i>&nbsp;		Map&lt;String, Serializable&gt; prefsMap = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>673</i>&nbsp;		for (Item item : items) {</b>
+<b class="nc"><i>674</i>&nbsp;			String name = item.getName();</b>
+<b class="nc"><i>675</i>&nbsp;			Object value = item.getValue();</b>
+<b class="nc"><i>676</i>&nbsp;			if (value instanceof Serializable)</b>
+<b class="nc"><i>677</i>&nbsp;				prefsMap.put(name, (Serializable)value);</b>
+<b class="nc"><i>678</i>&nbsp;		}</b>
+<b class="nc"><i>679</i>&nbsp;		return prefsMap;</b>
+<i>680</i>&nbsp;	}
+<i>681</i>&nbsp;
+<i>682</i>&nbsp;//	/**
+<i>683</i>&nbsp;//	 * Apply a map of preferences to the current export preference items list.
+<i>684</i>&nbsp;//	 * 
+<i>685</i>&nbsp;//	 * @param items
+<i>686</i>&nbsp;//	 * @param prefsMap
+<i>687</i>&nbsp;//	 */
+<i>688</i>&nbsp;//	static void applyPreferenceMap(final List&lt;Item&gt; items, final Map&lt;String, Serializable&gt; prefsMap) {
+<i>689</i>&nbsp;//		// Create a map for easy access to items
+<i>690</i>&nbsp;//		Map&lt;String, Item&gt; itemMap = new HashMap&lt;&gt;();
+<i>691</i>&nbsp;//		for (Item item : items) {
+<i>692</i>&nbsp;//			itemMap.put(item.getName(), item);
+<i>693</i>&nbsp;//		}
+<i>694</i>&nbsp;//
+<i>695</i>&nbsp;//		// Set the value of each item
+<i>696</i>&nbsp;//		for (Entry&lt;String, Serializable&gt; entry : prefsMap.entrySet()) {
+<i>697</i>&nbsp;//			Item item = itemMap.get(entry.getKey());
+<i>698</i>&nbsp;//			if (item == null)
+<i>699</i>&nbsp;//				continue;
+<i>700</i>&nbsp;//			item.setValue(entry.getValue());
+<i>701</i>&nbsp;//		}
+<i>702</i>&nbsp;//	}
+<i>703</i>&nbsp;
+<i>704</i>&nbsp;	
+<i>705</i>&nbsp;	Node initializePrefsManager() {
+<i>706</i>&nbsp;		
+<b class="nc"><i>707</i>&nbsp;		ComboBox&lt;String&gt; combo = new ComboBox&lt;&gt;(storedPrefs);</b>
+<b class="nc"><i>708</i>&nbsp;		combo.setTooltip(new Tooltip(&quot;Previously stored preferences to use for export&quot;));</b>
+<b class="nc"><i>709</i>&nbsp;		combo.getSelectionModel().selectedItemProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>710</i>&nbsp;			if (n != null) {</b>
+<i>711</i>&nbsp;				try {
+<b class="nc"><i>712</i>&nbsp;					loadExportPreferences(sheet.getItems(), n);</b>
+<b class="nc"><i>713</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>714</i>&nbsp;					Dialogs.showErrorMessage(&quot;Error loading prefs&quot;, &quot;Sorry, unable to load preferences for &quot; + n);</b>
+<b class="nc"><i>715</i>&nbsp;					logger.error(&quot;Error loading prefs&quot;, e);</b>
+<b class="nc"><i>716</i>&nbsp;				}</b>
+<i>717</i>&nbsp;			}
+<i>718</i>&nbsp;		});
+<i>719</i>&nbsp;		
+<b class="nc"><i>720</i>&nbsp;		Button btnAdd = new Button(&quot;Add&quot;);</b>
+<b class="nc"><i>721</i>&nbsp;		btnAdd.setTooltip(new Tooltip(&quot;Add current preferences to stored list&quot;));</b>
+<b class="nc"><i>722</i>&nbsp;		btnAdd.setOnAction(e -&gt; {</b>
+<b class="nc"><i>723</i>&nbsp;			String name = Dialogs.showInputDialog(&quot;Export chart&quot;, &quot;Enter name for stored preferences&quot;, chart.getTitle());</b>
+<b class="nc"><i>724</i>&nbsp;			if (name != null &amp;&amp; !name.trim().isEmpty()) {</b>
+<i>725</i>&nbsp;				try {
+<b class="nc"><i>726</i>&nbsp;					saveExportPreferences(sheet.getItems(), name);</b>
+<b class="nc"><i>727</i>&nbsp;					updateStoredPrefs();</b>
+<b class="nc"><i>728</i>&nbsp;					combo.getSelectionModel().select(name);</b>
+<b class="nc"><i>729</i>&nbsp;				} catch (Exception e1) {</b>
+<b class="nc"><i>730</i>&nbsp;					Dialogs.showErrorMessage(&quot;Error loading prefs&quot;, &quot;Sorry, unable to save preferences &quot; + name);					</b>
+<b class="nc"><i>731</i>&nbsp;					logger.error(&quot;Error saving prefs&quot;, e1);</b>
+<b class="nc"><i>732</i>&nbsp;				}</b>
+<i>733</i>&nbsp;			}
+<i>734</i>&nbsp;		});
+<i>735</i>&nbsp;
+<b class="nc"><i>736</i>&nbsp;		Button btnRemove = new Button(&quot;Remove&quot;);</b>
+<b class="nc"><i>737</i>&nbsp;		btnRemove.setTooltip(new Tooltip(&quot;Remove current preferences from stored list&quot;));</b>
+<b class="nc"><i>738</i>&nbsp;		btnRemove.setOnAction(e -&gt; {</b>
+<b class="nc"><i>739</i>&nbsp;			String selected = combo.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>740</i>&nbsp;			if (selected != null &amp;&amp; !selected.trim().isEmpty()) {</b>
+<b class="nc"><i>741</i>&nbsp;				if (Dialogs.showConfirmDialog(&quot;Remove export prefs&quot;, &quot;Remove \&quot;&quot; + selected + &quot;\&quot;?&quot;)) {</b>
+<b class="nc"><i>742</i>&nbsp;					PathPrefs.getUserPreferences().remove(EXPORT_CHART_PREFS_KEY + selected);</b>
+<b class="nc"><i>743</i>&nbsp;					updateStoredPrefs();</b>
+<i>744</i>&nbsp;				}
+<i>745</i>&nbsp;			}
+<i>746</i>&nbsp;		});
+<i>747</i>&nbsp;		
+<i>748</i>&nbsp;		
+<b class="nc"><i>749</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>750</i>&nbsp;		combo.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>751</i>&nbsp;		pane.setCenter(combo);</b>
+<b class="nc"><i>752</i>&nbsp;		pane.setBottom(PaneTools.createColumnGridControls(btnAdd, btnRemove));</b>
+<i>753</i>&nbsp;		
+<b class="nc"><i>754</i>&nbsp;		TitledPane titledPane = new TitledPane(&quot;Presets&quot;, pane);</b>
+<b class="nc"><i>755</i>&nbsp;		titledPane.setCollapsible(false);</b>
+<b class="nc"><i>756</i>&nbsp;		return titledPane;</b>
+<i>757</i>&nbsp;	}
+<i>758</i>&nbsp;
+<i>759</i>&nbsp;
+<i>760</i>&nbsp;
+<i>761</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

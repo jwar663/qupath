@@ -1,0 +1,465 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ObjectTreeBrowser</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.panes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ObjectTreeBrowser (qupath.lib.gui.panes)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ObjectTreeBrowser</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ObjectTreeBrowser$JsonTreeItem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ObjectTreeBrowser$ObjectTreeItem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ObjectTreeBrowser$ReflectiveObjectTreeItem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 45)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 103)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.panes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.lang.reflect.Array;
+<i>27</i>&nbsp;import java.lang.reflect.Field;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.HashSet;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.Map;
+<i>33</i>&nbsp;import java.util.Set;
+<i>34</i>&nbsp;import java.util.TreeMap;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.slf4j.Logger;
+<i>37</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import com.google.gson.JsonElement;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javafx.beans.property.ReadOnlyObjectWrapper;
+<i>42</i>&nbsp;import javafx.collections.ObservableList;
+<i>43</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>44</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>45</i>&nbsp;import javafx.scene.control.TreeItem;
+<i>46</i>&nbsp;import javafx.scene.control.TreeTableColumn;
+<i>47</i>&nbsp;import javafx.scene.control.TreeTableView;
+<i>48</i>&nbsp;import qupath.lib.io.GsonTools;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * Simple browser for exploring fields (including private fields) within an object by reflection.
+<i>54</i>&nbsp; * 
+<i>55</i>&nbsp; * @author Pete Bankhead
+<i>56</i>&nbsp; *
+<i>57</i>&nbsp; */
+<b class="nc"><i>58</i>&nbsp;public class ObjectTreeBrowser {</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ObjectTreeBrowser.class);</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;	private static &lt;T&gt; TreeTableView&lt;T&gt; createTreeTable() {
+<i>63</i>&nbsp;		
+<b class="nc"><i>64</i>&nbsp;		var treeTable = new TreeTableView&lt;T&gt;();</b>
+<i>65</i>&nbsp;		
+<i>66</i>&nbsp;		// TODO: There appears to be a rendering bug when collapsing nodes (text lives on longer than it should)
+<i>67</i>&nbsp;		
+<b class="nc"><i>68</i>&nbsp;		TreeTableColumn&lt;T, String&gt; colName = new TreeTableColumn&lt;&gt;(&quot;Key&quot;);</b>
+<b class="nc"><i>69</i>&nbsp;		colName.setCellValueFactory(c -&gt; {</b>
+<b class="nc"><i>70</i>&nbsp;			if (c.getValue() instanceof ObjectTreeItem)</b>
+<b class="nc"><i>71</i>&nbsp;				return new ReadOnlyObjectWrapper&lt;&gt;(((ObjectTreeItem&lt;?&gt;)c.getValue()).getName());</b>
+<b class="nc"><i>72</i>&nbsp;			return new ReadOnlyObjectWrapper&lt;&gt;();</b>
+<i>73</i>&nbsp;		});
+<i>74</i>&nbsp;//		colName.setCellFactory(c -&gt; new TreeTableCell&lt;&gt;() {
+<i>75</i>&nbsp;//			public void updateItem(String item, boolean empty) {
+<i>76</i>&nbsp;//				super.updateItem(item, empty);
+<i>77</i>&nbsp;//				if (item == null || empty) {
+<i>78</i>&nbsp;//					setText(null);
+<i>79</i>&nbsp;//					setGraphic(null);
+<i>80</i>&nbsp;//					return;
+<i>81</i>&nbsp;//				}
+<i>82</i>&nbsp;//				setText(item);
+<i>83</i>&nbsp;//			}
+<i>84</i>&nbsp;//		});
+<i>85</i>&nbsp;		
+<b class="nc"><i>86</i>&nbsp;		TreeTableColumn&lt;T, String&gt; colValue = new TreeTableColumn&lt;&gt;(&quot;Value&quot;);</b>
+<b class="nc"><i>87</i>&nbsp;		colValue.setCellValueFactory(c -&gt; {</b>
+<b class="nc"><i>88</i>&nbsp;			if (c.getValue() instanceof ObjectTreeItem)</b>
+<b class="nc"><i>89</i>&nbsp;				return new ReadOnlyObjectWrapper&lt;&gt;(String.valueOf(((ObjectTreeItem&lt;?&gt;)c.getValue()).getValue()));</b>
+<b class="nc"><i>90</i>&nbsp;			return new ReadOnlyObjectWrapper&lt;&gt;();</b>
+<i>91</i>&nbsp;		});
+<i>92</i>&nbsp;//		colValue.setCellFactory(c -&gt; new TreeTableCell&lt;&gt;() {
+<i>93</i>&nbsp;//			public void updateItem(String item, boolean empty) {
+<i>94</i>&nbsp;//				super.updateItem(item, empty);
+<i>95</i>&nbsp;//				if (item == null || empty) {
+<i>96</i>&nbsp;//					setText(null);
+<i>97</i>&nbsp;//					setGraphic(null);
+<i>98</i>&nbsp;//					return;
+<i>99</i>&nbsp;//				}
+<i>100</i>&nbsp;//				setText(item);
+<i>101</i>&nbsp;//			}
+<i>102</i>&nbsp;//		});
+<i>103</i>&nbsp;		
+<b class="nc"><i>104</i>&nbsp;		treeTable.getColumns().add(colName);</b>
+<b class="nc"><i>105</i>&nbsp;		treeTable.getColumns().add(colValue);</b>
+<b class="nc"><i>106</i>&nbsp;		treeTable.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);</b>
+<b class="nc"><i>107</i>&nbsp;		treeTable.setEditable(false);</b>
+<i>108</i>&nbsp;		
+<i>109</i>&nbsp;		// Enable manual refreshing
+<b class="nc"><i>110</i>&nbsp;		ContextMenu menu = new ContextMenu();</b>
+<b class="nc"><i>111</i>&nbsp;		MenuItem miRefresh = new MenuItem(&quot;Refresh&quot;);</b>
+<b class="nc"><i>112</i>&nbsp;		miRefresh.setOnAction(e -&gt; {</b>
+<b class="nc"><i>113</i>&nbsp;			for (int i = 0; i &lt; treeTable.getExpandedItemCount(); i++) {</b>
+<b class="nc"><i>114</i>&nbsp;				TreeItem&lt;T&gt; item = treeTable.getTreeItem(i);</b>
+<b class="nc"><i>115</i>&nbsp;				if (item instanceof ReflectiveObjectTreeItem)</b>
+<b class="nc"><i>116</i>&nbsp;					((ReflectiveObjectTreeItem)item).invalidate();</b>
+<i>117</i>&nbsp;			}
+<b class="nc"><i>118</i>&nbsp;			treeTable.refresh();</b>
+<i>119</i>&nbsp;		});
+<b class="nc"><i>120</i>&nbsp;		menu.getItems().add(miRefresh);</b>
+<b class="nc"><i>121</i>&nbsp;		treeTable.setContextMenu(menu);</b>
+<b class="nc"><i>122</i>&nbsp;		return treeTable;</b>
+<i>123</i>&nbsp;	}
+<i>124</i>&nbsp;	
+<i>125</i>&nbsp;	/**
+<i>126</i>&nbsp;	 * Create a {@link TreeTableView} showing the names and values of object fields, accessed via reflection.
+<i>127</i>&nbsp;	 * @param name root name used to identify the provided object
+<i>128</i>&nbsp;	 * @param object the object whose fields should be inspected
+<i>129</i>&nbsp;	 * @return a view depicting object fields
+<i>130</i>&nbsp;	 */
+<i>131</i>&nbsp;	public static TreeTableView&lt;Object&gt; createObjectTreeBrowser(String name, Object object) {
+<b class="nc"><i>132</i>&nbsp;		TreeTableView&lt;Object&gt; tree = createTreeTable();</b>
+<b class="nc"><i>133</i>&nbsp;		var cls = object == null ? null : object.getClass();</b>
+<b class="nc"><i>134</i>&nbsp;		tree.setRoot(new ReflectiveObjectTreeItem(name, cls, object));</b>
+<b class="nc"><i>135</i>&nbsp;		return tree;</b>
+<i>136</i>&nbsp;	}
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	/**
+<i>139</i>&nbsp;	 * Create a {@link TreeTableView} showing the names and values of fields within a {@link JsonElement}.
+<i>140</i>&nbsp;	 * @param name root name used to identify the provided object
+<i>141</i>&nbsp;	 * @param  object the object whose fields should be inspected. If this is not already a {@link JsonElement}, 
+<i>142</i>&nbsp;	 *                an attempt will be made to convert it using {@link GsonTools}.
+<i>143</i>&nbsp;	 * @return a view depicting element fields
+<i>144</i>&nbsp;	 */
+<i>145</i>&nbsp;	public static TreeTableView&lt;JsonElement&gt; createJsonTreeBrowser(String name, Object object) {
+<b class="nc"><i>146</i>&nbsp;		JsonElement element = object instanceof JsonElement ? (JsonElement)object : GsonTools.getInstance().toJsonTree(object);</b>
+<b class="nc"><i>147</i>&nbsp;		TreeTableView&lt;JsonElement&gt; tree = createTreeTable();</b>
+<b class="nc"><i>148</i>&nbsp;		tree.setRoot(new JsonTreeItem(name, element));</b>
+<b class="nc"><i>149</i>&nbsp;		return tree;</b>
+<i>150</i>&nbsp;	}
+<i>151</i>&nbsp;
+<i>152</i>&nbsp;	static class ObjectTreeItem&lt;T&gt; extends TreeItem&lt;T&gt; {
+<i>153</i>&nbsp;		
+<i>154</i>&nbsp;		protected String name;
+<i>155</i>&nbsp;		
+<i>156</i>&nbsp;		private ObjectTreeItem(final String name, final T object) {
+<b class="nc"><i>157</i>&nbsp;			super(object);</b>
+<b class="nc"><i>158</i>&nbsp;			this.name = name;</b>
+<i>159</i>&nbsp;		}
+<i>160</i>&nbsp;		
+<i>161</i>&nbsp;		public String getName() {
+<b class="nc"><i>162</i>&nbsp;			return name;</b>
+<i>163</i>&nbsp;		}
+<i>164</i>&nbsp;		
+<i>165</i>&nbsp;		@Override
+<i>166</i>&nbsp;		public String toString() {
+<b class="nc"><i>167</i>&nbsp;			return name + &quot;: &quot; + getValue();</b>
+<i>168</i>&nbsp;		}
+<i>169</i>&nbsp;		
+<i>170</i>&nbsp;	}
+<i>171</i>&nbsp;	
+<i>172</i>&nbsp;	
+<i>173</i>&nbsp;	static class JsonTreeItem extends ObjectTreeItem&lt;JsonElement&gt; {
+<i>174</i>&nbsp;		
+<b class="nc"><i>175</i>&nbsp;		private boolean isLeaf = false;</b>
+<b class="nc"><i>176</i>&nbsp;		private boolean childrenComputed = false;</b>
+<i>177</i>&nbsp;		
+<i>178</i>&nbsp;		private JsonTreeItem(final String name, final JsonElement object) {
+<b class="nc"><i>179</i>&nbsp;			super(name, object);</b>
+<b class="nc"><i>180</i>&nbsp;			isLeaf = object == null || object.isJsonPrimitive() || object.isJsonNull();</b>
+<i>181</i>&nbsp;		}
+<i>182</i>&nbsp;		
+<i>183</i>&nbsp;		@Override
+<i>184</i>&nbsp;		public ObservableList&lt;TreeItem&lt;JsonElement&gt;&gt; getChildren() {
+<b class="nc"><i>185</i>&nbsp;			if (!isLeaf() &amp;&amp; !childrenComputed) {</b>
+<b class="nc"><i>186</i>&nbsp;				List&lt;JsonTreeItem&gt; children = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>187</i>&nbsp;				var object = getValue();</b>
+<b class="nc"><i>188</i>&nbsp;				if (object.isJsonArray()) {</b>
+<b class="nc"><i>189</i>&nbsp;					var array = object.getAsJsonArray();</b>
+<b class="nc"><i>190</i>&nbsp;					for (int i = 0; i &lt; array.size(); i++)</b>
+<b class="nc"><i>191</i>&nbsp;						children.add(new JsonTreeItem(Integer.toString(i), array.get(i)));</b>
+<b class="nc"><i>192</i>&nbsp;				} else if (object.isJsonObject()) {</b>
+<b class="nc"><i>193</i>&nbsp;					for (var entry : object.getAsJsonObject().entrySet())</b>
+<b class="nc"><i>194</i>&nbsp;						children.add(new JsonTreeItem(entry.getKey(), entry.getValue()));</b>
+<i>195</i>&nbsp;				}
+<b class="nc"><i>196</i>&nbsp;				childrenComputed = true;</b>
+<b class="nc"><i>197</i>&nbsp;				super.getChildren().setAll(children);</b>
+<i>198</i>&nbsp;			}
+<b class="nc"><i>199</i>&nbsp;			return super.getChildren();</b>
+<i>200</i>&nbsp;		}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;		@Override
+<i>203</i>&nbsp;		public boolean isLeaf() {
+<b class="nc"><i>204</i>&nbsp;			return isLeaf;</b>
+<i>205</i>&nbsp;		}
+<i>206</i>&nbsp;		
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;	
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;	static class ReflectiveObjectTreeItem extends ObjectTreeItem&lt;Object&gt; {
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;		private static Set&lt;Class&lt;?&gt;&gt; leafClasses = new HashSet&lt;&gt;(Arrays.asList(</b>
+<i>213</i>&nbsp;				Enum.class,
+<i>214</i>&nbsp;				Boolean.class,
+<i>215</i>&nbsp;				Byte.class,
+<i>216</i>&nbsp;				Short.class,
+<i>217</i>&nbsp;				Integer.class,
+<i>218</i>&nbsp;				Long.class,
+<i>219</i>&nbsp;				Float.class,
+<i>220</i>&nbsp;				Double.class,
+<i>221</i>&nbsp;				Character.class,
+<i>222</i>&nbsp;				String.class,
+<i>223</i>&nbsp;				Array.class
+<i>224</i>&nbsp;				));
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;		private Class&lt;?&gt; cls;
+<b class="nc"><i>227</i>&nbsp;		private boolean isLeaf = false;</b>
+<b class="nc"><i>228</i>&nbsp;		private boolean childrenComputed = false;</b>
+<i>229</i>&nbsp;		
+<i>230</i>&nbsp;		private ReflectiveObjectTreeItem(final String name, final Class&lt;?&gt; cls, final Object object) {
+<b class="nc"><i>231</i>&nbsp;			super(name, object);</b>
+<b class="nc"><i>232</i>&nbsp;			this.cls = cls;</b>
+<i>233</i>&nbsp;			
+<i>234</i>&nbsp;			// Don&#39;t show primitives (including boxed ones) or long arrays
+<b class="nc"><i>235</i>&nbsp;			isLeaf = object == null || cls.isPrimitive() || leafClasses.contains(cls) || (cls.isArray() &amp;&amp; Array.getLength(object) &gt; 100);</b>
+<b class="nc"><i>236</i>&nbsp;			if (!isLeaf) {</b>
+<b class="nc"><i>237</i>&nbsp;				for (Class&lt;?&gt; leafClass : leafClasses) {</b>
+<b class="nc"><i>238</i>&nbsp;					if (leafClass.isInstance(object)) {</b>
+<b class="nc"><i>239</i>&nbsp;						isLeaf = true;</b>
+<b class="nc"><i>240</i>&nbsp;						break;</b>
+<i>241</i>&nbsp;					}
+<b class="nc"><i>242</i>&nbsp;				}</b>
+<i>243</i>&nbsp;			}
+<i>244</i>&nbsp;		}
+<i>245</i>&nbsp;		
+<i>246</i>&nbsp;		/**
+<i>247</i>&nbsp;		 * Recursively get all fields from a class &amp; superclasses, ignoring those that are masked.
+<i>248</i>&nbsp;		 * 
+<i>249</i>&nbsp;		 * @param fields
+<i>250</i>&nbsp;		 * @param type
+<i>251</i>&nbsp;		 * @return
+<i>252</i>&nbsp;		 */
+<i>253</i>&nbsp;		private static Map&lt;String, Field&gt; getAllFields(Map&lt;String, Field&gt; fields, Class&lt;?&gt; type) {
+<b class="nc"><i>254</i>&nbsp;			if (fields == null)</b>
+<b class="nc"><i>255</i>&nbsp;				fields = new TreeMap&lt;&gt;();</b>
+<i>256</i>&nbsp;			
+<b class="nc"><i>257</i>&nbsp;			for (Field f : type.getDeclaredFields()) {</b>
+<b class="nc"><i>258</i>&nbsp;				if (!fields.containsKey(f.getName()))</b>
+<b class="nc"><i>259</i>&nbsp;					fields.put(f.getName(), f);</b>
+<i>260</i>&nbsp;			}
+<b class="nc"><i>261</i>&nbsp;		    if (type.getSuperclass() != null) {</b>
+<b class="nc"><i>262</i>&nbsp;		        fields = getAllFields(fields, type.getSuperclass());</b>
+<i>263</i>&nbsp;		    }
+<b class="nc"><i>264</i>&nbsp;		    return fields;</b>
+<i>265</i>&nbsp;		}
+<i>266</i>&nbsp;		
+<i>267</i>&nbsp;		
+<i>268</i>&nbsp;		public void invalidate() {
+<b class="nc"><i>269</i>&nbsp;			childrenComputed = false;</b>
+<i>270</i>&nbsp;		}
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;		@Override
+<i>274</i>&nbsp;		public ObservableList&lt;TreeItem&lt;Object&gt;&gt; getChildren() {
+<b class="nc"><i>275</i>&nbsp;			if (!isLeaf() &amp;&amp; !childrenComputed) {</b>
+<b class="nc"><i>276</i>&nbsp;				List&lt;ReflectiveObjectTreeItem&gt; children = new ArrayList&lt;&gt;();</b>
+<i>277</i>&nbsp;				
+<b class="nc"><i>278</i>&nbsp;				var object = getValue();</b>
+<b class="nc"><i>279</i>&nbsp;				for (Field f : getAllFields(null, cls).values()) {</b>
+<i>280</i>&nbsp;					Object child;
+<i>281</i>&nbsp;					try {
+<b class="nc"><i>282</i>&nbsp;						boolean tempAccessible = false;</b>
+<b class="nc"><i>283</i>&nbsp;						if (!f.canAccess(object)) {</b>
+<b class="nc"><i>284</i>&nbsp;							f.setAccessible(true);</b>
+<b class="nc"><i>285</i>&nbsp;							tempAccessible = true;</b>
+<i>286</i>&nbsp;						}
+<b class="nc"><i>287</i>&nbsp;						child = f.get(object);</b>
+<b class="nc"><i>288</i>&nbsp;						children.add(new ReflectiveObjectTreeItem(f.getName(), child == null ? f.getType() : child.getClass(), child));</b>
+<b class="nc"><i>289</i>&nbsp;						if (tempAccessible)</b>
+<b class="nc"><i>290</i>&nbsp;							f.setAccessible(false);</b>
+<b class="nc"><i>291</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>292</i>&nbsp;						logger.trace(&quot;Exception accessing field {} of {}: {}&quot;, f, object, e.getLocalizedMessage());</b>
+<b class="nc"><i>293</i>&nbsp;					}</b>
+<b class="nc"><i>294</i>&nbsp;				}</b>
+<i>295</i>&nbsp;				
+<b class="nc"><i>296</i>&nbsp;				if (cls.isArray()) {</b>
+<b class="nc"><i>297</i>&nbsp;					for (int i = 0; i &lt; Array.getLength(object); i++) {</b>
+<b class="nc"><i>298</i>&nbsp;						Object child = Array.get(object, i);</b>
+<b class="nc"><i>299</i>&nbsp;						children.add(new ReflectiveObjectTreeItem(name + &quot;[&quot; + i + &quot;]&quot;, child == null ? Object.class : child.getClass(), child));</b>
+<i>300</i>&nbsp;					}
+<i>301</i>&nbsp;				}
+<i>302</i>&nbsp;				
+<b class="nc"><i>303</i>&nbsp;				childrenComputed = true;</b>
+<b class="nc"><i>304</i>&nbsp;				super.getChildren().setAll(children);</b>
+<i>305</i>&nbsp;			}
+<b class="nc"><i>306</i>&nbsp;			return super.getChildren();</b>
+<i>307</i>&nbsp;		}
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;		@Override
+<i>310</i>&nbsp;		public boolean isLeaf() {
+<b class="nc"><i>311</i>&nbsp;			return isLeaf;</b>
+<i>312</i>&nbsp;		}
+<i>313</i>&nbsp;		
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;	}
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

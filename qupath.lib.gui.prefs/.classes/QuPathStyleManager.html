@@ -1,0 +1,469 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: QuPathStyleManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.prefs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: QuPathStyleManager (qupath.lib.gui.prefs)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">QuPathStyleManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.2%
+  </span>
+  <span class="absValue">
+    (9/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64%
+  </span>
+  <span class="absValue">
+    (32/ 50)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">QuPathStyleManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">QuPathStyleManager$CustomStylesheet</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (6/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">QuPathStyleManager$Fonts</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (6/ 12)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">QuPathStyleManager$JavaFXStylesheet</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (3/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">QuPathStyleManager$StyleOption</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    64.3%
+  </span>
+  <span class="absValue">
+    (18/ 28)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    63.4%
+  </span>
+  <span class="absValue">
+    (52/ 82)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.prefs;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.lang.reflect.Method;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.slf4j.Logger;
+<i>29</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import javafx.application.Application;
+<i>32</i>&nbsp;import javafx.application.Platform;
+<i>33</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>34</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>35</i>&nbsp;import javafx.collections.FXCollections;
+<i>36</i>&nbsp;import javafx.collections.ObservableList;
+<i>37</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Class to facilitate the use of different styles within QuPath.
+<i>42</i>&nbsp; * &lt;p&gt;
+<i>43</i>&nbsp; * These register themselves with {@link PathPrefs} so that they can be persistent across restarts.
+<i>44</i>&nbsp; * 
+<i>45</i>&nbsp; * @author Pete Bankhead
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; */
+<b class="nc"><i>48</i>&nbsp;public class QuPathStyleManager {</b>
+<i>49</i>&nbsp;	
+<b class="fc"><i>50</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(QuPathStyleManager.class);</b>
+<i>51</i>&nbsp;	
+<b class="fc"><i>52</i>&nbsp;	private static JavaFXStylesheet DEFAULT_STYLE = new JavaFXStylesheet(&quot;Modena Light&quot;, Application.STYLESHEET_MODENA);</b>
+<i>53</i>&nbsp;
+<b class="fc"><i>54</i>&nbsp;	private static ObservableList&lt;StyleOption&gt; styles = FXCollections.observableArrayList(</b>
+<i>55</i>&nbsp;			DEFAULT_STYLE,
+<i>56</i>&nbsp;//			new JavaFXStylesheet(&quot;Caspian&quot;, Application.STYLESHEET_CASPIAN),
+<i>57</i>&nbsp;//			new CustomStylesheet(&quot;Modena (Helvetica)&quot;, &quot;JavaFX Modena stylesheet with Helvetica&quot;, &quot;css/helvetica.css&quot;),
+<i>58</i>&nbsp;			new CustomStylesheet(&quot;Modena Dark&quot;, &quot;Darker version of JavaFX Modena stylesheet&quot;, &quot;css/dark.css&quot;)
+<i>59</i>&nbsp;//			new CustomStylesheet(&quot;Modena Dark (Helvetica)&quot;, &quot;Darker version of JavaFX Modena stylesheet with Helvetica&quot;, &quot;css/dark.css&quot;, &quot;css/helvetica.css&quot;)
+<i>60</i>&nbsp;			);
+<i>61</i>&nbsp;	
+<b class="fc"><i>62</i>&nbsp;	private static ObjectProperty&lt;StyleOption&gt; selectedStyle = new SimpleObjectProperty&lt;&gt;();</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;	/**
+<i>65</i>&nbsp;	 * Available font families.
+<i>66</i>&nbsp;	 */
+<b class="fc"><i>67</i>&nbsp;	public static enum Fonts {</b>
+<i>68</i>&nbsp;		/**
+<i>69</i>&nbsp;		 * JavaFX default. May not look great on macOS.
+<i>70</i>&nbsp;		 */
+<b class="fc"><i>71</i>&nbsp;		DEFAULT,</b>
+<i>72</i>&nbsp;		/**
+<i>73</i>&nbsp;		 * Preferred sans-serif font.
+<i>74</i>&nbsp;		 */
+<b class="fc"><i>75</i>&nbsp;		SANS_SERIF,</b>
+<i>76</i>&nbsp;		/**
+<i>77</i>&nbsp;		 * Preferred serif font.
+<i>78</i>&nbsp;		 */
+<b class="fc"><i>79</i>&nbsp;		SERIF;</b>
+<i>80</i>&nbsp;		
+<i>81</i>&nbsp;		private String getURL() {
+<b class="fc"><i>82</i>&nbsp;			switch(this) {</b>
+<i>83</i>&nbsp;			case SANS_SERIF:
+<b class="nc"><i>84</i>&nbsp;				return &quot;css/sans-serif.css&quot;;</b>
+<i>85</i>&nbsp;			case SERIF:
+<b class="nc"><i>86</i>&nbsp;				return &quot;css/serif.css&quot;;</b>
+<i>87</i>&nbsp;			case DEFAULT:
+<i>88</i>&nbsp;			default:
+<b class="fc"><i>89</i>&nbsp;				return null;</b>
+<i>90</i>&nbsp;			}
+<i>91</i>&nbsp;		}
+<i>92</i>&nbsp;		
+<i>93</i>&nbsp;		@Override
+<i>94</i>&nbsp;		public String toString() {
+<b class="nc"><i>95</i>&nbsp;			switch(this) {</b>
+<i>96</i>&nbsp;			case SANS_SERIF:
+<b class="nc"><i>97</i>&nbsp;				return &quot;Sans-serif&quot;;</b>
+<i>98</i>&nbsp;			case SERIF:
+<b class="nc"><i>99</i>&nbsp;				return &quot;Serif&quot;;</b>
+<i>100</i>&nbsp;			case DEFAULT:
+<i>101</i>&nbsp;			default:
+<b class="nc"><i>102</i>&nbsp;				return &quot;Default&quot;;</b>
+<i>103</i>&nbsp;			}
+<i>104</i>&nbsp;		}
+<i>105</i>&nbsp;	}
+<i>106</i>&nbsp;
+<b class="fc"><i>107</i>&nbsp;	private static ObservableList&lt;Fonts&gt; availableFonts = FXCollections.observableArrayList(Fonts.values());</b>
+<i>108</i>&nbsp;
+<b class="fc"><i>109</i>&nbsp;	private static ObjectProperty&lt;Fonts&gt; selectedFont = PathPrefs.createPersistentPreference(&quot;selectedFont&quot;, </b>
+<b class="fc"><i>110</i>&nbsp;			GeneralTools.isMac() ? Fonts.SANS_SERIF : Fonts.DEFAULT, Fonts.class);</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;	static {
+<i>113</i>&nbsp;		// Add listener to adjust style as required
+<b class="fc"><i>114</i>&nbsp;		selectedStyle.addListener((v, o, n) -&gt; updateStyle());</b>
+<b class="fc"><i>115</i>&nbsp;		selectedFont.addListener((v, o, n) -&gt; updateStyle());</b>
+<i>116</i>&nbsp;		
+<i>117</i>&nbsp;		// Try to load preference
+<b class="fc"><i>118</i>&nbsp;		Platform.runLater(() -&gt; {</b>
+<b class="fc"><i>119</i>&nbsp;			String stylesheetName = PathPrefs.getUserPreferences().get(&quot;qupathStylesheet&quot;, null);</b>
+<b class="fc"><i>120</i>&nbsp;			if (stylesheetName != null) {</b>
+<b class="fc"><i>121</i>&nbsp;				for (StyleOption option : styles) {</b>
+<b class="fc"><i>122</i>&nbsp;					if (stylesheetName.equals(option.getName())) {</b>
+<b class="fc"><i>123</i>&nbsp;						selectedStyle.set(option);</b>
+<i>124</i>&nbsp;					}
+<b class="fc"><i>125</i>&nbsp;				}</b>
+<i>126</i>&nbsp;			} else
+<b class="nc"><i>127</i>&nbsp;				selectedStyle.set(DEFAULT_STYLE);</b>
+<b class="fc"><i>128</i>&nbsp;			updateStyle();</b>
+<b class="fc"><i>129</i>&nbsp;		});</b>
+<b class="fc"><i>130</i>&nbsp;	}</b>
+<i>131</i>&nbsp;	
+<i>132</i>&nbsp;	static void updateStyle() {
+<b class="fc"><i>133</i>&nbsp;		StyleOption n = selectedStyle.get();</b>
+<b class="fc"><i>134</i>&nbsp;		if (n != null) {</b>
+<b class="fc"><i>135</i>&nbsp;			PathPrefs.getUserPreferences().put(&quot;qupathStylesheet&quot;, n.getName());</b>
+<b class="fc"><i>136</i>&nbsp;			n.setStyle();</b>
+<i>137</i>&nbsp;		} else {
+<i>138</i>&nbsp;			// Default
+<b class="nc"><i>139</i>&nbsp;			PathPrefs.getUserPreferences().remove(&quot;qupathStylesheet&quot;);</b>
+<b class="nc"><i>140</i>&nbsp;			Application.setUserAgentStylesheet(null);</b>
+<i>141</i>&nbsp;		}
+<i>142</i>&nbsp;		// Set the font if required
+<b class="fc"><i>143</i>&nbsp;		Fonts font = selectedFont.get();</b>
+<b class="fc"><i>144</i>&nbsp;		if (font != null) {</b>
+<b class="fc"><i>145</i>&nbsp;			String url = font.getURL();</b>
+<b class="fc"><i>146</i>&nbsp;			if (url != null)</b>
+<b class="nc"><i>147</i>&nbsp;				addStyleSheets(url);</b>
+<i>148</i>&nbsp;		}
+<b class="fc"><i>149</i>&nbsp;	}</b>
+<i>150</i>&nbsp;	
+<i>151</i>&nbsp;	/**
+<i>152</i>&nbsp;	 * Check if the default JavaFX style is used.
+<i>153</i>&nbsp;	 * @return true if the default style is used, false otherwise.
+<i>154</i>&nbsp;	 */
+<i>155</i>&nbsp;	public static boolean isDefaultStyle() {
+<b class="nc"><i>156</i>&nbsp;		return DEFAULT_STYLE.equals(selectedStyle.get());</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	/**
+<i>160</i>&nbsp;	 * Get the current available styles.
+<i>161</i>&nbsp;	 * @return
+<i>162</i>&nbsp;	 */
+<i>163</i>&nbsp;	public static ObservableList&lt;StyleOption&gt; availableStylesProperty() {
+<b class="fc"><i>164</i>&nbsp;		return styles;</b>
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * Get the current selected style.
+<i>169</i>&nbsp;	 * @return
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public static ObjectProperty&lt;StyleOption&gt; selectedStyleProperty() {
+<b class="fc"><i>172</i>&nbsp;		return selectedStyle;</b>
+<i>173</i>&nbsp;	}
+<i>174</i>&nbsp;	
+<i>175</i>&nbsp;	/**
+<i>176</i>&nbsp;	 * Get a list of available fonts.
+<i>177</i>&nbsp;	 * @return list of available fonts
+<i>178</i>&nbsp;	 */
+<i>179</i>&nbsp;	public static ObservableList&lt;Fonts&gt; availableFontsProperty() {
+<b class="fc"><i>180</i>&nbsp;		return availableFonts;</b>
+<i>181</i>&nbsp;	}
+<i>182</i>&nbsp;	
+<i>183</i>&nbsp;	/**
+<i>184</i>&nbsp;	 * Get the current selected font.
+<i>185</i>&nbsp;	 * @return
+<i>186</i>&nbsp;	 */
+<i>187</i>&nbsp;	public static ObjectProperty&lt;Fonts&gt; fontProperty() {
+<b class="fc"><i>188</i>&nbsp;		return selectedFont;</b>
+<i>189</i>&nbsp;	}
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;	/**
+<i>192</i>&nbsp;	 * Interface defining a style that may be applied to QuPath.
+<i>193</i>&nbsp;	 */
+<i>194</i>&nbsp;	public static interface StyleOption {
+<i>195</i>&nbsp;		
+<i>196</i>&nbsp;		/**
+<i>197</i>&nbsp;		 * Set the style for the QuPath application.
+<i>198</i>&nbsp;		 */
+<i>199</i>&nbsp;		public void setStyle();
+<i>200</i>&nbsp;		
+<i>201</i>&nbsp;		/**
+<i>202</i>&nbsp;		 * Get a user-friendly description of the style.
+<i>203</i>&nbsp;		 * @return
+<i>204</i>&nbsp;		 */
+<i>205</i>&nbsp;		public String getDescription();
+<i>206</i>&nbsp;		
+<i>207</i>&nbsp;		/**
+<i>208</i>&nbsp;		 * Get a user-friendly name for the style.
+<i>209</i>&nbsp;		 * @return
+<i>210</i>&nbsp;		 */
+<i>211</i>&nbsp;		public String getName();
+<i>212</i>&nbsp;		
+<i>213</i>&nbsp;	}
+<i>214</i>&nbsp;	
+<i>215</i>&nbsp;	
+<i>216</i>&nbsp;	static class JavaFXStylesheet implements StyleOption {
+<i>217</i>&nbsp;		
+<i>218</i>&nbsp;		private String name;
+<i>219</i>&nbsp;		private String cssName;
+<i>220</i>&nbsp;		
+<b class="fc"><i>221</i>&nbsp;		JavaFXStylesheet(final String name, final String cssName) {</b>
+<b class="fc"><i>222</i>&nbsp;			this.name = name;</b>
+<b class="fc"><i>223</i>&nbsp;			this.cssName = cssName;</b>
+<b class="fc"><i>224</i>&nbsp;		}</b>
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;		@Override
+<i>227</i>&nbsp;		public void setStyle() {
+<b class="fc"><i>228</i>&nbsp;			Application.setUserAgentStylesheet(cssName);</b>
+<b class="fc"><i>229</i>&nbsp;		}</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;		@Override
+<i>232</i>&nbsp;		public String getDescription() {
+<b class="nc"><i>233</i>&nbsp;			return &quot;Built-in JavaFX stylesheet &quot; + cssName;</b>
+<i>234</i>&nbsp;		}
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;		@Override
+<i>237</i>&nbsp;		public String getName() {
+<b class="fc"><i>238</i>&nbsp;			return name;</b>
+<i>239</i>&nbsp;		}
+<i>240</i>&nbsp;		
+<i>241</i>&nbsp;		@Override
+<i>242</i>&nbsp;		public String toString() {
+<b class="nc"><i>243</i>&nbsp;			return getName();</b>
+<i>244</i>&nbsp;		}
+<i>245</i>&nbsp;		
+<i>246</i>&nbsp;	}
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	static class CustomStylesheet implements StyleOption {
+<i>250</i>&nbsp;		
+<i>251</i>&nbsp;		private String name;
+<i>252</i>&nbsp;		private String description;
+<i>253</i>&nbsp;		private String[] urls;
+<i>254</i>&nbsp;		
+<b class="fc"><i>255</i>&nbsp;		CustomStylesheet(final String name, final String description, final String... urls) {</b>
+<b class="fc"><i>256</i>&nbsp;			this.name = name;</b>
+<b class="fc"><i>257</i>&nbsp;			this.description = description;</b>
+<b class="fc"><i>258</i>&nbsp;			this.urls = urls.clone();</b>
+<b class="fc"><i>259</i>&nbsp;		}</b>
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;		@Override
+<i>262</i>&nbsp;		public void setStyle() {
+<b class="nc"><i>263</i>&nbsp;			setStyleSheets(urls);</b>
+<b class="nc"><i>264</i>&nbsp;		}</b>
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;		@Override
+<i>267</i>&nbsp;		public String getDescription() {
+<b class="nc"><i>268</i>&nbsp;			return description;</b>
+<i>269</i>&nbsp;		}
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;		@Override
+<i>272</i>&nbsp;		public String getName() {
+<b class="fc"><i>273</i>&nbsp;			return name;</b>
+<i>274</i>&nbsp;		}
+<i>275</i>&nbsp;		
+<i>276</i>&nbsp;		@Override
+<i>277</i>&nbsp;		public String toString() {
+<b class="nc"><i>278</i>&nbsp;			return getName();</b>
+<i>279</i>&nbsp;		}
+<i>280</i>&nbsp;		
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;	private static void setStyleSheets(String... urls) {
+<b class="nc"><i>284</i>&nbsp;		Application.setUserAgentStylesheet(null);</b>
+<b class="nc"><i>285</i>&nbsp;		addStyleSheets(urls);</b>
+<b class="nc"><i>286</i>&nbsp;	}</b>
+<i>287</i>&nbsp;	
+<i>288</i>&nbsp;	private static void addStyleSheets(String... urls) {
+<i>289</i>&nbsp;		try {
+<b class="nc"><i>290</i>&nbsp;			Class&lt;?&gt; cStyleManager = Class.forName(&quot;com.sun.javafx.css.StyleManager&quot;);</b>
+<b class="nc"><i>291</i>&nbsp;			Object styleManager = cStyleManager.getMethod(&quot;getInstance&quot;).invoke(null);</b>
+<b class="nc"><i>292</i>&nbsp;			Method m = styleManager.getClass().getMethod(&quot;addUserAgentStylesheet&quot;, String.class);</b>
+<b class="nc"><i>293</i>&nbsp;			for (String url : urls)</b>
+<b class="nc"><i>294</i>&nbsp;				m.invoke(styleManager, url);</b>
+<b class="nc"><i>295</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>296</i>&nbsp;			logger.error(&quot;Unable to call addUserAgentStylesheet&quot;, e);</b>
+<b class="nc"><i>297</i>&nbsp;		}</b>
+<b class="nc"><i>298</i>&nbsp;	}</b>
+<i>299</i>&nbsp;	
+<i>300</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

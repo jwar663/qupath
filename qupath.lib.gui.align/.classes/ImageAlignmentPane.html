@@ -1,0 +1,1203 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageAlignmentPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.align</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageAlignmentPane (qupath.lib.gui.align)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageAlignmentPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 463)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$AlignmentMethod</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$ImageEntryCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$RefineTransformMouseHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ImageAlignmentPane$RegistrationType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 45)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 524)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.align;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.Graphics2D;
+<i>25</i>&nbsp;import java.awt.Transparency;
+<i>26</i>&nbsp;import java.awt.color.ColorSpace;
+<i>27</i>&nbsp;import java.awt.geom.Point2D;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.awt.image.ComponentColorModel;
+<i>30</i>&nbsp;import java.awt.image.DataBuffer;
+<i>31</i>&nbsp;import java.io.IOException;
+<i>32</i>&nbsp;import java.text.NumberFormat;
+<i>33</i>&nbsp;import java.text.SimpleDateFormat;
+<i>34</i>&nbsp;import java.util.ArrayList;
+<i>35</i>&nbsp;import java.util.Collection;
+<i>36</i>&nbsp;import java.util.HashSet;
+<i>37</i>&nbsp;import java.util.LinkedHashMap;
+<i>38</i>&nbsp;import java.util.LinkedHashSet;
+<i>39</i>&nbsp;import java.util.List;
+<i>40</i>&nbsp;import java.util.Map;
+<i>41</i>&nbsp;import java.util.Optional;
+<i>42</i>&nbsp;import java.util.Set;
+<i>43</i>&nbsp;import java.util.StringTokenizer;
+<i>44</i>&nbsp;import java.util.WeakHashMap;
+<i>45</i>&nbsp;import java.util.stream.Collectors;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>48</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>49</i>&nbsp;import org.bytedeco.opencv.opencv_core.TermCriteria;
+<i>50</i>&nbsp;import org.bytedeco.opencv.global.opencv_video;
+<i>51</i>&nbsp;import org.bytedeco.javacpp.indexer.FloatIndexer;
+<i>52</i>&nbsp;import org.bytedeco.javacpp.indexer.Indexer;
+<i>53</i>&nbsp;import org.controlsfx.control.CheckListView;
+<i>54</i>&nbsp;import org.slf4j.Logger;
+<i>55</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>58</i>&nbsp;import javafx.beans.binding.BooleanBinding;
+<i>59</i>&nbsp;import javafx.beans.binding.ObjectBinding;
+<i>60</i>&nbsp;import javafx.beans.property.DoubleProperty;
+<i>61</i>&nbsp;import javafx.beans.property.FloatProperty;
+<i>62</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>63</i>&nbsp;import javafx.beans.property.SimpleDoubleProperty;
+<i>64</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>65</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>66</i>&nbsp;import javafx.collections.FXCollections;
+<i>67</i>&nbsp;import javafx.collections.ObservableList;
+<i>68</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>69</i>&nbsp;import javafx.event.EventHandler;
+<i>70</i>&nbsp;import javafx.geometry.Pos;
+<i>71</i>&nbsp;import javafx.scene.Node;
+<i>72</i>&nbsp;import javafx.scene.Scene;
+<i>73</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>74</i>&nbsp;import javafx.scene.control.Button;
+<i>75</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>76</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>77</i>&nbsp;import javafx.scene.control.Dialog;
+<i>78</i>&nbsp;import javafx.scene.control.Label;
+<i>79</i>&nbsp;import javafx.scene.control.ListCell;
+<i>80</i>&nbsp;import javafx.scene.control.ListView;
+<i>81</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>82</i>&nbsp;import javafx.scene.control.Slider;
+<i>83</i>&nbsp;import javafx.scene.control.SplitPane;
+<i>84</i>&nbsp;import javafx.scene.control.TextArea;
+<i>85</i>&nbsp;import javafx.scene.control.TextField;
+<i>86</i>&nbsp;import javafx.scene.control.TitledPane;
+<i>87</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>88</i>&nbsp;import javafx.scene.image.Image;
+<i>89</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>90</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>91</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>92</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>93</i>&nbsp;import javafx.scene.layout.Priority;
+<i>94</i>&nbsp;import javafx.scene.layout.StackPane;
+<i>95</i>&nbsp;import javafx.scene.layout.VBox;
+<i>96</i>&nbsp;import javafx.scene.transform.Affine;
+<i>97</i>&nbsp;import javafx.scene.transform.MatrixType;
+<i>98</i>&nbsp;import javafx.scene.transform.NonInvertibleTransformException;
+<i>99</i>&nbsp;import javafx.scene.transform.TransformChangedEvent;
+<i>100</i>&nbsp;import javafx.stage.Stage;
+<i>101</i>&nbsp;import qupath.lib.geom.Point2;
+<i>102</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>103</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>104</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>105</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>106</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>107</i>&nbsp;import qupath.lib.images.ImageData;
+<i>108</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>109</i>&nbsp;import qupath.lib.images.servers.LabeledImageServer;
+<i>110</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>111</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>112</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>113</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>114</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>115</i>&nbsp;import qupath.lib.projects.Project;
+<i>116</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>117</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>118</i>&nbsp;import qupath.opencv.tools.OpenCVTools;
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;/**
+<i>122</i>&nbsp; * A user interface for interacting with multiple image overlays.
+<i>123</i>&nbsp; * 
+<i>124</i>&nbsp; * @author Pete Bankhead
+<i>125</i>&nbsp; *
+<i>126</i>&nbsp; */
+<i>127</i>&nbsp;public class ImageAlignmentPane {
+<i>128</i>&nbsp;	
+<b class="nc"><i>129</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(ImageAlignmentPane.class);</b>
+<i>130</i>&nbsp;	
+<i>131</i>&nbsp;	private QuPathGUI qupath;
+<i>132</i>&nbsp;	private QuPathViewer viewer;
+<i>133</i>&nbsp;	
+<b class="nc"><i>134</i>&nbsp;	private ObservableList&lt;ImageData&lt;BufferedImage&gt;&gt; images = FXCollections.observableArrayList();</b>
+<b class="nc"><i>135</i>&nbsp;	private ObjectProperty&lt;ImageData&lt;BufferedImage&gt;&gt; selectedImageData = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc"><i>136</i>&nbsp;	private DoubleProperty rotationIncrement = new SimpleDoubleProperty(1.0);</b>
+<i>137</i>&nbsp;		
+<i>138</i>&nbsp;	private StringProperty affineStringProperty;
+<i>139</i>&nbsp;	
+<b class="nc"><i>140</i>&nbsp;	private static enum RegistrationType {</b>
+<b class="nc"><i>141</i>&nbsp;		AFFINE, RIGID;</b>
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;		@Override
+<i>144</i>&nbsp;		public String toString() {
+<b class="nc"><i>145</i>&nbsp;			switch(this) {</b>
+<i>146</i>&nbsp;			case AFFINE:
+<b class="nc"><i>147</i>&nbsp;				return &quot;Affine transform&quot;;</b>
+<i>148</i>&nbsp;			case RIGID:
+<b class="nc"><i>149</i>&nbsp;				return &quot;Rigid transform&quot;;</b>
+<i>150</i>&nbsp;			}
+<b class="nc"><i>151</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown registration type &quot; + this);</b>
+<i>152</i>&nbsp;		}
+<i>153</i>&nbsp;	}
+<i>154</i>&nbsp;	
+<b class="nc"><i>155</i>&nbsp;	private ObjectProperty&lt;RegistrationType&gt; registrationType = new SimpleObjectProperty&lt;&gt;(RegistrationType.AFFINE);</b>
+<i>156</i>&nbsp;	
+<b class="nc"><i>157</i>&nbsp;	private static enum AlignmentMethod {</b>
+<b class="nc"><i>158</i>&nbsp;			INTENSITY, AREA_ANNOTATIONS, POINT_ANNOTATIONS;</b>
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		@Override
+<i>161</i>&nbsp;		public String toString() {
+<b class="nc"><i>162</i>&nbsp;			switch(this) {</b>
+<i>163</i>&nbsp;			case INTENSITY:
+<b class="nc"><i>164</i>&nbsp;				return &quot;Image intensity&quot;;</b>
+<i>165</i>&nbsp;			case AREA_ANNOTATIONS:
+<b class="nc"><i>166</i>&nbsp;				return &quot;Area annotations&quot;;</b>
+<i>167</i>&nbsp;			case POINT_ANNOTATIONS:
+<b class="nc"><i>168</i>&nbsp;				return &quot;Point annotations&quot;;</b>
+<i>169</i>&nbsp;			}
+<b class="nc"><i>170</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown alignment method &quot; + this);</b>
+<i>171</i>&nbsp;		}
+<i>172</i>&nbsp;	}
+<i>173</i>&nbsp;	
+<b class="nc"><i>174</i>&nbsp;	private ObjectProperty&lt;AlignmentMethod&gt; alignmentMethod = new SimpleObjectProperty&lt;&gt;(AlignmentMethod.INTENSITY);</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;	private Map&lt;ImageData&lt;BufferedImage&gt;, ImageServerOverlay&gt; mapOverlays = new WeakHashMap&lt;&gt;();</b>
+<b class="nc"><i>177</i>&nbsp;	private EventHandler&lt;TransformChangedEvent&gt; transformEventHandler = new EventHandler&lt;TransformChangedEvent&gt;() {</b>
+<i>178</i>&nbsp;		@Override
+<i>179</i>&nbsp;		public void handle(TransformChangedEvent event) {
+<b class="nc"><i>180</i>&nbsp;			affineTransformUpdated();</b>
+<i>181</i>&nbsp;		}
+<i>182</i>&nbsp;	};
+<i>183</i>&nbsp;	
+<b class="nc"><i>184</i>&nbsp;	private RefineTransformMouseHandler mouseEventHandler = new RefineTransformMouseHandler();</b>
+<i>185</i>&nbsp;	
+<b class="nc"><i>186</i>&nbsp;	private ObjectBinding&lt;ImageServerOverlay&gt; selectedOverlay = Bindings.createObjectBinding(</b>
+<i>187</i>&nbsp;			() -&gt; {
+<b class="nc"><i>188</i>&nbsp;				return mapOverlays.get(selectedImageData.get());</b>
+<i>189</i>&nbsp;			},
+<i>190</i>&nbsp;			selectedImageData);
+<i>191</i>&nbsp;	
+<b class="nc"><i>192</i>&nbsp;	private BooleanBinding noOverlay = selectedOverlay.isNull();</b>
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;	/**
+<i>196</i>&nbsp;	 * Constructor.
+<i>197</i>&nbsp;	 * @param qupath QuPath instance
+<i>198</i>&nbsp;	 */
+<b class="nc"><i>199</i>&nbsp;	public ImageAlignmentPane(final QuPathGUI qupath) {</b>
+<i>200</i>&nbsp;		
+<b class="nc"><i>201</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>202</i>&nbsp;		this.viewer = qupath.getViewer();</b>
+<i>203</i>&nbsp;		
+<b class="nc"><i>204</i>&nbsp;		this.viewer.getView().addEventFilter(MouseEvent.ANY, mouseEventHandler);</b>
+<i>205</i>&nbsp;		
+<i>206</i>&nbsp;		// Create left-hand pane for list
+<b class="nc"><i>207</i>&nbsp;		CheckListView&lt;ImageData&lt;BufferedImage&gt;&gt; listImages = new CheckListView&lt;&gt;(images);</b>
+<b class="nc"><i>208</i>&nbsp;		listImages.setPrefHeight(300);</b>
+<b class="nc"><i>209</i>&nbsp;		listImages.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);</b>
+<b class="nc"><i>210</i>&nbsp;		listImages.setCellFactory(c -&gt; new ImageEntryCell());</b>
+<i>211</i>&nbsp;		
+<b class="nc"><i>212</i>&nbsp;		selectedImageData.bind(listImages.getSelectionModel().selectedItemProperty());</b>
+<i>213</i>&nbsp;		
+<b class="nc"><i>214</i>&nbsp;		Button btnChooseImages = new Button(&quot;Choose images from project&quot;);</b>
+<b class="nc"><i>215</i>&nbsp;		btnChooseImages.disableProperty().bind(qupath.projectProperty().isNull());</b>
+<b class="nc"><i>216</i>&nbsp;		btnChooseImages.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>217</i>&nbsp;		btnChooseImages.setOnAction(e -&gt; promptToAddImages());</b>
+<b class="nc"><i>218</i>&nbsp;		GridPane.setHgrow(btnChooseImages, Priority.ALWAYS);</b>
+<i>219</i>&nbsp;
+<b class="nc"><i>220</i>&nbsp;		FloatProperty opacityProperty = viewer.getOverlayOptions().opacityProperty();</b>
+<b class="nc"><i>221</i>&nbsp;		Slider sliderOpacity = new Slider(0, 1, opacityProperty.get());</b>
+<b class="nc"><i>222</i>&nbsp;		sliderOpacity.valueProperty().bindBidirectional(opacityProperty);</b>
+<b class="nc"><i>223</i>&nbsp;		sliderOpacity.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>224</i>&nbsp;		Label labelOpacity = new Label(&quot;Opacity&quot;);</b>
+<b class="nc"><i>225</i>&nbsp;		labelOpacity.setLabelFor(sliderOpacity);</b>
+<i>226</i>&nbsp;
+<b class="nc"><i>227</i>&nbsp;		GridPane paneList = new GridPane();</b>
+<b class="nc"><i>228</i>&nbsp;		paneList.add(listImages, 0, 0, 2, 1);</b>
+<b class="nc"><i>229</i>&nbsp;		paneList.add(btnChooseImages, 0, 1, 2, 1);</b>
+<b class="nc"><i>230</i>&nbsp;		paneList.add(labelOpacity, 0, 2);</b>
+<b class="nc"><i>231</i>&nbsp;		paneList.add(sliderOpacity, 1, 2);</b>
+<b class="nc"><i>232</i>&nbsp;		paneList.setVgap(5);</b>
+<b class="nc"><i>233</i>&nbsp;		paneList.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>234</i>&nbsp;		GridPane.setFillHeight(listImages, Boolean.TRUE);</b>
+<b class="nc"><i>235</i>&nbsp;		GridPane.setFillWidth(listImages, Boolean.TRUE);</b>
+<b class="nc"><i>236</i>&nbsp;		GridPane.setFillWidth(btnChooseImages, Boolean.TRUE);</b>
+<b class="nc"><i>237</i>&nbsp;		GridPane.setFillWidth(sliderOpacity, Boolean.TRUE);</b>
+<b class="nc"><i>238</i>&nbsp;		GridPane.setHgrow(listImages, Priority.ALWAYS);</b>
+<b class="nc"><i>239</i>&nbsp;		GridPane.setHgrow(btnChooseImages, Priority.ALWAYS);</b>
+<b class="nc"><i>240</i>&nbsp;		GridPane.setHgrow(sliderOpacity, Priority.ALWAYS);</b>
+<b class="nc"><i>241</i>&nbsp;		GridPane.setVgrow(listImages, Priority.ALWAYS);</b>
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;		// Create center pane for alignment
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;		// Handle rotation
+<b class="nc"><i>246</i>&nbsp;		TextField tfRotationIncrement = new TextField(&quot;1&quot;);</b>
+<b class="nc"><i>247</i>&nbsp;		tfRotationIncrement.setPrefColumnCount(6);</b>
+<b class="nc"><i>248</i>&nbsp;		tfRotationIncrement.textProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>249</i>&nbsp;			if (!n.isEmpty()) {</b>
+<i>250</i>&nbsp;				try {
+<b class="nc"><i>251</i>&nbsp;					rotationIncrement.set(Double.parseDouble(n));</b>
+<b class="nc"><i>252</i>&nbsp;				} catch (Exception e) {}</b>
+<i>253</i>&nbsp;			}
+<i>254</i>&nbsp;		});
+<b class="nc"><i>255</i>&nbsp;		Label labelRotationIncrement = new Label(&quot;Rotation increment: &quot;);</b>
+<b class="nc"><i>256</i>&nbsp;		labelRotationIncrement.setLabelFor(tfRotationIncrement);</b>
+<b class="nc"><i>257</i>&nbsp;		Button btnRotateLeft = new Button(&quot;Rotate Left&quot;);</b>
+<b class="nc"><i>258</i>&nbsp;		Button btnRotateRight = new Button(&quot;Rotate Right&quot;);</b>
+<b class="nc"><i>259</i>&nbsp;		btnRotateLeft.setOnAction(e -&gt; requestRotation(rotationIncrement.get()));</b>
+<b class="nc"><i>260</i>&nbsp;		btnRotateRight.setOnAction(e -&gt; requestRotation(-rotationIncrement.get()));	</b>
+<i>261</i>&nbsp;
+<b class="nc"><i>262</i>&nbsp;		btnRotateLeft.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>263</i>&nbsp;		btnRotateRight.disableProperty().bind(noOverlay);</b>
+<i>264</i>&nbsp;		
+<b class="nc"><i>265</i>&nbsp;		GridPane paneAlignment = new GridPane();</b>
+<b class="nc"><i>266</i>&nbsp;		paneAlignment.setHgap(5);</b>
+<b class="nc"><i>267</i>&nbsp;		paneAlignment.setVgap(5);</b>
+<b class="nc"><i>268</i>&nbsp;		int row = 0;</b>
+<b class="nc"><i>269</i>&nbsp;		int col = 0;</b>
+<i>270</i>&nbsp;		
+<b class="nc"><i>271</i>&nbsp;		Label labelTranslate = new Label(&quot;Adjust translation by clicking &amp; dragging on the image with the &#39;Shift&#39; key down&quot;);</b>
+<b class="nc"><i>272</i>&nbsp;		labelTranslate.setAlignment(Pos.CENTER);</b>
+<b class="nc"><i>273</i>&nbsp;		labelTranslate.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>274</i>&nbsp;		GridPane.setHgrow(labelTranslate, Priority.ALWAYS);</b>
+<b class="nc"><i>275</i>&nbsp;		GridPane.setFillWidth(labelTranslate, Boolean.TRUE);</b>
+<b class="nc"><i>276</i>&nbsp;		paneAlignment.add(labelTranslate, 0, row++, 4, 1);</b>
+<i>277</i>&nbsp;
+<b class="nc"><i>278</i>&nbsp;		paneAlignment.add(labelRotationIncrement, col++, row);</b>
+<b class="nc"><i>279</i>&nbsp;		paneAlignment.add(tfRotationIncrement, col++, row);</b>
+<b class="nc"><i>280</i>&nbsp;		paneAlignment.add(btnRotateLeft, col++, row);</b>
+<b class="nc"><i>281</i>&nbsp;		paneAlignment.add(btnRotateRight, col++, row++);</b>
+<b class="nc"><i>282</i>&nbsp;		TitledPane titledAlignment = new TitledPane(&quot;Interactive alignment&quot;, paneAlignment);</b>
+<i>283</i>&nbsp;		
+<i>284</i>&nbsp;		// Auto-align
+<b class="nc"><i>285</i>&nbsp;		GridPane paneAutoAlign = new GridPane();</b>
+<b class="nc"><i>286</i>&nbsp;		row = 0;</b>
+<b class="nc"><i>287</i>&nbsp;		col = 0;</b>
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;		Label labelAuto = new Label(&quot;Auto-alignment may work better if the images have been coarsely aligned interactively&quot;);</b>
+<b class="nc"><i>290</i>&nbsp;		paneAutoAlign.add(labelAuto, col, row++, 2, 1);</b>
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;		ComboBox&lt;RegistrationType&gt; comboRegistration = new ComboBox&lt;&gt;(</b>
+<b class="nc"><i>293</i>&nbsp;				FXCollections.observableArrayList(RegistrationType.values()));</b>
+<b class="nc"><i>294</i>&nbsp;		comboRegistration.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>295</i>&nbsp;		comboRegistration.getSelectionModel().select(registrationType.get());</b>
+<b class="nc"><i>296</i>&nbsp;		registrationType.bind(comboRegistration.getSelectionModel().selectedItemProperty());</b>
+<b class="nc"><i>297</i>&nbsp;		Label labelRegistrationType = new Label(&quot;Registration type&quot;);</b>
+<b class="nc"><i>298</i>&nbsp;		paneAutoAlign.add(labelRegistrationType, 0, row);</b>
+<b class="nc"><i>299</i>&nbsp;		paneAutoAlign.add(comboRegistration, 1, row++);</b>
+<b class="nc"><i>300</i>&nbsp;		GridPane.setFillWidth(comboRegistration, Boolean.TRUE);</b>
+<i>301</i>&nbsp;		
+<b class="nc"><i>302</i>&nbsp;		ComboBox&lt;AlignmentMethod&gt; comboAlign = new ComboBox&lt;&gt;(</b>
+<b class="nc"><i>303</i>&nbsp;				FXCollections.observableArrayList(AlignmentMethod.values()));</b>
+<b class="nc"><i>304</i>&nbsp;		comboAlign.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>305</i>&nbsp;		comboAlign.getSelectionModel().select(alignmentMethod.get());</b>
+<b class="nc"><i>306</i>&nbsp;		alignmentMethod.bind(comboAlign.getSelectionModel().selectedItemProperty());</b>
+<b class="nc"><i>307</i>&nbsp;		Label labelAlignmentType = new Label(&quot;Alignment type&quot;);</b>
+<b class="nc"><i>308</i>&nbsp;		paneAutoAlign.add(labelAlignmentType, 0, row);</b>
+<b class="nc"><i>309</i>&nbsp;		paneAutoAlign.add(comboAlign, 1, row++);</b>
+<b class="nc"><i>310</i>&nbsp;		GridPane.setFillWidth(comboAlign, Boolean.TRUE);</b>
+<i>311</i>&nbsp;		
+<b class="nc"><i>312</i>&nbsp;		TextField tfRequestedPixelSizeMicrons = new TextField(&quot;20&quot;);</b>
+<b class="nc"><i>313</i>&nbsp;		tfRequestedPixelSizeMicrons.setPrefColumnCount(6);</b>
+<b class="nc"><i>314</i>&nbsp;		Label labelRequestedPixelSizeMicrons = new Label(&quot;Pixel size&quot;);</b>
+<b class="nc"><i>315</i>&nbsp;		Button btnAutoAlign = new Button(&quot;Estimate transform&quot;);</b>
+<b class="nc"><i>316</i>&nbsp;		btnAutoAlign.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>317</i>&nbsp;		btnAutoAlign.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>318</i>&nbsp;		btnAutoAlign.setOnAction(e -&gt; {</b>
+<b class="nc"><i>319</i>&nbsp;			double requestedPixelSizeMicrons = Double.parseDouble(tfRequestedPixelSizeMicrons.getText());</b>
+<i>320</i>&nbsp;			try {
+<b class="nc"><i>321</i>&nbsp;				autoAlign(requestedPixelSizeMicrons);</b>
+<b class="nc"><i>322</i>&nbsp;			} catch (IOException e2) {</b>
+<b class="nc"><i>323</i>&nbsp;				Dialogs.showErrorMessage(&quot;Alignment error&quot;, &quot;Error requesting image region: &quot; + e2.getLocalizedMessage());</b>
+<b class="nc"><i>324</i>&nbsp;				logger.error(&quot;Error in auto alignment&quot;, e2);</b>
+<b class="nc"><i>325</i>&nbsp;			}</b>
+<i>326</i>&nbsp;		});
+<i>327</i>&nbsp;//		var paramsAuto = new ParameterList()
+<i>328</i>&nbsp;//				.addChoiceParameter(&quot;alignmentType&quot;, &quot;Alignment type&quot;, alignmentType.get(), align);
+<b class="nc"><i>329</i>&nbsp;		paneAutoAlign.add(labelRequestedPixelSizeMicrons, 0, row);</b>
+<b class="nc"><i>330</i>&nbsp;		paneAutoAlign.add(tfRequestedPixelSizeMicrons, 1, row++);</b>
+<i>331</i>&nbsp;		
+<b class="nc"><i>332</i>&nbsp;		paneAutoAlign.add(btnAutoAlign, 0, row++, 2, 1);</b>
+<i>333</i>&nbsp;//		paneAutoAlign.add(btnAutoAlign, 0, 1, 3, 1);
+<b class="nc"><i>334</i>&nbsp;		paneAutoAlign.setVgap(5);</b>
+<b class="nc"><i>335</i>&nbsp;		paneAutoAlign.setHgap(5);</b>
+<b class="nc"><i>336</i>&nbsp;		TitledPane titledAutoAlign = new TitledPane(&quot;Auto-align&quot;, paneAutoAlign);</b>
+<i>337</i>&nbsp;
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;		// Show affine transform
+<b class="nc"><i>340</i>&nbsp;		TextArea textArea = new TextArea();</b>
+<b class="nc"><i>341</i>&nbsp;		affineStringProperty = textArea.textProperty();</b>
+<b class="nc"><i>342</i>&nbsp;		textArea.setPrefRowCount(2);</b>
+<b class="nc"><i>343</i>&nbsp;		GridPane paneTransform = new GridPane();</b>
+<b class="nc"><i>344</i>&nbsp;		row = 0;</b>
+<b class="nc"><i>345</i>&nbsp;		paneTransform.add(new Label(&quot;Current affine transform being displayed&quot;), 0, row++);</b>
+<b class="nc"><i>346</i>&nbsp;		paneTransform.add(textArea, 0, row++, 2, 1);</b>
+<b class="nc"><i>347</i>&nbsp;		Button btnUpdate = new Button(&quot;Update&quot;);</b>
+<b class="nc"><i>348</i>&nbsp;		btnUpdate.setOnAction(e -&gt; {</b>
+<b class="nc"><i>349</i>&nbsp;			var overlay = getSelectedOverlay();</b>
+<b class="nc"><i>350</i>&nbsp;			var affine = overlay == null ? null : overlay.getAffine();</b>
+<b class="nc"><i>351</i>&nbsp;			if (affine == null)</b>
+<i>352</i>&nbsp;				return;
+<b class="nc"><i>353</i>&nbsp;			parseAffine(textArea.getText(), affine);</b>
+<i>354</i>&nbsp;		});
+<b class="nc"><i>355</i>&nbsp;		Button btnReset = new Button(&quot;Reset&quot;);</b>
+<b class="nc"><i>356</i>&nbsp;		btnReset.setOnAction(e -&gt; {</b>
+<b class="nc"><i>357</i>&nbsp;			var overlay = getSelectedOverlay();</b>
+<b class="nc"><i>358</i>&nbsp;			var affine = overlay == null ? null : overlay.getAffine();</b>
+<b class="nc"><i>359</i>&nbsp;			if (affine == null)</b>
+<i>360</i>&nbsp;				return;
+<b class="nc"><i>361</i>&nbsp;			affine.setToIdentity();</b>
+<i>362</i>&nbsp;		});
+<b class="nc"><i>363</i>&nbsp;		Button btnInvert = new Button(&quot;Invert&quot;);</b>
+<b class="nc"><i>364</i>&nbsp;		btnInvert.setOnAction(e -&gt; {</b>
+<b class="nc"><i>365</i>&nbsp;			var overlay = getSelectedOverlay();</b>
+<b class="nc"><i>366</i>&nbsp;			var affine = overlay == null ? null : overlay.getAffine();</b>
+<b class="nc"><i>367</i>&nbsp;			if (affine == null)</b>
+<i>368</i>&nbsp;				return;
+<i>369</i>&nbsp;			try {
+<b class="nc"><i>370</i>&nbsp;				affine.invert();</b>
+<b class="nc"><i>371</i>&nbsp;			} catch (NonInvertibleTransformException ex) {</b>
+<b class="nc"><i>372</i>&nbsp;				Dialogs.showErrorNotification(&quot;Invert transform&quot;, &quot;Transform not invertable!&quot;);</b>
+<b class="nc"><i>373</i>&nbsp;				logger.error(&quot;Error trying to invert affine transform: &quot; + ex.getLocalizedMessage(), ex);</b>
+<b class="nc"><i>374</i>&nbsp;			};</b>
+<i>375</i>&nbsp;		});
+<b class="nc"><i>376</i>&nbsp;		Button btnCopy = new Button(&quot;Copy&quot;);</b>
+<b class="nc"><i>377</i>&nbsp;		btnCopy.setOnAction(e -&gt; {</b>
+<b class="nc"><i>378</i>&nbsp;			var overlay = getSelectedOverlay();</b>
+<b class="nc"><i>379</i>&nbsp;			var affine = overlay == null ? null : overlay.getAffine();</b>
+<b class="nc"><i>380</i>&nbsp;			if (affine == null) {</b>
+<b class="nc"><i>381</i>&nbsp;				logger.warn(&quot;No transform found, can&#39;t copy to clipboard!&quot;);</b>
+<i>382</i>&nbsp;				return;
+<i>383</i>&nbsp;			}
+<b class="nc"><i>384</i>&nbsp;			ClipboardContent content = new ClipboardContent();</b>
+<b class="nc"><i>385</i>&nbsp;			String s = affine.getElement(MatrixType.MT_2D_2x3, 0, 0) + &quot;,\t&quot; +</b>
+<b class="nc"><i>386</i>&nbsp;					affine.getElement(MatrixType.MT_2D_2x3, 0, 1) + &quot;,\t&quot; +</b>
+<b class="nc"><i>387</i>&nbsp;					affine.getElement(MatrixType.MT_2D_2x3, 0, 2) + &quot;\n&quot; +</b>
+<b class="nc"><i>388</i>&nbsp;					affine.getElement(MatrixType.MT_2D_2x3, 1, 0) + &quot;,\t&quot; +</b>
+<b class="nc"><i>389</i>&nbsp;					affine.getElement(MatrixType.MT_2D_2x3, 1, 1) + &quot;,\t&quot; +</b>
+<b class="nc"><i>390</i>&nbsp;					affine.getElement(MatrixType.MT_2D_2x3, 1, 2);</b>
+<b class="nc"><i>391</i>&nbsp;			content.putString(s);</b>
+<b class="nc"><i>392</i>&nbsp;			Clipboard.getSystemClipboard().setContent(content);</b>
+<i>393</i>&nbsp;		});
+<b class="nc"><i>394</i>&nbsp;		btnReset.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>395</i>&nbsp;		btnReset.setTooltip(new Tooltip(&quot;Reset the transform&quot;));</b>
+<b class="nc"><i>396</i>&nbsp;		btnInvert.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>397</i>&nbsp;		btnInvert.setTooltip(new Tooltip(&quot;Invert the transform&quot;));</b>
+<b class="nc"><i>398</i>&nbsp;		btnUpdate.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>399</i>&nbsp;		btnUpdate.setTooltip(new Tooltip(&quot;Update the transform using the current text&quot;));</b>
+<b class="nc"><i>400</i>&nbsp;		btnCopy.disableProperty().bind(noOverlay);</b>
+<b class="nc"><i>401</i>&nbsp;		btnCopy.setTooltip(new Tooltip(&quot;Copy the current transform to clipboard&quot;));</b>
+<b class="nc"><i>402</i>&nbsp;		textArea.editableProperty().bind(noOverlay.not());</b>
+<b class="nc"><i>403</i>&nbsp;		paneTransform.add(PaneTools.createColumnGridControls(btnUpdate, btnInvert, btnReset, btnCopy), 0, row++);</b>
+<b class="nc"><i>404</i>&nbsp;		PaneTools.setFillWidth(Boolean.TRUE, paneTransform.getChildren().toArray(Node[]::new));</b>
+<b class="nc"><i>405</i>&nbsp;		PaneTools.setHGrowPriority(Priority.ALWAYS, paneTransform.getChildren().toArray(Node[]::new));</b>
+<b class="nc"><i>406</i>&nbsp;		paneTransform.setVgap(5.0);</b>
+<i>407</i>&nbsp;		
+<b class="nc"><i>408</i>&nbsp;		TitledPane titledTransform = new TitledPane(&quot;Affine transform&quot;, paneTransform);</b>
+<i>409</i>&nbsp;
+<i>410</i>&nbsp;		
+<i>411</i>&nbsp;		// Need to update transform text with image
+<b class="nc"><i>412</i>&nbsp;		selectedImageData.addListener((v, o, n) -&gt; affineTransformUpdated());</b>
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;//		Accordion paneMain = new Accordion(
+<i>415</i>&nbsp;//				titledAlignment,
+<i>416</i>&nbsp;//				titledAutoAlign);
+<i>417</i>&nbsp;		
+<b class="nc"><i>418</i>&nbsp;		titledAlignment.setCollapsible(false);</b>
+<b class="nc"><i>419</i>&nbsp;		titledAutoAlign.setCollapsible(false);</b>
+<b class="nc"><i>420</i>&nbsp;		titledTransform.setCollapsible(false);</b>
+<b class="nc"><i>421</i>&nbsp;		VBox paneMain = new VBox(titledAlignment, titledAutoAlign, titledTransform);</b>
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;		// Show only the current overlay on the viewer
+<b class="nc"><i>424</i>&nbsp;		selectedOverlay.addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>425</i>&nbsp;			if (o != null)</b>
+<b class="nc"><i>426</i>&nbsp;				viewer.getCustomOverlayLayers().remove(o);</b>
+<b class="nc"><i>427</i>&nbsp;			if (n != null)</b>
+<b class="nc"><i>428</i>&nbsp;				viewer.getCustomOverlayLayers().add(n);</b>
+<i>429</i>&nbsp;		});
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;		// Bring panes together
+<b class="nc"><i>432</i>&nbsp;		TitledPane titledList = new TitledPane(&quot;Image &amp; overlays&quot;, paneList);</b>
+<b class="nc"><i>433</i>&nbsp;		titledList.setCollapsible(false);</b>
+<b class="nc"><i>434</i>&nbsp;		SplitPane pane = new SplitPane(titledList, paneMain);</b>
+<b class="nc"><i>435</i>&nbsp;		pane.setDividerPositions(0.35);</b>
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;
+<i>438</i>&nbsp;		// Add current image to list, if we have one
+<b class="nc"><i>439</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageDataCurrent = viewer.getImageData();</b>
+<b class="nc"><i>440</i>&nbsp;		if (imageDataCurrent != null) {</b>
+<b class="nc"><i>441</i>&nbsp;			listImages.getItems().add(imageDataCurrent);</b>
+<i>442</i>&nbsp;		}
+<i>443</i>&nbsp;
+<i>444</i>&nbsp;
+<b class="nc"><i>445</i>&nbsp;		Stage stage = new Stage();</b>
+<b class="nc"><i>446</i>&nbsp;		if (qupath != null)</b>
+<b class="nc"><i>447</i>&nbsp;			stage.initOwner(qupath.getStage());</b>
+<b class="nc"><i>448</i>&nbsp;		stage.setTitle(&quot;Image overlay alignment&quot;);</b>
+<i>449</i>&nbsp;
+<b class="nc"><i>450</i>&nbsp;		Scene scene = new Scene(pane);</b>
+<b class="nc"><i>451</i>&nbsp;		stage.setScene(scene);</b>
+<i>452</i>&nbsp;
+<b class="nc"><i>453</i>&nbsp;		stage.show();</b>
+<i>454</i>&nbsp;		
+<i>455</i>&nbsp;		
+<b class="nc"><i>456</i>&nbsp;		stage.setOnHiding(e -&gt; {</b>
+<i>457</i>&nbsp;			// Remove event filter &amp; any overlays we created
+<b class="nc"><i>458</i>&nbsp;			this.viewer.getView().removeEventFilter(MouseEvent.ANY, mouseEventHandler);</b>
+<b class="nc"><i>459</i>&nbsp;			this.viewer.getCustomOverlayLayers().removeAll(mapOverlays.values());</b>
+<i>460</i>&nbsp;		});
+<i>461</i>&nbsp;		
+<i>462</i>&nbsp;	}
+<i>463</i>&nbsp;	
+<i>464</i>&nbsp;	
+<i>465</i>&nbsp;	void parseAffine(String text, Affine affine) {
+<b class="nc"><i>466</i>&nbsp;		String delims = &quot;\t\n &quot;;</b>
+<i>467</i>&nbsp;		// If we have any periods, then use a comma as an acceptable delimiter as well
+<b class="nc"><i>468</i>&nbsp;		if (text.contains(&quot;.&quot;))</b>
+<b class="nc"><i>469</i>&nbsp;			delims += &quot;,&quot;;</b>
+<b class="nc"><i>470</i>&nbsp;		var tokens = new StringTokenizer(text, delims);</b>
+<b class="nc"><i>471</i>&nbsp;		if (tokens.countTokens() != 6) {</b>
+<b class="nc"><i>472</i>&nbsp;			Dialogs.showErrorMessage(&quot;Parse affine transform&quot;, &quot;Affine transform should be tab-delimited and contain 6 numbers only&quot;);</b>
+<i>473</i>&nbsp;			return;
+<i>474</i>&nbsp;		}
+<b class="nc"><i>475</i>&nbsp;		var nf = NumberFormat.getInstance();</b>
+<i>476</i>&nbsp;		try {
+<b class="nc"><i>477</i>&nbsp;			double m00 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>478</i>&nbsp;			double m01 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>479</i>&nbsp;			double m02 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>480</i>&nbsp;			double m10 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>481</i>&nbsp;			double m11 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>482</i>&nbsp;			double m12 = nf.parse(tokens.nextToken()).doubleValue();</b>
+<b class="nc"><i>483</i>&nbsp;			affine.setToTransform(m00, m01, m02, m10, m11, m12);</b>
+<b class="nc"><i>484</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>485</i>&nbsp;			Dialogs.showErrorMessage(&quot;Parse affine transform&quot;, &quot;Unable to parse affine transform!&quot;);</b>
+<b class="nc"><i>486</i>&nbsp;			logger.error(&quot;Error parsing transform: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>487</i>&nbsp;		}</b>
+<i>488</i>&nbsp;	}
+<i>489</i>&nbsp;	
+<i>490</i>&nbsp;		
+<i>491</i>&nbsp;	void promptToAddImages() {
+<i>492</i>&nbsp;		// Get all the other project entries - except for the base image (which is fixed)
+<b class="nc"><i>493</i>&nbsp;		Project&lt;BufferedImage&gt; project = qupath.getProject();</b>
+<b class="nc"><i>494</i>&nbsp;		List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; entries = new ArrayList&lt;&gt;(project.getImageList());</b>
+<b class="nc"><i>495</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageDataCurrent = viewer.getImageData();</b>
+<b class="nc"><i>496</i>&nbsp;		ProjectImageEntry&lt;BufferedImage&gt; currentEntry = project.getEntry(imageDataCurrent);</b>
+<b class="nc"><i>497</i>&nbsp;		if (currentEntry != null)</b>
+<b class="nc"><i>498</i>&nbsp;			entries.remove(currentEntry);</b>
+<i>499</i>&nbsp;		
+<i>500</i>&nbsp;		// Find the entries currently selected
+<b class="nc"><i>501</i>&nbsp;		Set&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; alreadySelected = </b>
+<b class="nc"><i>502</i>&nbsp;				images.stream().map(i -&gt; project.getEntry(i)).collect(Collectors.toSet());</b>
+<b class="nc"><i>503</i>&nbsp;		if (currentEntry != null)</b>
+<b class="nc"><i>504</i>&nbsp;			alreadySelected.remove(currentEntry);</b>
+<i>505</i>&nbsp;		
+<i>506</i>&nbsp;		// Create a list to display, with the appropriate selections
+<b class="nc"><i>507</i>&nbsp;		ListView&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt;  list = new ListView&lt;&gt;();</b>
+<b class="nc"><i>508</i>&nbsp;		list.getItems().setAll(entries);</b>
+<b class="nc"><i>509</i>&nbsp;		list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</b>
+<b class="nc"><i>510</i>&nbsp;		for (int i = 0; i &lt; entries.size(); i++) {</b>
+<b class="nc"><i>511</i>&nbsp;			if (alreadySelected.contains(entries.get(i)))</b>
+<b class="nc"><i>512</i>&nbsp;				list.getSelectionModel().select(i);</b>
+<i>513</i>&nbsp;		}
+<i>514</i>&nbsp;		
+<b class="nc"><i>515</i>&nbsp;		Dialog&lt;ButtonType&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc"><i>516</i>&nbsp;		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);</b>
+<b class="nc"><i>517</i>&nbsp;		dialog.setHeaderText(&quot;Select images to include&quot;);</b>
+<b class="nc"><i>518</i>&nbsp;		dialog.getDialogPane().setContent(list);</b>
+<b class="nc"><i>519</i>&nbsp;		Optional&lt;ButtonType&gt; result = dialog.showAndWait();</b>
+<i>520</i>&nbsp;		
+<b class="nc"><i>521</i>&nbsp;		if (result.orElse(ButtonType.CANCEL) == ButtonType.CANCEL)</b>
+<i>522</i>&nbsp;			return;
+<i>523</i>&nbsp;		
+<i>524</i>&nbsp;		// We now need to add some &amp; remove some (potentially)
+<b class="nc"><i>525</i>&nbsp;		Set&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; toSelect = new LinkedHashSet&lt;&gt;(list.getSelectionModel().getSelectedItems());</b>
+<b class="nc"><i>526</i>&nbsp;		Set&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; toRemove = new HashSet&lt;&gt;(alreadySelected);</b>
+<b class="nc"><i>527</i>&nbsp;		toRemove.removeAll(toSelect);</b>
+<b class="nc"><i>528</i>&nbsp;		toSelect.removeAll(alreadySelected);</b>
+<i>529</i>&nbsp;		
+<i>530</i>&nbsp;		// Rather convoluted... but remove anything that needs to go, from the list, map &amp; overlay
+<b class="nc"><i>531</i>&nbsp;		if (!toRemove.isEmpty()) {</b>
+<b class="nc"><i>532</i>&nbsp;			List&lt;ImageData&lt;BufferedImage&gt;&gt; imagesToRemove = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>533</i>&nbsp;			for (ImageData&lt;BufferedImage&gt; temp : images) {</b>
+<b class="nc"><i>534</i>&nbsp;				for (ProjectImageEntry&lt;BufferedImage&gt; entry : toRemove) {</b>
+<b class="nc"><i>535</i>&nbsp;					if (entry == currentEntry)</b>
+<b class="nc"><i>536</i>&nbsp;						imagesToRemove.add(temp);</b>
+<b class="nc"><i>537</i>&nbsp;				}</b>
+<b class="nc"><i>538</i>&nbsp;			}</b>
+<b class="nc"><i>539</i>&nbsp;			images.removeAll(imagesToRemove);</b>
+<b class="nc"><i>540</i>&nbsp;			for (ImageData&lt;BufferedImage&gt; temp : imagesToRemove) {</b>
+<b class="nc"><i>541</i>&nbsp;				ImageServerOverlay overlay = mapOverlays.remove(temp);</b>
+<b class="nc"><i>542</i>&nbsp;				if (overlay != null) {</b>
+<b class="nc"><i>543</i>&nbsp;					overlay.getAffine().removeEventHandler(TransformChangedEvent.ANY, transformEventHandler);</b>
+<b class="nc"><i>544</i>&nbsp;					viewer.getCustomOverlayLayers().remove(overlay);					</b>
+<i>545</i>&nbsp;				}
+<b class="nc"><i>546</i>&nbsp;			}</b>
+<i>547</i>&nbsp;		}
+<i>548</i>&nbsp;		
+<i>549</i>&nbsp;		// Add any images that need to be added
+<b class="nc"><i>550</i>&nbsp;		List&lt;ImageData&lt;BufferedImage&gt;&gt; imagesToAdd = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>551</i>&nbsp;		for (ProjectImageEntry&lt;BufferedImage&gt; temp : toSelect) {</b>
+<b class="nc"><i>552</i>&nbsp;			ImageData&lt;BufferedImage&gt; imageData = null;</b>
+<i>553</i>&nbsp;			// Read annotations from any data file
+<i>554</i>&nbsp;			try {
+<i>555</i>&nbsp;				// Try to get data from an open viewer first, if possible
+<b class="nc"><i>556</i>&nbsp;				for (var viewer : qupath.getViewers()) {</b>
+<b class="nc"><i>557</i>&nbsp;					var tempData = viewer.getImageData();</b>
+<b class="nc"><i>558</i>&nbsp;					if (tempData != null &amp;&amp; temp.equals(project.getEntry(viewer.getImageData()))) {</b>
+<b class="nc"><i>559</i>&nbsp;						imageData = tempData;</b>
+<b class="nc"><i>560</i>&nbsp;						break;</b>
+<i>561</i>&nbsp;					}
+<b class="nc"><i>562</i>&nbsp;				}</b>
+<i>563</i>&nbsp;				// Read the data from the project if necessary
+<b class="nc"><i>564</i>&nbsp;				if (imageData == null) {</b>
+<b class="nc"><i>565</i>&nbsp;					if (temp.hasImageData()) {</b>
+<b class="nc"><i>566</i>&nbsp;						imageData = temp.readImageData();</b>
+<i>567</i>&nbsp;						// Remove non-annotations to save memory
+<b class="nc"><i>568</i>&nbsp;						Collection&lt;PathObject&gt; pathObjects = imageData.getHierarchy().getObjects(null, null);</b>
+<b class="nc"><i>569</i>&nbsp;						Set&lt;PathObject&gt; pathObjectsToRemove = pathObjects.stream().filter(p -&gt; !p.isAnnotation()).collect(Collectors.toSet());</b>
+<b class="nc"><i>570</i>&nbsp;						imageData.getHierarchy().removeObjects(pathObjectsToRemove, true);</b>
+<b class="nc"><i>571</i>&nbsp;					} else {</b>
+<i>572</i>&nbsp;						// Read the data from the project (but without a data file we expect this to really create a new image)
+<b class="nc"><i>573</i>&nbsp;						imageData = temp.readImageData();</b>
+<i>574</i>&nbsp;					}
+<i>575</i>&nbsp;				}
+<b class="nc"><i>576</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>577</i>&nbsp;				logger.error(&quot;Unable to read ImageData for &quot; + temp.getImageName(), e);</b>
+<b class="nc"><i>578</i>&nbsp;				continue;</b>
+<b class="nc"><i>579</i>&nbsp;			}</b>
+<b class="nc"><i>580</i>&nbsp;			ImageServerOverlay overlay = new ImageServerOverlay(viewer, imageData.getServer());</b>
+<b class="nc"><i>581</i>&nbsp;			overlay.getAffine().addEventHandler(TransformChangedEvent.ANY, transformEventHandler);</b>
+<b class="nc"><i>582</i>&nbsp;			mapOverlays.put(imageData, overlay);</b>
+<i>583</i>&nbsp;//			viewer.getCustomOverlayLayers().add(overlay);
+<b class="nc"><i>584</i>&nbsp;			imagesToAdd.add(imageData);</b>
+<b class="nc"><i>585</i>&nbsp;		}</b>
+<b class="nc"><i>586</i>&nbsp;		images.addAll(0, imagesToAdd);</b>
+<i>587</i>&nbsp;		
+<i>588</i>&nbsp;	}
+<i>589</i>&nbsp;	
+<i>590</i>&nbsp;	
+<i>591</i>&nbsp;	void addImageData(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>592</i>&nbsp;		ImageServerOverlay overlay = new ImageServerOverlay(viewer, imageData.getServer());</b>
+<b class="nc"><i>593</i>&nbsp;		mapOverlays.put(imageData, overlay);</b>
+<b class="nc"><i>594</i>&nbsp;		viewer.getCustomOverlayLayers().add(overlay);</b>
+<b class="nc"><i>595</i>&nbsp;		images.add(0, imageData);</b>
+<i>596</i>&nbsp;	}
+<i>597</i>&nbsp;	
+<i>598</i>&nbsp;	
+<i>599</i>&nbsp;	
+<i>600</i>&nbsp;	private ImageServerOverlay getSelectedOverlay() {
+<b class="nc"><i>601</i>&nbsp;		return mapOverlays.get(selectedImageData.get());</b>
+<i>602</i>&nbsp;	}
+<i>603</i>&nbsp;	
+<i>604</i>&nbsp;	private void affineTransformUpdated() {
+<b class="nc"><i>605</i>&nbsp;		ImageServerOverlay overlay = getSelectedOverlay();</b>
+<b class="nc"><i>606</i>&nbsp;		if (overlay == null) {</b>
+<b class="nc"><i>607</i>&nbsp;			affineStringProperty.set(&quot;No overlay selected&quot;);</b>
+<i>608</i>&nbsp;			return;
+<i>609</i>&nbsp;		}
+<b class="nc"><i>610</i>&nbsp;		Affine affine = overlay.getAffine();</b>
+<b class="nc"><i>611</i>&nbsp;		affineStringProperty.set(</b>
+<b class="nc"><i>612</i>&nbsp;				String.format(</b>
+<i>613</i>&nbsp;				&quot;%.4f, \t %.4f,\t %.4f,\n&quot; + 
+<i>614</i>&nbsp;				&quot;%.4f,\t %.4f,\t %.4f&quot;,
+<i>615</i>&nbsp;//				String.format(&quot;Transform: [\n&quot; +
+<i>616</i>&nbsp;//				&quot;  %.3f, %.3f, %.3f,\n&quot; + 
+<i>617</i>&nbsp;//				&quot;  %.3f, %.3f, %.3f\n&quot; + 
+<i>618</i>&nbsp;//				&quot;]&quot;,
+<b class="nc"><i>619</i>&nbsp;				affine.getMxx(), affine.getMxy(), affine.getTx(),</b>
+<b class="nc"><i>620</i>&nbsp;				affine.getMyx(), affine.getMyy(), affine.getTy())</b>
+<i>621</i>&nbsp;				);
+<i>622</i>&nbsp;	}
+<i>623</i>&nbsp;	
+<i>624</i>&nbsp;	
+<i>625</i>&nbsp;	
+<i>626</i>&nbsp;	/**
+<i>627</i>&nbsp;	 * Ensure an image is 8-bit grayscale, creating a new image if necessary.
+<i>628</i>&nbsp;	 * 
+<i>629</i>&nbsp;	 * @param img
+<i>630</i>&nbsp;	 * @return
+<i>631</i>&nbsp;	 */
+<i>632</i>&nbsp;	static BufferedImage ensureGrayScale(BufferedImage img) {
+<b class="nc"><i>633</i>&nbsp;		if (img.getType() == BufferedImage.TYPE_BYTE_GRAY)</b>
+<b class="nc"><i>634</i>&nbsp;			return img;</b>
+<b class="nc"><i>635</i>&nbsp;		if (img.getType() == BufferedImage.TYPE_BYTE_INDEXED) {</b>
+<b class="nc"><i>636</i>&nbsp;			 ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_GRAY);</b>
+<b class="nc"><i>637</i>&nbsp;             var colorModel = new ComponentColorModel(cs, new int[]{8}, false, true,</b>
+<i>638</i>&nbsp;                                                  Transparency.OPAQUE,
+<i>639</i>&nbsp;                                                  DataBuffer.TYPE_BYTE);
+<b class="nc"><i>640</i>&nbsp;			return new BufferedImage(colorModel, img.getRaster(), false, null);</b>
+<i>641</i>&nbsp;		}
+<b class="nc"><i>642</i>&nbsp;		BufferedImage imgGray = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_BYTE_GRAY);</b>
+<b class="nc"><i>643</i>&nbsp;		Graphics2D g2d = imgGray.createGraphics();</b>
+<b class="nc"><i>644</i>&nbsp;		g2d.drawImage(img, 0, 0, null);</b>
+<b class="nc"><i>645</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>646</i>&nbsp;		return imgGray;</b>
+<i>647</i>&nbsp;	}
+<i>648</i>&nbsp;
+<i>649</i>&nbsp;	/**
+<i>650</i>&nbsp;	 * Auto-align the selected image overlay with the base image in the viewer.
+<i>651</i>&nbsp;	 * 
+<i>652</i>&nbsp;	 * @param requestedPixelSizeMicrons
+<i>653</i>&nbsp;	 * @throws IOException 
+<i>654</i>&nbsp;	 */
+<i>655</i>&nbsp;	void autoAlign(double requestedPixelSizeMicrons) throws IOException {
+<b class="nc"><i>656</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageDataBase = viewer.getImageData();</b>
+<b class="nc"><i>657</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageDataSelected = selectedImageData.get();</b>
+<b class="nc"><i>658</i>&nbsp;		if (imageDataBase == null) {</b>
+<b class="nc"><i>659</i>&nbsp;			Dialogs.showNoImageError(&quot;Auto-alignment&quot;);</b>
+<i>660</i>&nbsp;			return;
+<i>661</i>&nbsp;		}
+<b class="nc"><i>662</i>&nbsp;		if (imageDataSelected == null) {</b>
+<b class="nc"><i>663</i>&nbsp;			Dialogs.showErrorMessage(&quot;Auto-alignment&quot;, &quot;Please ensure an image overlay is selected!&quot;);</b>
+<i>664</i>&nbsp;			return;
+<i>665</i>&nbsp;		}
+<b class="nc"><i>666</i>&nbsp;		if (imageDataBase == imageDataSelected) {</b>
+<b class="nc"><i>667</i>&nbsp;			Dialogs.showErrorMessage(&quot;Auto-alignment&quot;, &quot;Please select an image overlay, not the &#39;base&#39; image from the viewer!&quot;);</b>
+<i>668</i>&nbsp;			return;
+<i>669</i>&nbsp;		}
+<b class="nc"><i>670</i>&nbsp;		ImageServerOverlay overlay = mapOverlays.get(imageDataSelected);</b>
+<i>671</i>&nbsp;		
+<b class="nc"><i>672</i>&nbsp;		var affine = overlay.getAffine();</b>
+<i>673</i>&nbsp;		
+<i>674</i>&nbsp;		ImageServer&lt;BufferedImage&gt; serverBase, serverSelected;
+<i>675</i>&nbsp;
+<b class="nc"><i>676</i>&nbsp;		if (alignmentMethod.get() == AlignmentMethod.POINT_ANNOTATIONS) {</b>
+<b class="nc"><i>677</i>&nbsp;			logger.debug(&quot;Image alignment using point annotations&quot;);</b>
+<b class="nc"><i>678</i>&nbsp;			logger.warn(&quot;Point annotation alignment not yet implemented!&quot;);</b>
+<i>679</i>&nbsp;			Mat transform;
+<b class="nc"><i>680</i>&nbsp;			List&lt;Point2&gt; pointsBase = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>681</i>&nbsp;			List&lt;Point2&gt; pointsSelected = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>682</i>&nbsp;			for (var annotation : imageDataBase.getHierarchy().getAnnotationObjects()) {</b>
+<b class="nc"><i>683</i>&nbsp;				var roi = annotation.getROI();</b>
+<b class="nc"><i>684</i>&nbsp;				if (roi == null || roi.isArea())</b>
+<b class="nc"><i>685</i>&nbsp;					continue;</b>
+<b class="nc"><i>686</i>&nbsp;				pointsBase.addAll(roi.getAllPoints());</b>
+<b class="nc"><i>687</i>&nbsp;			}</b>
+<b class="nc"><i>688</i>&nbsp;			for (var annotation : imageDataSelected.getHierarchy().getAnnotationObjects()) {</b>
+<b class="nc"><i>689</i>&nbsp;				var roi = annotation.getROI();</b>
+<b class="nc"><i>690</i>&nbsp;				if (roi == null || roi.isArea())</b>
+<b class="nc"><i>691</i>&nbsp;					continue;</b>
+<b class="nc"><i>692</i>&nbsp;				pointsSelected.addAll(roi.getAllPoints());</b>
+<b class="nc"><i>693</i>&nbsp;			}</b>
+<b class="nc"><i>694</i>&nbsp;			if (pointsBase.isEmpty() &amp;&amp; pointsSelected.isEmpty()) {</b>
+<b class="nc"><i>695</i>&nbsp;				Dialogs.showErrorMessage(&quot;Align images&quot;, &quot;No points found for either image!&quot;);</b>
+<i>696</i>&nbsp;				return;
+<i>697</i>&nbsp;			}
+<b class="nc"><i>698</i>&nbsp;			if (pointsBase.size() != pointsSelected.size()) {</b>
+<b class="nc"><i>699</i>&nbsp;				Dialogs.showErrorMessage(&quot;Align images&quot;, &quot;Images have different numbers of annotated points (&quot; + pointsBase.size() + &quot; &amp; &quot; + pointsSelected.size() + &quot;)&quot;);</b>
+<i>700</i>&nbsp;				return;				
+<i>701</i>&nbsp;			}
+<b class="nc"><i>702</i>&nbsp;			Mat matBase = pointsToMat(pointsBase);</b>
+<b class="nc"><i>703</i>&nbsp;			Mat matSelected = pointsToMat(pointsSelected);</b>
+<i>704</i>&nbsp;			
+<b class="nc"><i>705</i>&nbsp;			transform = opencv_video.estimateRigidTransform(matBase, matSelected, registrationType.get() == RegistrationType.AFFINE);</b>
+<i>706</i>&nbsp;//			if (registrationType.get() == RegistrationType.AFFINE)
+<i>707</i>&nbsp;//				transform = opencv_calib3d.estimateAffine2D(matBase, matSelected);
+<i>708</i>&nbsp;//			else
+<i>709</i>&nbsp;//				transform = opencv_calib3d.estimateAffinePartial2D(matBase, matSelected);
+<b class="nc"><i>710</i>&nbsp;			matToAffine(transform, affine, 1.0);</b>
+<i>711</i>&nbsp;			return;
+<i>712</i>&nbsp;		}
+<i>713</i>&nbsp;		
+<b class="nc"><i>714</i>&nbsp;		if (alignmentMethod.get() == AlignmentMethod.AREA_ANNOTATIONS) {</b>
+<b class="nc"><i>715</i>&nbsp;			logger.debug(&quot;Image alignment using area annotations&quot;);</b>
+<b class="nc"><i>716</i>&nbsp;			Map&lt;PathClass, Integer&gt; labels = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>717</i>&nbsp;			int label = 1;</b>
+<b class="nc"><i>718</i>&nbsp;			labels.put(PathClassFactory.getPathClassUnclassified(), label++);</b>
+<b class="nc"><i>719</i>&nbsp;			for (var annotation : imageDataBase.getHierarchy().getAnnotationObjects()) {</b>
+<b class="nc"><i>720</i>&nbsp;				var pathClass = annotation.getPathClass();</b>
+<b class="nc"><i>721</i>&nbsp;				if (pathClass != null &amp;&amp; !labels.containsKey(pathClass))</b>
+<b class="nc"><i>722</i>&nbsp;					labels.put(pathClass, label++);</b>
+<b class="nc"><i>723</i>&nbsp;			}</b>
+<b class="nc"><i>724</i>&nbsp;			for (var annotation : imageDataSelected.getHierarchy().getAnnotationObjects()) {</b>
+<b class="nc"><i>725</i>&nbsp;				var pathClass = annotation.getPathClass();</b>
+<b class="nc"><i>726</i>&nbsp;				if (pathClass != null &amp;&amp; !labels.containsKey(pathClass))</b>
+<b class="nc"><i>727</i>&nbsp;					labels.put(pathClass, label++);</b>
+<b class="nc"><i>728</i>&nbsp;			}</b>
+<i>729</i>&nbsp;			
+<b class="nc"><i>730</i>&nbsp;			double downsampleBase = requestedPixelSizeMicrons / imageDataBase.getServer().getPixelCalibration().getAveragedPixelSize().doubleValue();</b>
+<b class="nc"><i>731</i>&nbsp;			serverBase = new LabeledImageServer.Builder(imageDataBase)</b>
+<b class="nc"><i>732</i>&nbsp;				.backgroundLabel(0)</b>
+<b class="nc"><i>733</i>&nbsp;				.addLabels(labels)</b>
+<b class="nc"><i>734</i>&nbsp;				.downsample(downsampleBase)</b>
+<b class="nc"><i>735</i>&nbsp;				.build();</b>
+<i>736</i>&nbsp;			
+<b class="nc"><i>737</i>&nbsp;			double downsampleSelected = requestedPixelSizeMicrons / imageDataSelected.getServer().getPixelCalibration().getAveragedPixelSize().doubleValue();</b>
+<b class="nc"><i>738</i>&nbsp;			serverSelected = new LabeledImageServer.Builder(imageDataSelected)</b>
+<b class="nc"><i>739</i>&nbsp;					.backgroundLabel(0)</b>
+<b class="nc"><i>740</i>&nbsp;					.addLabels(labels)</b>
+<b class="nc"><i>741</i>&nbsp;					.downsample(downsampleSelected)</b>
+<b class="nc"><i>742</i>&nbsp;					.build();</b>
+<i>743</i>&nbsp;			
+<b class="nc"><i>744</i>&nbsp;		} else {</b>
+<i>745</i>&nbsp;			// Default - just use intensities
+<b class="nc"><i>746</i>&nbsp;			logger.debug(&quot;Image alignment using intensities&quot;);</b>
+<b class="nc"><i>747</i>&nbsp;			serverBase = imageDataBase.getServer();</b>
+<b class="nc"><i>748</i>&nbsp;			serverSelected = imageDataSelected.getServer();			</b>
+<i>749</i>&nbsp;		}
+<i>750</i>&nbsp;		
+<b class="nc"><i>751</i>&nbsp;		autoAlign(serverBase, serverSelected, registrationType.get(), affine, requestedPixelSizeMicrons);</b>
+<i>752</i>&nbsp;	}
+<i>753</i>&nbsp;	
+<i>754</i>&nbsp;	
+<i>755</i>&nbsp;	static Mat pointsToMat(Collection&lt;Point2&gt; points) {
+<b class="nc"><i>756</i>&nbsp;		Mat mat = new Mat(points.size(), 2, opencv_core.CV_32FC1);</b>
+<b class="nc"><i>757</i>&nbsp;		int r = 0;</b>
+<b class="nc"><i>758</i>&nbsp;		FloatIndexer idx = mat.createIndexer();</b>
+<b class="nc"><i>759</i>&nbsp;		for (var p : points) {</b>
+<b class="nc"><i>760</i>&nbsp;			idx.put(r, 0, (float)p.getX());</b>
+<b class="nc"><i>761</i>&nbsp;			idx.put(r, 1, (float)p.getY());</b>
+<b class="nc"><i>762</i>&nbsp;			r++;</b>
+<b class="nc"><i>763</i>&nbsp;		}</b>
+<b class="nc"><i>764</i>&nbsp;		idx.release();</b>
+<b class="nc"><i>765</i>&nbsp;		return mat;</b>
+<i>766</i>&nbsp;	}
+<i>767</i>&nbsp;	
+<i>768</i>&nbsp;
+<i>769</i>&nbsp;	static void autoAlign(ImageServer&lt;BufferedImage&gt; serverBase, ImageServer&lt;BufferedImage&gt; serverOverlay, RegistrationType registrationType, Affine affine, double requestedPixelSizeMicrons) throws IOException {
+<b class="nc"><i>770</i>&nbsp;		PixelCalibration calBase = serverBase.getPixelCalibration();</b>
+<b class="nc"><i>771</i>&nbsp;		double pixelSize = calBase.getAveragedPixelSizeMicrons();</b>
+<b class="nc"><i>772</i>&nbsp;		double downsample = 1;</b>
+<b class="nc"><i>773</i>&nbsp;		if (!Double.isFinite(pixelSize)) {</b>
+<b class="nc"><i>774</i>&nbsp;			while (serverBase.getWidth() / downsample &gt; 2000)</b>
+<b class="nc"><i>775</i>&nbsp;				downsample++;</b>
+<b class="nc"><i>776</i>&nbsp;			logger.warn(&quot;Pixel size is unavailable! Default downsample value of {} will be used&quot;, downsample);</b>
+<i>777</i>&nbsp;		} else {
+<b class="nc"><i>778</i>&nbsp;			downsample = requestedPixelSizeMicrons / calBase.getAveragedPixelSizeMicrons();			</b>
+<i>779</i>&nbsp;		}
+<i>780</i>&nbsp;
+<b class="nc"><i>781</i>&nbsp;		BufferedImage imgBase = serverBase.readBufferedImage(RegionRequest.createInstance(serverBase.getPath(), downsample, 0, 0, serverBase.getWidth(), serverBase.getHeight()));</b>
+<b class="nc"><i>782</i>&nbsp;		BufferedImage imgOverlay = serverOverlay.readBufferedImage(RegionRequest.createInstance(serverOverlay.getPath(), downsample, 0, 0, serverOverlay.getWidth(), serverOverlay.getHeight()));</b>
+<i>783</i>&nbsp;		
+<b class="nc"><i>784</i>&nbsp;		imgBase = ensureGrayScale(imgBase);</b>
+<b class="nc"><i>785</i>&nbsp;		imgOverlay = ensureGrayScale(imgOverlay);</b>
+<i>786</i>&nbsp;		
+<b class="nc"><i>787</i>&nbsp;		Mat matBase = OpenCVTools.imageToMat(imgBase);</b>
+<b class="nc"><i>788</i>&nbsp;		Mat matOverlay = OpenCVTools.imageToMat(imgOverlay);</b>
+<i>789</i>&nbsp;		
+<i>790</i>&nbsp;//		opencv_imgproc.threshold(matBase, matBase, opencv_imgproc.THRESH_OTSU, 255, opencv_imgproc.THRESH_BINARY_INV + opencv_imgproc.THRESH_OTSU);
+<i>791</i>&nbsp;//		opencv_imgproc.threshold(matOverlay, matOverlay, opencv_imgproc.THRESH_OTSU, 255, opencv_imgproc.THRESH_BINARY_INV + opencv_imgproc.THRESH_OTSU);
+<i>792</i>&nbsp;
+<b class="nc"><i>793</i>&nbsp;		Mat matTransform = Mat.eye(2, 3, opencv_core.CV_32F).asMat();</b>
+<i>794</i>&nbsp;		// Initialize using existing transform
+<i>795</i>&nbsp;//		affine.setToTransform(mxx, mxy, tx, myx, myy, ty);
+<b class="nc"><i>796</i>&nbsp;		try (FloatIndexer indexer = matTransform.createIndexer()) {</b>
+<b class="nc"><i>797</i>&nbsp;			indexer.put(0, 0, (float)affine.getMxx());</b>
+<b class="nc"><i>798</i>&nbsp;			indexer.put(0, 1, (float)affine.getMxy());</b>
+<b class="nc"><i>799</i>&nbsp;			indexer.put(0, 2, (float)(affine.getTx() / downsample));</b>
+<b class="nc"><i>800</i>&nbsp;			indexer.put(1, 0, (float)affine.getMyx());</b>
+<b class="nc"><i>801</i>&nbsp;			indexer.put(1, 1, (float)affine.getMyy());</b>
+<b class="nc"><i>802</i>&nbsp;			indexer.put(1, 2, (float)(affine.getTy() / downsample));</b>
+<i>803</i>&nbsp;//			System.err.println(indexer);
+<b class="nc"><i>804</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>805</i>&nbsp;			logger.error(&quot;Error closing indexer&quot;, e);</b>
+<b class="nc"><i>806</i>&nbsp;		}</b>
+<i>807</i>&nbsp;//		// Might want to mask out completely black pixels (could indicate missing data)?
+<i>808</i>&nbsp;//		def matMask = new opencv_core.Mat(matOverlay.size(), opencv_core.CV_8UC1, Scalar.ZERO);
+<b class="nc"><i>809</i>&nbsp;		TermCriteria termCrit = new TermCriteria(TermCriteria.COUNT, 100, 0.0001);</b>
+<i>810</i>&nbsp;//		OpenCVTools.matToImagePlus(matBase, &quot;Base&quot;).show();
+<i>811</i>&nbsp;//		OpenCVTools.matToImagePlus(matOverlay, &quot;Overlay&quot;).show();
+<i>812</i>&nbsp;////		
+<i>813</i>&nbsp;//		Mat matTemp = new Mat();
+<i>814</i>&nbsp;//		opencv_imgproc.warpAffine(matOverlay, matTemp, matTransform, matBase.size());
+<i>815</i>&nbsp;//		OpenCVTools.matToImagePlus(matTemp, &quot;Transformed&quot;).show();
+<i>816</i>&nbsp;		try {
+<i>817</i>&nbsp;			int motion;
+<b class="nc"><i>818</i>&nbsp;			switch (registrationType) {</b>
+<i>819</i>&nbsp;			case AFFINE:
+<b class="nc"><i>820</i>&nbsp;				motion = opencv_video.MOTION_AFFINE;</b>
+<b class="nc"><i>821</i>&nbsp;				break;</b>
+<i>822</i>&nbsp;			case RIGID:
+<b class="nc"><i>823</i>&nbsp;				motion = opencv_video.MOTION_EUCLIDEAN;</b>
+<b class="nc"><i>824</i>&nbsp;				break;</b>
+<i>825</i>&nbsp;			default:
+<b class="nc"><i>826</i>&nbsp;				logger.warn(&quot;Unknown registration type {} - will use {}&quot;, registrationType, RegistrationType.AFFINE);</b>
+<b class="nc"><i>827</i>&nbsp;				motion = opencv_video.MOTION_AFFINE;</b>
+<i>828</i>&nbsp;				break;
+<i>829</i>&nbsp;			}
+<b class="nc"><i>830</i>&nbsp;			double result = opencv_video.findTransformECC(matBase, matOverlay, matTransform, motion, termCrit, null);</b>
+<b class="nc"><i>831</i>&nbsp;			logger.info(&quot;Transformation result: {}&quot;, result);</b>
+<b class="nc"><i>832</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>833</i>&nbsp;			Dialogs.showErrorNotification(&quot;Estimate transform&quot;, &quot;Unable to estimate transform - result did not converge&quot;);</b>
+<b class="nc"><i>834</i>&nbsp;			logger.error(&quot;Unable to estimate transform&quot;, e);</b>
+<i>835</i>&nbsp;			return;
+<b class="nc"><i>836</i>&nbsp;		}</b>
+<i>837</i>&nbsp;		
+<i>838</i>&nbsp;		// To use the following function, images need to be the same size
+<i>839</i>&nbsp;//		def matTransform = opencv_video.estimateRigidTransform(matBase, matOverlay, false);
+<b class="nc"><i>840</i>&nbsp;		Indexer indexer = matTransform.createIndexer();</b>
+<b class="nc"><i>841</i>&nbsp;		affine.setToTransform(</b>
+<b class="nc"><i>842</i>&nbsp;			indexer.getDouble(0, 0),</b>
+<b class="nc"><i>843</i>&nbsp;			indexer.getDouble(0, 1),</b>
+<b class="nc"><i>844</i>&nbsp;			indexer.getDouble(0, 2) * downsample,</b>
+<b class="nc"><i>845</i>&nbsp;			indexer.getDouble(1, 0),</b>
+<b class="nc"><i>846</i>&nbsp;			indexer.getDouble(1, 1),</b>
+<b class="nc"><i>847</i>&nbsp;			indexer.getDouble(1, 2) * downsample</b>
+<i>848</i>&nbsp;			);
+<b class="nc"><i>849</i>&nbsp;		indexer.release();</b>
+<i>850</i>&nbsp;		
+<i>851</i>&nbsp;//		matMask.release();
+<b class="nc"><i>852</i>&nbsp;		matBase.release();</b>
+<b class="nc"><i>853</i>&nbsp;		matOverlay.release();</b>
+<b class="nc"><i>854</i>&nbsp;		matTransform.release();</b>
+<i>855</i>&nbsp;	}
+<i>856</i>&nbsp;	
+<i>857</i>&nbsp;	/**
+<i>858</i>&nbsp;	 * Set the values of an Affine based on the contents of a 2x3 Mat.
+<i>859</i>&nbsp;	 * @param matTransform the transform data to use
+<i>860</i>&nbsp;	 * @param affine the Affine object to be updated
+<i>861</i>&nbsp;	 * @param downsample translation values will be scaled by the downsample. Relative scaling is otherwise assumed to be correct.
+<i>862</i>&nbsp;	 */
+<i>863</i>&nbsp;	static void matToAffine(Mat matTransform, Affine affine, double downsample) {
+<b class="nc"><i>864</i>&nbsp;		Indexer indexer = matTransform.createIndexer();</b>
+<b class="nc"><i>865</i>&nbsp;		affine.setToTransform(</b>
+<b class="nc"><i>866</i>&nbsp;			indexer.getDouble(0, 0),</b>
+<b class="nc"><i>867</i>&nbsp;			indexer.getDouble(0, 1),</b>
+<b class="nc"><i>868</i>&nbsp;			indexer.getDouble(0, 2) * downsample,</b>
+<b class="nc"><i>869</i>&nbsp;			indexer.getDouble(1, 0),</b>
+<b class="nc"><i>870</i>&nbsp;			indexer.getDouble(1, 1),</b>
+<b class="nc"><i>871</i>&nbsp;			indexer.getDouble(1, 2) * downsample</b>
+<i>872</i>&nbsp;			);
+<b class="nc"><i>873</i>&nbsp;		indexer.release();</b>
+<i>874</i>&nbsp;	}
+<i>875</i>&nbsp;	
+<i>876</i>&nbsp;	
+<i>877</i>&nbsp;
+<i>878</i>&nbsp;	void requestShift(double dx, double dy) {
+<b class="nc"><i>879</i>&nbsp;		ImageServerOverlay overlay = mapOverlays.get(selectedImageData.get());</b>
+<b class="nc"><i>880</i>&nbsp;		if (overlay == null) {</b>
+<b class="nc"><i>881</i>&nbsp;			Dialogs.showErrorNotification(&quot;Shift overlay&quot;, &quot;No overlay selected!&quot;);</b>
+<i>882</i>&nbsp;			return;
+<i>883</i>&nbsp;		}
+<b class="nc"><i>884</i>&nbsp;		double downsample = Math.max(1.0, viewer.getDownsampleFactor());</b>
+<b class="nc"><i>885</i>&nbsp;		overlay.getAffine().appendTranslation(dx * downsample, dy * downsample);</b>
+<i>886</i>&nbsp;	}
+<i>887</i>&nbsp;
+<i>888</i>&nbsp;	void requestRotation(double theta) {
+<b class="nc"><i>889</i>&nbsp;		ImageServerOverlay overlay = mapOverlays.get(selectedImageData.get());</b>
+<b class="nc"><i>890</i>&nbsp;		if (overlay == null) {</b>
+<b class="nc"><i>891</i>&nbsp;			Dialogs.showErrorNotification(&quot;Rotate overlay&quot;, &quot;No overlay selected!&quot;);</b>
+<i>892</i>&nbsp;			return;
+<i>893</i>&nbsp;		}
+<b class="nc"><i>894</i>&nbsp;		overlay.getAffine().appendRotation(theta, viewer.getCenterPixelX(), viewer.getCenterPixelY());</b>
+<i>895</i>&nbsp;	}
+<i>896</i>&nbsp;	
+<i>897</i>&nbsp;	
+<i>898</i>&nbsp;	static void requestShift(QuPathViewer viewer, Affine affine, double dx, double dy) {
+<b class="nc"><i>899</i>&nbsp;		double downsample = Math.max(1.0, viewer.getDownsampleFactor());</b>
+<b class="nc"><i>900</i>&nbsp;		affine.appendTranslation(dx * downsample, dy * downsample);</b>
+<i>901</i>&nbsp;	}
+<i>902</i>&nbsp;
+<i>903</i>&nbsp;	static void requestRotation(QuPathViewer viewer, Affine affine, double theta) {
+<b class="nc"><i>904</i>&nbsp;		affine.appendRotation(theta, viewer.getCenterPixelX(), viewer.getCenterPixelY());</b>
+<i>905</i>&nbsp;	}
+<i>906</i>&nbsp;	
+<i>907</i>&nbsp;	
+<i>908</i>&nbsp;	
+<i>909</i>&nbsp;	/**
+<i>910</i>&nbsp;	 * An event handler to enable interactively adjusting overlay transforms.
+<i>911</i>&nbsp;	 */
+<b class="nc"><i>912</i>&nbsp;	class RefineTransformMouseHandler implements EventHandler&lt;MouseEvent&gt; {</b>
+<i>913</i>&nbsp;		
+<i>914</i>&nbsp;		private Point2D pDragging;
+<i>915</i>&nbsp;		
+<i>916</i>&nbsp;		@Override
+<i>917</i>&nbsp;		public void handle(MouseEvent event) {
+<b class="nc"><i>918</i>&nbsp;			if (!event.isPrimaryButtonDown() || event.isConsumed())</b>
+<i>919</i>&nbsp;				return;
+<i>920</i>&nbsp;			
+<b class="nc"><i>921</i>&nbsp;			ImageServerOverlay overlay = getSelectedOverlay();</b>
+<b class="nc"><i>922</i>&nbsp;			if (overlay == null)</b>
+<i>923</i>&nbsp;				return;
+<i>924</i>&nbsp;				
+<b class="nc"><i>925</i>&nbsp;			if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {</b>
+<b class="nc"><i>926</i>&nbsp;				pDragging = viewer.componentPointToImagePoint(event.getX(), event.getY(), pDragging, true);</b>
+<i>927</i>&nbsp;				return;
+<b class="nc"><i>928</i>&nbsp;			} else if (event.getEventType() == MouseEvent.MOUSE_DRAGGED) {</b>
+<b class="nc"><i>929</i>&nbsp;				Point2D p = viewer.componentPointToImagePoint(event.getX(), event.getY(), null, true);</b>
+<b class="nc"><i>930</i>&nbsp;				if (event.isShiftDown() &amp;&amp; pDragging != null) {</b>
+<b class="nc"><i>931</i>&nbsp;					double dx = p.getX() - pDragging.getX();</b>
+<b class="nc"><i>932</i>&nbsp;					double dy = p.getY() - pDragging.getY();</b>
+<b class="nc"><i>933</i>&nbsp;					overlay.getAffine().appendTranslation(-dx, -dy);</b>
+<b class="nc"><i>934</i>&nbsp;					event.consume();</b>
+<i>935</i>&nbsp;				}
+<b class="nc"><i>936</i>&nbsp;				pDragging = p;</b>
+<i>937</i>&nbsp;			}
+<i>938</i>&nbsp;		}
+<i>939</i>&nbsp;	}
+<i>940</i>&nbsp;	
+<i>941</i>&nbsp;	
+<i>942</i>&nbsp;	
+<i>943</i>&nbsp;	/**
+<i>944</i>&nbsp;	 * ListCell for displaying image overlays.
+<i>945</i>&nbsp;	 */
+<i>946</i>&nbsp;	class ImageEntryCell extends ListCell&lt;ImageData&lt;BufferedImage&gt;&gt; {
+<i>947</i>&nbsp;
+<b class="nc"><i>948</i>&nbsp;		final SimpleDateFormat dateFormat = new SimpleDateFormat();</b>
+<i>949</i>&nbsp;		
+<b class="nc"><i>950</i>&nbsp;		private StackPane label = new StackPane();</b>
+<b class="nc"><i>951</i>&nbsp;		private Canvas viewCanvas = new Canvas();</b>
+<i>952</i>&nbsp;
+<b class="nc"><i>953</i>&nbsp;		public ImageEntryCell() {</b>
+<b class="nc"><i>954</i>&nbsp;			double viewWidth = 80;</b>
+<b class="nc"><i>955</i>&nbsp;			double viewHeight = 60;</b>
+<b class="nc"><i>956</i>&nbsp;			viewCanvas.setWidth(viewWidth);</b>
+<b class="nc"><i>957</i>&nbsp;			viewCanvas.setHeight(viewHeight);</b>
+<b class="nc"><i>958</i>&nbsp;			viewCanvas.setStyle(&quot;-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 4, 0, 1, 1);&quot;);</b>
+<b class="nc"><i>959</i>&nbsp;			label.getChildren().add(viewCanvas);</b>
+<b class="nc"><i>960</i>&nbsp;			label.setPrefSize(viewWidth, viewHeight);</b>
+<i>961</i>&nbsp;		}
+<i>962</i>&nbsp;
+<i>963</i>&nbsp;		@Override
+<i>964</i>&nbsp;		protected void updateItem(ImageData&lt;BufferedImage&gt; item, boolean empty) {
+<b class="nc"><i>965</i>&nbsp;			super.updateItem(item, empty);</b>
+<i>966</i>&nbsp;
+<b class="nc"><i>967</i>&nbsp;			if (item == null || empty) {</b>
+<b class="nc"><i>968</i>&nbsp;				setText(null);</b>
+<b class="nc"><i>969</i>&nbsp;				setGraphic(null);</b>
+<i>970</i>&nbsp;				return;
+<i>971</i>&nbsp;			}
+<i>972</i>&nbsp;			
+<b class="nc"><i>973</i>&nbsp;			if (item == viewer.getImageData())</b>
+<b class="nc"><i>974</i>&nbsp;				setStyle(&quot;-fx-font-weight: bold; -fx-font-family: arial&quot;);</b>
+<i>975</i>&nbsp;			else 
+<b class="nc"><i>976</i>&nbsp;				setStyle(&quot;-fx-font-weight: normal; -fx-font-family: arial&quot;);</b>
+<i>977</i>&nbsp;			
+<i>978</i>&nbsp;			// Get the name from the project, if possible
+<b class="nc"><i>979</i>&nbsp;			Project&lt;BufferedImage&gt; project = qupath.getProject();</b>
+<b class="nc"><i>980</i>&nbsp;			String name = ServerTools.getDisplayableImageName(item.getServer());</b>
+<b class="nc"><i>981</i>&nbsp;			if (project != null) {</b>
+<b class="nc"><i>982</i>&nbsp;				ProjectImageEntry&lt;BufferedImage&gt; entry = project.getEntry(item);</b>
+<b class="nc"><i>983</i>&nbsp;				if (entry != null)</b>
+<b class="nc"><i>984</i>&nbsp;					name = entry.getImageName();</b>
+<i>985</i>&nbsp;			}
+<b class="nc"><i>986</i>&nbsp;			setText(name);</b>
+<i>987</i>&nbsp;			
+<b class="nc"><i>988</i>&nbsp;			BufferedImage img = viewer.getImageRegionStore().getThumbnail(item.getServer(), 0, 0, true);</b>
+<b class="nc"><i>989</i>&nbsp;			Image image = SwingFXUtils.toFXImage(img, null);</b>
+<b class="nc"><i>990</i>&nbsp;			GuiTools.paintImage(viewCanvas, image);</b>
+<b class="nc"><i>991</i>&nbsp;			if (getGraphic() == null)</b>
+<b class="nc"><i>992</i>&nbsp;				setGraphic(label);</b>
+<i>993</i>&nbsp;				
+<i>994</i>&nbsp;		}
+<i>995</i>&nbsp;		
+<i>996</i>&nbsp;		
+<i>997</i>&nbsp;	}
+<i>998</i>&nbsp;	
+<i>999</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

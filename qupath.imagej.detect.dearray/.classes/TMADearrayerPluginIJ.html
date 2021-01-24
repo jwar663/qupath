@@ -1,0 +1,502 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TMADearrayerPluginIJ</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.dearray</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TMADearrayerPluginIJ (qupath.imagej.detect.dearray)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TMADearrayerPluginIJ</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TMADearrayerPluginIJ$Dearrayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 106)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 149)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.dearray;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Polygon;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Arrays;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import ij.ImagePlus;
+<i>39</i>&nbsp;import ij.plugin.ZProjector;
+<i>40</i>&nbsp;import ij.process.ByteProcessor;
+<i>41</i>&nbsp;import ij.process.ImageProcessor;
+<i>42</i>&nbsp;import qupath.imagej.detect.dearray.TMADearrayer.TMAGridShape;
+<i>43</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>44</i>&nbsp;import qupath.lib.images.ImageData;
+<i>45</i>&nbsp;import qupath.lib.images.PathImage;
+<i>46</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>47</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>48</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>49</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>50</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>51</i>&nbsp;import qupath.lib.objects.PathRootObject;
+<i>52</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>53</i>&nbsp;import qupath.lib.objects.hierarchy.DefaultTMAGrid;
+<i>54</i>&nbsp;import qupath.lib.objects.hierarchy.TMAGrid;
+<i>55</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>56</i>&nbsp;import qupath.lib.plugins.ObjectDetector;
+<i>57</i>&nbsp;import qupath.lib.plugins.PathPlugin;
+<i>58</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>59</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>60</i>&nbsp;import qupath.lib.plugins.workflow.SimplePluginWorkflowStep;
+<i>61</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowStep;
+<i>62</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>63</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;/**
+<i>68</i>&nbsp; * Plugin for automatically dearraying tissue microarrays (TMAs).
+<i>69</i>&nbsp; * 
+<i>70</i>&nbsp; * @author Pete Bankhead
+<i>71</i>&nbsp; *
+<i>72</i>&nbsp; */
+<i>73</i>&nbsp;public class TMADearrayerPluginIJ extends AbstractInteractivePlugin&lt;BufferedImage&gt; {
+<i>74</i>&nbsp;	
+<b class="nc"><i>75</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(TMADearrayerPluginIJ.class);</b>
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	private ParameterList params;
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	transient private Dearrayer dearrayer;
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	/**
+<i>82</i>&nbsp;	 * Default constructor.
+<i>83</i>&nbsp;	 */
+<b class="nc"><i>84</i>&nbsp;	public TMADearrayerPluginIJ() {</b>
+<i>85</i>&nbsp;		
+<i>86</i>&nbsp;		// Create default parameter list
+<b class="nc"><i>87</i>&nbsp;		params = new ParameterList();</b>
+<b class="nc"><i>88</i>&nbsp;		params.addDoubleParameter(&quot;coreDiameterMM&quot;, &quot;TMA core diameter&quot;, 1.2, &quot;mm&quot;, &quot;Enter the approximate diameter or each TMA core in mm&quot;);</b>
+<b class="nc"><i>89</i>&nbsp;		params.addDoubleParameter(&quot;coreDiameterPixels&quot;, &quot;TMA core diameter&quot;, 5000, &quot;px&quot;, &quot;Enter the approximate diameter or each TMA core in pixels&quot;);</b>
+<i>90</i>&nbsp;		
+<b class="nc"><i>91</i>&nbsp;		params.addEmptyParameter(&quot;Enter the horizontal and vertical labels for each core, with a space between each label.&quot;); </b>
+<b class="nc"><i>92</i>&nbsp;		params.addEmptyParameter(&quot;The number of labels will define the array dimensions.&quot;);</b>
+<b class="nc"><i>93</i>&nbsp;		params.addEmptyParameter(&quot;Labels may also be entered as a range (e.g. 1-10 or A-G).&quot;);</b>
+<i>94</i>&nbsp;		
+<b class="nc"><i>95</i>&nbsp;		params.addStringParameter(&quot;labelsHorizontal&quot;, &quot;Column labels&quot;, &quot;1-16&quot;, &quot;Enter column labels.\nThis can be a continuous range of letters or numbers (e.g. 1-10 or A-J),\nor a discontinuous list separated by spaces (e.g. A B C E F G).&quot;);</b>
+<b class="nc"><i>96</i>&nbsp;		params.addStringParameter(&quot;labelsVertical&quot;, &quot;Row labels&quot;, &quot;A-J&quot;, &quot;Enter row labels.\nThis can be a continuous range of letters or numbers (e.g. 1-10 or A-J),\nor a discontinuous list separated by spaces (e.g. A B C E F G).&quot;);</b>
+<i>97</i>&nbsp;		
+<b class="nc"><i>98</i>&nbsp;		params.addChoiceParameter(&quot;labelOrder&quot;, &quot;Label order&quot;, &quot;Row first&quot;, Arrays.asList(&quot;Column first&quot;, &quot;Row first&quot;), &quot;Create TMA labels either in the form Row-Column or Column-Row&quot;);</b>
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;		//-------------
+<i>101</i>&nbsp;//		gd.addMessage(&quot;Core size &amp; density&quot;, boldFont);
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		params.addIntParameter(&quot;densityThreshold&quot;, &quot;Density threshold&quot;, 5, &quot;%&quot;, 0, 100, &quot;Cores where a low density of tissue can be detected and excluded from later analysis (marked as &#39;missing&#39;).\nSet to 0 to include all cores (i.e. do not apply a density threshold).&quot;);</b>
+<i>104</i>&nbsp;		
+<i>105</i>&nbsp;//		gd.addMessage(&quot;Choose a scaling factor for the core ROIs.&quot;);
+<i>106</i>&nbsp;//		gd.addMessage(&quot;1 means the ROI will have the same diameter as the core specified above; higher values add padding.&quot;);
+<b class="nc"><i>107</i>&nbsp;		params.addIntParameter(&quot;boundsScale&quot;, &quot;Bounds scale factor&quot;, 105, &quot;%&quot;, 50, 150, &quot;Scaling factor to adjust the core size.\nA scale factor of 100% will give cores with the diameter specified above.\nA higher scale factor will increase the size, a lower factor will decrease the size.&quot;);</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;	}</b>
+<i>110</i>&nbsp;	
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	@Override
+<i>114</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>115</i>&nbsp;		List&lt;Class&lt;? extends PathObject&gt;&gt; list = new ArrayList&lt;&gt;(1);</b>
+<b class="nc"><i>116</i>&nbsp;		list.add(PathRootObject.class);</b>
+<b class="nc"><i>117</i>&nbsp;		return list;</b>
+<i>118</i>&nbsp;	}
+<i>119</i>&nbsp;	
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	@Override
+<i>122</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;BufferedImage&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<b class="nc"><i>123</i>&nbsp;		if (dearrayer == null)</b>
+<b class="nc"><i>124</i>&nbsp;			dearrayer = new Dearrayer();</b>
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;		tasks.add(() -&gt; {</b>
+<i>127</i>&nbsp;			try {
+<b class="nc"><i>128</i>&nbsp;				dearrayer.runDetection(imageData, getParameterList(imageData), null);</b>
+<b class="nc"><i>129</i>&nbsp;				TMAGrid tmaGrid = dearrayer.getTMAGrid();</b>
+<b class="nc"><i>130</i>&nbsp;				if (tmaGrid != null)</b>
+<b class="nc"><i>131</i>&nbsp;					imageData.getHierarchy().setTMAGrid(tmaGrid);</b>
+<b class="nc"><i>132</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>133</i>&nbsp;				logger.error(&quot;Error running TMA dearrayer&quot;, e);</b>
+<b class="nc"><i>134</i>&nbsp;			}</b>
+<b class="nc"><i>135</i>&nbsp;		});</b>
+<b class="nc"><i>136</i>&nbsp;	}</b>
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	@Override
+<i>141</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>142</i>&nbsp;		if (imageData.getServer().getPixelCalibration().hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>143</i>&nbsp;			params.getParameters().get(&quot;coreDiameterPixels&quot;).setHidden(true);</b>
+<b class="nc"><i>144</i>&nbsp;			params.getParameters().get(&quot;coreDiameterMM&quot;).setHidden(false);</b>
+<i>145</i>&nbsp;		}
+<i>146</i>&nbsp;		else {
+<b class="nc"><i>147</i>&nbsp;			params.getParameters().get(&quot;coreDiameterPixels&quot;).setHidden(false);</b>
+<b class="nc"><i>148</i>&nbsp;			params.getParameters().get(&quot;coreDiameterMM&quot;).setHidden(true);</b>
+<i>149</i>&nbsp;		}
+<b class="nc"><i>150</i>&nbsp;		return params;</b>
+<i>151</i>&nbsp;	}
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;	@Override
+<i>154</i>&nbsp;	public String getName() {
+<b class="nc"><i>155</i>&nbsp;		return &quot;TMA dearrayer&quot;;</b>
+<i>156</i>&nbsp;	}
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;	@Override
+<i>159</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>160</i>&nbsp;		return dearrayer == null ? &quot;&quot; : dearrayer.getLastResultsDescription();</b>
+<i>161</i>&nbsp;	}
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;	
+<b class="nc"><i>164</i>&nbsp;	static class Dearrayer implements ObjectDetector&lt;BufferedImage&gt; {</b>
+<i>165</i>&nbsp;		
+<b class="nc"><i>166</i>&nbsp;		final private static Logger logger = LoggerFactory.getLogger(Dearrayer.class);</b>
+<i>167</i>&nbsp;		
+<i>168</i>&nbsp;		private ImageProcessor ip;
+<i>169</i>&nbsp;		
+<b class="nc"><i>170</i>&nbsp;		private TMAGrid tmaGrid = null;</b>
+<i>171</i>&nbsp;		
+<b class="nc"><i>172</i>&nbsp;		private String lastMessage = null;</b>
+<i>173</i>&nbsp;		
+<i>174</i>&nbsp;		private double fullCoreDiameterPx, downsample;
+<i>175</i>&nbsp;		private boolean isFluorescence;
+<i>176</i>&nbsp;		private String[] hLabels, vLabels;
+<i>177</i>&nbsp;		
+<b class="nc"><i>178</i>&nbsp;		protected ByteProcessor bp = null;</b>
+<b class="nc"><i>179</i>&nbsp;		protected Polygon polyGrid = null;</b>
+<i>180</i>&nbsp;		
+<i>181</i>&nbsp;		
+<i>182</i>&nbsp;		@Override
+<i>183</i>&nbsp;		public Collection&lt;PathObject&gt; runDetection(final ImageData&lt;BufferedImage&gt; imageData, ParameterList params, ROI pathROI) throws IOException {
+<i>184</i>&nbsp;					
+<i>185</i>&nbsp;			double fullCoreDiameterPx;
+<b class="nc"><i>186</i>&nbsp;			ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="nc"><i>187</i>&nbsp;			PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>188</i>&nbsp;			if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>189</i>&nbsp;				fullCoreDiameterPx = params.getDoubleParameterValue(&quot;coreDiameterMM&quot;) / cal.getAveragedPixelSizeMicrons() * 1000;</b>
+<i>190</i>&nbsp;			else
+<b class="nc"><i>191</i>&nbsp;				fullCoreDiameterPx = params.getDoubleParameterValue(&quot;coreDiameterPixels&quot;);</b>
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;			String horizontalLabels = params.getStringParameterValue(&quot;labelsHorizontal&quot;).trim();</b>
+<b class="nc"><i>194</i>&nbsp;			String verticalLabels = params.getStringParameterValue(&quot;labelsVertical&quot;).trim();</b>
+<i>195</i>&nbsp;			
+<b class="nc"><i>196</i>&nbsp;			boolean horizontalLabelFirst = params.getChoiceParameterValue(&quot;labelOrder&quot;).toString().startsWith(&quot;Column&quot;);</b>
+<i>197</i>&nbsp;			// TODO: Consider fluorescence mode in TMA dearraying
+<b class="nc"><i>198</i>&nbsp;			boolean isFluorescence = imageData.isFluorescence();</b>
+<i>199</i>&nbsp;		
+<b class="nc"><i>200</i>&nbsp;			double densityThreshold = params.getIntParameterValue(&quot;densityThreshold&quot;) * 0.01;</b>
+<b class="nc"><i>201</i>&nbsp;			double roiScaleFactor = params.getIntParameterValue(&quot;boundsScale&quot;) * 0.01;</b>
+<b class="nc"><i>202</i>&nbsp;			logger.trace(&quot;ROI scale: &quot; + roiScaleFactor);</b>
+<i>203</i>&nbsp;		
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;			double maxDimLength = Math.max(server.getWidth(), server.getHeight());</b>
+<b class="nc"><i>206</i>&nbsp;			double dimRequested = 1200;</b>
+<b class="nc"><i>207</i>&nbsp;			double downsample = Math.pow(2, Math.round(Math.log(maxDimLength / dimRequested)/Math.log(2)));</b>
+<i>208</i>&nbsp;			
+<i>209</i>&nbsp;//			// Compute alternative downsample factor based on requested pixel size
+<i>210</i>&nbsp;//			// This is likely to be a bit more reproducible - so use it instead
+<i>211</i>&nbsp;//			if (server.hasPixelSizeMicrons()) {
+<i>212</i>&nbsp;//				double preferredCoreDiameterPixels = 60;
+<i>213</i>&nbsp;//				double downsample2 = Math.round(fullCoreDiameterPx / preferredCoreDiameterPixels);
+<i>214</i>&nbsp;//				if (downsample2 &gt; 1 &amp;&amp; (maxDimLength / downsample2 &lt; dimRequested*2)) {
+<i>215</i>&nbsp;//					downsample = downsample2;
+<i>216</i>&nbsp;//				}
+<i>217</i>&nbsp;//			}
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;			// Compute alternative downsample factor based on requested pixel size
+<i>220</i>&nbsp;			// This is likely to be a bit more reproducible - so use it instead
+<b class="nc"><i>221</i>&nbsp;			PixelCalibration pixelCalibration = server.getPixelCalibration();</b>
+<b class="nc"><i>222</i>&nbsp;			if (pixelCalibration.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>223</i>&nbsp;				double preferredPixelSizeMicrons = 25;</b>
+<b class="nc"><i>224</i>&nbsp;				double downsample2 = Math.round(preferredPixelSizeMicrons / pixelCalibration.getAveragedPixelSizeMicrons());</b>
+<b class="nc"><i>225</i>&nbsp;				if (downsample2 &gt; 1 &amp;&amp; (maxDimLength / downsample2 &lt; dimRequested*2))</b>
+<b class="nc"><i>226</i>&nbsp;					downsample = downsample2;</b>
+<i>227</i>&nbsp;			}
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;			// Read the image
+<b class="nc"><i>230</i>&nbsp;			PathImage&lt;ImagePlus&gt; pathImage = IJTools.convertToImagePlus(server,</b>
+<b class="nc"><i>231</i>&nbsp;					RegionRequest.createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight()));</b>
+<i>232</i>&nbsp;//			PathImage&lt;ImagePlus&gt; pathImage = IJTools.createPathImage(server, downsample);
+<b class="nc"><i>233</i>&nbsp;			ImagePlus imp = pathImage.getImage();</b>
+<i>234</i>&nbsp;
+<b class="nc"><i>235</i>&nbsp;			if (imp.getType() == ImagePlus.COLOR_RGB || imp.getNChannels() == 1)</b>
+<b class="nc"><i>236</i>&nbsp;				ip = imp.getProcessor();</b>
+<i>237</i>&nbsp;			else {
+<b class="nc"><i>238</i>&nbsp;				ZProjector zProjector = new ZProjector(imp);</b>
+<b class="nc"><i>239</i>&nbsp;				zProjector.setMethod(ZProjector.AVG_METHOD);</b>
+<b class="nc"><i>240</i>&nbsp;				zProjector.doProjection();</b>
+<b class="nc"><i>241</i>&nbsp;				ip = zProjector.getProjection().getProcessor();</b>
+<i>242</i>&nbsp;			}
+<b class="nc"><i>243</i>&nbsp;			bp = null;</b>
+<i>244</i>&nbsp;				
+<b class="nc"><i>245</i>&nbsp;			String[] hLabelsSplit = PathObjectTools.parseTMALabelString(horizontalLabels);</b>
+<b class="nc"><i>246</i>&nbsp;			String[] vLabelsSplit = PathObjectTools.parseTMALabelString(verticalLabels);</b>
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;			updateGrid(tmaGrid, downsample);</b>
+<b class="nc"><i>249</i>&nbsp;			tmaGrid = doDearraying(fullCoreDiameterPx, downsample, densityThreshold, roiScaleFactor, isFluorescence, hLabelsSplit, vLabelsSplit, horizontalLabelFirst);</b>
+<i>250</i>&nbsp;			
+<b class="nc"><i>251</i>&nbsp;			return tmaGrid == null ? null : new ArrayList&lt;&gt;(tmaGrid.getTMACoreList());</b>
+<i>252</i>&nbsp;		}
+<i>253</i>&nbsp;		
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		
+<i>256</i>&nbsp;		public boolean updateGrid(TMAGrid tmaGrid, double downsample) {
+<b class="nc"><i>257</i>&nbsp;			if (tmaGrid == null)</b>
+<b class="nc"><i>258</i>&nbsp;				return false;</b>
+<b class="nc"><i>259</i>&nbsp;			polyGrid = new Polygon();</b>
+<b class="nc"><i>260</i>&nbsp;			for (TMACoreObject core : tmaGrid.getTMACoreList()) {</b>
+<b class="nc"><i>261</i>&nbsp;				double x = core.getROI().getCentroidX() / downsample + .5;</b>
+<b class="nc"><i>262</i>&nbsp;				double y = core.getROI().getCentroidY() / downsample + .5;</b>
+<b class="nc"><i>263</i>&nbsp;				polyGrid.addPoint((int)x, (int)y);</b>
+<b class="nc"><i>264</i>&nbsp;			}</b>
+<b class="nc"><i>265</i>&nbsp;			return true;</b>
+<i>266</i>&nbsp;		}
+<i>267</i>&nbsp;		
+<i>268</i>&nbsp;		
+<i>269</i>&nbsp;		
+<i>270</i>&nbsp;		public TMAGrid doDearraying(double fullCoreDiameterPx, double downsample, double densityThreshold, double roiScaleFactor, boolean isFluorescence, String[] hLabelsSplit, String[] vLabelsSplit, boolean horizontalLabelFirst) {
+<b class="nc"><i>271</i>&nbsp;			lastMessage = null;</b>
+<i>272</i>&nbsp;			
+<i>273</i>&nbsp;			// Determine whether to update the ByteProcessor
+<b class="nc"><i>274</i>&nbsp;			if (this.fullCoreDiameterPx != fullCoreDiameterPx || this.downsample != downsample || this.isFluorescence != isFluorescence) {</b>
+<b class="nc"><i>275</i>&nbsp;				this.fullCoreDiameterPx = fullCoreDiameterPx;</b>
+<b class="nc"><i>276</i>&nbsp;				this.downsample = downsample;</b>
+<b class="nc"><i>277</i>&nbsp;				this.isFluorescence = isFluorescence;</b>
+<b class="nc"><i>278</i>&nbsp;				bp = null;</b>
+<i>279</i>&nbsp;			}
+<i>280</i>&nbsp;			// Determine whether to recompute the grid
+<b class="nc"><i>281</i>&nbsp;			boolean recomputeGrid = true; // bp == null || polyGrid == null; // TODO: Improve the efficiency here - it was previously posssible to avoid recomputing the grid, but this led to problems with an incorrect number of labels was provided</b>
+<b class="nc"><i>282</i>&nbsp;			if (hLabels == null || hLabels.length != hLabelsSplit.length || vLabels == null || vLabels.length != vLabelsSplit.length) {</b>
+<b class="nc"><i>283</i>&nbsp;				this.hLabels = hLabelsSplit;</b>
+<b class="nc"><i>284</i>&nbsp;				this.vLabels = vLabelsSplit;</b>
+<b class="nc"><i>285</i>&nbsp;				recomputeGrid = true;</b>
+<b class="nc"><i>286</i>&nbsp;				logger.info(&quot;Will (re)compute TMA grid...&quot;);</b>
+<i>287</i>&nbsp;			}
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;			int nHorizontal = hLabelsSplit.length;</b>
+<b class="nc"><i>290</i>&nbsp;			int nVertical = vLabelsSplit.length;</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;			// Update core diameter according to downsample
+<b class="nc"><i>293</i>&nbsp;			double coreDiameterPx = fullCoreDiameterPx / downsample;</b>
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;			// Detect the cores, or potential core regions
+<b class="nc"><i>296</i>&nbsp;			if (bp == null)</b>
+<b class="nc"><i>297</i>&nbsp;				bp = TMADearrayer.makeBinaryImage(ip, coreDiameterPx, null, isFluorescence);</b>
+<i>298</i>&nbsp;			
+<i>299</i>&nbsp;			// Identify the grid
+<b class="nc"><i>300</i>&nbsp;			if (recomputeGrid) {</b>
+<b class="nc"><i>301</i>&nbsp;				TMAGridShape tmaGridShape = TMADearrayer.detectTMACoresFromBinary(bp, coreDiameterPx, nHorizontal, nVertical, null);</b>
+<b class="nc"><i>302</i>&nbsp;				if (tmaGridShape == null || tmaGridShape.nHorizontal * tmaGridShape.nVertical == 0)</b>
+<b class="nc"><i>303</i>&nbsp;					polyGrid = null;</b>
+<i>304</i>&nbsp;				else {
+<b class="nc"><i>305</i>&nbsp;					polyGrid = tmaGridShape.polyGrid;</b>
+<b class="nc"><i>306</i>&nbsp;					nHorizontal = tmaGridShape.nHorizontal;</b>
+<b class="nc"><i>307</i>&nbsp;					nVertical = tmaGridShape.nVertical;</b>
+<i>308</i>&nbsp;				}
+<i>309</i>&nbsp;			}
+<i>310</i>&nbsp;			
+<i>311</i>&nbsp;			// Check for interruptions...
+<b class="nc"><i>312</i>&nbsp;			if (Thread.currentThread().isInterrupted() || polyGrid == null)</b>
+<b class="nc"><i>313</i>&nbsp;				return null;</b>
+<i>314</i>&nbsp;			
+<i>315</i>&nbsp;			// Compute densities
+<b class="nc"><i>316</i>&nbsp;			double[] coreDensities = TMADearrayer.computeDensities(bp, polyGrid, coreDiameterPx);</b>
+<i>317</i>&nbsp;			
+<i>318</i>&nbsp;			// Update cores
+<b class="nc"><i>319</i>&nbsp;			List&lt;TMACoreObject&gt; coords = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>320</i>&nbsp;			double coreSize = fullCoreDiameterPx * roiScaleFactor;</b>
+<b class="nc"><i>321</i>&nbsp;			int ind = 0;</b>
+<b class="nc"><i>322</i>&nbsp;			int nMissing = 0;</b>
+<b class="nc"><i>323</i>&nbsp;			for (int y = 0; y &lt; nVertical; y++) {</b>
+<b class="nc"><i>324</i>&nbsp;				for (int x = 0; x &lt; nHorizontal; x++) {</b>
+<b class="nc"><i>325</i>&nbsp;					if (ind &gt;= polyGrid.npoints)</b>
+<b class="nc"><i>326</i>&nbsp;						break;</b>
+<b class="nc"><i>327</i>&nbsp;					double xx = polyGrid.xpoints[ind] * downsample;</b>
+<b class="nc"><i>328</i>&nbsp;					double yy = polyGrid.ypoints[ind] * downsample;</b>
+<i>329</i>&nbsp;					
+<b class="nc"><i>330</i>&nbsp;					String hLabel = hLabelsSplit[x];</b>
+<b class="nc"><i>331</i>&nbsp;					String vLabel = vLabelsSplit[y];</b>
+<b class="nc"><i>332</i>&nbsp;					String name = &quot;&quot;;</b>
+<b class="nc"><i>333</i>&nbsp;					if (horizontalLabelFirst)</b>
+<b class="nc"><i>334</i>&nbsp;						name += hLabel + &quot;-&quot; + vLabel;</b>
+<i>335</i>&nbsp;					else
+<b class="nc"><i>336</i>&nbsp;						name += vLabel + &quot;-&quot; + hLabel;</b>
+<i>337</i>&nbsp;					
+<b class="nc"><i>338</i>&nbsp;					boolean missing = coreDensities[ind] &lt; densityThreshold;</b>
+<b class="nc"><i>339</i>&nbsp;					TMACoreObject core = PathObjects.createTMACoreObject(xx, yy, coreSize, missing);</b>
+<b class="nc"><i>340</i>&nbsp;					core.setName(name);</b>
+<b class="nc"><i>341</i>&nbsp;					coords.add(core);</b>
+<b class="nc"><i>342</i>&nbsp;					ind++;</b>
+<b class="nc"><i>343</i>&nbsp;					if (missing)</b>
+<b class="nc"><i>344</i>&nbsp;						nMissing++;</b>
+<i>345</i>&nbsp;				}
+<i>346</i>&nbsp;			}
+<b class="nc"><i>347</i>&nbsp;			TMAGrid tmaGrid = DefaultTMAGrid.create(coords, nHorizontal);</b>
+<i>348</i>&nbsp;			
+<b class="nc"><i>349</i>&nbsp;			lastMessage = String.format(&quot;%d x %d TMA grid created (%d missing)&quot;, nHorizontal, nVertical, nMissing);</b>
+<i>350</i>&nbsp;			
+<b class="nc"><i>351</i>&nbsp;			return tmaGrid;</b>
+<i>352</i>&nbsp;		}
+<i>353</i>&nbsp;		
+<i>354</i>&nbsp;		
+<i>355</i>&nbsp;		
+<i>356</i>&nbsp;		@Override
+<i>357</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>358</i>&nbsp;			return lastMessage;</b>
+<i>359</i>&nbsp;		}
+<i>360</i>&nbsp;		
+<i>361</i>&nbsp;		
+<i>362</i>&nbsp;		
+<i>363</i>&nbsp;		public TMAGrid getTMAGrid() {
+<b class="nc"><i>364</i>&nbsp;			return tmaGrid;</b>
+<i>365</i>&nbsp;		}
+<i>366</i>&nbsp;		
+<i>367</i>&nbsp;		
+<i>368</i>&nbsp;	}
+<i>369</i>&nbsp;	
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;	@Override
+<i>372</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>373</i>&nbsp;		return &quot;Detect a grid of tissue cores on a Tissue Microarray&quot;;</b>
+<i>374</i>&nbsp;	}
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;	@Override
+<i>380</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<b class="nc"><i>381</i>&nbsp;		return Collections.singletonList(runner.getImageData().getHierarchy().getRootObject());</b>
+<i>382</i>&nbsp;	}
+<i>383</i>&nbsp;	
+<i>384</i>&nbsp;	
+<i>385</i>&nbsp;	@Override
+<i>386</i>&nbsp;	protected void addWorkflowStep(final ImageData&lt;BufferedImage&gt; imageData, final String arg) {
+<b class="nc"><i>387</i>&nbsp;		WorkflowStep step = new SimplePluginWorkflowStep(getName(), (Class&lt;? extends PathPlugin&lt;?&gt;&gt;)getClass(), arg, &quot;if (!isTMADearrayed()) {\n\t&quot;, &quot;\n\treturn;\n}&quot;);</b>
+<b class="nc"><i>388</i>&nbsp;		imageData.getHistoryWorkflow().addStep(step);</b>
+<b class="nc"><i>389</i>&nbsp;		logger.info(&quot;{}&quot;, step);</b>
+<b class="nc"><i>390</i>&nbsp;	}</b>
+<i>391</i>&nbsp;	
+<i>392</i>&nbsp;
+<i>393</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

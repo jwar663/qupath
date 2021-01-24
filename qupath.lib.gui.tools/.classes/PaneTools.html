@@ -1,0 +1,455 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PaneTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PaneTools (qupath.lib.gui.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PaneTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15%
+  </span>
+  <span class="absValue">
+    (3/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    23.4%
+  </span>
+  <span class="absValue">
+    (32/ 137)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.tools;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.Arrays;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;import java.util.stream.Collectors;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import javafx.scene.Node;
+<i>30</i>&nbsp;import javafx.scene.Parent;
+<i>31</i>&nbsp;import javafx.scene.control.Control;
+<i>32</i>&nbsp;import javafx.scene.control.SplitPane;
+<i>33</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>34</i>&nbsp;import javafx.scene.layout.ColumnConstraints;
+<i>35</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>36</i>&nbsp;import javafx.scene.layout.Priority;
+<i>37</i>&nbsp;import javafx.scene.layout.Region;
+<i>38</i>&nbsp;import javafx.scene.layout.RowConstraints;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Assorted static functions to help when working with a JavaFX panes.
+<i>42</i>&nbsp; * 
+<i>43</i>&nbsp; * @author Pete Bankhead
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; */
+<b class="nc"><i>46</i>&nbsp;public class PaneTools {</b>
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;	/**
+<i>49</i>&nbsp;	 * Add a row of nodes.  The rowspan is always 1.  The colspan is 1 by default, 
+<i>50</i>&nbsp;	 * unless a Node is added multiple times consecutively in which case it is the sum 
+<i>51</i>&nbsp;	 * of the number of times the node is added.
+<i>52</i>&nbsp;	 * 
+<i>53</i>&nbsp;	 * @param pane
+<i>54</i>&nbsp;	 * @param row
+<i>55</i>&nbsp;	 * @param col
+<i>56</i>&nbsp;	 * @param tooltipText 
+<i>57</i>&nbsp;	 * @param nodes
+<i>58</i>&nbsp;	 */
+<i>59</i>&nbsp;	public static void addGridRow(GridPane pane, int row, int col, String tooltipText, Node... nodes) {
+<b class="nc"><i>60</i>&nbsp;		Node lastNode = null;</b>
+<b class="nc"><i>61</i>&nbsp;		var tooltip = tooltipText == null ? null : new Tooltip(tooltipText);</b>
+<i>62</i>&nbsp;		
+<b class="nc"><i>63</i>&nbsp;		for (var n : nodes) {</b>
+<b class="nc"><i>64</i>&nbsp;			if (lastNode == n) {</b>
+<b class="nc"><i>65</i>&nbsp;				Integer span = GridPane.getColumnSpan(n);</b>
+<b class="nc"><i>66</i>&nbsp;				if (span == null)</b>
+<b class="nc"><i>67</i>&nbsp;					GridPane.setColumnSpan(n, 2);</b>
+<i>68</i>&nbsp;				else
+<b class="nc"><i>69</i>&nbsp;					GridPane.setColumnSpan(n, span + 1);</b>
+<b class="nc"><i>70</i>&nbsp;			} else {</b>
+<b class="nc"><i>71</i>&nbsp;				pane.add(n, col, row);</b>
+<b class="nc"><i>72</i>&nbsp;				GridPane.setColumnSpan(n, 1);</b>
+<b class="nc"><i>73</i>&nbsp;				if (tooltip != null) {</b>
+<b class="nc"><i>74</i>&nbsp;					installTooltipRecursive(tooltip, n, false);</b>
+<i>75</i>&nbsp;				}
+<i>76</i>&nbsp;			}
+<b class="nc"><i>77</i>&nbsp;			lastNode = n;</b>
+<b class="nc"><i>78</i>&nbsp;			col++;</b>
+<i>79</i>&nbsp;		}
+<b class="nc"><i>80</i>&nbsp;	}</b>
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	static void installTooltipRecursive(Tooltip tooltip, Node node, boolean overrideExisting) {
+<b class="nc"><i>83</i>&nbsp;		if (node instanceof Control) {</b>
+<b class="nc"><i>84</i>&nbsp;			var control = (Control)node;</b>
+<b class="nc"><i>85</i>&nbsp;			if (overrideExisting || control.getTooltip() == null)</b>
+<b class="nc"><i>86</i>&nbsp;				control.setTooltip(tooltip);</b>
+<b class="nc"><i>87</i>&nbsp;		} else {</b>
+<b class="nc"><i>88</i>&nbsp;			Tooltip.install(node, tooltip);</b>
+<b class="nc"><i>89</i>&nbsp;			if (node instanceof Region) {</b>
+<b class="nc"><i>90</i>&nbsp;				for (var child : ((Region)node).getChildrenUnmodifiable())</b>
+<b class="nc"><i>91</i>&nbsp;					installTooltipRecursive(tooltip, child, overrideExisting);</b>
+<i>92</i>&nbsp;			}
+<i>93</i>&nbsp;		}
+<b class="nc"><i>94</i>&nbsp;	}</b>
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Set the {@link GridPane#setHgrow(Node, Priority)} property for specified nodes.
+<i>98</i>&nbsp;	 * @param priority
+<i>99</i>&nbsp;	 * @param nodes
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public static void setHGrowPriority(Priority priority, Node... nodes) {
+<b class="nc"><i>102</i>&nbsp;		for (var n : nodes) {</b>
+<b class="nc"><i>103</i>&nbsp;			GridPane.setHgrow(n, priority);</b>
+<i>104</i>&nbsp;		}
+<b class="nc"><i>105</i>&nbsp;	}</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;	/**
+<i>108</i>&nbsp;	 * Set the {@link GridPane#setVgrow(Node, Priority)} property for specified nodes.
+<i>109</i>&nbsp;	 * @param priority
+<i>110</i>&nbsp;	 * @param nodes
+<i>111</i>&nbsp;	 */
+<i>112</i>&nbsp;	public static void setVGrowPriority(Priority priority, Node... nodes) {
+<b class="nc"><i>113</i>&nbsp;		for (var n : nodes) {</b>
+<b class="nc"><i>114</i>&nbsp;			GridPane.setVgrow(n, priority);</b>
+<i>115</i>&nbsp;		}
+<b class="nc"><i>116</i>&nbsp;	}</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;	/**
+<i>119</i>&nbsp;	 * Set the max width property for the specified regions.
+<i>120</i>&nbsp;	 * This can be especially useful when setting the width to {@link Double#MAX_VALUE}, indicating 
+<i>121</i>&nbsp;	 * that the region may be enlarged as required.
+<i>122</i>&nbsp;	 * @param width
+<i>123</i>&nbsp;	 * @param regions
+<i>124</i>&nbsp;	 */
+<i>125</i>&nbsp;	public static void setMaxWidth(double width, Region...regions) {
+<b class="fc"><i>126</i>&nbsp;		for (var r : regions)</b>
+<b class="fc"><i>127</i>&nbsp;			r.setMaxWidth(width);</b>
+<b class="fc"><i>128</i>&nbsp;	}</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;	/**
+<i>131</i>&nbsp;	 * Set the max height property for the specified regions.
+<i>132</i>&nbsp;	 * This can be especially useful when setting the height to {@link Double#MAX_VALUE}, indicating 
+<i>133</i>&nbsp;	 * that the region may be enlarged as required.
+<i>134</i>&nbsp;	 * @param height
+<i>135</i>&nbsp;	 * @param regions
+<i>136</i>&nbsp;	 */
+<i>137</i>&nbsp;	public static void setMaxHeight(double height, Region...regions) {
+<b class="nc"><i>138</i>&nbsp;		for (var r : regions)</b>
+<b class="nc"><i>139</i>&nbsp;			r.setMaxHeight(height);</b>
+<b class="nc"><i>140</i>&nbsp;	}</b>
+<i>141</i>&nbsp;	
+<i>142</i>&nbsp;	/**
+<i>143</i>&nbsp;	 * Set the min width property for the specified regions.
+<i>144</i>&nbsp;	 * This can be especially useful when setting the width to {@link Region#USE_PREF_SIZE}, indicating 
+<i>145</i>&nbsp;	 * that the region should not be shrunk beyond its preferred size.
+<i>146</i>&nbsp;	 * @param width
+<i>147</i>&nbsp;	 * @param regions
+<i>148</i>&nbsp;	 */
+<i>149</i>&nbsp;	public static void setMinWidth(double width, Region...regions) {
+<b class="nc"><i>150</i>&nbsp;		for (var r : regions)</b>
+<b class="nc"><i>151</i>&nbsp;			r.setMinWidth(width);</b>
+<b class="nc"><i>152</i>&nbsp;	}</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;	/**
+<i>155</i>&nbsp;	 * Set the min height property for the specified regions.
+<i>156</i>&nbsp;	 * This can be especially useful when setting the height to {@link Region#USE_PREF_SIZE}, indicating 
+<i>157</i>&nbsp;	 * that the region should not be shrunk beyond its preferred size.
+<i>158</i>&nbsp;	 * @param height
+<i>159</i>&nbsp;	 * @param regions
+<i>160</i>&nbsp;	 */
+<i>161</i>&nbsp;	public static void setMinHeight(double height, Region...regions) {
+<b class="nc"><i>162</i>&nbsp;		for (var r : regions)</b>
+<b class="nc"><i>163</i>&nbsp;			r.setMinHeight(height);</b>
+<b class="nc"><i>164</i>&nbsp;	}</b>
+<i>165</i>&nbsp;	
+<i>166</i>&nbsp;	/**
+<i>167</i>&nbsp;	 * Set the {@link GridPane#setFillWidth(Node, Boolean)} property for specified nodes.
+<i>168</i>&nbsp;	 * @param doFill
+<i>169</i>&nbsp;	 * @param nodes
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public static void setFillWidth(Boolean doFill, Node...nodes) {
+<b class="nc"><i>172</i>&nbsp;		for (var n : nodes)</b>
+<b class="nc"><i>173</i>&nbsp;			GridPane.setFillWidth(n, doFill);</b>
+<b class="nc"><i>174</i>&nbsp;	}</b>
+<i>175</i>&nbsp;	
+<i>176</i>&nbsp;	/**
+<i>177</i>&nbsp;	 * Set constraints and max width values (where possible) so that the specified nodes 
+<i>178</i>&nbsp;	 * fill all available horizontal space in a {@link GridPane}.
+<i>179</i>&nbsp;	 * @param nodes
+<i>180</i>&nbsp;	 */
+<i>181</i>&nbsp;	public static void setToExpandGridPaneWidth(Node...nodes) {
+<b class="nc"><i>182</i>&nbsp;		setFillWidth(Boolean.TRUE, nodes);</b>
+<b class="nc"><i>183</i>&nbsp;		setHGrowPriority(Priority.ALWAYS, nodes);</b>
+<b class="nc"><i>184</i>&nbsp;		setMaxWidth(Double.MAX_VALUE, Arrays.stream(nodes).filter(n -&gt; n instanceof Region).map(n -&gt; (Region)n).toArray(Region[]::new));</b>
+<b class="nc"><i>185</i>&nbsp;	}</b>
+<i>186</i>&nbsp;	
+<i>187</i>&nbsp;	/**
+<i>188</i>&nbsp;	 * Set constraints and max width values (where possible) so that the specified nodes 
+<i>189</i>&nbsp;	 * fill all available vertical space in a {@link GridPane}.
+<i>190</i>&nbsp;	 * @param nodes
+<i>191</i>&nbsp;	 */
+<i>192</i>&nbsp;	public static void setToExpandGridPaneHeight(Node...nodes) {
+<b class="nc"><i>193</i>&nbsp;		setFillHeight(Boolean.TRUE, nodes);</b>
+<b class="nc"><i>194</i>&nbsp;		setVGrowPriority(Priority.ALWAYS, nodes);</b>
+<b class="nc"><i>195</i>&nbsp;		setMaxHeight(Double.MAX_VALUE, Arrays.stream(nodes).filter(n -&gt; n instanceof Region).map(n -&gt; (Region)n).toArray(Region[]::new));</b>
+<b class="nc"><i>196</i>&nbsp;	}</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;	
+<i>199</i>&nbsp;	/**
+<i>200</i>&nbsp;	 * Set the {@link GridPane#setFillHeight(Node, Boolean)} property for specified nodes.
+<i>201</i>&nbsp;	 * @param doFill
+<i>202</i>&nbsp;	 * @param nodes
+<i>203</i>&nbsp;	 */
+<i>204</i>&nbsp;	public static void setFillHeight(Boolean doFill, Node...nodes) {
+<b class="nc"><i>205</i>&nbsp;		for (var n : nodes)</b>
+<b class="nc"><i>206</i>&nbsp;			GridPane.setFillHeight(n, doFill);</b>
+<b class="nc"><i>207</i>&nbsp;	}</b>
+<i>208</i>&nbsp;
+<i>209</i>&nbsp;	/**
+<i>210</i>&nbsp;	 * Create a GridPane containing rows that resize similarly to Swing&#39;s GridLayout().
+<i>211</i>&nbsp;	 * 
+<i>212</i>&nbsp;	 * @param nodes
+<i>213</i>&nbsp;	 * @return
+<i>214</i>&nbsp;	 */
+<i>215</i>&nbsp;	public static GridPane createRowGrid(final Node... nodes) {
+<b class="fc"><i>216</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="fc"><i>217</i>&nbsp;		int n = nodes.length;</b>
+<b class="fc"><i>218</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc"><i>219</i>&nbsp;			RowConstraints row = new RowConstraints();</b>
+<b class="fc"><i>220</i>&nbsp;			row.setPercentHeight(100.0/n);			</b>
+<b class="fc"><i>221</i>&nbsp;			pane.getRowConstraints().add(row);</b>
+<b class="fc"><i>222</i>&nbsp;			pane.add(nodes[i], 0, i);</b>
+<i>223</i>&nbsp;		}
+<b class="fc"><i>224</i>&nbsp;		ColumnConstraints col = new ColumnConstraints();</b>
+<b class="fc"><i>225</i>&nbsp;		col.setPercentWidth(100);</b>
+<b class="fc"><i>226</i>&nbsp;		pane.getColumnConstraints().add(col);</b>
+<b class="fc"><i>227</i>&nbsp;		return pane;</b>
+<i>228</i>&nbsp;	}
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;	/**
+<i>231</i>&nbsp;	 * Create a GridPane containing columns that resize similarly to Swing&#39;s GridLayout(),
+<i>232</i>&nbsp;	 * while also resizing contained objects to have the corresponding widths.
+<i>233</i>&nbsp;	 * 
+<i>234</i>&nbsp;	 * @param nodes
+<i>235</i>&nbsp;	 * @return
+<i>236</i>&nbsp;	 */
+<i>237</i>&nbsp;	public static GridPane createRowGridControls(final Node... nodes) {
+<b class="nc"><i>238</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="nc"><i>239</i>&nbsp;		int n = nodes.length;</b>
+<b class="nc"><i>240</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>241</i>&nbsp;			RowConstraints row = new RowConstraints();</b>
+<b class="nc"><i>242</i>&nbsp;			row.setPercentHeight(100.0/n);			</b>
+<b class="nc"><i>243</i>&nbsp;			pane.getRowConstraints().add(row);</b>
+<b class="nc"><i>244</i>&nbsp;			Node node = nodes[i];</b>
+<b class="nc"><i>245</i>&nbsp;			pane.add(node, 0, i);</b>
+<b class="nc"><i>246</i>&nbsp;			if (node instanceof Control) {</b>
+<i>247</i>&nbsp;//				((Control)node).setMinSize(((Control) node).getPrefWidth(), ((Control) node).getPrefHeight());
+<b class="nc"><i>248</i>&nbsp;				((Control)node).prefWidthProperty().bind(pane.widthProperty());</b>
+<i>249</i>&nbsp;			}
+<i>250</i>&nbsp;		}
+<b class="nc"><i>251</i>&nbsp;		ColumnConstraints col = new ColumnConstraints();</b>
+<b class="nc"><i>252</i>&nbsp;		col.setPercentWidth(100);</b>
+<b class="nc"><i>253</i>&nbsp;		pane.getColumnConstraints().add(col);</b>
+<b class="nc"><i>254</i>&nbsp;		return pane;</b>
+<i>255</i>&nbsp;	}
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;	/**
+<i>258</i>&nbsp;	 * Create a GridPane containing columns that resize similarly to Swing&#39;s GridLayout(),
+<i>259</i>&nbsp;	 * where controls have their widths bound to their parent.
+<i>260</i>&nbsp;	 * 
+<i>261</i>&nbsp;	 * @param nodes
+<i>262</i>&nbsp;	 * @return
+<i>263</i>&nbsp;	 */
+<i>264</i>&nbsp;	public static GridPane createColumnGridControls(final Node... nodes) {
+<b class="fc"><i>265</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="fc"><i>266</i>&nbsp;		int n = nodes.length;</b>
+<b class="fc"><i>267</i>&nbsp;		double maxMinWidth = 0;</b>
+<b class="fc"><i>268</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="fc"><i>269</i>&nbsp;			ColumnConstraints col = new ColumnConstraints();</b>
+<b class="fc"><i>270</i>&nbsp;			col.setPercentWidth(100.0/n);			</b>
+<b class="fc"><i>271</i>&nbsp;			pane.getColumnConstraints().add(col);</b>
+<b class="fc"><i>272</i>&nbsp;			Node node = nodes[i];</b>
+<b class="fc"><i>273</i>&nbsp;			pane.add(node, i, 0);</b>
+<b class="fc"><i>274</i>&nbsp;			if (node instanceof Control) {</b>
+<b class="fc"><i>275</i>&nbsp;				maxMinWidth = Math.max(maxMinWidth, ((Control)node).getPrefWidth());</b>
+<b class="fc"><i>276</i>&nbsp;				((Control)node).prefWidthProperty().bind(pane.widthProperty().divide(n));</b>
+<i>277</i>&nbsp;			}
+<i>278</i>&nbsp;		}
+<b class="fc"><i>279</i>&nbsp;		RowConstraints row = new RowConstraints();</b>
+<b class="fc"><i>280</i>&nbsp;		row.setPercentHeight(100);</b>
+<b class="fc"><i>281</i>&nbsp;		pane.getRowConstraints().add(row);</b>
+<b class="fc"><i>282</i>&nbsp;		pane.setMinWidth(maxMinWidth * n);</b>
+<b class="fc"><i>283</i>&nbsp;		pane.setPrefWidth(maxMinWidth * n);</b>
+<b class="fc"><i>284</i>&nbsp;		return pane;</b>
+<i>285</i>&nbsp;	}
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;	/**
+<i>288</i>&nbsp;	 * Create a GridPane containing columns that resize similarly to Swing&#39;s GridLayout().
+<i>289</i>&nbsp;	 * 
+<i>290</i>&nbsp;	 * @param nodes
+<i>291</i>&nbsp;	 * @return
+<i>292</i>&nbsp;	 */
+<i>293</i>&nbsp;	public static GridPane createColumnGrid(final Node... nodes) {
+<b class="nc"><i>294</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="nc"><i>295</i>&nbsp;		int n = nodes.length;</b>
+<b class="nc"><i>296</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>297</i>&nbsp;			ColumnConstraints col = new ColumnConstraints();</b>
+<b class="nc"><i>298</i>&nbsp;			col.setPercentWidth(100.0/n);			</b>
+<b class="nc"><i>299</i>&nbsp;			pane.getColumnConstraints().add(col);</b>
+<b class="nc"><i>300</i>&nbsp;			pane.add(nodes[i], i, 0);</b>
+<i>301</i>&nbsp;		}
+<b class="nc"><i>302</i>&nbsp;		RowConstraints row = new RowConstraints();</b>
+<b class="nc"><i>303</i>&nbsp;		row.setPercentHeight(100);</b>
+<b class="nc"><i>304</i>&nbsp;		pane.getRowConstraints().add(row);</b>
+<b class="nc"><i>305</i>&nbsp;		return pane;</b>
+<i>306</i>&nbsp;	}
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;	/**
+<i>309</i>&nbsp;	 * Create a GridPane containing columns that resize similarly to Swing&#39;s GridLayout().
+<i>310</i>&nbsp;	 * 
+<i>311</i>&nbsp;	 * @param nCols
+<i>312</i>&nbsp;	 * @return
+<i>313</i>&nbsp;	 */
+<i>314</i>&nbsp;	public static GridPane createColumnGrid(final int nCols) {
+<b class="nc"><i>315</i>&nbsp;		GridPane pane = new GridPane();</b>
+<b class="nc"><i>316</i>&nbsp;		for (int i = 0; i &lt; nCols; i++) {</b>
+<b class="nc"><i>317</i>&nbsp;			ColumnConstraints col = new ColumnConstraints();</b>
+<b class="nc"><i>318</i>&nbsp;			col.setPercentWidth(100.0/nCols);			</b>
+<b class="nc"><i>319</i>&nbsp;			pane.getColumnConstraints().add(col);</b>
+<i>320</i>&nbsp;		}
+<b class="nc"><i>321</i>&nbsp;		RowConstraints row = new RowConstraints();</b>
+<b class="nc"><i>322</i>&nbsp;		row.setPercentHeight(100);</b>
+<b class="nc"><i>323</i>&nbsp;		pane.getRowConstraints().add(row);</b>
+<b class="nc"><i>324</i>&nbsp;		return pane;</b>
+<i>325</i>&nbsp;	}
+<i>326</i>&nbsp;	
+<i>327</i>&nbsp;	/**
+<i>328</i>&nbsp;	 * Get the nodes that are included within a {@link Parent}, optionally adding other nodes recursively.
+<i>329</i>&nbsp;	 * Without the recursive search, this is similar to {@link Parent#getChildrenUnmodifiable()} in most cases, 
+<i>330</i>&nbsp;	 * except that a separate collection is used. However in some cases {@code getItems()} must be used instead. 
+<i>331</i>&nbsp;	 * Currently this applies only to {@link SplitPane} but this may be used elsewhere if appropriate.
+<i>332</i>&nbsp;	 * @param parent
+<i>333</i>&nbsp;	 * @param collection
+<i>334</i>&nbsp;	 * @param doRecursive
+<i>335</i>&nbsp;	 * @return
+<i>336</i>&nbsp;	 */
+<i>337</i>&nbsp;	public static Collection&lt;Node&gt; getContents(Parent parent, Collection&lt;Node&gt; collection, boolean doRecursive) {
+<b class="nc"><i>338</i>&nbsp;		if (collection == null) {</b>
+<b class="nc"><i>339</i>&nbsp;			collection = new ArrayList&lt;&gt;();</b>
+<i>340</i>&nbsp;		}
+<b class="nc"><i>341</i>&nbsp;		var children = parent.getChildrenUnmodifiable();</b>
+<b class="nc"><i>342</i>&nbsp;		if (children.isEmpty() &amp;&amp; parent instanceof SplitPane) {</b>
+<b class="nc"><i>343</i>&nbsp;			children = ((SplitPane)parent).getItems();</b>
+<i>344</i>&nbsp;		}
+<b class="nc"><i>345</i>&nbsp;		for (var child : children) {</b>
+<b class="nc"><i>346</i>&nbsp;			collection.add(child);</b>
+<b class="nc"><i>347</i>&nbsp;			if (doRecursive &amp;&amp; child instanceof Parent)</b>
+<b class="nc"><i>348</i>&nbsp;				getContents((Parent)child, collection, doRecursive);</b>
+<b class="nc"><i>349</i>&nbsp;		}</b>
+<b class="nc"><i>350</i>&nbsp;		return collection;</b>
+<i>351</i>&nbsp;	}
+<i>352</i>&nbsp;	
+<i>353</i>&nbsp;	/**
+<i>354</i>&nbsp;	 * Get the nodes of type T that are contained within a {@link Parent}, optionally adding other nodes 
+<i>355</i>&nbsp;	 * recursively. This can be helpful, for example, to extract all the Buttons or Regions within a pane 
+<i>356</i>&nbsp;	 * in order to set some property of all of them.
+<i>357</i>&nbsp;	 * @param &lt;T&gt;
+<i>358</i>&nbsp;	 * @param parent
+<i>359</i>&nbsp;	 * @param cls
+<i>360</i>&nbsp;	 * @param doRecursive
+<i>361</i>&nbsp;	 * @return
+<i>362</i>&nbsp;	 * 
+<i>363</i>&nbsp;	 * @see #getContents(Parent, Collection, boolean)
+<i>364</i>&nbsp;	 */
+<i>365</i>&nbsp;	public static &lt;T extends Node&gt; Collection&lt;T&gt; getContentsOfType(Parent parent, Class&lt;T&gt; cls, boolean doRecursive) {
+<b class="nc"><i>366</i>&nbsp;		return getContents(parent, new ArrayList&lt;&gt;(), doRecursive).stream()</b>
+<b class="nc"><i>367</i>&nbsp;				.filter(p -&gt; cls.isInstance(p))</b>
+<b class="nc"><i>368</i>&nbsp;				.map(p -&gt; cls.cast(p))</b>
+<b class="nc"><i>369</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>370</i>&nbsp;	}
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,145 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ObjectClassifier</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.classifiers.object</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ObjectClassifier (qupath.lib.classifiers.object)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ObjectClassifier</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.classifiers.object;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.Collection;
+<i>25</i>&nbsp;import java.util.Map;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import qupath.lib.images.ImageData;
+<i>28</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>29</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Interface defining object classifiers, which assign {@linkplain PathClass PathClasses} to {@linkplain PathObject PathObjects}.
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; * @param &lt;T&gt;
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public interface ObjectClassifier&lt;T&gt; {
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * Get the classifications set by this classifier.
+<i>42</i>&nbsp;	 * @return
+<i>43</i>&nbsp;	 */
+<i>44</i>&nbsp;	Collection&lt;PathClass&gt; getPathClasses();
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;	/**
+<i>47</i>&nbsp;	 * Classify all compatible objects from an {@link ImageData}.
+<i>48</i>&nbsp;	 * &lt;p&gt;
+<i>49</i>&nbsp;	 * Note: this method does &lt;i&gt;not&lt;/i&gt; typically fire any hierarchy change/object classification events.
+<i>50</i>&nbsp;	 * It is up to the caller to fire these events if required.
+<i>51</i>&nbsp;	 * 
+<i>52</i>&nbsp;	 * @param imageData data containing the object hierarchy
+<i>53</i>&nbsp;	 * @param resetExistingClass 
+<i>54</i>&nbsp;	 * @return the number of objects whose classification was changed.
+<i>55</i>&nbsp;	 * 
+<i>56</i>&nbsp;	 * @see #getCompatibleObjects(ImageData)
+<i>57</i>&nbsp;	 */
+<i>58</i>&nbsp;	int classifyObjects(ImageData&lt;T&gt; imageData, boolean resetExistingClass);
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;	/**
+<i>61</i>&nbsp;	 * Classify the objects in the specified collection.
+<i>62</i>&nbsp;	 * This provides a means to specify exactly which objects should be classified, avoiding reliance on {@link #getCompatibleObjects(ImageData)}.
+<i>63</i>&nbsp;	 * &lt;p&gt;
+<i>64</i>&nbsp;	 * Note: this method does &lt;i&gt;not&lt;/i&gt; typically fire any hierarchy change/object classification events.
+<i>65</i>&nbsp;	 * It is up to the caller to fire these events if required.
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param imageData data that may or may not be required for classification depending upon how features are extracted
+<i>68</i>&nbsp;	 * @param pathObjects the objects to classify
+<i>69</i>&nbsp;	 * @param resetExistingClass 
+<i>70</i>&nbsp;	 * @return the number of objects whose classification was changed.
+<i>71</i>&nbsp;	 * 
+<i>72</i>&nbsp;	 * @see #classifyObjects(ImageData, boolean)
+<i>73</i>&nbsp;	 * @see #getCompatibleObjects(ImageData)
+<i>74</i>&nbsp;	 */
+<i>75</i>&nbsp;	int classifyObjects(ImageData&lt;T&gt; imageData, Collection&lt;? extends PathObject&gt; pathObjects, boolean resetExistingClass);
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;	/**
+<i>78</i>&nbsp;	 * Get the objects from an {@link ImageData} that are compatible with this classifier.
+<i>79</i>&nbsp;	 * @param imageData 
+<i>80</i>&nbsp;	 * @return a collection of compatible objects, or empty list if no compatible objects are found
+<i>81</i>&nbsp;	 */
+<i>82</i>&nbsp;	Collection&lt;PathObject&gt; getCompatibleObjects(ImageData&lt;T&gt; imageData);
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	/**
+<i>85</i>&nbsp;	 * Check for missing features, returning the names and number of input objects missing the specified features.
+<i>86</i>&nbsp;	 * This is useful as a warning that the input for the classifier may not be valid.
+<i>87</i>&nbsp;	 * Default implementation returns an empty map; however, implementations should attempt to provide a meaningful 
+<i>88</i>&nbsp;	 * output if possible. Features that are not missing should not be included in the output.
+<i>89</i>&nbsp;	 * @param imageData image containing the objects to test
+<i>90</i>&nbsp;	 * @param pathObjects objects to test for missing features; if not available, {@link #getCompatibleObjects(ImageData)} will be called.
+<i>91</i>&nbsp;	 * @return a map of feature names and the number of objects missing the corresponding features.
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	Map&lt;String, Integer&gt; getMissingFeatures(ImageData&lt;T&gt; imageData, Collection&lt;? extends PathObject&gt; pathObjects);
+<i>94</i>&nbsp;//	default Collection&lt;String&gt; getMissingFeatures(ImageData&lt;T&gt; imageData, Collection&lt;? extends PathObject&gt; pathObjects) {
+<i>95</i>&nbsp;//		return Collections.emptyList();
+<i>96</i>&nbsp;//	}
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

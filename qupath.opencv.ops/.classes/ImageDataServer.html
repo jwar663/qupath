@@ -1,0 +1,93 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageDataServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.opencv.ops</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageDataServer (qupath.opencv.ops)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ImageDataServer</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.opencv.ops;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>25</i>&nbsp;import qupath.lib.images.ImageData;
+<i>26</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * An {@link ImageServer} that wraps an {@link ImageData}.
+<i>30</i>&nbsp; * This can be used if the server requires additional information within the {@link ImageData}, such as {@link ColorDeconvolutionStains}.
+<i>31</i>&nbsp; * &lt;p&gt;
+<i>32</i>&nbsp; * Warning: because many properties of the {@link ImageData} are mutable, yet {@link ImageServer}s generally are not (apart from their metadata), 
+<i>33</i>&nbsp; * this interface should be used sparingly - and only temporarily (e.g. during a single processing operation).
+<i>34</i>&nbsp; * 
+<i>35</i>&nbsp; * @author Pete Bankhead
+<i>36</i>&nbsp; * @param &lt;T&gt;
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public interface ImageDataServer&lt;T&gt; extends ImageServer&lt;T&gt; {
+<i>39</i>&nbsp;	
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * Get the {@link ImageData} wrapped by the {@link ImageDataServer}.
+<i>42</i>&nbsp;	 * @return
+<i>43</i>&nbsp;	 */
+<i>44</i>&nbsp;	public ImageData&lt;T&gt; getImageData();
+<i>45</i>&nbsp;	
+<i>46</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

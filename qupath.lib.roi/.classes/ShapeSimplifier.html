@@ -1,0 +1,485 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShapeSimplifier</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.roi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShapeSimplifier (qupath.lib.roi)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShapeSimplifier</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 109)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShapeSimplifier$PointWithArea</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 124)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.roi;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Shape;
+<i>27</i>&nbsp;import java.awt.geom.Path2D;
+<i>28</i>&nbsp;import java.awt.geom.PathIterator;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.HashSet;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.PriorityQueue;
+<i>33</i>&nbsp;import java.util.Set;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import qupath.lib.geom.Point2;
+<i>36</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>37</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Helper methods for simplifying shapes, such removing polygon points while retaining the a similar overall 
+<i>41</i>&nbsp; * shape at a coarser level.
+<i>42</i>&nbsp; * &lt;p&gt;
+<i>43</i>&nbsp; * This can help manage storage and performance requirements when working with large numbers of ROIs,
+<i>44</i>&nbsp; * especially in terms of repainting speed.
+<i>45</i>&nbsp; * 
+<i>46</i>&nbsp; * @author Pete Bankhead
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; */
+<b class="nc"><i>49</i>&nbsp;public class ShapeSimplifier {</b>
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;	 * 
+<i>53</i>&nbsp;	 * Create a simplified polygon (fewer coordinates) using method based on Visvalingam’s Algorithm.
+<i>54</i>&nbsp;	 * The input is a list of points (the vertices) belonging to a closed polygon.
+<i>55</i>&nbsp;	 * This list is modified in place.
+<i>56</i>&nbsp;	 * &lt;p&gt;
+<i>57</i>&nbsp;	 * See references:
+<i>58</i>&nbsp;	 * https://hydra.hull.ac.uk/resources/hull:8338
+<i>59</i>&nbsp;	 * https://www.jasondavies.com/simplify/
+<i>60</i>&nbsp;	 * http://bost.ocks.org/mike/simplify/
+<i>61</i>&nbsp;	 * 
+<i>62</i>&nbsp;	 * @param points
+<i>63</i>&nbsp;	 * @param altitudeThreshold
+<i>64</i>&nbsp;	 */
+<i>65</i>&nbsp;	public static void simplifyPolygonPoints(final List&lt;Point2&gt; points, final double altitudeThreshold) {
+<i>66</i>&nbsp;		
+<b class="nc"><i>67</i>&nbsp;		if (points.size() &lt;= 1)</b>
+<b class="nc"><i>68</i>&nbsp;			return;</b>
+<i>69</i>&nbsp;		
+<i>70</i>&nbsp;		// Remove duplicates first
+<b class="nc"><i>71</i>&nbsp;		var iter = points.iterator();</b>
+<b class="nc"><i>72</i>&nbsp;		Point2 lastPoint = iter.next();</b>
+<b class="nc"><i>73</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>74</i>&nbsp;			var nextPoint = iter.next();</b>
+<b class="nc"><i>75</i>&nbsp;			if (nextPoint.equals(lastPoint))</b>
+<b class="nc"><i>76</i>&nbsp;				iter.remove();</b>
+<i>77</i>&nbsp;			else
+<b class="nc"><i>78</i>&nbsp;				lastPoint = nextPoint;</b>
+<b class="nc"><i>79</i>&nbsp;		}</b>
+<b class="nc"><i>80</i>&nbsp;		if (lastPoint.equals(points.get(0)))</b>
+<b class="nc"><i>81</i>&nbsp;			iter.remove();</b>
+<i>82</i>&nbsp;		
+<i>83</i>&nbsp;		
+<b class="nc"><i>84</i>&nbsp;		if (points.size() &lt;= 3)</b>
+<b class="nc"><i>85</i>&nbsp;			return;</b>
+<i>86</i>&nbsp;		
+<b class="nc"><i>87</i>&nbsp;		int n = points.size();</b>
+<i>88</i>&nbsp;		
+<i>89</i>&nbsp;		// Populate the priority queue
+<b class="nc"><i>90</i>&nbsp;		PriorityQueue&lt;PointWithArea&gt; queue = new PriorityQueue&lt;&gt;();</b>
+<i>91</i>&nbsp;		
+<b class="nc"><i>92</i>&nbsp;		Point2 pPrevious = points.get(points.size()-1);</b>
+<b class="nc"><i>93</i>&nbsp;		Point2 pCurrent = points.get(0);</b>
+<b class="nc"><i>94</i>&nbsp;		PointWithArea pwaPrevious = null;</b>
+<b class="nc"><i>95</i>&nbsp;		PointWithArea pwaFirst = null;</b>
+<b class="nc"><i>96</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>97</i>&nbsp;			Point2 pNext = points.get((i+1) % n);</b>
+<b class="nc"><i>98</i>&nbsp;			PointWithArea pwa = new PointWithArea(pCurrent, calculateArea(pPrevious, pCurrent, pNext));</b>
+<b class="nc"><i>99</i>&nbsp;			pwa.setPrevious(pwaPrevious);</b>
+<b class="nc"><i>100</i>&nbsp;			if (pwaPrevious != null)</b>
+<b class="nc"><i>101</i>&nbsp;				pwaPrevious.setNext(pwa);</b>
+<b class="nc"><i>102</i>&nbsp;			queue.add(pwa);</b>
+<b class="nc"><i>103</i>&nbsp;			pwaPrevious = pwa;</b>
+<i>104</i>&nbsp;			
+<b class="nc"><i>105</i>&nbsp;			pPrevious = pCurrent;</b>
+<b class="nc"><i>106</i>&nbsp;			pCurrent = pNext;</b>
+<i>107</i>&nbsp;			// Handle first and last cases for closed polygon
+<b class="nc"><i>108</i>&nbsp;			if (i == n - 1) {</b>
+<b class="nc"><i>109</i>&nbsp;				pwa.setNext(pwaFirst);</b>
+<b class="nc"><i>110</i>&nbsp;				pwaFirst.setPrevious(pwa);</b>
+<b class="nc"><i>111</i>&nbsp;			} else if (i == 0)</b>
+<b class="nc"><i>112</i>&nbsp;				pwaFirst = pwa;</b>
+<i>113</i>&nbsp;		}
+<i>114</i>&nbsp;		
+<i>115</i>&nbsp;		
+<b class="nc"><i>116</i>&nbsp;		double maxArea = 0;</b>
+<b class="nc"><i>117</i>&nbsp;		int minSize = Math.max(n / 100, 3);</b>
+<b class="nc"><i>118</i>&nbsp;		Set&lt;Point2&gt; toRemove = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>119</i>&nbsp;		while (queue.size() &gt; minSize) {</b>
+<b class="nc"><i>120</i>&nbsp;			PointWithArea pwa = queue.poll();</b>
+<i>121</i>&nbsp;//			logger.info(&quot;BEFORE: &quot; + pwa + &quot; (counter &quot; + counter + &quot;)&quot;);
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;			// Altitude check (?)
+<b class="nc"><i>124</i>&nbsp;			double altitude = pwa.getArea() * 2 / pwa.getNext().getPoint().distance(pwa.getPrevious().getPoint());</b>
+<b class="nc"><i>125</i>&nbsp;			if (altitude &gt; altitudeThreshold)</b>
+<b class="nc"><i>126</i>&nbsp;				break;</b>
+<i>127</i>&nbsp;
+<b class="nc"><i>128</i>&nbsp;			if (pwa.getArea() &lt; maxArea)</b>
+<b class="nc"><i>129</i>&nbsp;				pwa.setArea(maxArea);</b>
+<i>130</i>&nbsp;			else
+<b class="nc"><i>131</i>&nbsp;				maxArea = pwa.getArea();</b>
+<i>132</i>&nbsp;			
+<i>133</i>&nbsp;			// Remove the point &amp; update accordingly
+<i>134</i>&nbsp;//			points.remove(pwa.getPoint());
+<b class="nc"><i>135</i>&nbsp;			toRemove.add(pwa.getPoint());</b>
+<i>136</i>&nbsp;			
+<b class="nc"><i>137</i>&nbsp;			pwaPrevious = pwa.getPrevious();</b>
+<b class="nc"><i>138</i>&nbsp;			PointWithArea pwaNext = pwa.getNext();</b>
+<b class="nc"><i>139</i>&nbsp;			pwaPrevious.setNext(pwaNext);</b>
+<b class="nc"><i>140</i>&nbsp;			pwaPrevious.updateArea();</b>
+<b class="nc"><i>141</i>&nbsp;			pwaNext.setPrevious(pwaPrevious);</b>
+<b class="nc"><i>142</i>&nbsp;			pwaNext.updateArea();</b>
+<i>143</i>&nbsp;			
+<i>144</i>&nbsp;			// Reinsert into priority queue
+<b class="nc"><i>145</i>&nbsp;			queue.remove(pwaPrevious);</b>
+<b class="nc"><i>146</i>&nbsp;			queue.remove(pwaNext);</b>
+<b class="nc"><i>147</i>&nbsp;			queue.add(pwaPrevious);</b>
+<b class="nc"><i>148</i>&nbsp;			queue.add(pwaNext);</b>
+<i>149</i>&nbsp;			
+<i>150</i>&nbsp;//			logger.info(pwa);
+<b class="nc"><i>151</i>&nbsp;		}</b>
+<b class="nc"><i>152</i>&nbsp;		points.removeAll(toRemove);</b>
+<b class="nc"><i>153</i>&nbsp;	}</b>
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;	
+<i>156</i>&nbsp;	
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * 
+<i>160</i>&nbsp;	 * Create a simplified polygon (fewer coordinates) using method based on Visvalingam’s Algorithm.
+<i>161</i>&nbsp;	 * &lt;p&gt;
+<i>162</i>&nbsp;	 * See references:
+<i>163</i>&nbsp;	 * https://hydra.hull.ac.uk/resources/hull:8338
+<i>164</i>&nbsp;	 * https://www.jasondavies.com/simplify/
+<i>165</i>&nbsp;	 * http://bost.ocks.org/mike/simplify/
+<i>166</i>&nbsp;	 * 
+<i>167</i>&nbsp;	 * @param polygon
+<i>168</i>&nbsp;	 * @param altitudeThreshold
+<i>169</i>&nbsp;	 * @return
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public static PolygonROI simplifyPolygon(PolygonROI polygon, final double altitudeThreshold) {
+<b class="nc"><i>172</i>&nbsp;		List&lt;Point2&gt; points = polygon.getAllPoints();</b>
+<b class="nc"><i>173</i>&nbsp;		simplifyPolygonPoints(points, altitudeThreshold);</b>
+<i>174</i>&nbsp;		// Construct a new polygon
+<b class="nc"><i>175</i>&nbsp;		return ROIs.createPolygonROI(points, ImagePlane.getPlaneWithChannel(polygon));</b>
+<i>176</i>&nbsp;	}
+<i>177</i>&nbsp;	
+<i>178</i>&nbsp;	
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Calculate the area of a triangle from its vertices.
+<i>182</i>&nbsp;	 * 
+<i>183</i>&nbsp;	 * @param p1
+<i>184</i>&nbsp;	 * @param p2
+<i>185</i>&nbsp;	 * @param p3
+<i>186</i>&nbsp;	 * @return
+<i>187</i>&nbsp;	 */
+<i>188</i>&nbsp;	static double calculateArea(Point2 p1, Point2 p2, Point2 p3) {
+<b class="nc"><i>189</i>&nbsp;		return Math.abs(0.5 * (p1.getX() * (p2.getY() - p3.getY()) + </b>
+<b class="nc"><i>190</i>&nbsp;						p2.getX() * (p3.getY() - p1.getY()) + </b>
+<b class="nc"><i>191</i>&nbsp;						p3.getX() * (p1.getY() - p2.getY())));</b>
+<i>192</i>&nbsp;	}
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	static class PointWithArea implements Comparable&lt;PointWithArea&gt; {
+<i>196</i>&nbsp;		
+<i>197</i>&nbsp;		private PointWithArea pPrevious;
+<i>198</i>&nbsp;		private PointWithArea pNext;
+<i>199</i>&nbsp;		private Point2 p;
+<i>200</i>&nbsp;		private double area;
+<i>201</i>&nbsp;		
+<b class="nc"><i>202</i>&nbsp;		PointWithArea(Point2 p, double area) {</b>
+<b class="nc"><i>203</i>&nbsp;			this.p = p;</b>
+<b class="nc"><i>204</i>&nbsp;			this.area = area;</b>
+<i>205</i>&nbsp;		}
+<i>206</i>&nbsp;		
+<i>207</i>&nbsp;		public void setArea(double area) {
+<b class="nc"><i>208</i>&nbsp;			this.area = area;</b>
+<i>209</i>&nbsp;		}
+<i>210</i>&nbsp;		
+<i>211</i>&nbsp;		public void updateArea() {
+<b class="nc"><i>212</i>&nbsp;			this.area = calculateArea(pPrevious.getPoint(), p, pNext.getPoint());</b>
+<i>213</i>&nbsp;		}
+<i>214</i>&nbsp;		
+<i>215</i>&nbsp;		public double getX() {
+<b class="nc"><i>216</i>&nbsp;			return p.getX();</b>
+<i>217</i>&nbsp;		}
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;		public double getY() {
+<b class="nc"><i>220</i>&nbsp;			return p.getY();</b>
+<i>221</i>&nbsp;		}
+<i>222</i>&nbsp;		
+<i>223</i>&nbsp;		public double getArea() {
+<b class="nc"><i>224</i>&nbsp;			return area;</b>
+<i>225</i>&nbsp;		}
+<i>226</i>&nbsp;		
+<i>227</i>&nbsp;		public Point2 getPoint() {
+<b class="nc"><i>228</i>&nbsp;			return p;</b>
+<i>229</i>&nbsp;		}
+<i>230</i>&nbsp;		
+<i>231</i>&nbsp;		public void setPrevious(PointWithArea pPrevious) {
+<b class="nc"><i>232</i>&nbsp;			this.pPrevious = pPrevious;</b>
+<i>233</i>&nbsp;		}
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;		public void setNext(PointWithArea pNext) {
+<b class="nc"><i>236</i>&nbsp;			this.pNext = pNext;</b>
+<i>237</i>&nbsp;		}
+<i>238</i>&nbsp;		
+<i>239</i>&nbsp;		public PointWithArea getPrevious() {
+<b class="nc"><i>240</i>&nbsp;			return pPrevious;</b>
+<i>241</i>&nbsp;		}
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;		public PointWithArea getNext() {
+<b class="nc"><i>244</i>&nbsp;			return pNext;</b>
+<i>245</i>&nbsp;		}
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;		@Override
+<i>248</i>&nbsp;		public int compareTo(PointWithArea p) {
+<b class="nc"><i>249</i>&nbsp;			return (area &lt; p.area) ? -1 : (area == p.area ? 0 : 1);</b>
+<i>250</i>&nbsp;		}
+<i>251</i>&nbsp;		
+<i>252</i>&nbsp;		
+<i>253</i>&nbsp;		@Override
+<i>254</i>&nbsp;		public String toString() {
+<b class="nc"><i>255</i>&nbsp;			return getX() + &quot;, &quot; + getY() + &quot;, Area: &quot; + getArea();</b>
+<i>256</i>&nbsp;		}
+<i>257</i>&nbsp;		
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;	}
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;	/**
+<i>263</i>&nbsp;	 * 
+<i>264</i>&nbsp;	 * Create a simplified shape (fewer coordinates) using method based on Visvalingam’s Algorithm.
+<i>265</i>&nbsp;	 * &lt;p&gt;
+<i>266</i>&nbsp;	 * See references:
+<i>267</i>&nbsp;	 * https://hydra.hull.ac.uk/resources/hull:8338
+<i>268</i>&nbsp;	 * https://www.jasondavies.com/simplify/
+<i>269</i>&nbsp;	 * http://bost.ocks.org/mike/simplify/
+<i>270</i>&nbsp;	 * 
+<i>271</i>&nbsp;	 * @param shapeROI
+<i>272</i>&nbsp;	 * @param altitudeThreshold
+<i>273</i>&nbsp;	 * @return
+<i>274</i>&nbsp;	 */
+<i>275</i>&nbsp;	public static ROI simplifyShape(ROI shapeROI, double altitudeThreshold) {
+<b class="nc"><i>276</i>&nbsp;		Shape shape = RoiTools.getShape(shapeROI);</b>
+<b class="nc"><i>277</i>&nbsp;		Path2D path = shape instanceof Path2D ? (Path2D)shape : new Path2D.Float(shape);</b>
+<b class="nc"><i>278</i>&nbsp;		path = simplifyPath(path, altitudeThreshold);</b>
+<i>279</i>&nbsp;		// Construct a new polygon
+<b class="nc"><i>280</i>&nbsp;		return RoiTools.getShapeROI(path, shapeROI.getImagePlane(), 0.5);</b>
+<i>281</i>&nbsp;	}
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;	
+<i>284</i>&nbsp;	
+<i>285</i>&nbsp;	
+<i>286</i>&nbsp;	/**
+<i>287</i>&nbsp;	 * 
+<i>288</i>&nbsp;	 * Create a simplified path (fewer coordinates) using method based on Visvalingam’s Algorithm.
+<i>289</i>&nbsp;	 * &lt;p&gt;
+<i>290</i>&nbsp;	 * See references:
+<i>291</i>&nbsp;	 * https://hydra.hull.ac.uk/resources/hull:8338
+<i>292</i>&nbsp;	 * https://www.jasondavies.com/simplify/
+<i>293</i>&nbsp;	 * http://bost.ocks.org/mike/simplify/
+<i>294</i>&nbsp;	 * 
+<i>295</i>&nbsp;	 * @param path
+<i>296</i>&nbsp;	 * @param altitudeThreshold
+<i>297</i>&nbsp;	 * @return
+<i>298</i>&nbsp;	 */
+<i>299</i>&nbsp;	public static Path2D simplifyPath(Path2D path, double altitudeThreshold) {
+<i>300</i>&nbsp;		
+<b class="nc"><i>301</i>&nbsp;		List&lt;Point2&gt; points = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>302</i>&nbsp;		PathIterator iter = path.getPathIterator(null, 0.5);</b>
+<i>303</i>&nbsp;//		int nVerticesBefore = 0;
+<i>304</i>&nbsp;//		int nVerticesAfter = 0;
+<i>305</i>&nbsp;		
+<b class="nc"><i>306</i>&nbsp;		Path2D pathNew = new Path2D.Float();</b>
+<b class="nc"><i>307</i>&nbsp;		while (!iter.isDone()) {</b>
+<b class="nc"><i>308</i>&nbsp;			points.clear();</b>
+<b class="nc"><i>309</i>&nbsp;			getNextClosedSegment(iter, points);</b>
+<i>310</i>&nbsp;//			nVerticesBefore += points.size();
+<b class="nc"><i>311</i>&nbsp;			if (points.isEmpty())</b>
+<b class="nc"><i>312</i>&nbsp;				break;</b>
+<i>313</i>&nbsp;			
+<b class="nc"><i>314</i>&nbsp;			ShapeSimplifier.simplifyPolygonPoints(points, altitudeThreshold);</b>
+<i>315</i>&nbsp;//			nVerticesAfter += points.size();
+<i>316</i>&nbsp;			
+<b class="nc"><i>317</i>&nbsp;			boolean firstPoint = true;</b>
+<b class="nc"><i>318</i>&nbsp;			for (Point2 p : points) {</b>
+<b class="nc"><i>319</i>&nbsp;				double xx = p.getX();</b>
+<b class="nc"><i>320</i>&nbsp;				double yy = p.getY();</b>
+<b class="nc"><i>321</i>&nbsp;				if (firstPoint) {</b>
+<b class="nc"><i>322</i>&nbsp;					pathNew.moveTo(xx, yy);</b>
+<b class="nc"><i>323</i>&nbsp;					firstPoint = false;</b>
+<i>324</i>&nbsp;				} else
+<b class="nc"><i>325</i>&nbsp;					pathNew.lineTo(xx, yy);</b>
+<b class="nc"><i>326</i>&nbsp;			}</b>
+<b class="nc"><i>327</i>&nbsp;			pathNew.closePath();</b>
+<b class="nc"><i>328</i>&nbsp;		}</b>
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;//		logger.trace(&quot;Path simplified: {} vertices reduced to {} ({}%)&quot;, nVerticesBefore, nVerticesAfter, (nVerticesAfter*100./nVerticesBefore));
+<i>331</i>&nbsp;		
+<b class="nc"><i>332</i>&nbsp;		return pathNew;</b>
+<i>333</i>&nbsp;	}
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;	
+<i>336</i>&nbsp;	private static void getNextClosedSegment(PathIterator iter, List&lt;Point2&gt; points) {
+<b class="nc"><i>337</i>&nbsp;		double[] seg = new double[6];</b>
+<b class="nc"><i>338</i>&nbsp;		while (!iter.isDone()) {</b>
+<b class="nc"><i>339</i>&nbsp;			switch(iter.currentSegment(seg)) {</b>
+<i>340</i>&nbsp;			case PathIterator.SEG_MOVETO:
+<i>341</i>&nbsp;				// Fall through
+<i>342</i>&nbsp;			case PathIterator.SEG_LINETO:
+<i>343</i>&nbsp;//				points.add(new Point2(Math.round(seg[0]), Math.round(seg[1])));
+<b class="nc"><i>344</i>&nbsp;				points.add(new Point2(seg[0], seg[1]));</b>
+<b class="nc"><i>345</i>&nbsp;				break;</b>
+<i>346</i>&nbsp;			case PathIterator.SEG_CLOSE:
+<b class="nc"><i>347</i>&nbsp;				iter.next();</b>
+<b class="nc"><i>348</i>&nbsp;				return;</b>
+<i>349</i>&nbsp;			default:
+<b class="nc"><i>350</i>&nbsp;				throw new RuntimeException(&quot;Invalid path iterator &quot; + iter + &quot; - only line connections are allowed&quot;);</b>
+<i>351</i>&nbsp;			};
+<b class="nc"><i>352</i>&nbsp;			iter.next();</b>
+<i>353</i>&nbsp;		}
+<b class="nc"><i>354</i>&nbsp;	}</b>
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;
+<i>358</i>&nbsp;
+<i>359</i>&nbsp;	/**
+<i>360</i>&nbsp;	 * Apply a simple 3-point moving average to a list of points.
+<i>361</i>&nbsp;	 * 
+<i>362</i>&nbsp;	 * @param points
+<i>363</i>&nbsp;	 * @return
+<i>364</i>&nbsp;	 */
+<i>365</i>&nbsp;	public static List&lt;Point2&gt; smoothPoints(List&lt;Point2&gt; points) {
+<b class="nc"><i>366</i>&nbsp;		List&lt;Point2&gt; points2 = new ArrayList&lt;&gt;(points.size());</b>
+<b class="nc"><i>367</i>&nbsp;		for (int i = 0; i &lt; points.size(); i++) {</b>
+<b class="nc"><i>368</i>&nbsp;			Point2 p1 = points.get((i+points.size()-1)%points.size());</b>
+<b class="nc"><i>369</i>&nbsp;			Point2 p2 = points.get(i);</b>
+<b class="nc"><i>370</i>&nbsp;			Point2 p3 = points.get((i+1)%points.size());</b>
+<b class="nc"><i>371</i>&nbsp;			points2.add(new Point2((p1.getX() + p2.getX() + p3.getX())/3, (p1.getY() + p2.getY() + p3.getY())/3));</b>
+<i>372</i>&nbsp;		}
+<b class="nc"><i>373</i>&nbsp;		return points2;</b>
+<i>374</i>&nbsp;	}
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

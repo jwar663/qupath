@@ -1,0 +1,112 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathImage</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathImage (qupath.lib.images)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PathImage</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>27</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Interface used when needing to associate pixel data with information regarding the image from which it was obtained.
+<i>31</i>&nbsp; * &lt;p&gt;
+<i>32</i>&nbsp; * The generic parameter defines the type of the image (e.g. BufferedImage, ImagePlus, Mat...).
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; * @param &lt;T&gt;
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public interface PathImage&lt;T&gt; {
+<i>39</i>&nbsp;	
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * Get the pixel data (image).
+<i>42</i>&nbsp;	 * 
+<i>43</i>&nbsp;	 * @return
+<i>44</i>&nbsp;	 */
+<i>45</i>&nbsp;	public T getImage();
+<i>46</i>&nbsp;	
+<i>47</i>&nbsp;	/**
+<i>48</i>&nbsp;	 * Get the downsample factor originally used when obtaining the image from an ImageServer; will be 1 if the image is full-resolution.
+<i>49</i>&nbsp;	 * @return
+<i>50</i>&nbsp;	 */
+<i>51</i>&nbsp;	public double getDownsampleFactor();
+<i>52</i>&nbsp;	
+<i>53</i>&nbsp;	/**
+<i>54</i>&nbsp;	 * Get the PixelCalibration representing actual pixel sizes in this image, with downsampling applied if necessary.
+<i>55</i>&nbsp;	 * @return
+<i>56</i>&nbsp;	 */
+<i>57</i>&nbsp;	public PixelCalibration getPixelCalibration();
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	/**
+<i>60</i>&nbsp;	 * The region within the (original, possibly larger) image that this particular image corresponds to.
+<i>61</i>&nbsp;	 * @return
+<i>62</i>&nbsp;	 */
+<i>63</i>&nbsp;	public ImageRegion getImageRegion();
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

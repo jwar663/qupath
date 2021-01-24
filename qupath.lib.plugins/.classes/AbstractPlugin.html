@@ -1,0 +1,339 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractPlugin (qupath.lib.plugins)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    18.2%
+  </span>
+  <span class="absValue">
+    (2/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.1%
+  </span>
+  <span class="absValue">
+    (2/ 49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import org.slf4j.Logger;
+<i>32</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import qupath.lib.images.ImageData;
+<i>35</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>36</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>37</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>38</i>&nbsp;import qupath.lib.plugins.workflow.SimplePluginWorkflowStep;
+<i>39</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowStep;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;/**
+<i>42</i>&nbsp; * General abstract plugin implementation, which defines some methods to facilitate 
+<i>43</i>&nbsp; * creating plugins that do parallel processing.
+<i>44</i>&nbsp; * 
+<i>45</i>&nbsp; * @author Pete Bankhead
+<i>46</i>&nbsp; *
+<i>47</i>&nbsp; * @param &lt;T&gt;
+<i>48</i>&nbsp; */
+<b class="fc"><i>49</i>&nbsp;public abstract class AbstractPlugin&lt;T&gt; implements PathPlugin&lt;T&gt; {</b>
+<i>50</i>&nbsp;	
+<b class="fc"><i>51</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(AbstractPlugin.class);</b>
+<i>52</i>&nbsp;	
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	/**
+<i>55</i>&nbsp;	 * Get a list of tasks to perform.
+<i>56</i>&nbsp;	 * 
+<i>57</i>&nbsp;	 * This will be called from runPlugin *after* a call to parseArgument.
+<i>58</i>&nbsp;	 * 
+<i>59</i>&nbsp;	 * The default implementation simply calls getParentObjects, then addRunnableTasks for every parent object that was returned.
+<i>60</i>&nbsp;	 * 
+<i>61</i>&nbsp;	 * @param runner
+<i>62</i>&nbsp;	 * @return
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	protected Collection&lt;Runnable&gt; getTasks(final PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>65</i>&nbsp;		Collection&lt;? extends PathObject&gt; parentObjects = getParentObjects(runner);</b>
+<b class="nc"><i>66</i>&nbsp;		if (parentObjects == null || parentObjects.isEmpty())</b>
+<b class="nc"><i>67</i>&nbsp;			return Collections.emptyList();</b>
+<i>68</i>&nbsp;		
+<b class="nc"><i>69</i>&nbsp;		List&lt;Runnable&gt; tasks = new ArrayList&lt;&gt;(parentObjects.size());</b>
+<b class="nc"><i>70</i>&nbsp;		for (PathObject pathObject : parentObjects) {</b>
+<b class="nc"><i>71</i>&nbsp;			addRunnableTasks(runner.getImageData(), pathObject, tasks);</b>
+<b class="nc"><i>72</i>&nbsp;		}</b>
+<b class="nc"><i>73</i>&nbsp;		return tasks;</b>
+<i>74</i>&nbsp;	}
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Get the ImageServer from a PluginRunner, or null if no server is available.
+<i>78</i>&nbsp;	 * @param runner
+<i>79</i>&nbsp;	 * @return
+<i>80</i>&nbsp;	 */
+<i>81</i>&nbsp;	protected ImageServer&lt;T&gt; getServer(final PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>82</i>&nbsp;		ImageData&lt;T&gt; imageData = runner.getImageData();</b>
+<b class="nc"><i>83</i>&nbsp;		return imageData == null ? null : imageData.getServer();</b>
+<i>84</i>&nbsp;	}
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	/**
+<i>87</i>&nbsp;	 * Get the hierarchy from a PluginRunner, or null if no hierarchy is available.
+<i>88</i>&nbsp;	 * @param runner
+<i>89</i>&nbsp;	 * @return
+<i>90</i>&nbsp;	 */
+<i>91</i>&nbsp;	protected PathObjectHierarchy getHierarchy(final PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>92</i>&nbsp;		ImageData&lt;T&gt; imageData = runner.getImageData();</b>
+<b class="nc"><i>93</i>&nbsp;		return imageData == null ? null : imageData.getHierarchy();</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Optionally request a hierarchy update after the tasks have run.
+<i>98</i>&nbsp;	 * Default implementation returns true.
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	protected boolean requestHierarchyUpdate() {
+<b class="nc"><i>102</i>&nbsp;		return true;</b>
+<i>103</i>&nbsp;	}
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Parse the input argument, returning &#39;true&#39; if the argument is valid and it&#39;s possible to run the plugin.
+<i>107</i>&nbsp;	 * &lt;p&gt;
+<i>108</i>&nbsp;	 * This is called from within runPlugin.
+<i>109</i>&nbsp;	 * If it returns &#39;true&#39;, getTasks will be called and then runTasks will submit these to the plugin runner to run.
+<i>110</i>&nbsp;	 * If it returns &#39;false&#39;, runPlugin will immediately abort and return false as well.
+<i>111</i>&nbsp;	 * 
+<i>112</i>&nbsp;	 * Since this could result in some internal variables changed (e.g. a ParameterList), implementing classes can&#39;t
+<i>113</i>&nbsp;	 * be assumed to be thread-safe; plugins should be created and called from a single thread, although they may use
+<i>114</i>&nbsp;	 * multiple threads (via a PluginRunner) to complete their tasks.
+<i>115</i>&nbsp;	 * 
+<i>116</i>&nbsp;	 * 
+<i>117</i>&nbsp;	 * @param imageData
+<i>118</i>&nbsp;	 * @param arg
+<i>119</i>&nbsp;	 * @return
+<i>120</i>&nbsp;	 */
+<i>121</i>&nbsp;	protected abstract boolean parseArgument(ImageData&lt;T&gt; imageData, String arg);
+<i>122</i>&nbsp;	
+<i>123</i>&nbsp;	
+<i>124</i>&nbsp;	/**
+<i>125</i>&nbsp;	 * Get a collection of objects to process, based on the contents of the PluginRunner.
+<i>126</i>&nbsp;	 * 
+<i>127</i>&nbsp;	 * This could (for example) return the selected object, the root object, all detection objects... depending upon what the plugin does.
+<i>128</i>&nbsp;	 * 
+<i>129</i>&nbsp;	 * Each object this returns will be passed to addRunnableTasks to create a task to run.
+<i>130</i>&nbsp;	 * 
+<i>131</i>&nbsp;	 * In practice, this method can be overridden to return anything/nothing if getTasks is overridden instead.
+<i>132</i>&nbsp;	 * 
+<i>133</i>&nbsp;	 * @param runner
+<i>134</i>&nbsp;	 * @return
+<i>135</i>&nbsp;	 */
+<i>136</i>&nbsp;	protected abstract Collection&lt;? extends PathObject&gt; getParentObjects(final PluginRunner&lt;T&gt; runner);
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	/**
+<i>140</i>&nbsp;	 * For a specified parent object, generate a task to run.
+<i>141</i>&nbsp;	 * 
+<i>142</i>&nbsp;	 * In practice, this method can be overridden to return anything/nothing if getTasks is overridden instead.
+<i>143</i>&nbsp;	 * 
+<i>144</i>&nbsp;	 * @param imageData
+<i>145</i>&nbsp;	 * @param parentObject
+<i>146</i>&nbsp;	 * @param tasks
+<i>147</i>&nbsp;	 */
+<i>148</i>&nbsp;	protected abstract void addRunnableTasks(final ImageData&lt;T&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks);		
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;	
+<i>151</i>&nbsp;	
+<i>152</i>&nbsp;	@Override
+<i>153</i>&nbsp;	public boolean runPlugin(final PluginRunner&lt;T&gt; pluginRunner, final String arg) {
+<i>154</i>&nbsp;		
+<b class="nc"><i>155</i>&nbsp;		if (!parseArgument(pluginRunner.getImageData(), arg))</b>
+<b class="nc"><i>156</i>&nbsp;			return false;</b>
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;		preprocess(pluginRunner);</b>
+<i>159</i>&nbsp;
+<b class="nc"><i>160</i>&nbsp;		Collection&lt;Runnable&gt; tasks = getTasks(pluginRunner);</b>
+<b class="nc"><i>161</i>&nbsp;		if (tasks.isEmpty())</b>
+<b class="nc"><i>162</i>&nbsp;			return false;</b>
+<i>163</i>&nbsp;
+<b class="nc"><i>164</i>&nbsp;		pluginRunner.runTasks(tasks, requestHierarchyUpdate());</b>
+<b class="nc"><i>165</i>&nbsp;		postprocess(pluginRunner);</b>
+<i>166</i>&nbsp;		
+<b class="nc"><i>167</i>&nbsp;		if (pluginRunner.isCancelled())</b>
+<b class="nc"><i>168</i>&nbsp;			return false;</b>
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;		// Only add a workflow step if plugin was not cancelled
+<b class="nc"><i>171</i>&nbsp;		addWorkflowStep(pluginRunner.getImageData(), arg);</b>
+<i>172</i>&nbsp;		
+<b class="nc"><i>173</i>&nbsp;		return true;</b>
+<i>174</i>&nbsp;	}
+<i>175</i>&nbsp;	
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;	/**
+<i>178</i>&nbsp;	 * Called after parsing the argument String, and immediately before creating &amp;amp; running any generated tasks.
+<i>179</i>&nbsp;	 * 
+<i>180</i>&nbsp;	 * Does nothing by default.
+<i>181</i>&nbsp;	 * @param pluginRunner 
+<i>182</i>&nbsp;	 */
+<b class="nc"><i>183</i>&nbsp;	protected void preprocess(final PluginRunner&lt;T&gt; pluginRunner) {};</b>
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;	/**
+<i>186</i>&nbsp;	 * Called immediately after running any generated tasks.
+<i>187</i>&nbsp;	 * 
+<i>188</i>&nbsp;	 * Does nothing by default.
+<i>189</i>&nbsp;	 * @param pluginRunner 
+<i>190</i>&nbsp;	 */
+<b class="nc"><i>191</i>&nbsp;	protected void postprocess(final PluginRunner&lt;T&gt; pluginRunner) {};</b>
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	/**
+<i>195</i>&nbsp;	 * Add a workflow step to the ImageData indicating the argument that this plugin was run with.
+<i>196</i>&nbsp;	 * 
+<i>197</i>&nbsp;	 * Subclasses may override this if a better workflow step should be logged.
+<i>198</i>&nbsp;	 * 
+<i>199</i>&nbsp;	 * A subclass may also override this to avoid adding a workflow step at all.
+<i>200</i>&nbsp;	 * 
+<i>201</i>&nbsp;	 * @param imageData
+<i>202</i>&nbsp;	 * @param arg
+<i>203</i>&nbsp;	 */
+<i>204</i>&nbsp;	protected void addWorkflowStep(final ImageData&lt;T&gt; imageData, final String arg) {
+<i>205</i>&nbsp;		@SuppressWarnings(&quot;unchecked&quot;)
+<b class="nc"><i>206</i>&nbsp;		WorkflowStep step = new SimplePluginWorkflowStep(getName(), (Class&lt;? extends PathPlugin&lt;T&gt;&gt;)getClass(), arg);</b>
+<b class="nc"><i>207</i>&nbsp;		imageData.getHistoryWorkflow().addStep(step);</b>
+<b class="nc"><i>208</i>&nbsp;		logger.debug(&quot;Adding workflow step: {}&quot;, step);</b>
+<b class="nc"><i>209</i>&nbsp;	}</b>
+<i>210</i>&nbsp;	
+<i>211</i>&nbsp;	
+<i>212</i>&nbsp;	/**
+<i>213</i>&nbsp;	 * Test method for rearranging a collection so that entries are interleaved with a regularity given by stride.
+<i>214</i>&nbsp;	 * &lt;p&gt;
+<i>215</i>&nbsp;	 * It can be used to rearrange tasks to try to make better use of cached image regions, by helping to ensure that
+<i>216</i>&nbsp;	 * all available processors are operating on distinct parts of the image - rather than all in the same region,
+<i>217</i>&nbsp;	 * where image tile requests could become a bottleneck.
+<i>218</i>&nbsp;	 * 
+<i>219</i>&nbsp;	 * Intended use would be something like the following:
+<i>220</i>&nbsp;	 * &lt;pre&gt;
+<i>221</i>&nbsp;	 *   int n = tasks.size();
+<i>222</i>&nbsp;	 *	 Runnable[] tasks2 = new Runnable[n];
+<i>223</i>&nbsp; 	 *   if (rearrangeByStride(tasks, tasks2, Runtime.getRuntime().availableProcessors()))
+<i>224</i>&nbsp;	 *     tasks = Arrays.asList(tasks2);
+<i>225</i>&nbsp;	 * &lt;/pre&gt;
+<i>226</i>&nbsp;	 * 
+<i>227</i>&nbsp;	 * @param input
+<i>228</i>&nbsp;	 * @param output
+<i>229</i>&nbsp;	 * @param stride
+<i>230</i>&nbsp;	 * @return
+<i>231</i>&nbsp;	 */
+<i>232</i>&nbsp;	protected static &lt;T&gt; boolean rearrangeByStride(final Collection&lt;T&gt; input, final T[] output, final int stride) {
+<b class="nc"><i>233</i>&nbsp;		int n = input.size();</b>
+<b class="nc"><i>234</i>&nbsp;		int ind = 0;</b>
+<b class="nc"><i>235</i>&nbsp;		int startInd = 0;</b>
+<b class="nc"><i>236</i>&nbsp;		int indNew = 0;</b>
+<b class="nc"><i>237</i>&nbsp;		for (T t : input) {</b>
+<b class="nc"><i>238</i>&nbsp;			if (output[indNew] != null) {</b>
+<i>239</i>&nbsp;				// This shouldn&#39;t happen if I&#39;ve done this properly... but in case I haven&#39;t, log an error and
+<i>240</i>&nbsp;				// default to original list
+<b class="nc"><i>241</i>&nbsp;				logger.error(&quot;Not null for &quot; + indNew + &quot; (&quot; + ind + &quot;/&quot; + n + &quot;)&quot;);</b>
+<b class="nc"><i>242</i>&nbsp;				return false;</b>
+<i>243</i>&nbsp;//				return tasks;
+<i>244</i>&nbsp;			}
+<b class="nc"><i>245</i>&nbsp;			output[indNew] = t;</b>
+<b class="nc"><i>246</i>&nbsp;			ind++;</b>
+<b class="nc"><i>247</i>&nbsp;			indNew += stride;</b>
+<b class="nc"><i>248</i>&nbsp;			if (indNew &gt;= n) {</b>
+<b class="nc"><i>249</i>&nbsp;				startInd++;</b>
+<b class="nc"><i>250</i>&nbsp;				indNew = startInd;</b>
+<i>251</i>&nbsp;			}
+<b class="nc"><i>252</i>&nbsp;		}</b>
+<b class="nc"><i>253</i>&nbsp;		return true;</b>
+<i>254</i>&nbsp;	}
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

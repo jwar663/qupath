@@ -1,0 +1,790 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ProjectCheckUris</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ProjectCheckUris (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProjectCheckUris</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProjectCheckUris$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$ProjectUriManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 204)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$ProjectUriManager$TableCopyPasteHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$ProjectUriManager$TableFilter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$ProjectUriManager$UriCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$UriItem</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProjectCheckUris$UriStatus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 39)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 293)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.io.File;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.net.URI;
+<i>27</i>&nbsp;import java.net.URISyntaxException;
+<i>28</i>&nbsp;import java.nio.file.Files;
+<i>29</i>&nbsp;import java.nio.file.Path;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import java.util.LinkedHashSet;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.Map;
+<i>35</i>&nbsp;import java.util.Objects;
+<i>36</i>&nbsp;import java.util.Scanner;
+<i>37</i>&nbsp;import java.util.Set;
+<i>38</i>&nbsp;import java.util.function.Predicate;
+<i>39</i>&nbsp;import java.util.stream.Collectors;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.slf4j.Logger;
+<i>42</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>45</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>46</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>47</i>&nbsp;import javafx.collections.FXCollections;
+<i>48</i>&nbsp;import javafx.collections.ObservableList;
+<i>49</i>&nbsp;import javafx.collections.ObservableMap;
+<i>50</i>&nbsp;import javafx.collections.transformation.FilteredList;
+<i>51</i>&nbsp;import javafx.event.EventHandler;
+<i>52</i>&nbsp;import javafx.geometry.HPos;
+<i>53</i>&nbsp;import javafx.scene.control.Button;
+<i>54</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>55</i>&nbsp;import javafx.scene.control.CheckBox;
+<i>56</i>&nbsp;import javafx.scene.control.Dialog;
+<i>57</i>&nbsp;import javafx.scene.control.Label;
+<i>58</i>&nbsp;import javafx.scene.control.OverrunStyle;
+<i>59</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>60</i>&nbsp;import javafx.scene.control.TableCell;
+<i>61</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>62</i>&nbsp;import javafx.scene.control.TableView;
+<i>63</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>64</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>65</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>66</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>67</i>&nbsp;import javafx.scene.input.KeyCodeCombination;
+<i>68</i>&nbsp;import javafx.scene.input.KeyCombination;
+<i>69</i>&nbsp;import javafx.scene.input.KeyEvent;
+<i>70</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>71</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>72</i>&nbsp;import javafx.scene.layout.Priority;
+<i>73</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>74</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>75</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>76</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>77</i>&nbsp;import qupath.lib.projects.Project;
+<i>78</i>&nbsp;
+<b class="nc"><i>79</i>&nbsp;class ProjectCheckUris {</b>
+<i>80</i>&nbsp;	
+<b class="nc"><i>81</i>&nbsp;	private static int maxRecursiveSearchDepth = 8;</b>
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	static class ProjectUriManager {
+<i>84</i>&nbsp;		
+<b class="nc"><i>85</i>&nbsp;		private Logger logger = LoggerFactory.getLogger(ProjectUriManager.class);</b>
+<i>86</i>&nbsp;		
+<i>87</i>&nbsp;		private Project&lt;?&gt; project;
+<i>88</i>&nbsp;		
+<b class="nc"><i>89</i>&nbsp;		private ObservableMap&lt;UriItem, UriItem&gt; replacements = FXCollections.observableMap(new HashMap&lt;&gt;());</b>
+<i>90</i>&nbsp;		
+<b class="nc"><i>91</i>&nbsp;		private GridPane pane = new GridPane();</b>
+<b class="nc"><i>92</i>&nbsp;		private TableView&lt;UriItem&gt; table = new TableView&lt;&gt;();</b>
+<b class="nc"><i>93</i>&nbsp;		private ObservableList&lt;UriItem&gt; allItems = FXCollections.observableArrayList();</b>
+<i>94</i>&nbsp;		
+<b class="nc"><i>95</i>&nbsp;		private BooleanProperty showMissing = new SimpleBooleanProperty(true);</b>
+<b class="nc"><i>96</i>&nbsp;		private BooleanProperty showValid = new SimpleBooleanProperty(true);</b>
+<b class="nc"><i>97</i>&nbsp;		private BooleanProperty showUnknown = new SimpleBooleanProperty(true);</b>
+<i>98</i>&nbsp;		
+<b class="nc"><i>99</i>&nbsp;		ProjectUriManager(Project&lt;?&gt; project) throws IOException {</b>
+<b class="nc"><i>100</i>&nbsp;			this.project = project;</b>
+<i>101</i>&nbsp;			
+<b class="nc"><i>102</i>&nbsp;			URI uriProject = project.getURI();</b>
+<b class="nc"><i>103</i>&nbsp;			URI uriProjectPrevious = project.getPreviousURI();</b>
+<i>104</i>&nbsp;			
+<i>105</i>&nbsp;			// Get all the URIs
+<b class="nc"><i>106</i>&nbsp;			Set&lt;URI&gt; imageUris = new LinkedHashSet&lt;&gt;();</b>
+<b class="nc"><i>107</i>&nbsp;			for (var entry : project.getImageList()) {</b>
+<b class="nc"><i>108</i>&nbsp;				imageUris.addAll(entry.getServerURIs());</b>
+<b class="nc"><i>109</i>&nbsp;			}</b>
+<i>110</i>&nbsp;			
+<i>111</i>&nbsp;			// Get paths, if we can
+<b class="nc"><i>112</i>&nbsp;			Path pathProject = uriProject == null ? null : GeneralTools.toPath(uriProject);</b>
+<b class="nc"><i>113</i>&nbsp;			Path pathPrevious = uriProjectPrevious == null ? null : GeneralTools.toPath(uriProjectPrevious);</b>
+<i>114</i>&nbsp;			// We care about the directory rather than the actual file
+<b class="nc"><i>115</i>&nbsp;			if (pathProject != null &amp;&amp; !Files.isDirectory(pathProject)) {</b>
+<b class="nc"><i>116</i>&nbsp;				pathProject = pathProject.getParent();</b>
+<i>117</i>&nbsp;			}
+<b class="nc"><i>118</i>&nbsp;			if (pathPrevious != null &amp;&amp; !Files.isDirectory(pathPrevious)) {</b>
+<b class="nc"><i>119</i>&nbsp;				pathPrevious = pathPrevious.getParent();</b>
+<i>120</i>&nbsp;			}
+<b class="nc"><i>121</i>&nbsp;			boolean tryRelative = pathProject != null &amp;&amp; pathPrevious != null &amp;&amp; !pathProject.equals(pathPrevious);</b>
+<i>122</i>&nbsp;			
+<i>123</i>&nbsp;			// Map the URIs to a list of potential replacements
+<b class="nc"><i>124</i>&nbsp;			List&lt;UriItem&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>125</i>&nbsp;			int nMissing = 0;</b>
+<b class="nc"><i>126</i>&nbsp;			int nExists = 0;</b>
+<b class="nc"><i>127</i>&nbsp;			int nUnknown = 0;</b>
+<b class="nc"><i>128</i>&nbsp;			for (var temp : imageUris) {</b>
+<b class="nc"><i>129</i>&nbsp;				var item = new UriItem(temp);</b>
+<b class="nc"><i>130</i>&nbsp;				switch (item.getStatus()) {</b>
+<i>131</i>&nbsp;				case MISSING:
+<i>132</i>&nbsp;					// Try to relativize the path to predict a likely replacement - if we have the same root
+<b class="nc"><i>133</i>&nbsp;					Path pathItem = item.getPath();</b>
+<i>134</i>&nbsp;					try {
+<b class="nc"><i>135</i>&nbsp;						if (tryRelative &amp;&amp;</b>
+<i>136</i>&nbsp;								pathItem != null &amp;&amp;
+<i>137</i>&nbsp;								pathPrevious != null &amp;&amp;
+<b class="nc"><i>138</i>&nbsp;								Objects.equals(pathItem.getRoot(), pathPrevious.getRoot())</b>
+<i>139</i>&nbsp;								) {
+<b class="nc"><i>140</i>&nbsp;							Path pathRelative = pathProject.resolve(pathPrevious.relativize(pathItem));</b>
+<b class="nc"><i>141</i>&nbsp;							if (Files.exists(pathRelative)) {</b>
+<b class="nc"><i>142</i>&nbsp;								URI uri2 = pathRelative.normalize().toUri().normalize();</b>
+<b class="nc"><i>143</i>&nbsp;								replacements.put(item, new UriItem(uri2));</b>
+<i>144</i>&nbsp;							}
+<i>145</i>&nbsp;						}
+<b class="nc"><i>146</i>&nbsp;					} catch (Exception e) {</b>
+<i>147</i>&nbsp;						// Shouldn&#39;t occur (but being extra careful in case resolve/normalize/toUri or sth else complains)
+<b class="nc"><i>148</i>&nbsp;						logger.warn(&quot;Error relativizing paths: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>149</i>&nbsp;						logger.debug(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>150</i>&nbsp;					}</b>
+<b class="nc"><i>151</i>&nbsp;					nMissing++;</b>
+<b class="nc"><i>152</i>&nbsp;					break;</b>
+<i>153</i>&nbsp;				case EXISTS:
+<b class="nc"><i>154</i>&nbsp;					nExists++;</b>
+<b class="nc"><i>155</i>&nbsp;					break;</b>
+<i>156</i>&nbsp;				case UNKNOWN:
+<i>157</i>&nbsp;				default:
+<b class="nc"><i>158</i>&nbsp;					nUnknown++;</b>
+<i>159</i>&nbsp;					break;
+<i>160</i>&nbsp;				}
+<b class="nc"><i>161</i>&nbsp;				list.add(item);</b>
+<b class="nc"><i>162</i>&nbsp;			}</b>
+<b class="nc"><i>163</i>&nbsp;			allItems.setAll(list);</b>
+<i>164</i>&nbsp;			
+<i>165</i>&nbsp;//			// We can return if we don&#39;t have any missing or unknown (or if we don&#39;t care about unknown)
+<i>166</i>&nbsp;//			if (nMissing == 0)
+<i>167</i>&nbsp;//				return;
+<i>168</i>&nbsp;			
+<i>169</i>&nbsp;			// Create a table view
+<b class="nc"><i>170</i>&nbsp;			TableColumn&lt;UriItem, UriItem&gt; colOriginal = new TableColumn&lt;&gt;(&quot;Original URI&quot;);</b>
+<b class="nc"><i>171</i>&nbsp;			colOriginal.setCellValueFactory(item -&gt; Bindings.createObjectBinding(() -&gt; item.getValue()));</b>
+<b class="nc"><i>172</i>&nbsp;			colOriginal.setCellFactory(col -&gt; new UriCell());</b>
+<b class="nc"><i>173</i>&nbsp;			table.getColumns().add(colOriginal);</b>
+<i>174</i>&nbsp;			
+<b class="nc"><i>175</i>&nbsp;			TableColumn&lt;UriItem, UriItem&gt; colReplacement = new TableColumn&lt;&gt;(&quot;Replacement URI&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;			colReplacement.setCellValueFactory(item -&gt; {</b>
+<b class="nc"><i>177</i>&nbsp;				return Bindings.createObjectBinding(() -&gt; replacements.get(item.getValue()), replacements);</b>
+<i>178</i>&nbsp;			});
+<b class="nc"><i>179</i>&nbsp;			colReplacement.setCellFactory(col -&gt; new UriCell());</b>
+<b class="nc"><i>180</i>&nbsp;			table.getColumns().add(colReplacement);</b>
+<i>181</i>&nbsp;			
+<b class="nc"><i>182</i>&nbsp;			FilteredList&lt;UriItem&gt; filteredList = allItems.filtered(new TableFilter());</b>
+<b class="nc"><i>183</i>&nbsp;			table.setItems(filteredList);</b>
+<i>184</i>&nbsp;			
+<b class="nc"><i>185</i>&nbsp;			showMissing.addListener((v, o, n) -&gt; filteredList.setPredicate(new TableFilter()));</b>
+<b class="nc"><i>186</i>&nbsp;			showUnknown.addListener((v, o, n) -&gt; filteredList.setPredicate(new TableFilter()));</b>
+<b class="nc"><i>187</i>&nbsp;			showValid.addListener((v, o, n) -&gt; filteredList.setPredicate(new TableFilter()));</b>
+<i>188</i>&nbsp;			
+<b class="nc"><i>189</i>&nbsp;			table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<i>190</i>&nbsp;			
+<b class="nc"><i>191</i>&nbsp;			table.setPrefSize(600, 400);</b>
+<i>192</i>&nbsp;			
+<b class="nc"><i>193</i>&nbsp;			CheckBox cbMissing = new CheckBox(String.format(&quot;Show missing (%d)&quot;, nMissing));</b>
+<b class="nc"><i>194</i>&nbsp;			cbMissing.selectedProperty().bindBidirectional(showMissing);</b>
+<b class="nc"><i>195</i>&nbsp;			CheckBox cbValid = new CheckBox(String.format(&quot;Show valid (%d)&quot;, nExists));</b>
+<b class="nc"><i>196</i>&nbsp;			cbValid.selectedProperty().bindBidirectional(showValid);</b>
+<b class="nc"><i>197</i>&nbsp;			CheckBox cbUnknown = new CheckBox(String.format(&quot;Show unknown (%d)&quot;, nUnknown));</b>
+<b class="nc"><i>198</i>&nbsp;			cbUnknown.selectedProperty().bindBidirectional(showUnknown);</b>
+<i>199</i>&nbsp;
+<b class="nc"><i>200</i>&nbsp;			Label labelReplacements = new Label();</b>
+<b class="nc"><i>201</i>&nbsp;			labelReplacements.textProperty().bind(Bindings.createStringBinding(() -&gt;</b>
+<b class="nc"><i>202</i>&nbsp;				&quot;Number of replacements: &quot; + replacements.size()</b>
+<i>203</i>&nbsp;				, replacements));
+<i>204</i>&nbsp;			
+<b class="nc"><i>205</i>&nbsp;			Button btnSearch = new Button(&quot;Search...&quot;);</b>
+<b class="nc"><i>206</i>&nbsp;			btnSearch.setTooltip(new Tooltip(&quot;Choose a directory &amp; search recursively for images inside&quot;));</b>
+<b class="nc"><i>207</i>&nbsp;			btnSearch.setOnAction(e -&gt; {</b>
+<b class="nc"><i>208</i>&nbsp;				var dir = Dialogs.getChooser(GuiTools.getWindow(btnSearch)).promptForDirectory(null);</b>
+<b class="nc"><i>209</i>&nbsp;				Map&lt;String, List&lt;UriItem&gt;&gt; missing = allItems.stream().filter(p -&gt; p.getStatus() == UriStatus.MISSING &amp;&amp; p.getPath() != null &amp;&amp; replacements.get(p) == null)</b>
+<b class="nc"><i>210</i>&nbsp;						.collect(Collectors.groupingBy(p -&gt; p.getPath().getFileName().toString()));</b>
+<i>211</i>&nbsp;				
+<b class="nc"><i>212</i>&nbsp;				searchDirectoriesRecursive(dir, missing, maxRecursiveSearchDepth);</b>
+<i>213</i>&nbsp;			});
+<i>214</i>&nbsp;			
+<b class="nc"><i>215</i>&nbsp;			int row = 0;</b>
+<b class="nc"><i>216</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, null, table, table, table);</b>
+<b class="nc"><i>217</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, null, labelReplacements, labelReplacements, btnSearch);</b>
+<b class="nc"><i>218</i>&nbsp;			PaneTools.addGridRow(pane, row, 0, null, cbValid);</b>
+<b class="nc"><i>219</i>&nbsp;			PaneTools.addGridRow(pane, row, 1, null, cbMissing);</b>
+<b class="nc"><i>220</i>&nbsp;			PaneTools.addGridRow(pane, row++, 2, null, cbUnknown);</b>
+<i>221</i>&nbsp;			
+<b class="nc"><i>222</i>&nbsp;			PaneTools.setFillWidth(Boolean.TRUE, cbValid, cbMissing, cbUnknown, labelReplacements, table);</b>
+<b class="nc"><i>223</i>&nbsp;			PaneTools.setHGrowPriority(Priority.ALWAYS, cbValid, cbMissing, cbUnknown, labelReplacements, table);</b>
+<b class="nc"><i>224</i>&nbsp;			PaneTools.setMaxWidth(Double.MAX_VALUE, cbValid, cbMissing, cbUnknown, labelReplacements, table);</b>
+<b class="nc"><i>225</i>&nbsp;			GridPane.setHalignment(btnSearch, HPos.RIGHT);</b>
+<i>226</i>&nbsp;			
+<b class="nc"><i>227</i>&nbsp;			pane.setHgap(5);</b>
+<b class="nc"><i>228</i>&nbsp;			pane.setVgap(5);</b>
+<i>229</i>&nbsp;			
+<b class="nc"><i>230</i>&nbsp;			table.addEventHandler(KeyEvent.KEY_PRESSED, new TableCopyPasteHandler());</b>
+<b class="nc"><i>231</i>&nbsp;			table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);</b>
+<i>232</i>&nbsp;		}
+<i>233</i>&nbsp;		
+<i>234</i>&nbsp;		
+<i>235</i>&nbsp;		void searchDirectoriesRecursive(File dir, Map&lt;String, List&lt;UriItem&gt;&gt; missing, int maxDepth) {
+<b class="nc"><i>236</i>&nbsp;			if (dir == null || !dir.canRead() || !dir.isDirectory() || missing.isEmpty() || maxDepth &lt;= 0)</b>
+<i>237</i>&nbsp;				return;
+<i>238</i>&nbsp;			
+<b class="nc"><i>239</i>&nbsp;			List&lt;File&gt; subdirs = new ArrayList&lt;&gt;();</b>
+<i>240</i>&nbsp;			
+<b class="nc"><i>241</i>&nbsp;			logger.debug(&quot;Searching {}&quot;, dir);</b>
+<b class="nc"><i>242</i>&nbsp;			var list = dir.listFiles();</b>
+<b class="nc"><i>243</i>&nbsp;			if (list == null)</b>
+<i>244</i>&nbsp;				return;
+<b class="nc"><i>245</i>&nbsp;			for (File f : list) {</b>
+<b class="nc"><i>246</i>&nbsp;				if (f == null)</b>
+<b class="nc"><i>247</i>&nbsp;					continue;</b>
+<b class="nc"><i>248</i>&nbsp;				if (f.isHidden())</b>
+<b class="nc"><i>249</i>&nbsp;					continue;</b>
+<b class="nc"><i>250</i>&nbsp;				else if (f.isFile()) {</b>
+<i>251</i>&nbsp;					// If we find something with the correct name, update the URIs
+<b class="nc"><i>252</i>&nbsp;					String name = f.getName();</b>
+<b class="nc"><i>253</i>&nbsp;					List&lt;UriItem&gt; myList = missing.remove(name);</b>
+<b class="nc"><i>254</i>&nbsp;					if (myList != null) {</b>
+<b class="nc"><i>255</i>&nbsp;						for (var item : myList)</b>
+<b class="nc"><i>256</i>&nbsp;							replacements.put(item, new UriItem(f.toURI()));</b>
+<i>257</i>&nbsp;					}
+<i>258</i>&nbsp;					// Check if we are done
+<b class="nc"><i>259</i>&nbsp;					if (missing.isEmpty())</b>
+<i>260</i>&nbsp;						return;
+<b class="nc"><i>261</i>&nbsp;				} else if (f.isDirectory()) {</b>
+<b class="nc"><i>262</i>&nbsp;					subdirs.add(f);</b>
+<i>263</i>&nbsp;				}
+<i>264</i>&nbsp;			}
+<b class="nc"><i>265</i>&nbsp;			for (File subdir : subdirs) {</b>
+<b class="nc"><i>266</i>&nbsp;				searchDirectoriesRecursive(subdir, missing, maxDepth-1);</b>
+<b class="nc"><i>267</i>&nbsp;			}</b>
+<i>268</i>&nbsp;		}
+<i>269</i>&nbsp;		
+<i>270</i>&nbsp;		
+<i>271</i>&nbsp;		int countOriginalItems(UriStatus status) {
+<b class="nc"><i>272</i>&nbsp;			int n = 0;</b>
+<b class="nc"><i>273</i>&nbsp;			for (var item : allItems) {</b>
+<b class="nc"><i>274</i>&nbsp;				if (item.getStatus() == status)</b>
+<b class="nc"><i>275</i>&nbsp;					n++;</b>
+<b class="nc"><i>276</i>&nbsp;			}</b>
+<b class="nc"><i>277</i>&nbsp;			return n;</b>
+<i>278</i>&nbsp;		}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;		int countReplacedItems(UriStatus status) {
+<b class="nc"><i>281</i>&nbsp;			int n = 0;</b>
+<b class="nc"><i>282</i>&nbsp;			for (var item : allItems) {</b>
+<b class="nc"><i>283</i>&nbsp;				var item2 = replacements.getOrDefault(item, item);</b>
+<b class="nc"><i>284</i>&nbsp;				if (item2.getStatus() == status)</b>
+<b class="nc"><i>285</i>&nbsp;					n++;</b>
+<b class="nc"><i>286</i>&nbsp;			}</b>
+<b class="nc"><i>287</i>&nbsp;			return n;			</b>
+<i>288</i>&nbsp;		}
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;		class TableFilter implements Predicate&lt;UriItem&gt; {</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;			@Override
+<i>293</i>&nbsp;			public boolean test(UriItem item) {
+<b class="nc"><i>294</i>&nbsp;				switch (item.getStatus()) {</b>
+<i>295</i>&nbsp;				case EXISTS:
+<b class="nc"><i>296</i>&nbsp;					return showValid.get();</b>
+<i>297</i>&nbsp;				case MISSING:
+<b class="nc"><i>298</i>&nbsp;					return showMissing.get();</b>
+<i>299</i>&nbsp;				case UNKNOWN:
+<i>300</i>&nbsp;				default:
+<b class="nc"><i>301</i>&nbsp;					return showUnknown.get();</b>
+<i>302</i>&nbsp;				}
+<i>303</i>&nbsp;			}
+<i>304</i>&nbsp;			
+<i>305</i>&nbsp;		}
+<i>306</i>&nbsp;		
+<i>307</i>&nbsp;		
+<b class="nc"><i>308</i>&nbsp;		class TableCopyPasteHandler implements EventHandler&lt;KeyEvent&gt; {</b>
+<i>309</i>&nbsp;
+<b class="nc"><i>310</i>&nbsp;			private KeyCombination copyCombo = new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN);</b>
+<b class="nc"><i>311</i>&nbsp;			private KeyCombination pasteCombo = new KeyCodeCombination(KeyCode.V, KeyCombination.SHORTCUT_DOWN);</b>
+<i>312</i>&nbsp;			
+<i>313</i>&nbsp;			@Override
+<i>314</i>&nbsp;			public void handle(KeyEvent event) {
+<b class="nc"><i>315</i>&nbsp;				if (copyCombo.match(event))</b>
+<b class="nc"><i>316</i>&nbsp;					handleCopy();</b>
+<b class="nc"><i>317</i>&nbsp;				else if (pasteCombo.match(event))</b>
+<b class="nc"><i>318</i>&nbsp;					handlePaste();</b>
+<i>319</i>&nbsp;			}
+<i>320</i>&nbsp;			
+<i>321</i>&nbsp;		}
+<i>322</i>&nbsp;		
+<i>323</i>&nbsp;		boolean handleCopy() {
+<b class="nc"><i>324</i>&nbsp;			StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>325</i>&nbsp;			for (var uriItem : table.getSelectionModel().getSelectedItems()) {</b>
+<b class="nc"><i>326</i>&nbsp;				var uri = uriItem.getURI();</b>
+<b class="nc"><i>327</i>&nbsp;				if (sb.length() &gt; 0)</b>
+<b class="nc"><i>328</i>&nbsp;					sb.append(System.lineSeparator());</b>
+<b class="nc"><i>329</i>&nbsp;				sb.append(uri.toString());</b>
+<b class="nc"><i>330</i>&nbsp;				sb.append(&quot;\t&quot;);</b>
+<b class="nc"><i>331</i>&nbsp;				var uri2 = replacements.get(uriItem);</b>
+<b class="nc"><i>332</i>&nbsp;				if (uri2 != null)</b>
+<b class="nc"><i>333</i>&nbsp;					sb.append(uri2.getURI().toString());</b>
+<b class="nc"><i>334</i>&nbsp;			}</b>
+<b class="nc"><i>335</i>&nbsp;			if (sb.length() == 0)</b>
+<b class="nc"><i>336</i>&nbsp;				return false;</b>
+<b class="nc"><i>337</i>&nbsp;			var content = new ClipboardContent();</b>
+<b class="nc"><i>338</i>&nbsp;			content.putString(sb.toString());</b>
+<b class="nc"><i>339</i>&nbsp;			Clipboard.getSystemClipboard().setContent(content);</b>
+<b class="nc"><i>340</i>&nbsp;			return true;</b>
+<i>341</i>&nbsp;		}
+<i>342</i>&nbsp;		
+<i>343</i>&nbsp;		boolean handlePaste() {
+<b class="nc"><i>344</i>&nbsp;			String s = Clipboard.getSystemClipboard().getString();</b>
+<b class="nc"><i>345</i>&nbsp;			if (s == null)</b>
+<b class="nc"><i>346</i>&nbsp;				return false;</b>
+<i>347</i>&nbsp;			
+<b class="nc"><i>348</i>&nbsp;			try (var scanner = new Scanner(s)) {</b>
+<b class="nc"><i>349</i>&nbsp;				while (scanner.hasNextLine()) {</b>
+<b class="nc"><i>350</i>&nbsp;					var line = scanner.nextLine();</b>
+<b class="nc"><i>351</i>&nbsp;					var split = line.split(&quot;\t&quot;);</b>
+<b class="nc"><i>352</i>&nbsp;					if (split.length &gt; 1) {</b>
+<i>353</i>&nbsp;						try {
+<b class="nc"><i>354</i>&nbsp;							var uri1 = GeneralTools.toURI(split[0]);</b>
+<b class="nc"><i>355</i>&nbsp;							var uri2 = GeneralTools.toURI(split[1]);</b>
+<b class="nc"><i>356</i>&nbsp;							if (uri1 != null &amp;&amp; uri2 != null) {</b>
+<b class="nc"><i>357</i>&nbsp;								var item1 = new UriItem(uri1);</b>
+<b class="nc"><i>358</i>&nbsp;								var item2 = new UriItem(uri2);</b>
+<b class="nc"><i>359</i>&nbsp;								if (table.getItems().contains(item1)) {</b>
+<b class="nc"><i>360</i>&nbsp;									if (item1.equals(item2))</b>
+<b class="nc"><i>361</i>&nbsp;										replacements.remove(item1);</b>
+<i>362</i>&nbsp;									else
+<b class="nc"><i>363</i>&nbsp;										replacements.put(item1, item2);</b>
+<i>364</i>&nbsp;								} else
+<b class="nc"><i>365</i>&nbsp;									logger.warn(&quot;Unable to find URI {} - will be skipped&quot;, item1);</b>
+<i>366</i>&nbsp;							}
+<b class="nc"><i>367</i>&nbsp;						} catch (Exception e) {</b>
+<b class="nc"><i>368</i>&nbsp;							logger.warn(&quot;Unable to parse URIs from {} ({})&quot;, line, e.getLocalizedMessage());</b>
+<b class="nc"><i>369</i>&nbsp;						}</b>
+<i>370</i>&nbsp;					}
+<b class="nc"><i>371</i>&nbsp;				}</b>
+<b class="nc"><i>372</i>&nbsp;			}</b>
+<b class="nc"><i>373</i>&nbsp;			return true;</b>
+<i>374</i>&nbsp;			
+<i>375</i>&nbsp;		}
+<i>376</i>&nbsp;		
+<i>377</i>&nbsp;		
+<i>378</i>&nbsp;		int applyReplacements() throws IOException {
+<b class="nc"><i>379</i>&nbsp;			Map&lt;URI, URI&gt; map = replacements.entrySet().stream().collect(Collectors.toMap(e -&gt; e.getKey().getURI(), e -&gt; e.getValue().getURI()));</b>
+<b class="nc"><i>380</i>&nbsp;			int count = 0;</b>
+<b class="nc"><i>381</i>&nbsp;			for (var entry : project.getImageList()) {</b>
+<b class="nc"><i>382</i>&nbsp;				if (entry.updateServerURIs(map))</b>
+<b class="nc"><i>383</i>&nbsp;					count++;</b>
+<b class="nc"><i>384</i>&nbsp;			}</b>
+<b class="nc"><i>385</i>&nbsp;			return count;</b>
+<i>386</i>&nbsp;		}
+<i>387</i>&nbsp;		
+<i>388</i>&nbsp;		/**
+<i>389</i>&nbsp;		 * Returns true if the dialog was not cancelled (regardless of whether changes were made).
+<i>390</i>&nbsp;		 * @return
+<i>391</i>&nbsp;		 */
+<i>392</i>&nbsp;		boolean showDialog() {
+<i>393</i>&nbsp;			
+<b class="nc"><i>394</i>&nbsp;			Dialog&lt;ButtonType&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc"><i>395</i>&nbsp;			dialog.setHeaderText(&quot;Images may have been deleted or moved!\nFix broken paths here by double-clicking on red entries and/or accepting QuPath&#39;s suggestions.&quot;);</b>
+<b class="nc"><i>396</i>&nbsp;			dialog.getDialogPane().getButtonTypes().setAll(ButtonType.YES, ButtonType.NO, ButtonType.CANCEL);</b>
+<b class="nc"><i>397</i>&nbsp;			((Button)dialog.getDialogPane().lookupButton(ButtonType.YES)).setText(&quot;Apply changes&quot;);</b>
+<b class="nc"><i>398</i>&nbsp;			((Button)dialog.getDialogPane().lookupButton(ButtonType.NO)).setText(&quot;Ignore&quot;);</b>
+<b class="nc"><i>399</i>&nbsp;			dialog.getDialogPane().setContent(pane);</b>
+<b class="nc"><i>400</i>&nbsp;			dialog.setTitle(&quot;Update URIs&quot;);</b>
+<b class="nc"><i>401</i>&nbsp;			dialog.setResizable(true);</b>
+<b class="nc"><i>402</i>&nbsp;			var btn = dialog.showAndWait().orElseGet(() -&gt; ButtonType.CANCEL);</b>
+<b class="nc"><i>403</i>&nbsp;			if (btn.equals(ButtonType.CANCEL))</b>
+<b class="nc"><i>404</i>&nbsp;				return false;</b>
+<i>405</i>&nbsp;			
+<b class="nc"><i>406</i>&nbsp;			if (btn.equals(ButtonType.NO))</b>
+<b class="nc"><i>407</i>&nbsp;				return true;</b>
+<i>408</i>&nbsp;			
+<i>409</i>&nbsp;//			if (DisplayHelpers.showConfirmDialog(&quot;Update URIs&quot;, pane)) {
+<i>410</i>&nbsp;				try {
+<b class="nc"><i>411</i>&nbsp;					int n = applyReplacements();</b>
+<b class="nc"><i>412</i>&nbsp;					if (n &lt;= 0) {</b>
+<b class="nc"><i>413</i>&nbsp;						Dialogs.showInfoNotification(&quot;Update URIs&quot;, &quot;No URIs updated!&quot;);</b>
+<b class="nc"><i>414</i>&nbsp;						return true;</b>
+<i>415</i>&nbsp;					}
+<b class="nc"><i>416</i>&nbsp;					if (n == 1) </b>
+<b class="nc"><i>417</i>&nbsp;						Dialogs.showInfoNotification(&quot;Update URIs&quot;, &quot;URIs updated for 1 image&quot;);</b>
+<b class="nc"><i>418</i>&nbsp;					else if (n &gt; 1)</b>
+<b class="nc"><i>419</i>&nbsp;						Dialogs.showInfoNotification(&quot;Update URIs&quot;, &quot;URIs updated for &quot; + n + &quot; images&quot;);</b>
+<b class="nc"><i>420</i>&nbsp;					project.syncChanges();</b>
+<b class="nc"><i>421</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>422</i>&nbsp;					Dialogs.showErrorMessage(&quot;Update URIs&quot;, e);</b>
+<b class="nc"><i>423</i>&nbsp;				}</b>
+<i>424</i>&nbsp;//			}
+<b class="nc"><i>425</i>&nbsp;			return true;</b>
+<i>426</i>&nbsp;		}
+<i>427</i>&nbsp;		
+<i>428</i>&nbsp;		
+<i>429</i>&nbsp;		
+<i>430</i>&nbsp;		class UriCell extends TableCell&lt;UriItem, UriItem&gt; implements EventHandler&lt;MouseEvent&gt; {
+<i>431</i>&nbsp;			
+<b class="nc"><i>432</i>&nbsp;			private Tooltip tooltip = new Tooltip();</b>
+<i>433</i>&nbsp;
+<b class="nc"><i>434</i>&nbsp;			UriCell() {</b>
+<b class="nc"><i>435</i>&nbsp;				super();</b>
+<b class="nc"><i>436</i>&nbsp;				setTextOverrun(OverrunStyle.LEADING_ELLIPSIS);</b>
+<b class="nc"><i>437</i>&nbsp;				addEventHandler(MouseEvent.MOUSE_CLICKED, this);</b>
+<i>438</i>&nbsp;			}
+<i>439</i>&nbsp;
+<i>440</i>&nbsp;			@Override
+<i>441</i>&nbsp;			protected void updateItem(UriItem item, boolean empty) {
+<b class="nc"><i>442</i>&nbsp;				super.updateItem(item, empty);</b>
+<b class="nc"><i>443</i>&nbsp;				if (item == null || empty) {</b>
+<b class="nc"><i>444</i>&nbsp;					setTooltip(null);</b>
+<b class="nc"><i>445</i>&nbsp;					setText(&quot;&quot;);</b>
+<i>446</i>&nbsp;					return;
+<i>447</i>&nbsp;				}
+<b class="nc"><i>448</i>&nbsp;				setText(item.toString());</b>
+<b class="nc"><i>449</i>&nbsp;				tooltip.setText(item.toString());</b>
+<b class="nc"><i>450</i>&nbsp;				setTooltip(tooltip);</b>
+<i>451</i>&nbsp;				
+<b class="nc"><i>452</i>&nbsp;				switch (item.getStatus()) {</b>
+<i>453</i>&nbsp;				case EXISTS:
+<b class="nc"><i>454</i>&nbsp;					setStyle(null);</b>
+<b class="nc"><i>455</i>&nbsp;					break;</b>
+<i>456</i>&nbsp;				case MISSING:
+<b class="nc"><i>457</i>&nbsp;					setStyle(&quot;-fx-text-fill: red&quot;);</b>
+<b class="nc"><i>458</i>&nbsp;					break;</b>
+<i>459</i>&nbsp;				case UNKNOWN:
+<i>460</i>&nbsp;				default:
+<b class="nc"><i>461</i>&nbsp;					setStyle(&quot;-fx-text-fill: gray&quot;);</b>
+<i>462</i>&nbsp;				}
+<i>463</i>&nbsp;			}
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;			@Override
+<i>466</i>&nbsp;			public void handle(MouseEvent event) {
+<b class="nc"><i>467</i>&nbsp;				if (event.getClickCount() != 2)</b>
+<i>468</i>&nbsp;					return;
+<b class="nc"><i>469</i>&nbsp;				var row = getTableRow();</b>
+<b class="nc"><i>470</i>&nbsp;				var uriOriginal = row.getItem();</b>
+<b class="nc"><i>471</i>&nbsp;				if (uriOriginal == null)</b>
+<i>472</i>&nbsp;					return;
+<b class="nc"><i>473</i>&nbsp;				var uriReplacement = replacements.get(uriOriginal);</b>
+<b class="nc"><i>474</i>&nbsp;				var defaultPath = uriReplacement == null ? uriOriginal.getURI().toString() : uriReplacement.getURI().toString();</b>
+<b class="nc"><i>475</i>&nbsp;				String path = Dialogs.getChooser(GuiTools.getWindow(this)).promptForFilePathOrURL(&quot;Change URI&quot;, defaultPath, null, null);</b>
+<b class="nc"><i>476</i>&nbsp;				if (path != null &amp;&amp; !path.isBlank()) {</b>
+<b class="nc"><i>477</i>&nbsp;					URI uri = null;</b>
+<i>478</i>&nbsp;					try {
+<b class="nc"><i>479</i>&nbsp;						uri = GeneralTools.toURI(path);</b>
+<b class="nc"><i>480</i>&nbsp;					} catch (URISyntaxException e) {</b>
+<b class="nc"><i>481</i>&nbsp;						logger.error(&quot;Error parsing URI&quot;, e);</b>
+<b class="nc"><i>482</i>&nbsp;					}</b>
+<b class="nc"><i>483</i>&nbsp;					if (uri == null) {</b>
+<b class="nc"><i>484</i>&nbsp;						Dialogs.showErrorMessage(&quot;Change URI&quot;, &quot;Unable to parse URI from &quot; + path);</b>
+<i>485</i>&nbsp;					} else
+<b class="nc"><i>486</i>&nbsp;						replacements.put(uriOriginal, new UriItem(uri));</b>
+<b class="nc"><i>487</i>&nbsp;				} else</b>
+<b class="nc"><i>488</i>&nbsp;					replacements.remove(uriOriginal);</b>
+<i>489</i>&nbsp;			}
+<i>490</i>&nbsp;
+<i>491</i>&nbsp;		}
+<i>492</i>&nbsp;		
+<i>493</i>&nbsp;		
+<i>494</i>&nbsp;	}
+<i>495</i>&nbsp;	
+<i>496</i>&nbsp;	
+<b class="nc"><i>497</i>&nbsp;	static enum UriStatus { </b>
+<b class="nc"><i>498</i>&nbsp;		EXISTS, MISSING, UNKNOWN;</b>
+<i>499</i>&nbsp;	}
+<i>500</i>&nbsp;	
+<i>501</i>&nbsp;	static class UriItem {
+<i>502</i>&nbsp;		
+<i>503</i>&nbsp;				private URI uri;
+<i>504</i>&nbsp;		private Path path;
+<i>505</i>&nbsp;		
+<b class="nc"><i>506</i>&nbsp;		UriItem(URI uri) {</b>
+<b class="nc"><i>507</i>&nbsp;			this.uri = uri;</b>
+<b class="nc"><i>508</i>&nbsp;			this.path = GeneralTools.toPath(uri);</b>
+<i>509</i>&nbsp;		}
+<i>510</i>&nbsp;		
+<i>511</i>&nbsp;		UriStatus getStatus() {
+<b class="nc"><i>512</i>&nbsp;			if (path == null)</b>
+<b class="nc"><i>513</i>&nbsp;				return UriStatus.UNKNOWN;</b>
+<b class="nc"><i>514</i>&nbsp;			if (Files.exists(path))</b>
+<b class="nc"><i>515</i>&nbsp;				return UriStatus.EXISTS;</b>
+<b class="nc"><i>516</i>&nbsp;			return UriStatus.MISSING;</b>
+<i>517</i>&nbsp;		}
+<i>518</i>&nbsp;		
+<i>519</i>&nbsp;		URI getURI() {
+<b class="nc"><i>520</i>&nbsp;			return uri;</b>
+<i>521</i>&nbsp;		}
+<i>522</i>&nbsp;		
+<i>523</i>&nbsp;		Path getPath() {
+<b class="nc"><i>524</i>&nbsp;			return path;</b>
+<i>525</i>&nbsp;		}
+<i>526</i>&nbsp;		
+<i>527</i>&nbsp;		@Override
+<i>528</i>&nbsp;		public String toString() {
+<b class="nc"><i>529</i>&nbsp;			if (path == null)</b>
+<b class="nc"><i>530</i>&nbsp;				return uri.toString();</b>
+<b class="nc"><i>531</i>&nbsp;			return path.toString();</b>
+<i>532</i>&nbsp;		}
+<i>533</i>&nbsp;		
+<i>534</i>&nbsp;		@Override
+<i>535</i>&nbsp;		public int hashCode() {
+<b class="nc"><i>536</i>&nbsp;			final int prime = 31;</b>
+<b class="nc"><i>537</i>&nbsp;			int result = 1;</b>
+<b class="nc"><i>538</i>&nbsp;			result = prime * result + ((path == null) ? 0 : path.hashCode());</b>
+<b class="nc"><i>539</i>&nbsp;			result = prime * result + ((uri == null) ? 0 : uri.hashCode());</b>
+<b class="nc"><i>540</i>&nbsp;			return result;</b>
+<i>541</i>&nbsp;		}
+<i>542</i>&nbsp;
+<i>543</i>&nbsp;		@Override
+<i>544</i>&nbsp;		public boolean equals(Object obj) {
+<b class="nc"><i>545</i>&nbsp;			if (this == obj)</b>
+<b class="nc"><i>546</i>&nbsp;				return true;</b>
+<b class="nc"><i>547</i>&nbsp;			if (obj == null)</b>
+<b class="nc"><i>548</i>&nbsp;				return false;</b>
+<b class="nc"><i>549</i>&nbsp;			if (getClass() != obj.getClass())</b>
+<b class="nc"><i>550</i>&nbsp;				return false;</b>
+<b class="nc"><i>551</i>&nbsp;			UriItem other = (UriItem) obj;</b>
+<b class="nc"><i>552</i>&nbsp;			if (path == null) {</b>
+<b class="nc"><i>553</i>&nbsp;				if (other.path != null)</b>
+<b class="nc"><i>554</i>&nbsp;					return false;</b>
+<b class="nc"><i>555</i>&nbsp;			} else if (!path.equals(other.path))</b>
+<b class="nc"><i>556</i>&nbsp;				return false;</b>
+<b class="nc"><i>557</i>&nbsp;			if (uri == null) {</b>
+<b class="nc"><i>558</i>&nbsp;				if (other.uri != null)</b>
+<b class="nc"><i>559</i>&nbsp;					return false;</b>
+<b class="nc"><i>560</i>&nbsp;			} else if (!uri.equals(other.uri))</b>
+<b class="nc"><i>561</i>&nbsp;				return false;</b>
+<b class="nc"><i>562</i>&nbsp;			return true;</b>
+<i>563</i>&nbsp;		}
+<i>564</i>&nbsp;		
+<i>565</i>&nbsp;	}
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,447 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TensorFlowOp</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.tensorflow</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TensorFlowOp (qupath.tensorflow)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TensorFlowOp</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 40)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TensorFlowOp$TensorFlowBundle</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 22)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 119)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.tensorflow;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.io.File;
+<i>25</i>&nbsp;import java.util.ArrayList;
+<i>26</i>&nbsp;import java.util.Arrays;
+<i>27</i>&nbsp;import java.util.HashMap;
+<i>28</i>&nbsp;import java.util.LinkedHashMap;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;import java.util.Map;
+<i>31</i>&nbsp;import java.util.Objects;
+<i>32</i>&nbsp;import java.util.stream.Collectors;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.bytedeco.javacpp.BytePointer;
+<i>35</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>36</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>37</i>&nbsp;import org.bytedeco.tensorflow.GraphDef;
+<i>38</i>&nbsp;import org.bytedeco.tensorflow.MetaGraphDef;
+<i>39</i>&nbsp;import org.bytedeco.tensorflow.NodeDef;
+<i>40</i>&nbsp;import org.bytedeco.tensorflow.RunOptions;
+<i>41</i>&nbsp;import org.bytedeco.tensorflow.SavedModelBundle;
+<i>42</i>&nbsp;import org.bytedeco.tensorflow.SessionOptions;
+<i>43</i>&nbsp;import org.bytedeco.tensorflow.SignatureDef;
+<i>44</i>&nbsp;import org.bytedeco.tensorflow.StringSignatureDefMap;
+<i>45</i>&nbsp;import org.bytedeco.tensorflow.StringTensorPairVector;
+<i>46</i>&nbsp;import org.bytedeco.tensorflow.StringUnorderedSet;
+<i>47</i>&nbsp;import org.bytedeco.tensorflow.StringVector;
+<i>48</i>&nbsp;import org.bytedeco.tensorflow.Tensor;
+<i>49</i>&nbsp;import org.bytedeco.tensorflow.TensorInfo;
+<i>50</i>&nbsp;import org.bytedeco.tensorflow.TensorShapeProto;
+<i>51</i>&nbsp;import org.bytedeco.tensorflow.TensorVector;
+<i>52</i>&nbsp;import org.bytedeco.tensorflow.global.tensorflow;
+<i>53</i>&nbsp;import org.slf4j.Logger;
+<i>54</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>57</i>&nbsp;import qupath.lib.regions.Padding;
+<i>58</i>&nbsp;import qupath.opencv.ops.ImageOp;
+<i>59</i>&nbsp;import qupath.opencv.ops.ImageOps.PaddedOp;
+<i>60</i>&nbsp;import qupath.opencv.tools.OpenCVTools;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;/**
+<i>63</i>&nbsp; * An {@link ImageOp} that runs a TensorFlow model for prediction.
+<i>64</i>&nbsp; * 
+<i>65</i>&nbsp; * @author Pete Bankhead
+<i>66</i>&nbsp; */
+<i>67</i>&nbsp;public class TensorFlowOp extends PaddedOp {
+<i>68</i>&nbsp;	
+<b class="nc"><i>69</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(TensorFlowOp.class);</b>
+<i>70</i>&nbsp;	
+<i>71</i>&nbsp;	private String modelPath;
+<b class="nc"><i>72</i>&nbsp;	private int tileWidth = 512;</b>
+<b class="nc"><i>73</i>&nbsp;	private int tileHeight = 512;</b>
+<i>74</i>&nbsp;	
+<i>75</i>&nbsp;	private Padding padding;
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	// Identifier for the requested output node - may be null to use the default output
+<b class="nc"><i>78</i>&nbsp;	private String outputName = null;</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	private transient TensorFlowBundle bundle;
+<i>81</i>&nbsp;	private transient Exception exception;
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;	TensorFlowOp(String modelPath, int tileWidth, int tileHeight, Padding padding, String outputName) {
+<b class="nc"><i>84</i>&nbsp;		super();</b>
+<b class="nc"><i>85</i>&nbsp;		logger.debug(&quot;Creating op from {}&quot;, modelPath);</b>
+<b class="nc"><i>86</i>&nbsp;		this.modelPath = modelPath;</b>
+<b class="nc"><i>87</i>&nbsp;		this.outputName = outputName;</b>
+<b class="nc"><i>88</i>&nbsp;		this.tileWidth = tileWidth;</b>
+<b class="nc"><i>89</i>&nbsp;		this.tileHeight = tileHeight;</b>
+<b class="nc"><i>90</i>&nbsp;		if (padding == null)</b>
+<b class="nc"><i>91</i>&nbsp;			this.padding = Padding.empty();</b>
+<i>92</i>&nbsp;		else
+<b class="nc"><i>93</i>&nbsp;			this.padding = padding;</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	private TensorFlowBundle getBundle() {
+<b class="nc"><i>97</i>&nbsp;		if (bundle == null &amp;&amp; exception == null) {</b>
+<i>98</i>&nbsp;			try {
+<b class="nc"><i>99</i>&nbsp;				bundle = loadBundle(modelPath);</b>
+<b class="nc"><i>100</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>101</i>&nbsp;				logger.error(&quot;Unable to load bundle: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>102</i>&nbsp;				this.exception = e;</b>
+<b class="nc"><i>103</i>&nbsp;			}</b>
+<i>104</i>&nbsp;		}
+<b class="nc"><i>105</i>&nbsp;		return bundle;</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;	// Not needed
+<i>109</i>&nbsp;	@Override
+<i>110</i>&nbsp;	protected Padding calculatePadding() {
+<b class="nc"><i>111</i>&nbsp;		return padding;</b>
+<i>112</i>&nbsp;	}
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;	@Override
+<i>115</i>&nbsp;	protected Mat transformPadded(Mat input) {
+<b class="nc"><i>116</i>&nbsp;		var bundle = getBundle();</b>
+<b class="nc"><i>117</i>&nbsp;		if (exception != null)</b>
+<b class="nc"><i>118</i>&nbsp;			throw new RuntimeException(exception);</b>
+<b class="nc"><i>119</i>&nbsp;		if (tileWidth &gt; 0 &amp;&amp; tileHeight &gt; 0)</b>
+<b class="nc"><i>120</i>&nbsp;			return OpenCVTools.applyTiled(m -&gt; bundle.run(m, outputName), input, tileWidth, tileHeight, opencv_core.BORDER_REFLECT);</b>
+<i>121</i>&nbsp;		else
+<b class="nc"><i>122</i>&nbsp;			return bundle.run(input, outputName);</b>
+<i>123</i>&nbsp;	}
+<i>124</i>&nbsp;	
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	@Override
+<i>127</i>&nbsp;	public Padding getPadding() {
+<b class="nc"><i>128</i>&nbsp;        return Padding.empty();</b>
+<i>129</i>&nbsp;    }
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    @Override
+<i>132</i>&nbsp;   public List&lt;ImageChannel&gt; getChannels(List&lt;ImageChannel&gt; channels) {
+<b class="nc"><i>133</i>&nbsp;        var names = new ArrayList&lt;String&gt;();</b>
+<b class="nc"><i>134</i>&nbsp;        var name = getBundle().outputName;</b>
+<b class="nc"><i>135</i>&nbsp;        var bundle = getBundle();</b>
+<b class="nc"><i>136</i>&nbsp;        if (outputName != null &amp;&amp; !Objects.equals(outputName, bundle.outputName))</b>
+<b class="nc"><i>137</i>&nbsp;        	logger.warn(&quot;Non-default output node, predicted channel numbers may be incorrect&quot;);</b>
+<b class="nc"><i>138</i>&nbsp;        var outputShape = bundle.outputShape;</b>
+<b class="nc"><i>139</i>&nbsp;        var nChannels = outputShape[outputShape.length-1];</b>
+<b class="nc"><i>140</i>&nbsp;        for (int i = 0; i &lt; nChannels; i++)</b>
+<b class="nc"><i>141</i>&nbsp;            names.add(name + &quot; &quot; + i);</b>
+<b class="nc"><i>142</i>&nbsp;        return ImageChannel.getChannelList(names.toArray(String[]::new));</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;    
+<i>145</i>&nbsp;    
+<i>146</i>&nbsp;    
+<i>147</i>&nbsp;    
+<b class="nc"><i>148</i>&nbsp;    private static Map&lt;String, TensorFlowBundle&gt; cachedBundles = new HashMap&lt;&gt;();</b>
+<i>149</i>&nbsp;    
+<i>150</i>&nbsp;    private static TensorFlowBundle loadBundle(String path) {
+<b class="nc"><i>151</i>&nbsp;    	return cachedBundles.computeIfAbsent(path, p -&gt; new TensorFlowBundle(p));</b>
+<i>152</i>&nbsp;    }
+<i>153</i>&nbsp;    
+<i>154</i>&nbsp;    
+<i>155</i>&nbsp;    private static class TensorFlowBundle {
+<i>156</i>&nbsp;    	
+<b class="nc"><i>157</i>&nbsp;    	private final static Logger logger = LoggerFactory.getLogger(TensorFlowBundle.class);</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;    	private String pathModel;
+<i>160</i>&nbsp;        private SavedModelBundle bundle;
+<i>161</i>&nbsp;        
+<i>162</i>&nbsp;        private String inputName;
+<i>163</i>&nbsp;        private String outputName;
+<i>164</i>&nbsp;        private long[] inputShape;
+<i>165</i>&nbsp;    	private long[] outputShape;
+<i>166</i>&nbsp;    	
+<i>167</i>&nbsp;    	private transient Map&lt;String, NodeDef&gt; nodeDefs;
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;    	private TensorFlowBundle(String pathModel) {</b>
+<i>170</i>&nbsp;    		
+<b class="nc"><i>171</i>&nbsp;    		this.pathModel = pathModel;</b>
+<i>172</i>&nbsp;    		
+<b class="nc"><i>173</i>&nbsp;    		var dir = new File(pathModel);</b>
+<b class="nc"><i>174</i>&nbsp;    		if (!dir.exists()) {</b>
+<b class="nc"><i>175</i>&nbsp;    			throw new IllegalArgumentException(pathModel + &quot; does not exist!&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;    		} else if (!dir.isDirectory() || !tensorflow.MaybeSavedModelDirectory(pathModel)) {</b>
+<b class="nc"><i>177</i>&nbsp;    			throw new IllegalArgumentException(pathModel + &quot; is not a valid TensorFlow model directory!&quot;);    			</b>
+<i>178</i>&nbsp;    		}
+<i>179</i>&nbsp;    		
+<i>180</i>&nbsp;            // If this fails, are both the main jars and the platform-specific jars present - for TensorFlow and MKL-DNN?
+<b class="nc"><i>181</i>&nbsp;            var sessionOptions = new SessionOptions();</b>
+<i>182</i>&nbsp;            
+<i>183</i>&nbsp;//            var runOptions = new RunOptions();
+<i>184</i>&nbsp;            
+<b class="nc"><i>185</i>&nbsp;            var runOptions = RunOptions.default_instance();</b>
+<i>186</i>&nbsp;            
+<i>187</i>&nbsp;            
+<b class="nc"><i>188</i>&nbsp;            var tags = new StringUnorderedSet();</b>
+<b class="nc"><i>189</i>&nbsp;            tags.insert(tensorflow.kSavedModelTagServe());</b>
+<i>190</i>&nbsp;//            tags.insert(tensorflow.kSavedModelTagTrain());
+<b class="nc"><i>191</i>&nbsp;            bundle = new SavedModelBundle();</b>
+<i>192</i>&nbsp;            
+<b class="nc"><i>193</i>&nbsp;            var status = tensorflow.LoadSavedModel(</b>
+<i>194</i>&nbsp;                    sessionOptions,
+<i>195</i>&nbsp;                    runOptions,
+<i>196</i>&nbsp;                    pathModel,
+<i>197</i>&nbsp;                    tags,
+<i>198</i>&nbsp;                    bundle
+<i>199</i>&nbsp;            );
+<i>200</i>&nbsp;                        
+<b class="nc"><i>201</i>&nbsp;            if (!status.ok()) {</b>
+<b class="nc"><i>202</i>&nbsp;            	throw new RuntimeException(status.error_message().getString());</b>
+<i>203</i>&nbsp;            }
+<i>204</i>&nbsp;            
+<b class="nc"><i>205</i>&nbsp;            MetaGraphDef graphDef = bundle.meta_graph_def();</b>
+<b class="nc"><i>206</i>&nbsp;            logger.trace(&quot;Has GraphDef: {}&quot;, graphDef.has_graph_def());</b>
+<b class="nc"><i>207</i>&nbsp;            StringSignatureDefMap sigdefMap = graphDef.signature_def();</b>
+<i>208</i>&nbsp;            
+<i>209</i>&nbsp;            
+<b class="nc"><i>210</i>&nbsp;            logger.debug(&quot;StringSignatureDefMap size: {}&quot;, sigdefMap.size());</b>
+<b class="nc"><i>211</i>&nbsp;            SignatureDef map = sigdefMap.get(sigdefMap.begin().first());</b>
+<i>212</i>&nbsp;            
+<b class="nc"><i>213</i>&nbsp;            long nInputs = map.inputs().size();</b>
+<b class="nc"><i>214</i>&nbsp;            if (nInputs != 1) {</b>
+<b class="nc"><i>215</i>&nbsp;            	logger.warn(&quot;Only one input currently supported, but model supports {}&quot;, nInputs);</b>
+<i>216</i>&nbsp;            }
+<b class="nc"><i>217</i>&nbsp;            long nOutputs = map.outputs().size();</b>
+<b class="nc"><i>218</i>&nbsp;            if (nOutputs != 1) {</b>
+<b class="nc"><i>219</i>&nbsp;            	logger.warn(&quot;Only one output currently supported, but model supports {}&quot;, nOutputs);</b>
+<i>220</i>&nbsp;            }
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;            // Get input &amp; output names and shapes
+<b class="nc"><i>223</i>&nbsp;            TensorInfo input = map.inputs().get(map.inputs().begin().first());</b>
+<b class="nc"><i>224</i>&nbsp;            inputName = input.name().getString();</b>
+<b class="nc"><i>225</i>&nbsp;            inputShape = tensorShape(input.tensor_shape());</b>
+<i>226</i>&nbsp;            
+<b class="nc"><i>227</i>&nbsp;            TensorInfo output = map.outputs().get(map.outputs().begin().first());</b>
+<b class="nc"><i>228</i>&nbsp;            outputName = output.name().getString();</b>
+<b class="nc"><i>229</i>&nbsp;            outputShape = tensorShape(output.tensor_shape());</b>
+<i>230</i>&nbsp;            
+<b class="nc"><i>231</i>&nbsp;            logger.debug(&quot;Model input: {} ({})&quot;, inputName, arrayToString(inputShape));</b>
+<b class="nc"><i>232</i>&nbsp;        	logger.debug(&quot;Model output: {} ({})&quot;, outputName, arrayToString(outputShape));</b>
+<i>233</i>&nbsp;        	
+<b class="nc"><i>234</i>&nbsp;        	logger.info(&quot;Loaded {}&quot;, this);</b>
+<i>235</i>&nbsp;        }
+<i>236</i>&nbsp;    	
+<i>237</i>&nbsp;    	private static String arrayToString(long[] shape) {
+<b class="nc"><i>238</i>&nbsp;    		return Arrays.stream(shape).mapToObj(l -&gt; Long.toString(l)).collect(Collectors.joining(&quot;,&quot;));</b>
+<i>239</i>&nbsp;    	}
+<i>240</i>&nbsp;        
+<i>241</i>&nbsp;    	private static long[] tensorShape(TensorShapeProto shape) {
+<b class="nc"><i>242</i>&nbsp;        	long[] dims = new long[shape.dim_size()];</b>
+<b class="nc"><i>243</i>&nbsp;        	for (int i = 0; i &lt; dims.length; i++) {</b>
+<b class="nc"><i>244</i>&nbsp;        		dims[i] = shape.dim(i).size();</b>
+<i>245</i>&nbsp;        	}
+<b class="nc"><i>246</i>&nbsp;        	return dims;</b>
+<i>247</i>&nbsp;        }
+<i>248</i>&nbsp;    	
+<b class="nc"><i>249</i>&nbsp;    	private static BytePointer SHAPE = new BytePointer(&quot;shape&quot;);</b>
+<i>250</i>&nbsp;    	
+<i>251</i>&nbsp;    	// Seems to do something useful, but mostly untested
+<i>252</i>&nbsp;    	private static long[] nodeDefShape(NodeDef nodeDef) {
+<b class="nc"><i>253</i>&nbsp;    		if (nodeDef == null)</b>
+<b class="nc"><i>254</i>&nbsp;    			return null;</b>
+<b class="nc"><i>255</i>&nbsp;    		var shape = nodeDef.attr().get(SHAPE);</b>
+<b class="nc"><i>256</i>&nbsp;    		if (shape.has_shape())</b>
+<b class="nc"><i>257</i>&nbsp;    			return tensorShape(shape.shape());</b>
+<b class="nc"><i>258</i>&nbsp;        	return null;</b>
+<i>259</i>&nbsp;        }
+<i>260</i>&nbsp;        
+<i>261</i>&nbsp;    	/**
+<i>262</i>&nbsp;    	 * Get the path to the model (a directory).
+<i>263</i>&nbsp;    	 * @return
+<i>264</i>&nbsp;    	 */
+<i>265</i>&nbsp;    	public String getModelPath() {
+<b class="nc"><i>266</i>&nbsp;    		return pathModel;</b>
+<i>267</i>&nbsp;    	}
+<i>268</i>&nbsp;    	
+<i>269</i>&nbsp;    	private String getNodeSummary() {
+<b class="nc"><i>270</i>&nbsp;    		return getNodeDefs().values().stream().map(n -&gt; tensorflow.SummarizeNodeDef(n).getString()).collect(Collectors.joining(System.lineSeparator())); </b>
+<i>271</i>&nbsp;    	}
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;    	private List&lt;String&gt; getNodeNames() {
+<b class="nc"><i>274</i>&nbsp;    		return new ArrayList&lt;&gt;(getNodeDefs().keySet());</b>
+<i>275</i>&nbsp;    	}
+<i>276</i>&nbsp;    	
+<i>277</i>&nbsp;    	private Map&lt;String, NodeDef&gt; getNodeDefs() {
+<b class="nc"><i>278</i>&nbsp;    		if (nodeDefs == null) {</b>
+<b class="nc"><i>279</i>&nbsp;	    		nodeDefs = readNodeDefs();</b>
+<i>280</i>&nbsp;    		}
+<b class="nc"><i>281</i>&nbsp;            return nodeDefs;</b>
+<i>282</i>&nbsp;    	}
+<i>283</i>&nbsp;    	
+<i>284</i>&nbsp;    	private synchronized Map&lt;String, NodeDef&gt; readNodeDefs() {
+<b class="nc"><i>285</i>&nbsp;    		GraphDef def = bundle.meta_graph_def().graph_def();</b>
+<b class="nc"><i>286</i>&nbsp;   			Map&lt;String, NodeDef&gt; nodes = new LinkedHashMap&lt;&gt;();</b>
+<b class="nc"><i>287</i>&nbsp;            for (int i = 0; i &lt; def.node_size(); i++) {</b>
+<b class="nc"><i>288</i>&nbsp;            	var node = def.node(i);</b>
+<b class="nc"><i>289</i>&nbsp;            	var name = node.name().getString();</b>
+<b class="nc"><i>290</i>&nbsp;            	nodes.put(name, node);</b>
+<i>291</i>&nbsp;            }
+<b class="nc"><i>292</i>&nbsp;            return nodes;</b>
+<i>293</i>&nbsp;    	}
+<i>294</i>&nbsp;
+<i>295</i>&nbsp;        private Mat run(Mat mat, String outputName) {
+<b class="nc"><i>296</i>&nbsp;            var tensor = TensorFlowTools.convertToTensor(mat);</b>
+<i>297</i>&nbsp;
+<b class="nc"><i>298</i>&nbsp;            var outputs = new TensorVector();</b>
+<b class="nc"><i>299</i>&nbsp;            var inputs = new StringTensorPairVector(</b>
+<i>300</i>&nbsp;                    new String[] {inputName},
+<i>301</i>&nbsp;                    new Tensor[] {tensor}
+<i>302</i>&nbsp;            );
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;            var outputNames = new StringVector(outputName == null ? this.outputName : outputName);</b>
+<b class="nc"><i>305</i>&nbsp;            var targetNodeNames = new StringVector();</b>
+<b class="nc"><i>306</i>&nbsp;            var status = bundle.session().Run(</b>
+<i>307</i>&nbsp;                    inputs,
+<i>308</i>&nbsp;                    outputNames,
+<i>309</i>&nbsp;                    targetNodeNames,
+<i>310</i>&nbsp;                    outputs
+<i>311</i>&nbsp;            );
+<i>312</i>&nbsp;            
+<b class="nc"><i>313</i>&nbsp;            if (!status.ok()) {</b>
+<b class="nc"><i>314</i>&nbsp;            	throw new RuntimeException(status.error_message().getString());</b>
+<i>315</i>&nbsp;            }
+<i>316</i>&nbsp;            
+<b class="nc"><i>317</i>&nbsp;            logger.debug(&quot;Number of outputs: {}&quot;, outputs.size());</b>
+<b class="nc"><i>318</i>&nbsp;            var outputTensor = outputs.get(0L);</b>
+<b class="nc"><i>319</i>&nbsp;            var output = TensorFlowTools.convertToMat(outputTensor);</b>
+<i>320</i>&nbsp;            
+<b class="nc"><i>321</i>&nbsp;            inputs.close();</b>
+<b class="nc"><i>322</i>&nbsp;            outputNames.close();</b>
+<b class="nc"><i>323</i>&nbsp;            targetNodeNames.close();</b>
+<b class="nc"><i>324</i>&nbsp;            outputTensor.close();</b>
+<i>325</i>&nbsp;            
+<b class="nc"><i>326</i>&nbsp;            return output;</b>
+<i>327</i>&nbsp;        }
+<i>328</i>&nbsp;        
+<i>329</i>&nbsp;        @Override
+<i>330</i>&nbsp;        public String toString() {
+<b class="nc"><i>331</i>&nbsp;        	return String.format(&quot;TensorFlow bundle: %s, (input%s [%s], output=%s [%s])&quot;,</b>
+<b class="nc"><i>332</i>&nbsp;        			pathModel, inputName, arrayToString(inputShape), outputName, arrayToString(outputShape));</b>
+<i>333</i>&nbsp;        }
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;    }
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;	
+<i>338</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,757 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SingleMeasurementClassificationCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SingleMeasurementClassificationCommand (qupath.process.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SingleMeasurementClassificationCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (6/ 15)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SingleMeasurementClassificationCommand$ClassificationRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">SingleMeasurementClassificationCommand$SingleMeasurementPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 38)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 257)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    4.5%
+  </span>
+  <span class="absValue">
+    (2/ 44)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.1%
+  </span>
+  <span class="absValue">
+    (6/ 281)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.util.ArrayList;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.HashMap;
+<i>29</i>&nbsp;import java.util.Map;
+<i>30</i>&nbsp;import java.util.WeakHashMap;
+<i>31</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>32</i>&nbsp;import java.util.concurrent.Executors;
+<i>33</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>34</i>&nbsp;import java.util.function.Predicate;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>41</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>42</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>43</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>44</i>&nbsp;import javafx.collections.FXCollections;
+<i>45</i>&nbsp;import javafx.collections.ObservableList;
+<i>46</i>&nbsp;import javafx.collections.transformation.FilteredList;
+<i>47</i>&nbsp;import javafx.scene.control.Button;
+<i>48</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>49</i>&nbsp;import javafx.scene.control.CheckBox;
+<i>50</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>51</i>&nbsp;import javafx.scene.control.Dialog;
+<i>52</i>&nbsp;import javafx.scene.control.Label;
+<i>53</i>&nbsp;import javafx.scene.control.Slider;
+<i>54</i>&nbsp;import javafx.scene.control.TextField;
+<i>55</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>56</i>&nbsp;import javafx.scene.paint.Color;
+<i>57</i>&nbsp;import javafx.stage.Modality;
+<i>58</i>&nbsp;import qupath.lib.analysis.stats.Histogram;
+<i>59</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>60</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifier;
+<i>61</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifiers.ClassifyByMeasurementBuilder;
+<i>62</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>63</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>64</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>65</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>66</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX;
+<i>67</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX.ThresholdedChartWrapper;
+<i>68</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>69</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>70</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>71</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>72</i>&nbsp;import qupath.lib.images.ImageData;
+<i>73</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>74</i>&nbsp;import qupath.lib.objects.PathObjectFilter;
+<i>75</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>76</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>77</i>&nbsp;import qupath.process.gui.ml.ProjectClassifierBindings;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;/**
+<i>80</i>&nbsp; * Command to (sub)classify objects based on a single measurement.
+<i>81</i>&nbsp; * 
+<i>82</i>&nbsp; * @author Pete Bankhead
+<i>83</i>&nbsp; */
+<i>84</i>&nbsp;public class SingleMeasurementClassificationCommand implements Runnable {
+<i>85</i>&nbsp;	
+<b class="fc"><i>86</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(SingleMeasurementClassificationCommand.class);</b>
+<i>87</i>&nbsp;	
+<b class="fc"><i>88</i>&nbsp;	private static String title = &quot;Single measurement classifier&quot;;</b>
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	private QuPathGUI qupath;
+<i>91</i>&nbsp;	
+<b class="fc"><i>92</i>&nbsp;	private Map&lt;QuPathViewer, SingleMeasurementPane&gt; paneMap = new WeakHashMap&lt;&gt;();</b>
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	/**
+<i>95</i>&nbsp;	 * Constructor.
+<i>96</i>&nbsp;	 * @param qupath
+<i>97</i>&nbsp;	 */
+<b class="fc"><i>98</i>&nbsp;	public SingleMeasurementClassificationCommand(QuPathGUI qupath) {</b>
+<b class="fc"><i>99</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>100</i>&nbsp;	}</b>
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;	@Override
+<i>103</i>&nbsp;	public void run() {
+<b class="nc"><i>104</i>&nbsp;		var viewer = qupath.getViewer();</b>
+<b class="nc"><i>105</i>&nbsp;		var pane = paneMap.get(viewer);</b>
+<b class="nc"><i>106</i>&nbsp;		if (pane == null) {</b>
+<b class="nc"><i>107</i>&nbsp;			pane = new SingleMeasurementPane(qupath, viewer);</b>
+<b class="nc"><i>108</i>&nbsp;			paneMap.put(viewer, pane);</b>
+<i>109</i>&nbsp;		}
+<b class="nc"><i>110</i>&nbsp;		if (pane.dialog != null) {</b>
+<b class="nc"><i>111</i>&nbsp;			pane.dialog.getDialogPane().requestFocus();</b>
+<i>112</i>&nbsp;		} else {
+<b class="nc"><i>113</i>&nbsp;			pane.show();</b>
+<i>114</i>&nbsp;		}
+<b class="nc"><i>115</i>&nbsp;	}</b>
+<i>116</i>&nbsp;	
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	
+<i>119</i>&nbsp;	static class SingleMeasurementPane implements ChangeListener&lt;ImageData&lt;BufferedImage&gt;&gt; {
+<i>120</i>&nbsp;		
+<i>121</i>&nbsp;		private QuPathGUI qupath;
+<i>122</i>&nbsp;		private QuPathViewer viewer;
+<i>123</i>&nbsp;		
+<i>124</i>&nbsp;		private GridPane pane;
+<i>125</i>&nbsp;
+<b class="nc"><i>126</i>&nbsp;		private Predicate&lt;String&gt; ALWAYS_TRUE = m -&gt; true;</b>
+<b class="nc"><i>127</i>&nbsp;		private String NO_CHANNEL_FILTER = &quot;No filter (allow all channels)&quot;;</b>
+<b class="nc"><i>128</i>&nbsp;		private ComboBox&lt;String&gt; comboChannels = new ComboBox&lt;&gt;();</b>
+<i>129</i>&nbsp;
+<b class="nc"><i>130</i>&nbsp;		private ComboBox&lt;PathObjectFilter&gt; comboFilter = new ComboBox&lt;&gt;();</b>
+<i>131</i>&nbsp;		
+<i>132</i>&nbsp;		/**
+<i>133</i>&nbsp;		 * Map storing previous threshold values used for specific measurements.
+<i>134</i>&nbsp;		 */
+<b class="nc"><i>135</i>&nbsp;		private Map&lt;String, Double&gt; previousThresholds = new HashMap&lt;&gt;();</b>
+<i>136</i>&nbsp;		
+<b class="nc"><i>137</i>&nbsp;		private ObservableList&lt;String&gt; measurements = FXCollections.observableArrayList();</b>
+<b class="nc"><i>138</i>&nbsp;		private FilteredList&lt;String&gt; measurementsFiltered = measurements.filtered(ALWAYS_TRUE);</b>
+<i>139</i>&nbsp;		
+<b class="nc"><i>140</i>&nbsp;		private ComboBox&lt;String&gt; comboMeasurements = new ComboBox&lt;&gt;(measurementsFiltered);</b>
+<i>141</i>&nbsp;		
+<b class="nc"><i>142</i>&nbsp;		private Slider sliderThreshold = new Slider();</b>
+<b class="nc"><i>143</i>&nbsp;		private ComboBox&lt;PathClass&gt; comboAbove = new ComboBox&lt;&gt;();</b>
+<b class="nc"><i>144</i>&nbsp;		private ComboBox&lt;PathClass&gt; comboBelow = new ComboBox&lt;&gt;();</b>
+<i>145</i>&nbsp;		
+<b class="nc"><i>146</i>&nbsp;		private CheckBox cbLivePreview = new CheckBox(&quot;Live preview&quot;);</b>
+<i>147</i>&nbsp;		
+<b class="nc"><i>148</i>&nbsp;		private HistogramPanelFX histogramPane = new HistogramPanelFX();</b>
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		private ClassificationRequest&lt;BufferedImage&gt; nextRequest;
+<i>151</i>&nbsp;		
+<b class="nc"><i>152</i>&nbsp;		private TextField tfSaveName = new TextField();</b>
+<i>153</i>&nbsp;		
+<i>154</i>&nbsp;		private Dialog&lt;ButtonType&gt; dialog;
+<i>155</i>&nbsp;		
+<b class="nc"><i>156</i>&nbsp;		private StringProperty titleProperty = new SimpleStringProperty(title);</b>
+<i>157</i>&nbsp;		
+<i>158</i>&nbsp;		private ExecutorService pool;
+<i>159</i>&nbsp;		
+<b class="nc"><i>160</i>&nbsp;		SingleMeasurementPane(QuPathGUI qupath, QuPathViewer viewer) {</b>
+<b class="nc"><i>161</i>&nbsp;			this.qupath = qupath;</b>
+<b class="nc"><i>162</i>&nbsp;			this.viewer = viewer;</b>
+<i>163</i>&nbsp;			
+<i>164</i>&nbsp;			// Object selection filter
+<b class="nc"><i>165</i>&nbsp;			this.comboFilter.getItems().setAll(</b>
+<i>166</i>&nbsp;					PathObjectFilter.DETECTIONS_ALL,
+<i>167</i>&nbsp;					PathObjectFilter.DETECTIONS,
+<i>168</i>&nbsp;					PathObjectFilter.CELLS,
+<i>169</i>&nbsp;					PathObjectFilter.TILES
+<i>170</i>&nbsp;					);
+<b class="nc"><i>171</i>&nbsp;			comboFilter.getSelectionModel().select(PathObjectFilter.DETECTIONS_ALL);</b>
+<i>172</i>&nbsp;			
+<i>173</i>&nbsp;			// Set up text fields
+<b class="nc"><i>174</i>&nbsp;			var tf = new TextField();</b>
+<b class="nc"><i>175</i>&nbsp;			tf.setPrefColumnCount(6);</b>
+<b class="nc"><i>176</i>&nbsp;			GuiTools.bindSliderAndTextField(sliderThreshold, tf);</b>
+<i>177</i>&nbsp;			
+<i>178</i>&nbsp;			// Initialize pane
+<b class="nc"><i>179</i>&nbsp;			pane = new GridPane();</b>
+<b class="nc"><i>180</i>&nbsp;			pane.setHgap(5.0);</b>
+<b class="nc"><i>181</i>&nbsp;			pane.setVgap(5.0);</b>
+<i>182</i>&nbsp;			
+<i>183</i>&nbsp;//			comboMeasurements.getEditor().textProperty().addListener((v, o, n) -&gt; {
+<i>184</i>&nbsp;//				String text = n == null ? &quot;&quot; : n.toLowerCase().strip();
+<i>185</i>&nbsp;//				if (n.isEmpty())
+<i>186</i>&nbsp;//					measurementsFiltered.setPredicate(p -&gt; true);
+<i>187</i>&nbsp;//				else
+<i>188</i>&nbsp;//					measurementsFiltered.setPredicate(p -&gt; p.toLowerCase().contains(text));
+<i>189</i>&nbsp;//			});
+<i>190</i>&nbsp;			
+<b class="nc"><i>191</i>&nbsp;			int row = 0;</b>
+<i>192</i>&nbsp;			
+<b class="nc"><i>193</i>&nbsp;			var labelFilter = new Label(&quot;Object filter&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Select objects to classify&quot;, labelFilter, comboFilter, comboFilter);</b>
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;			var labelChannels = new Label(&quot;Channel filter&quot;);</b>
+<b class="nc"><i>197</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Optionally filter measurement lists &amp; classifications by channel name&quot;, labelChannels, comboChannels, comboChannels);</b>
+<i>198</i>&nbsp;
+<b class="nc"><i>199</i>&nbsp;			var labelMeasurements = new Label(&quot;Measurement&quot;);</b>
+<b class="nc"><i>200</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Select measurement to threshold&quot;, labelMeasurements, comboMeasurements, comboMeasurements);</b>
+<i>201</i>&nbsp;			
+<b class="nc"><i>202</i>&nbsp;			var labelThreshold = new Label(&quot;Threshold&quot;);</b>
+<b class="nc"><i>203</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Select threshold value&quot;, labelThreshold, sliderThreshold, tf);</b>
+<i>204</i>&nbsp;
+<b class="nc"><i>205</i>&nbsp;			var labelAbove = new Label(&quot;Above threshold&quot;);</b>
+<b class="nc"><i>206</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Specify the classification for objects above (or equal to) the threshold&quot;, labelAbove, comboAbove, comboAbove);</b>
+<i>207</i>&nbsp;
+<b class="nc"><i>208</i>&nbsp;			var labelBelow = new Label(&quot;Below threshold&quot;);</b>
+<b class="nc"><i>209</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Specify the classification for objects below the threshold&quot;, labelBelow, comboBelow, comboBelow);</b>
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Turn on/off live preview while changing settings&quot;, cbLivePreview, cbLivePreview, cbLivePreview);</b>
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;			var btnSave = new Button(&quot;Save&quot;);</b>
+<b class="nc"><i>214</i>&nbsp;			btnSave.setOnAction(e -&gt; {</b>
+<b class="nc"><i>215</i>&nbsp;				tryToSave();</b>
+<b class="nc"><i>216</i>&nbsp;				tfSaveName.requestFocus();</b>
+<b class="nc"><i>217</i>&nbsp;				btnSave.requestFocus();</b>
+<i>218</i>&nbsp;			});
+<b class="nc"><i>219</i>&nbsp;			var labelSave = new Label(&quot;Classifier name&quot;);</b>
+<b class="nc"><i>220</i>&nbsp;			tfSaveName.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>221</i>&nbsp;			tfSaveName.setPromptText(&quot;Enter object classifier name&quot;);</b>
+<b class="nc"><i>222</i>&nbsp;			ProjectClassifierBindings.bindObjectClassifierNameInput(tfSaveName, qupath.projectProperty());</b>
+<b class="nc"><i>223</i>&nbsp;			btnSave.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>224</i>&nbsp;			btnSave.disableProperty().bind(comboMeasurements.valueProperty().isNull().or(tfSaveName.textProperty().isEmpty()));</b>
+<b class="nc"><i>225</i>&nbsp;			PaneTools.addGridRow(pane, row++, 0, &quot;Specify name of the classifier - this will be used to save to &quot;</b>
+<i>226</i>&nbsp;					+ &quot;save the classifier in the current project, so it may be used for scripting later&quot;, labelSave, tfSaveName, btnSave);
+<i>227</i>&nbsp;			
+<b class="nc"><i>228</i>&nbsp;			var chartWrapper = new ThresholdedChartWrapper(histogramPane.getChart());</b>
+<b class="nc"><i>229</i>&nbsp;			chartWrapper.setIsInteractive(true);</b>
+<b class="nc"><i>230</i>&nbsp;			chartWrapper.addThreshold(sliderThreshold.valueProperty(), Color.rgb(0, 0, 0, 0.2));</b>
+<i>231</i>&nbsp;			
+<b class="nc"><i>232</i>&nbsp;			histogramPane.getChart().getYAxis().setTickLabelsVisible(false);</b>
+<b class="nc"><i>233</i>&nbsp;			histogramPane.getChart().setAnimated(false);</b>
+<i>234</i>&nbsp;			
+<b class="nc"><i>235</i>&nbsp;			PaneTools.setToExpandGridPaneHeight(chartWrapper.getPane());</b>
+<b class="nc"><i>236</i>&nbsp;			PaneTools.setToExpandGridPaneWidth(chartWrapper.getPane());</b>
+<b class="nc"><i>237</i>&nbsp;			PaneTools.setToExpandGridPaneWidth(comboFilter, comboChannels, comboMeasurements, sliderThreshold, </b>
+<i>238</i>&nbsp;					comboAbove, comboBelow, tfSaveName, cbLivePreview);
+<i>239</i>&nbsp;			
+<b class="nc"><i>240</i>&nbsp;			histogramPane.getChart().getYAxis().setTickLabelsVisible(false);</b>
+<b class="nc"><i>241</i>&nbsp;			histogramPane.getChart().setAnimated(false);</b>
+<b class="nc"><i>242</i>&nbsp;			chartWrapper.getPane().setPrefSize(200, 80);</b>
+<b class="nc"><i>243</i>&nbsp;			pane.add(chartWrapper.getPane(), pane.getColumnCount(), 0, 1, pane.getRowCount());</b>
+<i>244</i>&nbsp;			
+<i>245</i>&nbsp;			// Add listeners
+<b class="nc"><i>246</i>&nbsp;			comboChannels.valueProperty().addListener((v, o, n) -&gt; updateChannelFilter());</b>
+<b class="nc"><i>247</i>&nbsp;			comboMeasurements.valueProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>248</i>&nbsp;				if (o != null)</b>
+<b class="nc"><i>249</i>&nbsp;					previousThresholds.put(o, getThreshold());</b>
+<b class="nc"><i>250</i>&nbsp;				updateThresholdSlider();</b>
+<b class="nc"><i>251</i>&nbsp;				maybePreview();</b>
+<i>252</i>&nbsp;			});
+<b class="nc"><i>253</i>&nbsp;			sliderThreshold.valueProperty().addListener((v, o, n) -&gt; maybePreview());</b>
+<b class="nc"><i>254</i>&nbsp;			comboAbove.valueProperty().addListener((v, o, n) -&gt; maybePreview());</b>
+<b class="nc"><i>255</i>&nbsp;			comboBelow.valueProperty().addListener((v, o, n) -&gt; maybePreview());</b>
+<b class="nc"><i>256</i>&nbsp;			cbLivePreview.selectedProperty().addListener((v, o, n) -&gt; maybePreview());</b>
+<i>257</i>&nbsp;		}
+<i>258</i>&nbsp;		
+<i>259</i>&nbsp;		
+<i>260</i>&nbsp;		void updateChannelFilter() {
+<b class="nc"><i>261</i>&nbsp;			var selected = comboChannels.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>262</i>&nbsp;			if (selected == null || selected.isBlank() || NO_CHANNEL_FILTER.equals(selected)) {</b>
+<b class="nc"><i>263</i>&nbsp;				measurementsFiltered.setPredicate(ALWAYS_TRUE);</b>
+<i>264</i>&nbsp;			} else {
+<b class="nc"><i>265</i>&nbsp;				var lowerSelected = selected.trim().toLowerCase();</b>
+<b class="nc"><i>266</i>&nbsp;				Predicate&lt;String&gt; predicate = m -&gt; m.toLowerCase().contains(lowerSelected);</b>
+<b class="nc"><i>267</i>&nbsp;				if (measurements.stream().anyMatch(predicate))</b>
+<b class="nc"><i>268</i>&nbsp;					measurementsFiltered.setPredicate(predicate);</b>
+<i>269</i>&nbsp;				else
+<b class="nc"><i>270</i>&nbsp;					measurementsFiltered.setPredicate(ALWAYS_TRUE);</b>
+<i>271</i>&nbsp;				
+<b class="nc"><i>272</i>&nbsp;				if (comboMeasurements.getSelectionModel().getSelectedItem() == null &amp;&amp; !comboMeasurements.getItems().isEmpty())</b>
+<b class="nc"><i>273</i>&nbsp;					comboMeasurements.getSelectionModel().selectFirst();</b>
+<i>274</i>&nbsp;				
+<b class="nc"><i>275</i>&nbsp;				var imageData = getImageData();</b>
+<b class="nc"><i>276</i>&nbsp;				var pathClass = qupath.getAvailablePathClasses().stream()</b>
+<b class="nc"><i>277</i>&nbsp;						.filter(p -&gt; p.toString().toLowerCase().contains(lowerSelected))</b>
+<b class="nc"><i>278</i>&nbsp;						.findFirst().orElse(null);</b>
+<b class="nc"><i>279</i>&nbsp;				if (imageData != null &amp;&amp; pathClass != null) {</b>
+<i>280</i>&nbsp;//					if (imageData.isBrightfield()) {
+<b class="nc"><i>281</i>&nbsp;					comboAbove.getSelectionModel().select(pathClass);</b>
+<b class="nc"><i>282</i>&nbsp;					comboBelow.getSelectionModel().select(null);</b>
+<i>283</i>&nbsp;//					}
+<i>284</i>&nbsp;				}
+<b class="nc"><i>285</i>&nbsp;				tfSaveName.setText(selected.trim());</b>
+<i>286</i>&nbsp;			}
+<i>287</i>&nbsp;		}
+<i>288</i>&nbsp;		
+<i>289</i>&nbsp;		
+<b class="nc"><i>290</i>&nbsp;		private Map&lt;PathObjectHierarchy, Map&lt;PathObject, PathClass&gt;&gt; mapPrevious = new WeakHashMap&lt;&gt;();</b>
+<i>291</i>&nbsp;		
+<i>292</i>&nbsp;		/**
+<i>293</i>&nbsp;		 * Store the classifications for the current hierarchy, so these may be reset if the user cancels.
+<i>294</i>&nbsp;		 */
+<i>295</i>&nbsp;		void storeClassificationMap(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>296</i>&nbsp;			if (hierarchy == null)</b>
+<i>297</i>&nbsp;				return;
+<b class="nc"><i>298</i>&nbsp;			var pathObjects = hierarchy.getFlattenedObjectList(null);</b>
+<b class="nc"><i>299</i>&nbsp;			mapPrevious.put(</b>
+<i>300</i>&nbsp;					hierarchy,
+<b class="nc"><i>301</i>&nbsp;					PathClassifierTools.createClassificationMap(pathObjects)</b>
+<i>302</i>&nbsp;					);
+<i>303</i>&nbsp;		}
+<i>304</i>&nbsp;		
+<i>305</i>&nbsp;		public void show() {
+<b class="nc"><i>306</i>&nbsp;			var imageData = viewer.getImageData();</b>
+<b class="nc"><i>307</i>&nbsp;			if (imageData == null) {</b>
+<b class="nc"><i>308</i>&nbsp;				Dialogs.showNoImageError(title);</b>
+<i>309</i>&nbsp;				return;
+<i>310</i>&nbsp;			}
+<i>311</i>&nbsp;			
+<b class="nc"><i>312</i>&nbsp;			viewer.imageDataProperty().addListener(this);</b>
+<i>313</i>&nbsp;			
+<b class="nc"><i>314</i>&nbsp;			storeClassificationMap(imageData.getHierarchy());</b>
+<b class="nc"><i>315</i>&nbsp;			refreshOptions();</b>
+<i>316</i>&nbsp;			
+<b class="nc"><i>317</i>&nbsp;			pool = Executors.newSingleThreadExecutor(ThreadTools.createThreadFactory(&quot;single-measurement-classifier&quot;, true));</b>
+<i>318</i>&nbsp;			
+<b class="nc"><i>319</i>&nbsp;			dialog = new Dialog&lt;ButtonType&gt;();</b>
+<b class="nc"><i>320</i>&nbsp;			dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>321</i>&nbsp;			dialog.titleProperty().bind(titleProperty);</b>
+<b class="nc"><i>322</i>&nbsp;			dialog.getDialogPane().setContent(pane);</b>
+<b class="nc"><i>323</i>&nbsp;			dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);</b>
+<b class="nc"><i>324</i>&nbsp;			dialog.initModality(Modality.NONE);</b>
+<i>325</i>&nbsp;			
+<b class="nc"><i>326</i>&nbsp;			dialog.getDialogPane().focusedProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>327</i>&nbsp;				if (n)</b>
+<b class="nc"><i>328</i>&nbsp;					refreshTitle();</b>
+<i>329</i>&nbsp;			});
+<i>330</i>&nbsp;			
+<b class="nc"><i>331</i>&nbsp;			dialog.setOnCloseRequest(e -&gt; {</b>
+<b class="nc"><i>332</i>&nbsp;				var applyClassifier = ButtonType.APPLY.equals(dialog.getResult());</b>
+<b class="nc"><i>333</i>&nbsp;				cleanup(applyClassifier);</b>
+<i>334</i>&nbsp;			});			
+<i>335</i>&nbsp;			
+<b class="nc"><i>336</i>&nbsp;			dialog.show();</b>
+<b class="nc"><i>337</i>&nbsp;			maybePreview();</b>
+<i>338</i>&nbsp;		}
+<i>339</i>&nbsp;		
+<i>340</i>&nbsp;		
+<i>341</i>&nbsp;		/**
+<i>342</i>&nbsp;		 * Cleanup after the dialog is closed.
+<i>343</i>&nbsp;		 * @param applyLastClassifier
+<i>344</i>&nbsp;		 */
+<i>345</i>&nbsp;		void cleanup(boolean applyLastClassifier) {
+<b class="nc"><i>346</i>&nbsp;			pool.shutdown();</b>
+<i>347</i>&nbsp;			try {
+<b class="nc"><i>348</i>&nbsp;				pool.awaitTermination(5000L, TimeUnit.SECONDS);</b>
+<b class="nc"><i>349</i>&nbsp;			} catch (InterruptedException e) {</b>
+<b class="nc"><i>350</i>&nbsp;				logger.debug(&quot;Exception waiting for classification to complete: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>351</i>&nbsp;			}</b>
+<b class="nc"><i>352</i>&nbsp;			if (applyLastClassifier) {</b>
+<i>353</i>&nbsp;				// Make sure we ran the last command, then log it in the workflow
+<b class="nc"><i>354</i>&nbsp;				var nextRequest = getUpdatedRequest();</b>
+<b class="nc"><i>355</i>&nbsp;				if (nextRequest != null) {</b>
+<b class="nc"><i>356</i>&nbsp;					nextRequest.doClassification();</b>
+<b class="nc"><i>357</i>&nbsp;					String name = null;</b>
+<b class="nc"><i>358</i>&nbsp;					if (tfSaveName.getText() != null &amp;&amp; !tfSaveName.getText().isEmpty())</b>
+<b class="nc"><i>359</i>&nbsp;						name = tryToSave();</b>
+<b class="nc"><i>360</i>&nbsp;					if (name == null) {</b>
+<b class="nc"><i>361</i>&nbsp;						Dialogs.showWarningNotification(&quot;Object classifier&quot;, &quot;Classifier was not saved, so will not appear in the command history&quot;);</b>
+<i>362</i>&nbsp;					} else {
+<b class="nc"><i>363</i>&nbsp;						nextRequest.imageData.getHistoryWorkflow().addStep(ObjectClassifierLoadCommand.createObjectClassifierStep(name));</b>
+<i>364</i>&nbsp;					}
+<i>365</i>&nbsp;				}
+<i>366</i>&nbsp;				// TODO: Log classification in the workflow?
+<b class="nc"><i>367</i>&nbsp;			} else {</b>
+<i>368</i>&nbsp;				// Restore classifications if the user cancelled
+<b class="nc"><i>369</i>&nbsp;				for (var entry : mapPrevious.entrySet())</b>
+<b class="nc"><i>370</i>&nbsp;					resetClassifications(entry.getKey(), entry.getValue());</b>
+<i>371</i>&nbsp;			}
+<b class="nc"><i>372</i>&nbsp;			viewer.imageDataProperty().removeListener(this);</b>
+<b class="nc"><i>373</i>&nbsp;			dialog = null;</b>
+<i>374</i>&nbsp;		}
+<i>375</i>&nbsp;		
+<i>376</i>&nbsp;		
+<i>377</i>&nbsp;		
+<i>378</i>&nbsp;		ImageData&lt;BufferedImage&gt; getImageData() {
+<b class="nc"><i>379</i>&nbsp;			return viewer.getImageData();</b>
+<i>380</i>&nbsp;		}
+<i>381</i>&nbsp;		
+<i>382</i>&nbsp;		PathObjectHierarchy getHierarchy() {
+<b class="nc"><i>383</i>&nbsp;			var imageData = getImageData();</b>
+<b class="nc"><i>384</i>&nbsp;			return imageData == null ? null : imageData.getHierarchy();</b>
+<i>385</i>&nbsp;		}
+<i>386</i>&nbsp;		
+<i>387</i>&nbsp;		/**
+<i>388</i>&nbsp;		 * Get objects for which the classification should be applied (depending upon image and filter).
+<i>389</i>&nbsp;		 * @return
+<i>390</i>&nbsp;		 */
+<i>391</i>&nbsp;		Collection&lt;? extends PathObject&gt; getCurrentObjects() {
+<b class="nc"><i>392</i>&nbsp;			var hierarchy = getHierarchy();</b>
+<b class="nc"><i>393</i>&nbsp;			if (hierarchy == null)</b>
+<b class="nc"><i>394</i>&nbsp;				return Collections.emptyList();</b>
+<b class="nc"><i>395</i>&nbsp;			var filter = comboFilter.getValue();</b>
+<b class="nc"><i>396</i>&nbsp;			var pathObjects = hierarchy.getFlattenedObjectList(new ArrayList&lt;&gt;());</b>
+<b class="nc"><i>397</i>&nbsp;			if (filter != null)</b>
+<b class="nc"><i>398</i>&nbsp;				pathObjects.removeIf(filter.negate());</b>
+<b class="nc"><i>399</i>&nbsp;			return pathObjects;</b>
+<i>400</i>&nbsp;		}
+<i>401</i>&nbsp;		
+<i>402</i>&nbsp;		String getSelectedMeasurement() {
+<b class="nc"><i>403</i>&nbsp;			return comboMeasurements.getSelectionModel().getSelectedItem();</b>
+<i>404</i>&nbsp;		}
+<i>405</i>&nbsp;		
+<i>406</i>&nbsp;		double getThreshold() {
+<b class="nc"><i>407</i>&nbsp;			return sliderThreshold.getValue();</b>
+<i>408</i>&nbsp;		}
+<i>409</i>&nbsp;		
+<i>410</i>&nbsp;		void refreshTitle() {
+<b class="nc"><i>411</i>&nbsp;			var imageData = getImageData();</b>
+<b class="nc"><i>412</i>&nbsp;			var project = qupath.getProject();</b>
+<b class="nc"><i>413</i>&nbsp;			if (imageData == null)</b>
+<b class="nc"><i>414</i>&nbsp;				titleProperty.set(title);</b>
+<i>415</i>&nbsp;			else {
+<b class="nc"><i>416</i>&nbsp;				String imageName = null;</b>
+<b class="nc"><i>417</i>&nbsp;				if (project != null) {</b>
+<b class="nc"><i>418</i>&nbsp;					var entry = project.getEntry(imageData);</b>
+<b class="nc"><i>419</i>&nbsp;					if (entry != null)</b>
+<b class="nc"><i>420</i>&nbsp;						imageName = entry.getImageName();</b>
+<i>421</i>&nbsp;				}
+<b class="nc"><i>422</i>&nbsp;				if (imageName == null)</b>
+<b class="nc"><i>423</i>&nbsp;					imageName = imageData.getServer().getMetadata().getName();</b>
+<b class="nc"><i>424</i>&nbsp;				titleProperty.set(title + &quot; (&quot; + imageName + &quot;)&quot;);</b>
+<i>425</i>&nbsp;			}
+<i>426</i>&nbsp;		}
+<i>427</i>&nbsp;		
+<i>428</i>&nbsp;		/**
+<i>429</i>&nbsp;		 * Refresh all displayed options to match the current image
+<i>430</i>&nbsp;		 */
+<i>431</i>&nbsp;		void refreshOptions() {
+<b class="nc"><i>432</i>&nbsp;			refreshTitle();</b>
+<b class="nc"><i>433</i>&nbsp;			refreshChannels();</b>
+<b class="nc"><i>434</i>&nbsp;			updateAvailableClasses();</b>
+<b class="nc"><i>435</i>&nbsp;			updateAvailableMeasurements();</b>
+<b class="nc"><i>436</i>&nbsp;			updateThresholdSlider();</b>
+<i>437</i>&nbsp;		}
+<i>438</i>&nbsp;		
+<i>439</i>&nbsp;		void refreshChannels() {
+<b class="nc"><i>440</i>&nbsp;			var list = new ArrayList&lt;String&gt;();</b>
+<b class="nc"><i>441</i>&nbsp;			list.add(NO_CHANNEL_FILTER);</b>
+<b class="nc"><i>442</i>&nbsp;			var imageData = getImageData();</b>
+<b class="nc"><i>443</i>&nbsp;			if (imageData != null) {</b>
+<b class="nc"><i>444</i>&nbsp;				var stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>445</i>&nbsp;				if (stains != null) {</b>
+<b class="nc"><i>446</i>&nbsp;					for (int s = 1; s &lt;= 3; s++) {</b>
+<b class="nc"><i>447</i>&nbsp;						var stain = stains.getStain(s);</b>
+<b class="nc"><i>448</i>&nbsp;						if (!stain.isResidual())</b>
+<b class="nc"><i>449</i>&nbsp;							list.add(stain.getName());</b>
+<i>450</i>&nbsp;					}
+<i>451</i>&nbsp;				}
+<b class="nc"><i>452</i>&nbsp;				for (var channel : imageData.getServer().getMetadata().getChannels()) {</b>
+<b class="nc"><i>453</i>&nbsp;					list.add(channel.getName());</b>
+<b class="nc"><i>454</i>&nbsp;				}</b>
+<i>455</i>&nbsp;			}
+<b class="nc"><i>456</i>&nbsp;			comboChannels.getItems().setAll(list);</b>
+<b class="nc"><i>457</i>&nbsp;			if (comboChannels.getSelectionModel().getSelectedItem() == null)</b>
+<b class="nc"><i>458</i>&nbsp;				comboChannels.getSelectionModel().selectFirst();</b>
+<i>459</i>&nbsp;		}
+<i>460</i>&nbsp;		
+<i>461</i>&nbsp;		void updateAvailableClasses() {
+<b class="nc"><i>462</i>&nbsp;			comboAbove.getItems().setAll(qupath.getAvailablePathClasses());</b>
+<b class="nc"><i>463</i>&nbsp;			comboBelow.getItems().setAll(qupath.getAvailablePathClasses());</b>
+<i>464</i>&nbsp;		}
+<i>465</i>&nbsp;		
+<i>466</i>&nbsp;		void resetClassifications(PathObjectHierarchy hierarchy, Map&lt;PathObject, PathClass&gt; mapPrevious) {
+<i>467</i>&nbsp;			// Restore classifications if the user cancelled
+<b class="nc"><i>468</i>&nbsp;			var changed = PathClassifierTools.restoreClassificationsFromMap(mapPrevious);</b>
+<b class="nc"><i>469</i>&nbsp;			if (hierarchy != null &amp;&amp; !changed.isEmpty())</b>
+<b class="nc"><i>470</i>&nbsp;				hierarchy.fireObjectClassificationsChangedEvent(this, changed);</b>
+<i>471</i>&nbsp;		}
+<i>472</i>&nbsp;		
+<i>473</i>&nbsp;		void updateThresholdSlider() {
+<b class="nc"><i>474</i>&nbsp;			var measurement = getSelectedMeasurement();</b>
+<b class="nc"><i>475</i>&nbsp;			var pathObjects = getCurrentObjects();</b>
+<b class="nc"><i>476</i>&nbsp;			if (measurement == null || pathObjects.isEmpty()) {</b>
+<b class="nc"><i>477</i>&nbsp;				sliderThreshold.setMin(0);</b>
+<b class="nc"><i>478</i>&nbsp;				sliderThreshold.setMax(1);</b>
+<b class="nc"><i>479</i>&nbsp;				sliderThreshold.setValue(0);</b>
+<i>480</i>&nbsp;				return;
+<i>481</i>&nbsp;			}
+<b class="nc"><i>482</i>&nbsp;			double[] allValues = pathObjects.stream().mapToDouble(p -&gt; p.getMeasurementList().getMeasurementValue(measurement))</b>
+<b class="nc"><i>483</i>&nbsp;					.filter(d -&gt; Double.isFinite(d)).toArray();</b>
+<b class="nc"><i>484</i>&nbsp;			var stats = new DescriptiveStatistics(allValues);</b>
+<b class="nc"><i>485</i>&nbsp;			var histogram = new Histogram(allValues, 100, stats.getMin(), stats.getMax());</b>
+<b class="nc"><i>486</i>&nbsp;			histogramPane.getHistogramData().setAll(HistogramPanelFX.createHistogramData(histogram, false, ColorTools.makeRGBA(200, 20, 20, 100)));</b>
+<i>487</i>&nbsp;			
+<b class="nc"><i>488</i>&nbsp;			double value = previousThresholds.getOrDefault(measurement, stats.getMean());</b>
+<b class="nc"><i>489</i>&nbsp;			sliderThreshold.setMin(stats.getMin());</b>
+<b class="nc"><i>490</i>&nbsp;			sliderThreshold.setMax(stats.getMax());</b>
+<b class="nc"><i>491</i>&nbsp;			sliderThreshold.setValue(value);</b>
+<i>492</i>&nbsp;		}
+<i>493</i>&nbsp;		
+<i>494</i>&nbsp;		/**
+<i>495</i>&nbsp;		 * Update measurements according to current image and filter.
+<i>496</i>&nbsp;		 */
+<i>497</i>&nbsp;		void updateAvailableMeasurements() {
+<b class="nc"><i>498</i>&nbsp;			var measurements = PathClassifierTools.getAvailableFeatures(getCurrentObjects());</b>
+<b class="nc"><i>499</i>&nbsp;			this.measurements.setAll(measurements);</b>
+<i>500</i>&nbsp;		}
+<i>501</i>&nbsp;		
+<i>502</i>&nbsp;		/**
+<i>503</i>&nbsp;		 * Try to save the classifier &amp; return the name of the saved classifier if successful
+<i>504</i>&nbsp;		 * @return
+<i>505</i>&nbsp;		 */
+<i>506</i>&nbsp;		String tryToSave() {
+<b class="nc"><i>507</i>&nbsp;			var project = qupath.getProject();</b>
+<b class="nc"><i>508</i>&nbsp;			if (project == null) {</b>
+<b class="nc"><i>509</i>&nbsp;				Dialogs.showErrorMessage(title, &quot;You need a project to save this classifier!&quot;);</b>
+<b class="nc"><i>510</i>&nbsp;				return null;</b>
+<i>511</i>&nbsp;			}
+<b class="nc"><i>512</i>&nbsp;			var name = GeneralTools.stripInvalidFilenameChars(tfSaveName.getText());</b>
+<b class="nc"><i>513</i>&nbsp;			if (name.isBlank()) {</b>
+<b class="nc"><i>514</i>&nbsp;				Dialogs.showErrorMessage(title, &quot;Please enter a name for the classifier!&quot;);</b>
+<b class="nc"><i>515</i>&nbsp;				return null;</b>
+<i>516</i>&nbsp;			}
+<b class="nc"><i>517</i>&nbsp;			var classifier = updateClassifier();</b>
+<b class="nc"><i>518</i>&nbsp;			if (classifier == null) {</b>
+<b class="nc"><i>519</i>&nbsp;				Dialogs.showErrorMessage(title, &quot;Not enough information to create a classifier!&quot;);</b>
+<b class="nc"><i>520</i>&nbsp;				return null;</b>
+<i>521</i>&nbsp;			}
+<i>522</i>&nbsp;			try {
+<b class="nc"><i>523</i>&nbsp;				if (project.getObjectClassifiers().contains(name)) {</b>
+<b class="nc"><i>524</i>&nbsp;					if (!Dialogs.showConfirmDialog(title, &quot;Do you want to overwrite the existing classifier &#39;&quot; + name + &quot;&#39;?&quot;))</b>
+<b class="nc"><i>525</i>&nbsp;						return null;</b>
+<i>526</i>&nbsp;				}
+<b class="nc"><i>527</i>&nbsp;				project.getObjectClassifiers().put(name, classifier);</b>
+<b class="nc"><i>528</i>&nbsp;				Dialogs.showInfoNotification(title, &quot;Saved classifier as &#39;&quot; + name + &quot;&#39;&quot;);</b>
+<b class="nc"><i>529</i>&nbsp;				return name;</b>
+<b class="nc"><i>530</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>531</i>&nbsp;				Dialogs.showErrorNotification(title, e);</b>
+<b class="nc"><i>532</i>&nbsp;				return null;</b>
+<i>533</i>&nbsp;			}
+<i>534</i>&nbsp;		}
+<i>535</i>&nbsp;		
+<i>536</i>&nbsp;		/**
+<i>537</i>&nbsp;		 * Request a preview of the classification update, asynchronously.
+<i>538</i>&nbsp;		 * This will only have an effect if there is an {@link ExecutorService} ready (and thereby may be suppressed during initialization 
+<i>539</i>&nbsp;		 * by delaying the creation of the service), and also if &#39;live preview&#39; is selected.
+<i>540</i>&nbsp;		 */
+<i>541</i>&nbsp;		void maybePreview() {
+<b class="nc"><i>542</i>&nbsp;			if (!cbLivePreview.isSelected() || pool == null || pool.isShutdown())</b>
+<i>543</i>&nbsp;				return;
+<i>544</i>&nbsp;
+<b class="nc"><i>545</i>&nbsp;			nextRequest = getUpdatedRequest();</b>
+<b class="nc"><i>546</i>&nbsp;			pool.execute(() -&gt; processRequest());</b>
+<i>547</i>&nbsp;		}
+<i>548</i>&nbsp;				
+<i>549</i>&nbsp;		ClassificationRequest&lt;BufferedImage&gt; getUpdatedRequest() {
+<b class="nc"><i>550</i>&nbsp;			var imageData = getImageData();</b>
+<b class="nc"><i>551</i>&nbsp;			if (imageData == null) {</b>
+<b class="nc"><i>552</i>&nbsp;				return null;</b>
+<i>553</i>&nbsp;			}
+<b class="nc"><i>554</i>&nbsp;			var classifier = updateClassifier();</b>
+<b class="nc"><i>555</i>&nbsp;			if (classifier == null)</b>
+<b class="nc"><i>556</i>&nbsp;				return null;</b>
+<b class="nc"><i>557</i>&nbsp;			return new ClassificationRequest&lt;&gt;(imageData, classifier);</b>
+<i>558</i>&nbsp;		}
+<i>559</i>&nbsp;		
+<i>560</i>&nbsp;		ObjectClassifier&lt;BufferedImage&gt; updateClassifier() {
+<b class="nc"><i>561</i>&nbsp;			var filter = comboFilter.getValue();</b>
+<b class="nc"><i>562</i>&nbsp;			var measurement = getSelectedMeasurement();</b>
+<b class="nc"><i>563</i>&nbsp;			var threshold = getThreshold();</b>
+<b class="nc"><i>564</i>&nbsp;			var classAbove = comboAbove.getValue();</b>
+<b class="nc"><i>565</i>&nbsp;			var classBelow = comboBelow.getValue();</b>
+<b class="nc"><i>566</i>&nbsp;			var classEquals = classAbove; // We use &gt;= and if this changes the tooltip must change too!</b>
+<i>567</i>&nbsp;			
+<b class="nc"><i>568</i>&nbsp;			if (measurement == null || Double.isNaN(threshold))</b>
+<b class="nc"><i>569</i>&nbsp;				return null;</b>
+<i>570</i>&nbsp;			
+<b class="nc"><i>571</i>&nbsp;			return new ClassifyByMeasurementBuilder&lt;BufferedImage&gt;(measurement)</b>
+<b class="nc"><i>572</i>&nbsp;					.threshold(threshold)</b>
+<b class="nc"><i>573</i>&nbsp;					.filter(filter)</b>
+<b class="nc"><i>574</i>&nbsp;					.above(classAbove)</b>
+<b class="nc"><i>575</i>&nbsp;					.equalTo(classEquals)</b>
+<b class="nc"><i>576</i>&nbsp;					.below(classBelow)</b>
+<b class="nc"><i>577</i>&nbsp;					.build();</b>
+<i>578</i>&nbsp;		}
+<i>579</i>&nbsp;		
+<i>580</i>&nbsp;		synchronized void processRequest() {
+<b class="nc"><i>581</i>&nbsp;			if (nextRequest == null || nextRequest.isComplete())</b>
+<i>582</i>&nbsp;				return;
+<b class="nc"><i>583</i>&nbsp;			nextRequest.doClassification();</b>
+<i>584</i>&nbsp;		}
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;		@Override
+<i>587</i>&nbsp;		public void changed(ObservableValue&lt;? extends ImageData&lt;BufferedImage&gt;&gt; observable,
+<i>588</i>&nbsp;				ImageData&lt;BufferedImage&gt; oldValue, ImageData&lt;BufferedImage&gt; newValue) {
+<i>589</i>&nbsp;			
+<b class="nc"><i>590</i>&nbsp;			if (newValue != null &amp;&amp; ! mapPrevious.containsKey(newValue.getHierarchy()))</b>
+<b class="nc"><i>591</i>&nbsp;				storeClassificationMap(newValue.getHierarchy());</b>
+<i>592</i>&nbsp;			
+<b class="nc"><i>593</i>&nbsp;			refreshOptions();</b>
+<i>594</i>&nbsp;		}
+<i>595</i>&nbsp;		
+<i>596</i>&nbsp;		
+<i>597</i>&nbsp;	}
+<i>598</i>&nbsp;	
+<i>599</i>&nbsp;	
+<i>600</i>&nbsp;	/**
+<i>601</i>&nbsp;	 * Encapsulate the requirements for a intensity classification into a single object.
+<i>602</i>&nbsp;	 */
+<i>603</i>&nbsp;	static class ClassificationRequest&lt;T&gt; {
+<i>604</i>&nbsp;		
+<i>605</i>&nbsp;		private ImageData&lt;T&gt; imageData;
+<i>606</i>&nbsp;		private ObjectClassifier&lt;T&gt; classifier;
+<i>607</i>&nbsp;		
+<b class="nc"><i>608</i>&nbsp;		private boolean isComplete = false;</b>
+<i>609</i>&nbsp;		
+<b class="nc"><i>610</i>&nbsp;		ClassificationRequest(ImageData&lt;T&gt; imageData, ObjectClassifier&lt;T&gt; classifier) {</b>
+<b class="nc"><i>611</i>&nbsp;			this.imageData = imageData;</b>
+<b class="nc"><i>612</i>&nbsp;			this.classifier = classifier;</b>
+<i>613</i>&nbsp;		}
+<i>614</i>&nbsp;		
+<i>615</i>&nbsp;		public synchronized void doClassification() {
+<b class="nc"><i>616</i>&nbsp;			var pathObjects = classifier.getCompatibleObjects(imageData);</b>
+<b class="nc"><i>617</i>&nbsp;			classifier.classifyObjects(imageData, pathObjects, true);</b>
+<b class="nc"><i>618</i>&nbsp;			imageData.getHierarchy().fireObjectClassificationsChangedEvent(classifier, pathObjects);</b>
+<b class="nc"><i>619</i>&nbsp;			isComplete = true;</b>
+<i>620</i>&nbsp;		}
+<i>621</i>&nbsp;		
+<i>622</i>&nbsp;		public synchronized boolean isComplete() {
+<b class="nc"><i>623</i>&nbsp;			return isComplete;</b>
+<i>624</i>&nbsp;		}
+<i>625</i>&nbsp;		
+<i>626</i>&nbsp;	}
+<i>627</i>&nbsp;	
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

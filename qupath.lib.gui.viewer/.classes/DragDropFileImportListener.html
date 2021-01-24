@@ -1,0 +1,435 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DragDropFileImportListener</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DragDropFileImportListener (qupath.lib.gui.viewer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DragDropFileImportListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.5%
+  </span>
+  <span class="absValue">
+    (5/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.3%
+  </span>
+  <span class="absValue">
+    (13/ 140)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DragDropFileImportListener$FileDropHandler</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    45.5%
+  </span>
+  <span class="absValue">
+    (5/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.3%
+  </span>
+  <span class="absValue">
+    (13/ 140)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.File;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Arrays;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;import java.util.stream.Collectors;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import javafx.event.EventHandler;
+<i>38</i>&nbsp;import javafx.scene.Node;
+<i>39</i>&nbsp;import javafx.scene.Scene;
+<i>40</i>&nbsp;import javafx.scene.input.DragEvent;
+<i>41</i>&nbsp;import javafx.scene.input.Dragboard;
+<i>42</i>&nbsp;import javafx.scene.input.TransferMode;
+<i>43</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>44</i>&nbsp;import qupath.lib.gui.commands.ProjectCommands;
+<i>45</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>46</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>47</i>&nbsp;import qupath.lib.gui.scripting.ScriptEditor;
+<i>48</i>&nbsp;import qupath.lib.gui.tma.TMADataIO;
+<i>49</i>&nbsp;import qupath.lib.images.ImageData;
+<i>50</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>51</i>&nbsp;import qupath.lib.objects.hierarchy.TMAGrid;
+<i>52</i>&nbsp;import qupath.lib.projects.Project;
+<i>53</i>&nbsp;import qupath.lib.projects.ProjectIO;
+<i>54</i>&nbsp;import qupath.lib.projects.Projects;
+<i>55</i>&nbsp;import qupath.lib.gui.scripting.DefaultScriptEditor;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;/**
+<i>59</i>&nbsp; * Drag and drop support for main QuPath application, which supports a range of different supported file types.
+<i>60</i>&nbsp; * 
+<i>61</i>&nbsp; * @author Pete Bankhead
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; */
+<i>64</i>&nbsp;public class DragDropFileImportListener implements EventHandler&lt;DragEvent&gt; {
+<i>65</i>&nbsp;	
+<b class="fc"><i>66</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(DragDropFileImportListener.class);</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;	private QuPathGUI qupath;
+<i>69</i>&nbsp;	
+<b class="fc"><i>70</i>&nbsp;	private List&lt;FileDropHandler&gt; fileDropHandlers = new ArrayList&lt;&gt;();</b>
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;	/**
+<i>73</i>&nbsp;	 * Constructor.
+<i>74</i>&nbsp;	 * @param qupath the current QuPath instance
+<i>75</i>&nbsp;	 */
+<b class="fc"><i>76</i>&nbsp;	public DragDropFileImportListener(final QuPathGUI qupath) {</b>
+<b class="fc"><i>77</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>78</i>&nbsp;	}</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * Prepare a target node to accept drag and drop events.
+<i>82</i>&nbsp;	 * @param target
+<i>83</i>&nbsp;	 */
+<i>84</i>&nbsp;	public void setupTarget(final Node target) {
+<b class="fc"><i>85</i>&nbsp;		target.setOnDragOver(event -&gt; {</b>
+<i>86</i>&nbsp;        	// Remove this condition if the user can drag onto anything, not only a canvas
+<b class="nc"><i>87</i>&nbsp;            event.acceptTransferModes(TransferMode.COPY);</b>
+<b class="nc"><i>88</i>&nbsp;            event.consume();</b>
+<b class="nc"><i>89</i>&nbsp;        });</b>
+<b class="fc"><i>90</i>&nbsp;		target.setOnDragDropped(this);</b>
+<b class="fc"><i>91</i>&nbsp;	}</b>
+<i>92</i>&nbsp;	
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Prepare a target scene to accept drag and drop events.
+<i>95</i>&nbsp;	 * @param target
+<i>96</i>&nbsp;	 */
+<i>97</i>&nbsp;	public void setupTarget(final Scene target) {
+<b class="fc"><i>98</i>&nbsp;		target.setOnDragOver(event -&gt; {</b>
+<i>99</i>&nbsp;        	// Remove this condition if the user can drag onto anything, not only a canvas
+<b class="nc"><i>100</i>&nbsp;            event.acceptTransferModes(TransferMode.COPY);</b>
+<b class="nc"><i>101</i>&nbsp;            event.consume();</b>
+<b class="nc"><i>102</i>&nbsp;        });</b>
+<b class="fc"><i>103</i>&nbsp;		target.setOnDragDropped(this);</b>
+<b class="fc"><i>104</i>&nbsp;	}</b>
+<i>105</i>&nbsp;	
+<i>106</i>&nbsp;	
+<i>107</i>&nbsp;    @Override
+<i>108</i>&nbsp;    public void handle(DragEvent event) {
+<b class="nc"><i>109</i>&nbsp;        Dragboard dragboard = event.getDragboard();</b>
+<b class="nc"><i>110</i>&nbsp;        Object source = event.getSource();</b>
+<i>111</i>&nbsp;        // Look for the viewer that we dragged on to - may be null, if drag was on
+<b class="nc"><i>112</i>&nbsp;        QuPathViewer viewer = null;</b>
+<b class="nc"><i>113</i>&nbsp;        for (QuPathViewer viewer2 : qupath.getViewers()) {</b>
+<b class="nc"><i>114</i>&nbsp;        	if (viewer2.getView() == source) {</b>
+<b class="nc"><i>115</i>&nbsp;        		viewer = viewer2;</b>
+<b class="nc"><i>116</i>&nbsp;        		break;</b>
+<i>117</i>&nbsp;        	}
+<b class="nc"><i>118</i>&nbsp;        }</b>
+<i>119</i>&nbsp;        // If only one viewer is available, there is no ambiguity... use it
+<b class="nc"><i>120</i>&nbsp;        if (viewer == null &amp;&amp; qupath.getViewers().size() == 1)</b>
+<b class="nc"><i>121</i>&nbsp;        	viewer = qupath.getViewer();</b>
+<i>122</i>&nbsp;        
+<b class="nc"><i>123</i>&nbsp;		if (dragboard.hasFiles()) {</b>
+<b class="nc"><i>124</i>&nbsp;	        logger.debug(&quot;Files dragged onto {}&quot;, source);</b>
+<i>125</i>&nbsp;			try {
+<b class="nc"><i>126</i>&nbsp;				handleFileDrop(viewer, dragboard.getFiles());</b>
+<b class="nc"><i>127</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>128</i>&nbsp;				Dialogs.showErrorMessage(&quot;Drag &amp; Drop&quot;, e);</b>
+<b class="nc"><i>129</i>&nbsp;			}</b>
+<i>130</i>&nbsp;		}
+<b class="nc"><i>131</i>&nbsp;		event.setDropCompleted(true);</b>
+<b class="nc"><i>132</i>&nbsp;		event.consume();</b>
+<b class="nc"><i>133</i>&nbsp;    }</b>
+<i>134</i>&nbsp;    
+<i>135</i>&nbsp;    /**
+<i>136</i>&nbsp;     * Add a new FileDropHandler.
+<i>137</i>&nbsp;     * &lt;p&gt;
+<i>138</i>&nbsp;     * This may be called on a drag-and-drop application on the main window, if no other 
+<i>139</i>&nbsp;     * handler deals with the event.
+<i>140</i>&nbsp;     * 
+<i>141</i>&nbsp;     * @param handler
+<i>142</i>&nbsp;     */
+<i>143</i>&nbsp;	public void addFileDropHandler(final FileDropHandler handler) {
+<b class="fc"><i>144</i>&nbsp;		this.fileDropHandlers.add(handler);</b>
+<b class="fc"><i>145</i>&nbsp;	}</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;	/**
+<i>148</i>&nbsp;	 * Remove a FileDropHandler.
+<i>149</i>&nbsp;	 * 
+<i>150</i>&nbsp;	 * @param handler
+<i>151</i>&nbsp;	 */
+<i>152</i>&nbsp;	public void removeFileDropHandler(final FileDropHandler handler) {
+<b class="nc"><i>153</i>&nbsp;		this.fileDropHandlers.remove(handler);</b>
+<b class="nc"><i>154</i>&nbsp;	}</b>
+<i>155</i>&nbsp;    
+<i>156</i>&nbsp;    void handleFileDrop(final QuPathViewer viewer, final List&lt;File&gt; list) throws IOException {
+<i>157</i>&nbsp;    	try {
+<b class="nc"><i>158</i>&nbsp;    		handleFileDropImpl(viewer, list);</b>
+<b class="nc"><i>159</i>&nbsp;    	} catch (IOException e) {</b>
+<b class="nc"><i>160</i>&nbsp;    		throw e;</b>
+<b class="nc"><i>161</i>&nbsp;    	} catch (Throwable e) {</b>
+<b class="nc"><i>162</i>&nbsp;    		throw new IOException(e);</b>
+<b class="nc"><i>163</i>&nbsp;    	}</b>
+<b class="nc"><i>164</i>&nbsp;    }</b>
+<i>165</i>&nbsp;    
+<i>166</i>&nbsp;    private void handleFileDropImpl(final QuPathViewer viewer, final List&lt;File&gt; list) throws IOException {
+<i>167</i>&nbsp;		
+<i>168</i>&nbsp;		// Shouldn&#39;t occur... but keeps FindBugs happy to check
+<b class="nc"><i>169</i>&nbsp;		if (list == null) {</b>
+<b class="nc"><i>170</i>&nbsp;			logger.warn(&quot;No files given!&quot;);</b>
+<b class="nc"><i>171</i>&nbsp;			return;</b>
+<i>172</i>&nbsp;		}
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;		
+<i>175</i>&nbsp;		// Check if we have only jar files
+<b class="nc"><i>176</i>&nbsp;		int nJars = 0;</b>
+<b class="nc"><i>177</i>&nbsp;		for (File file : list) {</b>
+<b class="nc"><i>178</i>&nbsp;			if (file.getName().toLowerCase().endsWith(&quot;.jar&quot;))</b>
+<b class="nc"><i>179</i>&nbsp;				nJars++;</b>
+<b class="nc"><i>180</i>&nbsp;		}</b>
+<b class="nc"><i>181</i>&nbsp;		if (nJars == list.size()) {</b>
+<b class="nc"><i>182</i>&nbsp;			if (qupath.canInstallExtensions())</b>
+<b class="nc"><i>183</i>&nbsp;				qupath.installExtensions(list);</b>
+<i>184</i>&nbsp;			else
+<b class="nc"><i>185</i>&nbsp;				Dialogs.showErrorMessage(&quot;Install extensions&quot;, &quot;Sorry, extensions can only be installed when QuPath is run as a standalone application.&quot;);</b>
+<b class="nc"><i>186</i>&nbsp;			return;</b>
+<i>187</i>&nbsp;		}
+<i>188</i>&nbsp;		
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;		// Try to get a hierarchy for importing ROIs
+<b class="nc"><i>191</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageData = viewer == null ? null : viewer.getImageData();</b>
+<b class="nc"><i>192</i>&nbsp;		PathObjectHierarchy hierarchy = imageData == null ? null : imageData.getHierarchy();</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;		boolean singleFile = list != null &amp;&amp; list.size() == 1;</b>
+<b class="nc"><i>195</i>&nbsp;		for (File file : list) {</b>
+<b class="nc"><i>196</i>&nbsp;			String fileName = file.getName().toLowerCase();</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;			// Check if this is a hierarchy file
+<b class="nc"><i>199</i>&nbsp;			if (singleFile &amp;&amp; (fileName.endsWith(PathPrefs.getSerializationExtension()))) {</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;				// If we have a different path, open as a new image
+<b class="nc"><i>202</i>&nbsp;				if (viewer == null) {</b>
+<b class="nc"><i>203</i>&nbsp;					Dialogs.showErrorMessage(&quot;Open data&quot;, &quot;Please drag the file onto a specific viewer to open!&quot;);</b>
+<b class="nc"><i>204</i>&nbsp;					break;</b>
+<i>205</i>&nbsp;				}
+<i>206</i>&nbsp;				try {
+<b class="nc"><i>207</i>&nbsp;					qupath.openSavedData(viewer, file, false, true);</b>
+<b class="nc"><i>208</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>209</i>&nbsp;					Dialogs.showErrorMessage(&quot;Open image&quot;, e);</b>
+<b class="nc"><i>210</i>&nbsp;				}</b>
+<b class="nc"><i>211</i>&nbsp;				return;</b>
+<i>212</i>&nbsp;			}
+<i>213</i>&nbsp;			
+<i>214</i>&nbsp;			// Check if this is a directory - if so, look for a single project file
+<b class="nc"><i>215</i>&nbsp;			if (singleFile &amp;&amp; file.isDirectory()) {</b>
+<i>216</i>&nbsp;				// Identify all files in the directory, and also all potential project files
+<b class="nc"><i>217</i>&nbsp;				File[] filesInDirectory = file.listFiles(f -&gt; !f.isHidden());</b>
+<b class="nc"><i>218</i>&nbsp;				List&lt;File&gt; projectFiles = Arrays.stream(filesInDirectory).filter(f -&gt; f.isFile() &amp;&amp; </b>
+<b class="nc"><i>219</i>&nbsp;						f.getAbsolutePath().toLowerCase().endsWith(ProjectIO.getProjectExtension())).collect(Collectors.toList());</b>
+<b class="nc"><i>220</i>&nbsp;				if (projectFiles.size() == 1) {</b>
+<b class="nc"><i>221</i>&nbsp;					file = projectFiles.get(0);</b>
+<b class="nc"><i>222</i>&nbsp;					logger.warn(&quot;Selecting project file {}&quot;, file);</b>
+<b class="nc"><i>223</i>&nbsp;				} else if (projectFiles.size() &gt; 1) {</b>
+<i>224</i>&nbsp;					// Prompt to select which project file to open
+<b class="nc"><i>225</i>&nbsp;					logger.debug(&quot;Multiple project files found in directory {}&quot;, file);</b>
+<b class="nc"><i>226</i>&nbsp;					String[] fileNames = projectFiles.stream().map(f -&gt; f.getName()).toArray(n -&gt; new String[n]);</b>
+<b class="nc"><i>227</i>&nbsp;					String selectedName = Dialogs.showChoiceDialog(&quot;Select project&quot;, &quot;Select project to open&quot;, fileNames, fileNames[0]);</b>
+<b class="nc"><i>228</i>&nbsp;					if (selectedName == null)</b>
+<b class="nc"><i>229</i>&nbsp;						return;</b>
+<b class="nc"><i>230</i>&nbsp;					file = new File(file, selectedName);</b>
+<b class="nc"><i>231</i>&nbsp;				} else if (filesInDirectory.length == 0) {</b>
+<i>232</i>&nbsp;					// If we have an empty directory, offer to set it as a project
+<b class="nc"><i>233</i>&nbsp;					if (Dialogs.showYesNoDialog(&quot;Create project&quot;, &quot;Create project for empty directory?&quot;)) {</b>
+<b class="nc"><i>234</i>&nbsp;						Project&lt;BufferedImage&gt; project = Projects.createProject(file, BufferedImage.class);</b>
+<b class="nc"><i>235</i>&nbsp;						qupath.setProject(project);</b>
+<b class="nc"><i>236</i>&nbsp;						if (!project.isEmpty())</b>
+<b class="nc"><i>237</i>&nbsp;							project.syncChanges();</b>
+<b class="nc"><i>238</i>&nbsp;						return;</b>
+<i>239</i>&nbsp;					} else
+<i>240</i>&nbsp;						// Can&#39;t do anything else with an empty folder
+<b class="nc"><i>241</i>&nbsp;						return;</b>
+<i>242</i>&nbsp;				}
+<i>243</i>&nbsp;			}
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;			// Check if this is a project
+<b class="nc"><i>246</i>&nbsp;			if (singleFile &amp;&amp; (fileName.endsWith(ProjectIO.getProjectExtension()))) {</b>
+<i>247</i>&nbsp;				try {
+<b class="nc"><i>248</i>&nbsp;					Project&lt;BufferedImage&gt; project = ProjectIO.loadProject(file, BufferedImage.class);</b>
+<b class="nc"><i>249</i>&nbsp;					qupath.setProject(project);</b>
+<b class="nc"><i>250</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>251</i>&nbsp;					Dialogs.showErrorMessage(&quot;Project error&quot;, e);</b>
+<i>252</i>&nbsp;//					logger.error(&quot;Could not open as project file: {}&quot;, e);
+<b class="nc"><i>253</i>&nbsp;				}</b>
+<b class="nc"><i>254</i>&nbsp;				return;</b>
+<i>255</i>&nbsp;			}
+<i>256</i>&nbsp;			
+<i>257</i>&nbsp;			// Check if this is TMA dearraying data file
+<b class="nc"><i>258</i>&nbsp;			if (singleFile &amp;&amp; (fileName.endsWith(TMADataIO.TMA_DEARRAYING_DATA_EXTENSION))) {</b>
+<b class="nc"><i>259</i>&nbsp;				if (hierarchy == null)</b>
+<b class="nc"><i>260</i>&nbsp;					Dialogs.showErrorMessage(&quot;TMA grid import&quot;, &quot;Please open an image first before importing a dearrayed TMA grid!&quot;);</b>
+<i>261</i>&nbsp;				else {
+<b class="nc"><i>262</i>&nbsp;					TMAGrid tmaGrid = TMADataIO.importDearrayedTMAData(file);</b>
+<b class="nc"><i>263</i>&nbsp;					if (tmaGrid != null) {</b>
+<b class="nc"><i>264</i>&nbsp;						if (hierarchy.isEmpty() || Dialogs.showYesNoDialog(&quot;TMA grid import&quot;, &quot;Set TMA grid for existing hierarchy?&quot;))</b>
+<b class="nc"><i>265</i>&nbsp;							hierarchy.setTMAGrid(tmaGrid);</b>
+<i>266</i>&nbsp;					} else
+<b class="nc"><i>267</i>&nbsp;						Dialogs.showErrorMessage(&quot;TMA grid import&quot;, &quot;Could not parse TMA grid from &quot; + file.getName());</b>
+<i>268</i>&nbsp;				}
+<b class="nc"><i>269</i>&nbsp;				return;</b>
+<i>270</i>&nbsp;			}
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;			// Open Javascript
+<b class="nc"><i>274</i>&nbsp;			ScriptEditor scriptEditor = qupath.getScriptEditor();</b>
+<b class="nc"><i>275</i>&nbsp;			if (scriptEditor instanceof DefaultScriptEditor &amp;&amp; ((DefaultScriptEditor)scriptEditor).supportsFile(file)) {</b>
+<b class="nc"><i>276</i>&nbsp;				scriptEditor.showScript(file);</b>
+<b class="nc"><i>277</i>&nbsp;				return;</b>
+<i>278</i>&nbsp;			}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;			
+<i>281</i>&nbsp;			// Check handlers
+<b class="nc"><i>282</i>&nbsp;			for (FileDropHandler handler : fileDropHandlers) {</b>
+<b class="nc"><i>283</i>&nbsp;				if (handler.handleFileDrop(viewer, list))</b>
+<b class="nc"><i>284</i>&nbsp;					return;</b>
+<b class="nc"><i>285</i>&nbsp;			}</b>
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;			// Assume we have images
+<b class="nc"><i>288</i>&nbsp;			if (singleFile &amp;&amp; file.isFile()) {</b>
+<i>289</i>&nbsp;				// Try to open as an image, if the extension is known
+<b class="nc"><i>290</i>&nbsp;				if (viewer == null) {</b>
+<b class="nc"><i>291</i>&nbsp;					Dialogs.showErrorMessage(&quot;Open image&quot;, &quot;Please drag the file only a specific viewer to open!&quot;);</b>
+<b class="nc"><i>292</i>&nbsp;					return;</b>
+<i>293</i>&nbsp;				}
+<b class="nc"><i>294</i>&nbsp;				qupath.openImage(viewer, file.getAbsolutePath(), true, true);</b>
+<b class="nc"><i>295</i>&nbsp;				return;</b>
+<b class="nc"><i>296</i>&nbsp;			} else if (qupath.getProject() != null) {</b>
+<i>297</i>&nbsp;				// Try importing multiple images to a project
+<b class="nc"><i>298</i>&nbsp;				String[] potentialFiles = list.stream().filter(f -&gt; f.isFile()).map(f -&gt; f.getAbsolutePath()).toArray(String[]::new);</b>
+<b class="nc"><i>299</i>&nbsp;				if (potentialFiles.length &gt; 0) {</b>
+<b class="nc"><i>300</i>&nbsp;					ProjectCommands.promptToImportImages(qupath, potentialFiles);</b>
+<b class="nc"><i>301</i>&nbsp;					return;</b>
+<i>302</i>&nbsp;				}
+<i>303</i>&nbsp;			}
+<i>304</i>&nbsp;
+<i>305</i>&nbsp;
+<b class="nc"><i>306</i>&nbsp;		}</b>
+<b class="nc"><i>307</i>&nbsp;		if (qupath.getProject() == null) {</b>
+<b class="nc"><i>308</i>&nbsp;			if (list.size() &gt; 1) {</b>
+<b class="nc"><i>309</i>&nbsp;				Dialogs.showErrorMessage(&quot;Drag &amp; drop&quot;, &quot;Could not handle multiple file drop - if you want to handle multiple images, you need to create a project first&quot;);</b>
+<b class="nc"><i>310</i>&nbsp;				return;</b>
+<i>311</i>&nbsp;			}
+<i>312</i>&nbsp;    	}
+<b class="nc"><i>313</i>&nbsp;		if (list.size() &gt; 1)</b>
+<b class="nc"><i>314</i>&nbsp;			Dialogs.showErrorMessage(&quot;Drag &amp; drop&quot;, &quot;Sorry, I couldn&#39;t figure out what to do with these files - try opening one at a time&quot;);</b>
+<i>315</i>&nbsp;		else
+<b class="nc"><i>316</i>&nbsp;			Dialogs.showErrorMessage(&quot;Drag &amp; drop&quot;, &quot;Sorry, I couldn&#39;t figure out what to do with &quot; + list.get(0).getName());</b>
+<b class="nc"><i>317</i>&nbsp;	}</b>
+<i>318</i>&nbsp;    
+<i>319</i>&nbsp;    
+<i>320</i>&nbsp;    /**
+<i>321</i>&nbsp;     * Interface to define a new file drop handler for a particular kind of file.
+<i>322</i>&nbsp;     * 
+<i>323</i>&nbsp;     * @author Pete Bankhead
+<i>324</i>&nbsp;     *
+<i>325</i>&nbsp;     */
+<i>326</i>&nbsp;    public static interface FileDropHandler {
+<i>327</i>&nbsp;    	
+<i>328</i>&nbsp;    	/**
+<i>329</i>&nbsp;    	 * Handle file drop onto a viewer.
+<i>330</i>&nbsp;    	 * This makes it possible to drop images (for example) onto a specific viewer to open them in that viewer, 
+<i>331</i>&nbsp;    	 * irrespective of whether the viewer is active currently.
+<i>332</i>&nbsp;    	 * 
+<i>333</i>&nbsp;    	 * @param viewer the active viewer, or the viewer only which the files were dropped
+<i>334</i>&nbsp;    	 * @param list the dropped files
+<i>335</i>&nbsp;    	 * @return true if the handler processed the file drop event
+<i>336</i>&nbsp;    	 */
+<i>337</i>&nbsp;    	public boolean handleFileDrop(final QuPathViewer viewer, final List&lt;File&gt; list);
+<i>338</i>&nbsp;    	
+<i>339</i>&nbsp;    }
+<i>340</i>&nbsp;    
+<i>341</i>&nbsp;       
+<i>342</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

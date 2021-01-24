@@ -1,0 +1,473 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Watershed</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.processing</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Watershed (qupath.imagej.processing)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Watershed</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 83)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Watershed$PixelWithValue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Watershed$WatershedQueueWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 34)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 127)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.processing;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayDeque;
+<i>27</i>&nbsp;import java.util.PriorityQueue;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import ij.IJ;
+<i>30</i>&nbsp;import ij.plugin.filter.EDM;
+<i>31</i>&nbsp;import ij.process.FloatProcessor;
+<i>32</i>&nbsp;import ij.process.ImageProcessor;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * Implementation of 2D watershed transform for ImageJ.
+<i>36</i>&nbsp; * 
+<i>37</i>&nbsp; * @author Pete Bankhead
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; */
+<b class="nc"><i>40</i>&nbsp;public class Watershed {</b>
+<i>41</i>&nbsp;	
+<i>42</i>&nbsp;	/**
+<i>43</i>&nbsp;	 * Expand non-zero regions in a labeled image up to a maximum distance, using a watershed transform to prevent region merging.
+<i>44</i>&nbsp;	 * The expansion is performed in-place.
+<i>45</i>&nbsp;	 * 
+<i>46</i>&nbsp;	 * @param ipLabels labeled image, where values &amp;le; 0 represent the background
+<i>47</i>&nbsp;	 * @param maxDistance maximum expansion distance, in pixels
+<i>48</i>&nbsp;	 * @param conn8 if true, use 8-connectivity
+<i>49</i>&nbsp;	 */
+<i>50</i>&nbsp;	public static void watershedExpandLabels(final ImageProcessor ipLabels, final double maxDistance, final boolean conn8) {
+<b class="nc"><i>51</i>&nbsp;		var bp = SimpleThresholding.thresholdAbove(ipLabels, 0f);</b>
+<b class="nc"><i>52</i>&nbsp;		FloatProcessor fpEDM = new EDM().makeFloatEDM(bp, (byte)255, false);</b>
+<b class="nc"><i>53</i>&nbsp;		fpEDM.multiply(-1);</b>
+<b class="nc"><i>54</i>&nbsp;		doWatershed(fpEDM, ipLabels, -maxDistance, conn8);</b>
+<i>55</i>&nbsp;	}
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	
+<i>58</i>&nbsp;	/**
+<i>59</i>&nbsp;	 * Apply a watershed transform.
+<i>60</i>&nbsp;	 * @param ip intensity image
+<i>61</i>&nbsp;	 * @param ipLabels starting locations
+<i>62</i>&nbsp;	 * @param conn8 if true, use 8-connectivity rather than 4-connectivity
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	public static void doWatershed(final ImageProcessor ip, final ImageProcessor ipLabels, final boolean conn8) {
+<b class="nc"><i>65</i>&nbsp;		doWatershed(ip, ipLabels, Double.NEGATIVE_INFINITY, conn8);</b>
+<i>66</i>&nbsp;	}
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	/**
+<i>69</i>&nbsp;	 * Apply an intensity-constrained watershed transform, preventing regions from expanding to pixels below a specified minimum threshold
+<i>70</i>&nbsp;	 * @param ip intensity image
+<i>71</i>&nbsp;	 * @param ipLabels starting locations
+<i>72</i>&nbsp;	 * @param minThreshold minimum threshold
+<i>73</i>&nbsp;	 * @param conn8 if true, use 8-connectivity rather than 4-connectivity
+<i>74</i>&nbsp;	 */
+<i>75</i>&nbsp;	public static void doWatershed(final ImageProcessor ip, final ImageProcessor ipLabels, final double minThreshold, final boolean conn8) {
+<i>76</i>&nbsp;		
+<b class="nc"><i>77</i>&nbsp;		final long startTime = System.currentTimeMillis();</b>
+<i>78</i>&nbsp;		
+<b class="nc"><i>79</i>&nbsp;		final int width = ip.getWidth();</b>
+<b class="nc"><i>80</i>&nbsp;		final int height = ip.getHeight();</b>
+<i>81</i>&nbsp;		
+<i>82</i>&nbsp;		// Create &amp; initialize a priority queue
+<b class="nc"><i>83</i>&nbsp;		final WatershedQueueWrapper queue = new WatershedQueueWrapper(ip, ipLabels, minThreshold);</b>
+<i>84</i>&nbsp;		
+<i>85</i>&nbsp;		// Process the queue
+<b class="nc"><i>86</i>&nbsp;		while (!queue.isEmpty()) {</b>
+<b class="nc"><i>87</i>&nbsp;			final PixelWithValue pwv = queue.poll();</b>
+<b class="nc"><i>88</i>&nbsp;			final int x = pwv.x;</b>
+<b class="nc"><i>89</i>&nbsp;			final int y = pwv.y;</b>
+<b class="nc"><i>90</i>&nbsp;			queue.discard(pwv);</b>
+<i>91</i>&nbsp;			
+<i>92</i>&nbsp;			float lastLabel;
+<b class="nc"><i>93</i>&nbsp;			if (conn8)</b>
+<b class="nc"><i>94</i>&nbsp;				lastLabel = getNeighborLabels8(ipLabels, x, y, width, height);</b>
+<i>95</i>&nbsp;			else
+<b class="nc"><i>96</i>&nbsp;				lastLabel = getNeighborLabels4(ipLabels, x, y, width, height);</b>
+<b class="nc"><i>97</i>&nbsp;			if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>98</i>&nbsp;				continue;</b>
+<b class="nc"><i>99</i>&nbsp;			ipLabels.setf(x, y, lastLabel);</b>
+<b class="nc"><i>100</i>&nbsp;			if (conn8)</b>
+<b class="nc"><i>101</i>&nbsp;				addNeighboursToQueue8(queue, x, y, width, height);</b>
+<i>102</i>&nbsp;			else
+<b class="nc"><i>103</i>&nbsp;				addNeighboursToQueue4(queue, x, y, width, height);</b>
+<i>104</i>&nbsp;			
+<b class="nc"><i>105</i>&nbsp;		}</b>
+<i>106</i>&nbsp;		
+<b class="nc"><i>107</i>&nbsp;		final long endTime = System.currentTimeMillis();</b>
+<b class="nc"><i>108</i>&nbsp;		if (IJ.debugMode)</b>
+<b class="nc"><i>109</i>&nbsp;			IJ.log(String.format(&quot;Watershed time taken: %.2fs&quot;, (endTime - startTime)/1000.0));	</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	private static float getNeighborLabels4(final ImageProcessor ipLabels, final int x, final int y, final int w, final int h) {
+<b class="nc"><i>114</i>&nbsp;		float lastLabel = Float.NaN;</b>
+<b class="nc"><i>115</i>&nbsp;		if (x &gt; 0) {</b>
+<b class="nc"><i>116</i>&nbsp;			float label = ipLabels.getf(x-1, y);</b>
+<b class="nc"><i>117</i>&nbsp;			if (label != 0) {</b>
+<b class="nc"><i>118</i>&nbsp;				if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>119</i>&nbsp;					lastLabel = label;</b>
+<b class="nc"><i>120</i>&nbsp;				else if (lastLabel != label)</b>
+<b class="nc"><i>121</i>&nbsp;					return Float.NaN;</b>
+<i>122</i>&nbsp;			}
+<i>123</i>&nbsp;		}
+<b class="nc"><i>124</i>&nbsp;		if (x &lt; w-1) {</b>
+<b class="nc"><i>125</i>&nbsp;			float label = ipLabels.getf(x+1, y);</b>
+<b class="nc"><i>126</i>&nbsp;			if (label != 0) {</b>
+<b class="nc"><i>127</i>&nbsp;				if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>128</i>&nbsp;					lastLabel = label;</b>
+<b class="nc"><i>129</i>&nbsp;				else if (lastLabel != label)</b>
+<b class="nc"><i>130</i>&nbsp;					return Float.NaN;</b>
+<i>131</i>&nbsp;			}
+<i>132</i>&nbsp;		}
+<b class="nc"><i>133</i>&nbsp;		if (y &gt; 0) {</b>
+<b class="nc"><i>134</i>&nbsp;			float label = ipLabels.getf(x, y-1);</b>
+<b class="nc"><i>135</i>&nbsp;			if (label != 0) {</b>
+<b class="nc"><i>136</i>&nbsp;				if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>137</i>&nbsp;					lastLabel = label;</b>
+<b class="nc"><i>138</i>&nbsp;				else if (lastLabel != label)</b>
+<b class="nc"><i>139</i>&nbsp;					return Float.NaN;</b>
+<i>140</i>&nbsp;			}
+<i>141</i>&nbsp;		}
+<b class="nc"><i>142</i>&nbsp;		if (y &lt; h-1) {</b>
+<b class="nc"><i>143</i>&nbsp;			float label = ipLabels.getf(x, y+1);</b>
+<b class="nc"><i>144</i>&nbsp;			if (label != 0) {</b>
+<b class="nc"><i>145</i>&nbsp;				if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>146</i>&nbsp;					lastLabel = label;</b>
+<b class="nc"><i>147</i>&nbsp;				else if (lastLabel != label)</b>
+<b class="nc"><i>148</i>&nbsp;					return Float.NaN;</b>
+<i>149</i>&nbsp;			}
+<i>150</i>&nbsp;		}
+<b class="nc"><i>151</i>&nbsp;		return lastLabel;</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;	
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;	private static void addNeighboursToQueue4(final WatershedQueueWrapper queue, final int x, final int y, final int w, final int h) {
+<b class="nc"><i>156</i>&nbsp;		queue.add(x, y-1);</b>
+<b class="nc"><i>157</i>&nbsp;		queue.add(x-1, y);</b>
+<b class="nc"><i>158</i>&nbsp;		queue.add(x+1, y);</b>
+<b class="nc"><i>159</i>&nbsp;		queue.add(x, y+1);</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	
+<i>163</i>&nbsp;	private static float getNeighborLabels8(final ImageProcessor ipLabels, final int x, final int y, final int w, final int h) {
+<b class="nc"><i>164</i>&nbsp;		float lastLabel = Float.NaN;</b>
+<b class="nc"><i>165</i>&nbsp;		for (int yy = Math.max(y-1, 0); yy &lt;= Math.min(h-1, y+1); yy++) {</b>
+<b class="nc"><i>166</i>&nbsp;			for (int xx = Math.max(x-1, 0); xx &lt;= Math.min(w-1, x+1); xx++) {</b>
+<b class="nc"><i>167</i>&nbsp;				if (xx == x &amp;&amp; yy == y)</b>
+<b class="nc"><i>168</i>&nbsp;					continue;</b>
+<b class="nc"><i>169</i>&nbsp;				float label = ipLabels.getf(xx, yy);</b>
+<i>170</i>&nbsp;				// TODO: CONSIDER USE OF -1 BOUNDARIES
+<b class="nc"><i>171</i>&nbsp;				if (label &lt;= 0)</b>
+<b class="nc"><i>172</i>&nbsp;					continue;</b>
+<b class="nc"><i>173</i>&nbsp;				if (Float.isNaN(lastLabel))</b>
+<b class="nc"><i>174</i>&nbsp;					lastLabel = label;</b>
+<b class="nc"><i>175</i>&nbsp;				else if (lastLabel != label)</b>
+<b class="nc"><i>176</i>&nbsp;					return Float.NaN;</b>
+<i>177</i>&nbsp;			}
+<i>178</i>&nbsp;		}
+<b class="nc"><i>179</i>&nbsp;		return lastLabel;</b>
+<i>180</i>&nbsp;	}
+<i>181</i>&nbsp;	
+<i>182</i>&nbsp;	
+<i>183</i>&nbsp;	private static void addNeighboursToQueue8(final WatershedQueueWrapper queue, final int x, final int y, final int w, final int h) {
+<b class="nc"><i>184</i>&nbsp;		queue.add(x-1, y-1);</b>
+<b class="nc"><i>185</i>&nbsp;		queue.add(x, y-1);</b>
+<b class="nc"><i>186</i>&nbsp;		queue.add(x+1, y-1);</b>
+<i>187</i>&nbsp;		
+<b class="nc"><i>188</i>&nbsp;		queue.add(x-1, y);</b>
+<b class="nc"><i>189</i>&nbsp;		queue.add(x+1, y);</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;		queue.add(x-1, y+1);</b>
+<b class="nc"><i>192</i>&nbsp;		queue.add(x, y+1);</b>
+<b class="nc"><i>193</i>&nbsp;		queue.add(x+1, y+1);</b>
+<i>194</i>&nbsp;	}
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;	
+<i>197</i>&nbsp;	
+<i>198</i>&nbsp;	
+<i>199</i>&nbsp;	
+<i>200</i>&nbsp;	static class WatershedQueueWrapper {
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;		final private PriorityQueue&lt;PixelWithValue&gt; queue = new PriorityQueue&lt;&gt;();</b>
+<i>203</i>&nbsp;		final private boolean[] queued;
+<i>204</i>&nbsp;		final private int width, height;
+<i>205</i>&nbsp;		final private ImageProcessor ip;
+<i>206</i>&nbsp;		
+<b class="nc"><i>207</i>&nbsp;		private long counter = 0;//Long.MIN_VALUE;</b>
+<i>208</i>&nbsp;		
+<i>209</i>&nbsp;		// Keep a pool of objects so they can be reused... not normally worth the effort, but we are likely to have *a lot*
+<i>210</i>&nbsp;		final private ArrayDeque&lt;PixelWithValue&gt; dequePool;
+<i>211</i>&nbsp;		
+<i>212</i>&nbsp;		
+<b class="nc"><i>213</i>&nbsp;		public WatershedQueueWrapper(final ImageProcessor ip, final ImageProcessor ipLabels, final double minThreshold) {</b>
+<b class="nc"><i>214</i>&nbsp;			this.ip = ip;</b>
+<b class="nc"><i>215</i>&nbsp;			this.width = ip.getWidth();</b>
+<b class="nc"><i>216</i>&nbsp;			this.height = ip.getHeight();</b>
+<i>217</i>&nbsp;			// Keep a record of already-queued pixels
+<b class="nc"><i>218</i>&nbsp;			queued = new boolean[width * height];</b>
+<i>219</i>&nbsp;			
+<i>220</i>&nbsp;			// Loop through and populate the queue sensibly; background assumed to be zero
+<b class="nc"><i>221</i>&nbsp;			for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>222</i>&nbsp;				for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>223</i>&nbsp;					float val = ip.getf(x, y);</b>
+<i>224</i>&nbsp;					// Mark below-threshold pixels as queued (even if they aren&#39;t...) to indicate they shouldn&#39;t be added later
+<b class="nc"><i>225</i>&nbsp;					if (val &lt;= minThreshold) {</b>
+<b class="nc"><i>226</i>&nbsp;						queued[y * width + x] = true;</b>
+<b class="nc"><i>227</i>&nbsp;						continue;</b>
+<i>228</i>&nbsp;					}
+<i>229</i>&nbsp;					// Mark already-labeled pixels as queued as well,
+<i>230</i>&nbsp;					// and add pixels immediately adjacent to a labeled pixel to the queue
+<b class="nc"><i>231</i>&nbsp;					if (ipLabels.getf(x, y) != 0) {</b>
+<b class="nc"><i>232</i>&nbsp;						queued[y * width + x] = true;</b>
+<i>233</i>&nbsp;					}
+<b class="nc"><i>234</i>&nbsp;					else if (ipLabels.getPixelValue(x+1, y) != 0f || ipLabels.getPixelValue(x-1, y) != 0f || ipLabels.getPixelValue(x, y-1) != 0f || ipLabels.getPixelValue(x, y+1) != 0f) {</b>
+<b class="nc"><i>235</i>&nbsp;						queued[y * width + x] = true;</b>
+<b class="nc"><i>236</i>&nbsp;						queue.add(new PixelWithValue(x, y, val, ++counter));</b>
+<i>237</i>&nbsp;					}
+<i>238</i>&nbsp;				}			
+<i>239</i>&nbsp;			}
+<i>240</i>&nbsp;			
+<i>241</i>&nbsp;			// Create a deque
+<b class="nc"><i>242</i>&nbsp;			dequePool = new ArrayDeque&lt;&gt;(ip.getWidth() * ip.getHeight());</b>
+<i>243</i>&nbsp;		}
+<i>244</i>&nbsp;		
+<i>245</i>&nbsp;		public final void add(final int x, final int y) {
+<i>246</i>&nbsp;			// Don&#39;t add to the queue twice
+<b class="nc"><i>247</i>&nbsp;			if (!mayAddToQueue(x, y))</b>
+<i>248</i>&nbsp;				return;
+<b class="nc"><i>249</i>&nbsp;			addWithoutCheck(x, y, ip.getf(x, y));</b>
+<i>250</i>&nbsp;		}
+<i>251</i>&nbsp;		
+<i>252</i>&nbsp;		protected final void addWithoutCheck(final int x, final int y, final float val) {
+<b class="nc"><i>253</i>&nbsp;			PixelWithValue pwv = dequePool.poll();</b>
+<b class="nc"><i>254</i>&nbsp;			if (pwv == null)</b>
+<b class="nc"><i>255</i>&nbsp;				pwv = new PixelWithValue(x, y, val, ++counter);</b>
+<i>256</i>&nbsp;			else {
+<b class="nc"><i>257</i>&nbsp;				pwv.x = x;</b>
+<b class="nc"><i>258</i>&nbsp;				pwv.y = y;</b>
+<b class="nc"><i>259</i>&nbsp;				pwv.value = val;</b>
+<b class="nc"><i>260</i>&nbsp;				pwv.count = ++counter;</b>
+<i>261</i>&nbsp;			}
+<i>262</i>&nbsp;			// Add, while storing a count variable, effectively turning the PriorityQueue into a FIFO queue whenever values are equal
+<i>263</i>&nbsp;			// This is necessary to produce reasonable-looking watershed results where there are plateaus (i.e. pixels with the same value)
+<b class="nc"><i>264</i>&nbsp;			queue.add(pwv);</b>
+<i>265</i>&nbsp;			
+<i>266</i>&nbsp;//			queue.add(new PixelWithValue(x, y, val, ++counter));
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;			// Keep track of the fact this has been queued - won&#39;t need it again
+<b class="nc"><i>269</i>&nbsp;			queued[y * width + x] = true;</b>
+<i>270</i>&nbsp;		}
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;//		public final boolean mayAddToQueue(int x, int y) {
+<i>273</i>&nbsp;//			return !queued[y * width + x];
+<i>274</i>&nbsp;//		}
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;		public final boolean mayAddToQueue(final int x, final int y) {
+<b class="nc"><i>277</i>&nbsp;			return x &gt;= 0 &amp;&amp; x &lt; width &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; height &amp;&amp; !queued[y * width + x];</b>
+<i>278</i>&nbsp;		}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;		public final PixelWithValue poll() {
+<b class="nc"><i>281</i>&nbsp;			return queue.poll();</b>
+<i>282</i>&nbsp;		}
+<i>283</i>&nbsp;		
+<i>284</i>&nbsp;		public final boolean isEmpty() {
+<b class="nc"><i>285</i>&nbsp;			return queue.isEmpty();</b>
+<i>286</i>&nbsp;		}
+<i>287</i>&nbsp;		
+<i>288</i>&nbsp;		/**
+<i>289</i>&nbsp;		 * Inform the queue it is free to reuse a PixelWithValue object if required
+<i>290</i>&nbsp;		 * @param pwv
+<i>291</i>&nbsp;		 */
+<i>292</i>&nbsp;		public final void discard(PixelWithValue pwv) {
+<b class="nc"><i>293</i>&nbsp;			dequePool.add(pwv);</b>
+<i>294</i>&nbsp;		}
+<i>295</i>&nbsp;		
+<i>296</i>&nbsp;	}
+<i>297</i>&nbsp;
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;	static class PixelWithValue implements Comparable&lt;PixelWithValue&gt; {
+<i>300</i>&nbsp;		
+<i>301</i>&nbsp;		public int x, y;
+<i>302</i>&nbsp;		public float value;
+<i>303</i>&nbsp;		public long count;
+<i>304</i>&nbsp;		
+<i>305</i>&nbsp;//		final public int x, y;
+<i>306</i>&nbsp;//		final public float value;
+<i>307</i>&nbsp;//		final public long count;
+<i>308</i>&nbsp;		
+<b class="nc"><i>309</i>&nbsp;		public PixelWithValue(final int x, final int y, final float value, final long count) {</b>
+<b class="nc"><i>310</i>&nbsp;			this.x = x;</b>
+<b class="nc"><i>311</i>&nbsp;			this.y = y;</b>
+<b class="nc"><i>312</i>&nbsp;			this.value = value;</b>
+<b class="nc"><i>313</i>&nbsp;			this.count = count;</b>
+<i>314</i>&nbsp;			
+<i>315</i>&nbsp;//			System.out.println(&quot;My count: &quot; + count);
+<i>316</i>&nbsp;		}
+<i>317</i>&nbsp;
+<i>318</i>&nbsp;		@Override
+<i>319</i>&nbsp;		public int compareTo(final PixelWithValue pwv) {
+<i>320</i>&nbsp;//			// Profiling indicates that the many comparisons are the slowest part of the algorithm...
+<i>321</i>&nbsp;//			if (value == pwv.value) 
+<i>322</i>&nbsp;//				return count &gt; pwv.count ? 1 : -1;
+<i>323</i>&nbsp;//			else
+<i>324</i>&nbsp;//				return value &gt; pwv.value ? -1 : 1;
+<i>325</i>&nbsp;					
+<i>326</i>&nbsp;			// Profiling indicates that the many comparisons are the slowest part of the algorithm...
+<b class="nc"><i>327</i>&nbsp;			if (value &lt; pwv.value) {</b>
+<b class="nc"><i>328</i>&nbsp;				return 1;</b>
+<i>329</i>&nbsp;			}
+<b class="nc"><i>330</i>&nbsp;			else if (value &gt; pwv.value) {</b>
+<b class="nc"><i>331</i>&nbsp;				return -1;</b>
+<i>332</i>&nbsp;			}
+<b class="nc"><i>333</i>&nbsp;			return count &gt; pwv.count ? 1 : -1;</b>
+<i>334</i>&nbsp;			
+<i>335</i>&nbsp;//			// Profiling indicates that the many comparisons are the slowest part of the algorithm...
+<i>336</i>&nbsp;//			if (value &gt; pwv.value)
+<i>337</i>&nbsp;//				return 1;
+<i>338</i>&nbsp;//			else if (value &lt; pwv.value)
+<i>339</i>&nbsp;//				return -1;
+<i>340</i>&nbsp;//			return count &gt; pwv.count ? 1 : -1;
+<i>341</i>&nbsp;		}
+<i>342</i>&nbsp;		
+<i>343</i>&nbsp;	}
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

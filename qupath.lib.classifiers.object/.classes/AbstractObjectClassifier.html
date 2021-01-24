@@ -1,0 +1,150 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractObjectClassifier</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.classifiers.object</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractObjectClassifier (qupath.lib.classifiers.object)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractObjectClassifier</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.classifiers.object;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.Collection;
+<i>25</i>&nbsp;import java.util.stream.Collectors;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import qupath.lib.images.ImageData;
+<i>28</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>29</i>&nbsp;import qupath.lib.objects.PathObjectFilter;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Abstract class to help with the creation of object classifiers.
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; * @param &lt;T&gt;
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public abstract class AbstractObjectClassifier&lt;T&gt; implements ObjectClassifier&lt;T&gt; {
+<i>39</i>&nbsp;	
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * Choose which objects are supported (often detections)
+<i>42</i>&nbsp;	 */
+<i>43</i>&nbsp;	private PathObjectFilter filter;
+<i>44</i>&nbsp;	
+<i>45</i>&nbsp;	/**
+<i>46</i>&nbsp;	 * Timestamp representing when the classifier was created/trained
+<i>47</i>&nbsp;	 */
+<b class="nc"><i>48</i>&nbsp;	private long timestamp = System.currentTimeMillis();</b>
+<i>49</i>&nbsp;	
+<b class="nc"><i>50</i>&nbsp;	protected AbstractObjectClassifier(final PathObjectFilter filter) {</b>
+<b class="nc"><i>51</i>&nbsp;		this.filter = filter;</b>
+<b class="nc"><i>52</i>&nbsp;	}</b>
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;	@Override
+<i>55</i>&nbsp;	public int classifyObjects(ImageData&lt;T&gt; imageData, boolean resetExistingClass) {
+<b class="nc"><i>56</i>&nbsp;		return classifyObjects(imageData, getCompatibleObjects(imageData), resetExistingClass);</b>
+<i>57</i>&nbsp;	}
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	@Override
+<i>60</i>&nbsp;	public Collection&lt;PathObject&gt; getCompatibleObjects(ImageData&lt;T&gt; imageData) {
+<b class="nc"><i>61</i>&nbsp;		var pathObjects = imageData.getHierarchy().getFlattenedObjectList(null);</b>
+<b class="nc"><i>62</i>&nbsp;		if (filter != null)</b>
+<b class="nc"><i>63</i>&nbsp;			pathObjects = pathObjects.stream().filter(filter).collect(Collectors.toList());</b>
+<b class="nc"><i>64</i>&nbsp;		return pathObjects;</b>
+<i>65</i>&nbsp;	}
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

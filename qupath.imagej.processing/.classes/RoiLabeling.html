@@ -1,0 +1,871 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RoiLabeling</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.processing</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RoiLabeling (qupath.imagej.processing)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RoiLabeling</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 299)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.processing;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Rectangle;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Arrays;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;import java.util.Map;
+<i>31</i>&nbsp;import java.util.TreeMap;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import ij.gui.PolygonRoi;
+<i>37</i>&nbsp;import ij.gui.Roi;
+<i>38</i>&nbsp;import ij.gui.Wand;
+<i>39</i>&nbsp;import ij.plugin.filter.RankFilters;
+<i>40</i>&nbsp;import ij.plugin.filter.ThresholdToSelection;
+<i>41</i>&nbsp;import ij.process.Blitter;
+<i>42</i>&nbsp;import ij.process.ByteProcessor;
+<i>43</i>&nbsp;import ij.process.FloatPolygon;
+<i>44</i>&nbsp;import ij.process.FloodFiller;
+<i>45</i>&nbsp;import ij.process.ImageProcessor;
+<i>46</i>&nbsp;import ij.process.ImageStatistics;
+<i>47</i>&nbsp;import ij.process.ShortProcessor;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Collection of static methods to help work with ROIs, binary &amp;amp; labelled images in ImageJ.
+<i>51</i>&nbsp; * &lt;p&gt;
+<i>52</i>&nbsp; * This enables switching between different methods of representing regions as required.
+<i>53</i>&nbsp; * 
+<i>54</i>&nbsp; * @author Pete Bankhead
+<i>55</i>&nbsp; *
+<i>56</i>&nbsp; */
+<b class="nc"><i>57</i>&nbsp;public class RoiLabeling {</b>
+<i>58</i>&nbsp;	
+<b class="nc"><i>59</i>&nbsp;	static Logger logger = LoggerFactory.getLogger(RoiLabeling.class);</b>
+<i>60</i>&nbsp;	
+<i>61</i>&nbsp;	/**
+<i>62</i>&nbsp;	 * Create a binary image for pixels that have a higher value than their neighbors.
+<i>63</i>&nbsp;	 * Comparisons are made horizontally, vertically and diagonally. Pixels meeting the criterion 
+<i>64</i>&nbsp;	 * have the value 255, all others are 0.
+<i>65</i>&nbsp;	 * @param ip
+<i>66</i>&nbsp;	 * @return
+<i>67</i>&nbsp;	 */
+<i>68</i>&nbsp;	public static ByteProcessor findDirectionalMaxima(ImageProcessor ip) {
+<b class="nc"><i>69</i>&nbsp;		ImageProcessor ip2 = ip.duplicate();</b>
+<b class="nc"><i>70</i>&nbsp;		ip2.invert();</b>
+<b class="nc"><i>71</i>&nbsp;		return findDirectionalMinima(ip2);</b>
+<i>72</i>&nbsp;	}
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	/**
+<i>75</i>&nbsp;	 * Create a binary image for pixels that have a lower value than their neighbors.
+<i>76</i>&nbsp;	 * Comparisons are made horizontally, vertically and diagonally. Pixels meeting the criterion 
+<i>77</i>&nbsp;	 * have the value 255, all others are 0.
+<i>78</i>&nbsp;	 * @param ip
+<i>79</i>&nbsp;	 * @return
+<i>80</i>&nbsp;	 */
+<i>81</i>&nbsp;	public static ByteProcessor findDirectionalMinima(ImageProcessor ip) {
+<b class="nc"><i>82</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>83</i>&nbsp;		int h = ip.getHeight();</b>
+<b class="nc"><i>84</i>&nbsp;		ByteProcessor bp = new ByteProcessor(w, h);</b>
+<b class="nc"><i>85</i>&nbsp;		for (int y = 1; y &lt; h-1; y++) {</b>
+<b class="nc"><i>86</i>&nbsp;			for (int x = 1; x &lt; w-1; x++) {</b>
+<i>87</i>&nbsp;				// Get value
+<b class="nc"><i>88</i>&nbsp;				float val = ip.getf(x, y);</b>
+<i>89</i>&nbsp;				// Check nonzero neighbours
+<b class="nc"><i>90</i>&nbsp;				if ((ip.getf(x-1, y) &gt; val &amp;&amp; ip.getf(x+1, y) &gt; val) ||</b>
+<b class="nc"><i>91</i>&nbsp;						(ip.getf(x-1, y-1) &gt; val &amp;&amp; ip.getf(x+1, y+1) &gt; val) ||</b>
+<b class="nc"><i>92</i>&nbsp;						(ip.getf(x, y-1) &gt; val &amp;&amp; ip.getf(x, y+1) &gt; val) ||</b>
+<b class="nc"><i>93</i>&nbsp;						(ip.getf(x-1, y+1) &gt; val &amp;&amp; ip.getf(x+1, y-1) &gt; val)) {</b>
+<i>94</i>&nbsp;					// If we have 2 zero neighbours, in any direction, break the connection
+<b class="nc"><i>95</i>&nbsp;					bp.setf(x, y, 255);</b>
+<i>96</i>&nbsp;				}
+<i>97</i>&nbsp;					
+<i>98</i>&nbsp;			}			
+<i>99</i>&nbsp;		}
+<b class="nc"><i>100</i>&nbsp;		return bp;</b>
+<i>101</i>&nbsp;	}
+<i>102</i>&nbsp;	
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Experimental 8-connected ROI creation; non-zero pixels considered within objects
+<i>107</i>&nbsp;	 * &lt;p&gt;
+<i>108</i>&nbsp;	 * TODO: Improve experimental getFillPolygonROIs!!!  Consider efficiency (i.e. no min filter) &amp;amp; standard ImageJ compatibility
+<i>109</i>&nbsp;	 * 			Using standard ImageJ draw/fill, the original binary image is NOT reconstructed.
+<i>110</i>&nbsp;	 * 
+<i>111</i>&nbsp;	 * @param ip
+<i>112</i>&nbsp;	 * @return
+<i>113</i>&nbsp;	 */
+<i>114</i>&nbsp;	public static List&lt;PolygonRoi&gt; getFilledPolygonROIsExperimental(ImageProcessor ip) {
+<b class="nc"><i>115</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>116</i>&nbsp;		int h = ip.getHeight();</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;		List&lt;PolygonRoi&gt; rois = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>119</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>120</i>&nbsp;		bpCompleted.copyBits(ip, 0, 0, Blitter.COPY);</b>
+<b class="nc"><i>121</i>&nbsp;		new RankFilters().rank(bpCompleted, 0.5, RankFilters.MIN);</b>
+<b class="nc"><i>122</i>&nbsp;		for (int i = 0; i &lt; w*h; i++) {</b>
+<b class="nc"><i>123</i>&nbsp;			if (ip.getf(i) != 0 &amp;&amp; bpCompleted.getf(i) == 0)</b>
+<b class="nc"><i>124</i>&nbsp;				bpCompleted.setf(i, 1);</b>
+<i>125</i>&nbsp;			else
+<b class="nc"><i>126</i>&nbsp;				bpCompleted.setf(i, 0);</b>
+<i>127</i>&nbsp;		}
+<i>128</i>&nbsp;//		new ImagePlus(&quot;Completed&quot;, bpCompleted.duplicate()).show();
+<b class="nc"><i>129</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>130</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>131</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>132</i>&nbsp;				if (ip.get(x, y) == 0)</b>
+<b class="nc"><i>133</i>&nbsp;					continue;</b>
+<b class="nc"><i>134</i>&nbsp;				if (bpCompleted.getf(x, y) &gt; 1)</b>
+<b class="nc"><i>135</i>&nbsp;					continue;</b>
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;				// Begin tracing contour
+<b class="nc"><i>138</i>&nbsp;				FloatPolygon poly = new FloatPolygon();</b>
+<b class="nc"><i>139</i>&nbsp;				int xx = x;</b>
+<b class="nc"><i>140</i>&nbsp;				int yy = y;</b>
+<b class="nc"><i>141</i>&nbsp;				boolean angleChanged = true;</b>
+<b class="nc"><i>142</i>&nbsp;				int lastAngle = -1;</b>
+<i>143</i>&nbsp;				while (true) {
+<i>144</i>&nbsp;					// If the angle is unchanged from that of the previously-added point, simplify the polygon by updating the last point
+<i>145</i>&nbsp;//					if (angleChanged)
+<i>146</i>&nbsp;//						poly.addPoint(xx, yy);
+<i>147</i>&nbsp;//					else {
+<i>148</i>&nbsp;//						poly.xpoints[poly.npoints-1] = xx;
+<i>149</i>&nbsp;//						poly.ypoints[poly.npoints-1] = yy;
+<i>150</i>&nbsp;//					}
+<b class="nc"><i>151</i>&nbsp;					if (angleChanged)</b>
+<b class="nc"><i>152</i>&nbsp;						poly.addPoint(xx+.5, yy+.5);</b>
+<i>153</i>&nbsp;					else {
+<b class="nc"><i>154</i>&nbsp;						poly.xpoints[poly.npoints-1] = xx+.5f;</b>
+<b class="nc"><i>155</i>&nbsp;						poly.ypoints[poly.npoints-1] = yy+.5f;</b>
+<i>156</i>&nbsp;					}
+<i>157</i>&nbsp;					
+<b class="nc"><i>158</i>&nbsp;					bpCompleted.setf(xx, yy, 255f);</b>
+<i>159</i>&nbsp;					// Trace clockwise
+<b class="nc"><i>160</i>&nbsp;					if (yy-1 &gt;= 0 &amp;&amp; bpCompleted.getf(xx, yy-1) == 1) {</b>
+<b class="nc"><i>161</i>&nbsp;						yy -= 1;</b>
+<b class="nc"><i>162</i>&nbsp;						angleChanged = lastAngle != 1;</b>
+<b class="nc"><i>163</i>&nbsp;						lastAngle = 1;</b>
+<b class="nc"><i>164</i>&nbsp;						continue;</b>
+<i>165</i>&nbsp;					}
+<b class="nc"><i>166</i>&nbsp;					if (yy-1 &gt;= 0 &amp;&amp; xx+1 &lt; w &amp;&amp; bpCompleted.getf(xx+1, yy-1) == 1) {</b>
+<b class="nc"><i>167</i>&nbsp;						yy -= 1;</b>
+<b class="nc"><i>168</i>&nbsp;						xx += 1;</b>
+<b class="nc"><i>169</i>&nbsp;						angleChanged = lastAngle != 2;</b>
+<b class="nc"><i>170</i>&nbsp;						lastAngle = 2;</b>
+<b class="nc"><i>171</i>&nbsp;						continue;</b>
+<i>172</i>&nbsp;					}
+<b class="nc"><i>173</i>&nbsp;					if (xx+1 &lt; w &amp;&amp; bpCompleted.getf(xx+1, yy) == 1) {</b>
+<b class="nc"><i>174</i>&nbsp;						xx += 1;</b>
+<b class="nc"><i>175</i>&nbsp;						angleChanged = lastAngle != 3;</b>
+<b class="nc"><i>176</i>&nbsp;						lastAngle = 3;</b>
+<b class="nc"><i>177</i>&nbsp;						continue;</b>
+<i>178</i>&nbsp;					}
+<b class="nc"><i>179</i>&nbsp;					if (yy+1 &lt; h) {</b>
+<b class="nc"><i>180</i>&nbsp;						if (xx+1 &lt; w &amp;&amp; bpCompleted.getf(xx+1, yy+1) == 1) {</b>
+<b class="nc"><i>181</i>&nbsp;							yy += 1;</b>
+<b class="nc"><i>182</i>&nbsp;							xx += 1;</b>
+<b class="nc"><i>183</i>&nbsp;							angleChanged = lastAngle != 4;</b>
+<b class="nc"><i>184</i>&nbsp;							lastAngle = 4;</b>
+<b class="nc"><i>185</i>&nbsp;							continue;</b>
+<i>186</i>&nbsp;						}
+<b class="nc"><i>187</i>&nbsp;						if (bpCompleted.getf(xx, yy+1) == 1) {</b>
+<b class="nc"><i>188</i>&nbsp;							yy += 1;</b>
+<b class="nc"><i>189</i>&nbsp;							angleChanged = lastAngle != 1;</b>
+<b class="nc"><i>190</i>&nbsp;							lastAngle = 1;</b>
+<b class="nc"><i>191</i>&nbsp;							continue;</b>
+<i>192</i>&nbsp;						}
+<b class="nc"><i>193</i>&nbsp;						if (xx-1 &lt; w &amp;&amp; bpCompleted.getf(xx-1, yy+1) == 1) {</b>
+<b class="nc"><i>194</i>&nbsp;							yy += 1;</b>
+<b class="nc"><i>195</i>&nbsp;							xx -= 1;</b>
+<b class="nc"><i>196</i>&nbsp;							angleChanged = lastAngle != 2;</b>
+<b class="nc"><i>197</i>&nbsp;							lastAngle = 2;</b>
+<b class="nc"><i>198</i>&nbsp;							continue;</b>
+<i>199</i>&nbsp;						}
+<i>200</i>&nbsp;					}
+<b class="nc"><i>201</i>&nbsp;					if (xx-1 &gt;= 0) {</b>
+<b class="nc"><i>202</i>&nbsp;						if (bpCompleted.getf(xx-1, yy) == 1) {</b>
+<b class="nc"><i>203</i>&nbsp;							xx -= 1;</b>
+<b class="nc"><i>204</i>&nbsp;							angleChanged = lastAngle != 3;</b>
+<b class="nc"><i>205</i>&nbsp;							lastAngle = 3;</b>
+<b class="nc"><i>206</i>&nbsp;							continue;</b>
+<i>207</i>&nbsp;						}
+<b class="nc"><i>208</i>&nbsp;						if (yy-1 &gt;= 0 &amp;&amp; bpCompleted.getf(xx-1, yy-1) == 1) {</b>
+<b class="nc"><i>209</i>&nbsp;							yy -= 1;</b>
+<b class="nc"><i>210</i>&nbsp;							xx -= 1;</b>
+<b class="nc"><i>211</i>&nbsp;							angleChanged = lastAngle != 4;</b>
+<b class="nc"><i>212</i>&nbsp;							lastAngle = 4;</b>
+<b class="nc"><i>213</i>&nbsp;							continue;</b>
+<i>214</i>&nbsp;						}
+<i>215</i>&nbsp;					}
+<i>216</i>&nbsp;					break;
+<i>217</i>&nbsp;				}
+<b class="nc"><i>218</i>&nbsp;				PolygonRoi roi = new PolygonRoi(poly, Roi.POLYGON);</b>
+<b class="nc"><i>219</i>&nbsp;				bpCompleted.fill(roi);</b>
+<b class="nc"><i>220</i>&nbsp;				if (poly.npoints &gt; 2)</b>
+<b class="nc"><i>221</i>&nbsp;					rois.add(roi);</b>
+<i>222</i>&nbsp;			}
+<i>223</i>&nbsp;		}
+<b class="nc"><i>224</i>&nbsp;		return rois;</b>
+<i>225</i>&nbsp;	}
+<i>226</i>&nbsp;	
+<i>227</i>&nbsp;	/**
+<i>228</i>&nbsp;	 * Convert a labelled image into a list of PolygonRois by tracing.
+<i>229</i>&nbsp;	 * &lt;p&gt;
+<i>230</i>&nbsp;	 * Note that labels are assumed not to contain any holes or nested ROIs; ROIs produced by this command will not contain holes.
+<i>231</i>&nbsp;	 * &lt;p&gt;
+<i>232</i>&nbsp;	 * Some entries in the resulting array may be null if this is not the case, or if not all labels are found.
+<i>233</i>&nbsp;	 * Otherwise, pixels with the integer label L will belong to the Roi in the output array at entry L-1
+<i>234</i>&nbsp;	 * 
+<i>235</i>&nbsp;	 * @param ipLabels
+<i>236</i>&nbsp;	 * @param n maximum number of labels
+<i>237</i>&nbsp;	 * @return
+<i>238</i>&nbsp;	 */
+<i>239</i>&nbsp;	public static PolygonRoi[] labelsToFilledROIs(ImageProcessor ipLabels, int n) {
+<b class="nc"><i>240</i>&nbsp;		PolygonRoi[] rois = new PolygonRoi[n];</b>
+<b class="nc"><i>241</i>&nbsp;		int w = ipLabels.getWidth();</b>
+<b class="nc"><i>242</i>&nbsp;		int h = ipLabels.getHeight();</b>
+<b class="nc"><i>243</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>244</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>245</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>246</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>247</i>&nbsp;				if (bpCompleted.get(x, y) != 0)</b>
+<b class="nc"><i>248</i>&nbsp;					continue;</b>
+<b class="nc"><i>249</i>&nbsp;				float val = ipLabels.getf(x, y);</b>
+<b class="nc"><i>250</i>&nbsp;				if (val &gt; 0 &amp;&amp; val &lt;= n) {</b>
+<b class="nc"><i>251</i>&nbsp;					Wand wand = new Wand(ipLabels);</b>
+<b class="nc"><i>252</i>&nbsp;					wand.autoOutline(x, y, val, val, Wand.EIGHT_CONNECTED);</b>
+<b class="nc"><i>253</i>&nbsp;					PolygonRoi roi = wandToRoi(wand);</b>
+<b class="nc"><i>254</i>&nbsp;					rois[(int)val-1] = roi;</b>
+<b class="nc"><i>255</i>&nbsp;					bpCompleted.fill(roi);</b>
+<i>256</i>&nbsp;				}
+<i>257</i>&nbsp;			}
+<i>258</i>&nbsp;		}
+<b class="nc"><i>259</i>&nbsp;		return rois;</b>
+<i>260</i>&nbsp;	}
+<i>261</i>&nbsp;	
+<i>262</i>&nbsp;	
+<i>263</i>&nbsp;	
+<i>264</i>&nbsp;	/**
+<i>265</i>&nbsp;	 * Convert a labelled image into a list of PolygonRois by tracing.
+<i>266</i>&nbsp;	 * &lt;p&gt;
+<i>267</i>&nbsp;	 * Unlike labelsToFilledROIs, the order in which ROIs are returned is arbitrary.
+<i>268</i>&nbsp;	 * &lt;p&gt;
+<i>269</i>&nbsp;	 * Also, the multiple Rois may be created for the same label, if unconnected regions are used.
+<i>270</i>&nbsp;	 * 
+<i>271</i>&nbsp;	 * @param ipLabels
+<i>272</i>&nbsp;	 * @param conn8
+<i>273</i>&nbsp;	 * @return
+<i>274</i>&nbsp;	 */
+<i>275</i>&nbsp;	public static List&lt;PolygonRoi&gt; labelsToFilledRoiList(final ImageProcessor ipLabels, final boolean conn8) {
+<b class="nc"><i>276</i>&nbsp;		List&lt;PolygonRoi&gt; rois = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>277</i>&nbsp;		int w = ipLabels.getWidth();</b>
+<b class="nc"><i>278</i>&nbsp;		int h = ipLabels.getHeight();</b>
+<b class="nc"><i>279</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>280</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>281</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>282</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>283</i>&nbsp;				if (bpCompleted.get(x, y) != 0)</b>
+<b class="nc"><i>284</i>&nbsp;					continue;</b>
+<b class="nc"><i>285</i>&nbsp;				float val = ipLabels.getf(x, y);</b>
+<b class="nc"><i>286</i>&nbsp;				if (val &gt; 0) {</b>
+<b class="nc"><i>287</i>&nbsp;					Wand wand = new Wand(ipLabels);</b>
+<b class="nc"><i>288</i>&nbsp;					wand.autoOutline(x, y, val, val, conn8 ? Wand.EIGHT_CONNECTED : Wand.FOUR_CONNECTED);</b>
+<b class="nc"><i>289</i>&nbsp;					PolygonRoi roi = wandToRoi(wand);</b>
+<b class="nc"><i>290</i>&nbsp;					rois.add(roi);</b>
+<b class="nc"><i>291</i>&nbsp;					bpCompleted.fill(roi);</b>
+<i>292</i>&nbsp;				}
+<i>293</i>&nbsp;			}
+<i>294</i>&nbsp;		}
+<b class="nc"><i>295</i>&nbsp;		return rois;</b>
+<i>296</i>&nbsp;	}
+<i>297</i>&nbsp;	
+<i>298</i>&nbsp;	
+<i>299</i>&nbsp;	
+<i>300</i>&nbsp;	/**
+<i>301</i>&nbsp;	 * Create ROIs from labels in an image.
+<i>302</i>&nbsp;	 * &lt;p&gt;
+<i>303</i>&nbsp;	 * This differs from labelsToConnectedROIs in that the ROIs created may be
+<i>304</i>&nbsp;	 * disconnected and contain holes.
+<i>305</i>&nbsp;	 * 
+<i>306</i>&nbsp;	 * @param ipLabels
+<i>307</i>&nbsp;	 * @param n
+<i>308</i>&nbsp;	 * @return
+<i>309</i>&nbsp;	 */
+<i>310</i>&nbsp;	public static Roi[] labelsToConnectedROIs(ImageProcessor ipLabels, int n) {
+<b class="nc"><i>311</i>&nbsp;		Roi[] rois = new Roi[n];</b>
+<b class="nc"><i>312</i>&nbsp;		int w = ipLabels.getWidth();</b>
+<b class="nc"><i>313</i>&nbsp;		int h = ipLabels.getHeight();</b>
+<b class="nc"><i>314</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>315</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>316</i>&nbsp;		ThresholdToSelection tts = new ThresholdToSelection();</b>
+<b class="nc"><i>317</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>318</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>319</i>&nbsp;				if (bpCompleted.get(x, y) != 0)</b>
+<b class="nc"><i>320</i>&nbsp;					continue;</b>
+<b class="nc"><i>321</i>&nbsp;				float val = ipLabels.getf(x, y);</b>
+<b class="nc"><i>322</i>&nbsp;				if (val &gt; 0 &amp;&amp; val &lt;= n) {</b>
+<b class="nc"><i>323</i>&nbsp;					Wand wand = new Wand(ipLabels);</b>
+<b class="nc"><i>324</i>&nbsp;					ipLabels.resetThreshold();</b>
+<b class="nc"><i>325</i>&nbsp;					wand.autoOutline(x, y, val, val, Wand.EIGHT_CONNECTED);</b>
+<b class="nc"><i>326</i>&nbsp;					Roi roi = wandToRoi(wand);</b>
+<i>327</i>&nbsp;					
+<i>328</i>&nbsp;					// Check if ROI contains holes, and create if necessary
+<b class="nc"><i>329</i>&nbsp;					ipLabels.setRoi(roi);</b>
+<b class="nc"><i>330</i>&nbsp;					ImageStatistics stats = ipLabels.getStatistics();</b>
+<b class="nc"><i>331</i>&nbsp;					if (stats.max != stats.min || rois[(int)val-1] != null) {</b>
+<b class="nc"><i>332</i>&nbsp;						ipLabels.setThreshold(val-0.25, val+0.25, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>333</i>&nbsp;						roi = tts.convert(ipLabels);</b>
+<i>334</i>&nbsp;					}
+<i>335</i>&nbsp;					
+<b class="nc"><i>336</i>&nbsp;					rois[(int)val-1] = roi;</b>
+<b class="nc"><i>337</i>&nbsp;					bpCompleted.fill(roi);</b>
+<i>338</i>&nbsp;				}
+<i>339</i>&nbsp;			}
+<i>340</i>&nbsp;		}
+<b class="nc"><i>341</i>&nbsp;		return rois;</b>
+<i>342</i>&nbsp;	}
+<i>343</i>&nbsp;	
+<i>344</i>&nbsp;	
+<i>345</i>&nbsp;	/**
+<i>346</i>&nbsp;	 * Get filled Polygon ROIs using distinct labels, creating a map between labels and ROIs.
+<i>347</i>&nbsp;	 * &lt;p&gt;
+<i>348</i>&nbsp;	 * Note that discontinuous ROIs are not supported; if labelled regions are discontinuous,
+<i>349</i>&nbsp;	 * then ROIs detected earlier will be discarded from the map.
+<i>350</i>&nbsp;	 * 
+<i>351</i>&nbsp;	 * @param ip
+<i>352</i>&nbsp;	 * @param wandMode
+<i>353</i>&nbsp;	 * @return
+<i>354</i>&nbsp;	 */
+<i>355</i>&nbsp;	public static Map&lt;Float, PolygonRoi&gt; getFilledPolygonROIsFromLabels(ImageProcessor ip, int wandMode) {
+<i>356</i>&nbsp;//		Wand wand = new Wand(ip);
+<b class="nc"><i>357</i>&nbsp;		double threshLower = ip.getMinThreshold();</b>
+<b class="nc"><i>358</i>&nbsp;		if (threshLower == ImageProcessor.NO_THRESHOLD)</b>
+<b class="nc"><i>359</i>&nbsp;			threshLower = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>360</i>&nbsp;		double threshHigher = ip.getMaxThreshold();</b>
+<b class="nc"><i>361</i>&nbsp;		if (threshHigher == ImageProcessor.NO_THRESHOLD)</b>
+<b class="nc"><i>362</i>&nbsp;			threshHigher = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>363</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>364</i>&nbsp;		int h = ip.getHeight();</b>
+<i>365</i>&nbsp;//		List&lt;PolygonRoi&gt; rois = new ArrayList&lt;&gt;();
+<b class="nc"><i>366</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>367</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>368</i>&nbsp;		TreeMap&lt;Float, PolygonRoi&gt; map = new TreeMap&lt;&gt;();</b>
+<b class="nc"><i>369</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>370</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>371</i>&nbsp;				if (bpCompleted.get(x, y) != 0)</b>
+<b class="nc"><i>372</i>&nbsp;					continue;</b>
+<b class="nc"><i>373</i>&nbsp;				float val = ip.getf(x, y);</b>
+<b class="nc"><i>374</i>&nbsp;				if (val &gt;= threshLower &amp;&amp; val &lt;= threshHigher) {</b>
+<b class="nc"><i>375</i>&nbsp;					Wand wand = new Wand(ip);</b>
+<b class="nc"><i>376</i>&nbsp;					wand.autoOutline(x, y, threshLower, threshHigher, wandMode);</b>
+<b class="nc"><i>377</i>&nbsp;					PolygonRoi roi = wandToRoi(wand);</b>
+<i>378</i>&nbsp;//					rois.add(roi);
+<b class="nc"><i>379</i>&nbsp;					Float key = val;</b>
+<b class="nc"><i>380</i>&nbsp;					if (map.containsKey(key))</b>
+<b class="nc"><i>381</i>&nbsp;						logger.warn(&quot;Polygon ROI is being inserted twice into map for the same key {}&quot;, key);</b>
+<b class="nc"><i>382</i>&nbsp;					map.put(val, roi);</b>
+<b class="nc"><i>383</i>&nbsp;					bpCompleted.fill(roi);</b>
+<i>384</i>&nbsp;				}
+<i>385</i>&nbsp;			}
+<i>386</i>&nbsp;		}
+<b class="nc"><i>387</i>&nbsp;		return map;</b>
+<i>388</i>&nbsp;	}
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;	/**
+<i>391</i>&nbsp;	 * Get filled PolygonRois for connected pixels with the same value in an image.
+<i>392</i>&nbsp;	 * Because this uses ImageJ&#39;s Wand tool, holes will be filled.
+<i>393</i>&nbsp;	 * &lt;p&gt;
+<i>394</i>&nbsp;	 * Note that this command applies any thresholds that were set in the ImageProcessor, returning 
+<i>395</i>&nbsp;	 * only Rois for values within these limits. Therefore to identify only non-zero pixels in a labelled image
+<i>396</i>&nbsp;	 * you may need to first call {@code ip.setThreshold(0.5, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);}
+<i>397</i>&nbsp;	 * @param ip
+<i>398</i>&nbsp;	 * @param wandMode
+<i>399</i>&nbsp;	 * @return
+<i>400</i>&nbsp;	 */
+<i>401</i>&nbsp;	public static List&lt;PolygonRoi&gt; getFilledPolygonROIs(ImageProcessor ip, int wandMode) {
+<i>402</i>&nbsp;//		Wand wand = new Wand(ip);
+<b class="nc"><i>403</i>&nbsp;		double threshLower = ip.getMinThreshold();</b>
+<b class="nc"><i>404</i>&nbsp;		if (threshLower == ImageProcessor.NO_THRESHOLD)</b>
+<b class="nc"><i>405</i>&nbsp;			threshLower = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>406</i>&nbsp;		double threshHigher = ip.getMaxThreshold();</b>
+<b class="nc"><i>407</i>&nbsp;		if (threshHigher == ImageProcessor.NO_THRESHOLD)</b>
+<b class="nc"><i>408</i>&nbsp;			threshHigher = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>409</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>410</i>&nbsp;		int h = ip.getHeight();</b>
+<b class="nc"><i>411</i>&nbsp;		List&lt;PolygonRoi&gt; rois = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>412</i>&nbsp;		ByteProcessor bpCompleted = new ByteProcessor(w, h);</b>
+<b class="nc"><i>413</i>&nbsp;		bpCompleted.setValue(255);</b>
+<b class="nc"><i>414</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>415</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>416</i>&nbsp;				if (bpCompleted.get(x, y) != 0)</b>
+<b class="nc"><i>417</i>&nbsp;					continue;</b>
+<b class="nc"><i>418</i>&nbsp;				float val = ip.getf(x, y);</b>
+<b class="nc"><i>419</i>&nbsp;				if (val &gt;= threshLower &amp;&amp; val &lt;= threshHigher) {</b>
+<b class="nc"><i>420</i>&nbsp;					Wand wand = new Wand(ip);</b>
+<b class="nc"><i>421</i>&nbsp;					wand.autoOutline(x, y, threshLower, threshHigher, wandMode);</b>
+<b class="nc"><i>422</i>&nbsp;					PolygonRoi roi = wandToRoi(wand);</b>
+<b class="nc"><i>423</i>&nbsp;					rois.add(roi);</b>
+<b class="nc"><i>424</i>&nbsp;					bpCompleted.fill(roi);</b>
+<i>425</i>&nbsp;				}
+<i>426</i>&nbsp;			}
+<i>427</i>&nbsp;		}
+<b class="nc"><i>428</i>&nbsp;		return rois;</b>
+<i>429</i>&nbsp;	}
+<i>430</i>&nbsp;	
+<i>431</i>&nbsp;	/**
+<i>432</i>&nbsp;	 * Convert a traced outline from the ImageJ Wand into a PolygonRoi.
+<i>433</i>&nbsp;	 * @param wand
+<i>434</i>&nbsp;	 * @return
+<i>435</i>&nbsp;	 */
+<i>436</i>&nbsp;	public static PolygonRoi wandToRoi(Wand wand) {
+<i>437</i>&nbsp;		// TODO: CONSIDER IF SHOULD BE TRACED OR POLYGON!
+<i>438</i>&nbsp;//		PolygonRoi roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.POLYGON);
+<i>439</i>&nbsp;		
+<i>440</i>&nbsp;		PolygonRoi roi;
+<i>441</i>&nbsp;		
+<i>442</i>&nbsp;		// The Wand can have far too many points (1000, when fewer are needed) - so used trimmed arrays where this is the case
+<b class="nc"><i>443</i>&nbsp;		if (wand.xpoints.length &gt; wand.npoints * 1.25)</b>
+<b class="nc"><i>444</i>&nbsp;			roi = new PolygonRoi(Arrays.copyOf(wand.xpoints, wand.npoints), Arrays.copyOf(wand.ypoints, wand.npoints), wand.npoints, Roi.TRACED_ROI);</b>
+<i>445</i>&nbsp;		else
+<b class="nc"><i>446</i>&nbsp;			roi = new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.TRACED_ROI);</b>
+<i>447</i>&nbsp;		
+<i>448</i>&nbsp;		
+<i>449</i>&nbsp;		// TODO: Consider simplifying wand perimeters along diagonals
+<i>450</i>&nbsp;//		Polygon poly = new Polygon();
+<i>451</i>&nbsp;//		int lastAngle = -1;
+<i>452</i>&nbsp;//		boolean angleChanged = true;
+<i>453</i>&nbsp;//		int lastX = -1000;
+<i>454</i>&nbsp;//		int lastY = -1000;
+<i>455</i>&nbsp;//		for (int i = 0; i &lt; wand.npoints; i++) {
+<i>456</i>&nbsp;//			int x = wand.xpoints[i];
+<i>457</i>&nbsp;//			int y = wand.ypoints[i];
+<i>458</i>&nbsp;//			
+<i>459</i>&nbsp;//			if (Math.abs(lastX - x) &lt;= 1 &amp;&amp; Math.abs(lastY - y) &lt;= 1) {
+<i>460</i>&nbsp;//				
+<i>461</i>&nbsp;//			} else {
+<i>462</i>&nbsp;//				angleChanged = true;
+<i>463</i>&nbsp;//				lastAngle = -1;
+<i>464</i>&nbsp;//			}
+<i>465</i>&nbsp;//			
+<i>466</i>&nbsp;//			if (angleChanged)
+<i>467</i>&nbsp;//				poly.addPoint(x, y);
+<i>468</i>&nbsp;//			else {
+<i>469</i>&nbsp;//				poly.xpoints[poly.npoints-1] = x;
+<i>470</i>&nbsp;//				poly.ypoints[poly.npoints-1] = y;
+<i>471</i>&nbsp;//			}
+<i>472</i>&nbsp;//			lastX = x;
+<i>473</i>&nbsp;//			lastY = y;
+<i>474</i>&nbsp;//		}
+<i>475</i>&nbsp;		
+<b class="nc"><i>476</i>&nbsp;		return roi;</b>
+<i>477</i>&nbsp;	}
+<i>478</i>&nbsp;	
+<i>479</i>&nbsp;	/**
+<i>480</i>&nbsp;	 * Fill holes in a binary image.
+<i>481</i>&nbsp;	 * &lt;p&gt;
+<i>482</i>&nbsp;	 * Assumes 255 is foreground, 0 is background.
+<i>483</i>&nbsp;	 * &lt;p&gt;
+<i>484</i>&nbsp;	 * Based on code in ImageJ&#39;s Binary class.
+<i>485</i>&nbsp;	 * 
+<i>486</i>&nbsp;	 * @param bp
+<i>487</i>&nbsp;	 */
+<i>488</i>&nbsp;	public static void fillHoles(ByteProcessor bp) {
+<b class="nc"><i>489</i>&nbsp;		int w = bp.getWidth();</b>
+<b class="nc"><i>490</i>&nbsp;		int h = bp.getHeight();</b>
+<b class="nc"><i>491</i>&nbsp;		FloodFiller ff = new FloodFiller(bp);</b>
+<b class="nc"><i>492</i>&nbsp;		bp.setValue(127);</b>
+<b class="nc"><i>493</i>&nbsp;		for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>494</i>&nbsp;			if (bp.getPixel(x, 0) == 0)</b>
+<b class="nc"><i>495</i>&nbsp;				ff.fill8(x, 0);</b>
+<b class="nc"><i>496</i>&nbsp;			if (bp.getPixel(x, h-1) == 0)</b>
+<b class="nc"><i>497</i>&nbsp;				ff.fill8(x, h-1);</b>
+<i>498</i>&nbsp;		}
+<b class="nc"><i>499</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>500</i>&nbsp;			if (bp.getPixel(0, y) == 0)</b>
+<b class="nc"><i>501</i>&nbsp;				ff.fill8(0, y);</b>
+<b class="nc"><i>502</i>&nbsp;			if (bp.getPixel(w-1, y) == 0)</b>
+<b class="nc"><i>503</i>&nbsp;				ff.fill8(w-1, y);</b>
+<i>504</i>&nbsp;		}
+<b class="nc"><i>505</i>&nbsp;		for (int i = 0; i &lt; w*h; i++) {</b>
+<b class="nc"><i>506</i>&nbsp;			if (bp.get(i) == 127)</b>
+<b class="nc"><i>507</i>&nbsp;				bp.set(i, 0);</b>
+<i>508</i>&nbsp;			else
+<b class="nc"><i>509</i>&nbsp;				bp.set(i, 255);</b>
+<i>510</i>&nbsp;		}
+<i>511</i>&nbsp;	}
+<i>512</i>&nbsp;	
+<i>513</i>&nbsp;	/**
+<i>514</i>&nbsp;	 * Label ROIs by filling each pixel with an integer value corresponding to the index of the Roi 
+<i>515</i>&nbsp;	 * in the list + 1.
+<i>516</i>&nbsp;	 * @param ipLabels
+<i>517</i>&nbsp;	 * @param rois
+<i>518</i>&nbsp;	 * @return
+<i>519</i>&nbsp;	 */
+<i>520</i>&nbsp;	public static ImageProcessor labelROIs(ImageProcessor ipLabels, List&lt;? extends Roi&gt; rois) {
+<b class="nc"><i>521</i>&nbsp;		int label = 0;</b>
+<b class="nc"><i>522</i>&nbsp;		for (Roi r : rois) {</b>
+<b class="nc"><i>523</i>&nbsp;			label++;</b>
+<b class="nc"><i>524</i>&nbsp;			ipLabels.setValue(label);</b>
+<b class="nc"><i>525</i>&nbsp;			ipLabels.fill(r);</b>
+<b class="nc"><i>526</i>&nbsp;		}</b>
+<b class="nc"><i>527</i>&nbsp;		return ipLabels;</b>
+<i>528</i>&nbsp;	}
+<i>529</i>&nbsp;	
+<i>530</i>&nbsp;	
+<i>531</i>&nbsp;	/**
+<i>532</i>&nbsp;	 * Create a labelled image from above-threshold pixels for an image.
+<i>533</i>&nbsp;	 * @param ip
+<i>534</i>&nbsp;	 * @param threshold
+<i>535</i>&nbsp;	 * @param conn8
+<i>536</i>&nbsp;	 * @return labelled image, as a ShortProcessor (if possible) or FloatProcessor (if necessary)
+<i>537</i>&nbsp;	 */
+<i>538</i>&nbsp;	public static ImageProcessor labelImage(ImageProcessor ip, float threshold, boolean conn8) {
+<b class="nc"><i>539</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>540</i>&nbsp;		int h = ip.getHeight();</b>
+<b class="nc"><i>541</i>&nbsp;		short shortMax = (short)65535;</b>
+<b class="nc"><i>542</i>&nbsp;		ImageProcessor sp = new ShortProcessor(w, h);</b>
+<b class="nc"><i>543</i>&nbsp;		short[] pxShort = (short[])sp.getPixels();</b>
+<b class="nc"><i>544</i>&nbsp;		for (int i = 0; i &lt; w*h; i++) {</b>
+<b class="nc"><i>545</i>&nbsp;			if (ip.getf(i) &gt; threshold)</b>
+<b class="nc"><i>546</i>&nbsp;				pxShort[i] = shortMax;</b>
+<i>547</i>&nbsp;		}
+<i>548</i>&nbsp;		// Loop through and flood fill
+<b class="nc"><i>549</i>&nbsp;		FloodFiller ff = new FloodFiller(sp);</b>
+<b class="nc"><i>550</i>&nbsp;		double label = 0;</b>
+<b class="nc"><i>551</i>&nbsp;		double maxSupported = 65535;</b>
+<b class="nc"><i>552</i>&nbsp;		for (int i = 0; i &lt; pxShort.length; i++) {</b>
+<b class="nc"><i>553</i>&nbsp;			if (pxShort[i] == shortMax) {</b>
+<b class="nc"><i>554</i>&nbsp;				label++;</b>
+<i>555</i>&nbsp;				// We would overflow the max int value for a ShortProcessor - convert now to 32-bit
+<b class="nc"><i>556</i>&nbsp;				if (label == maxSupported) {</b>
+<b class="nc"><i>557</i>&nbsp;					sp = sp.convertToFloatProcessor();</b>
+<b class="nc"><i>558</i>&nbsp;					ff = new FloodFiller(sp);</b>
+<b class="nc"><i>559</i>&nbsp;					maxSupported = -1;</b>
+<i>560</i>&nbsp;				}
+<b class="nc"><i>561</i>&nbsp;				sp.setValue(label);</b>
+<b class="nc"><i>562</i>&nbsp;				if (conn8)</b>
+<b class="nc"><i>563</i>&nbsp;					ff.fill8(i % w, i / w);</b>
+<i>564</i>&nbsp;				else
+<b class="nc"><i>565</i>&nbsp;					ff.fill(i % w, i / w);</b>
+<i>566</i>&nbsp;			}
+<i>567</i>&nbsp;		}
+<b class="nc"><i>568</i>&nbsp;		sp.setMinAndMax(0, label);</b>
+<b class="nc"><i>569</i>&nbsp;		return sp;</b>
+<i>570</i>&nbsp;	}
+<i>571</i>&nbsp;	
+<i>572</i>&nbsp;	
+<i>573</i>&nbsp;	
+<i>574</i>&nbsp;	/**
+<i>575</i>&nbsp;	 * Remove objects having small areas, defined in terms of pixels
+<i>576</i>&nbsp;	 * 
+<i>577</i>&nbsp;	 * @param bp
+<i>578</i>&nbsp;	 * @param minPixels minimum number of pixels in an object that should be kept
+<i>579</i>&nbsp;	 * @param conn8
+<i>580</i>&nbsp;	 */
+<i>581</i>&nbsp;	public static void removeSmallAreas(ByteProcessor bp, double minPixels, boolean conn8) {
+<b class="nc"><i>582</i>&nbsp;		removeByAreas(bp, minPixels, Double.POSITIVE_INFINITY, conn8);</b>
+<i>583</i>&nbsp;	}
+<i>584</i>&nbsp;	
+<i>585</i>&nbsp;	
+<i>586</i>&nbsp;	/**
+<i>587</i>&nbsp;	 * Remove objects containing &amp;lt; minPixels or &amp;gt; maxPixels.
+<i>588</i>&nbsp;	 * 
+<i>589</i>&nbsp;	 * @param bp
+<i>590</i>&nbsp;	 * @param minPixels
+<i>591</i>&nbsp;	 * @param maxPixels
+<i>592</i>&nbsp;	 * @param conn8
+<i>593</i>&nbsp;	 * @return the number of connected objects remaining.
+<i>594</i>&nbsp;	 */
+<i>595</i>&nbsp;	public static int removeByAreas(final ByteProcessor bp, final double minPixels, final double maxPixels, final boolean conn8) {
+<b class="nc"><i>596</i>&nbsp;		int w = bp.getWidth();</b>
+<b class="nc"><i>597</i>&nbsp;		int h = bp.getHeight();</b>
+<b class="nc"><i>598</i>&nbsp;		int shortMax = 65535;</b>
+<b class="nc"><i>599</i>&nbsp;		ImageProcessor ipLabels = labelImage(bp, 0.5f, conn8);</b>
+<i>600</i>&nbsp;		// Loop through pixels &amp; compute a histogram
+<b class="nc"><i>601</i>&nbsp;		long[] histogram = new long[shortMax+1];</b>
+<b class="nc"><i>602</i>&nbsp;		for (int i = 0; i &lt; w*h; i++) {</b>
+<b class="nc"><i>603</i>&nbsp;			int val = (int)ipLabels.getf(i);</b>
+<b class="nc"><i>604</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>605</i>&nbsp;				histogram[val] += 1;</b>
+<i>606</i>&nbsp;		}
+<i>607</i>&nbsp;		// Create a thresholded histogram
+<b class="nc"><i>608</i>&nbsp;		boolean[] histThresholded = new boolean[histogram.length];</b>
+<b class="nc"><i>609</i>&nbsp;		int nObjects = 0;</b>
+<b class="nc"><i>610</i>&nbsp;		for (int i = 0; i &lt; histThresholded.length; i++) {</b>
+<b class="nc"><i>611</i>&nbsp;			boolean keepObject = histogram[i] &gt;= minPixels &amp;&amp; histogram[i] &lt;= maxPixels;</b>
+<b class="nc"><i>612</i>&nbsp;			if (keepObject) {</b>
+<b class="nc"><i>613</i>&nbsp;				histThresholded[i] = true;</b>
+<b class="nc"><i>614</i>&nbsp;				nObjects++;</b>
+<i>615</i>&nbsp;			}
+<i>616</i>&nbsp;		}
+<i>617</i>&nbsp;		// Loop through and set to zero and below threshold objects
+<b class="nc"><i>618</i>&nbsp;		for (int i = 0; i &lt; w*h; i++) {</b>
+<b class="nc"><i>619</i>&nbsp;			int val = (int)ipLabels.getf(i);</b>
+<b class="nc"><i>620</i>&nbsp;			if (val != 0 &amp;&amp; !histThresholded[val])</b>
+<b class="nc"><i>621</i>&nbsp;				bp.set(i, 0);</b>
+<i>622</i>&nbsp;		}
+<b class="nc"><i>623</i>&nbsp;		return nObjects;</b>
+<i>624</i>&nbsp;	}
+<i>625</i>&nbsp;	
+<i>626</i>&nbsp;	
+<i>627</i>&nbsp;	
+<i>628</i>&nbsp;//	private static final boolean binaryOn(ByteProcessor bp, int x, int y) {
+<i>629</i>&nbsp;//		return bp.get(x, y) != 0;
+<i>630</i>&nbsp;//	}
+<i>631</i>&nbsp;//	
+<i>632</i>&nbsp;//	
+<i>633</i>&nbsp;//	public static ByteProcessor removeSpurs(ByteProcessor bp, ByteProcessor bpOutput) {
+<i>634</i>&nbsp;//		int w = bp.getWidth();
+<i>635</i>&nbsp;//		int h = bp.getHeight();
+<i>636</i>&nbsp;//		if (bpOutput == null)
+<i>637</i>&nbsp;//			bpOutput = new ByteProcessor(w, h);
+<i>638</i>&nbsp;//		int[] xOffsets = new int[]{-1, 0, 1, 1, 1, 0, -1, -1};
+<i>639</i>&nbsp;//		int[] yOffsets = new int[]{-1, -1, -1, 0, 1, 1, 1, 0};
+<i>640</i>&nbsp;//		for (int y = 0; y &lt; h; y++) {
+<i>641</i>&nbsp;//			for (int x = 0; x &lt; w; x++) {
+<i>642</i>&nbsp;//				boolean val = binaryOn(bp, x, y);
+<i>643</i>&nbsp;//				if (!val)
+<i>644</i>&nbsp;//					continue;
+<i>645</i>&nbsp;//				// Loop around the central pixel &amp; count the &#39;on&#39; neighbors
+<i>646</i>&nbsp;//				// Remove pixel if it only has one group of continuous &#39;on&#39; neighbors
+<i>647</i>&nbsp;//				int count = 0;
+<i>648</i>&nbsp;//				boolean lastOn = x-1 &gt;= 0 &amp;&amp; binaryOn(bp, x-1, y);
+<i>649</i>&nbsp;//				for (int i = 0; i &lt; xOffsets.length; i++) {
+<i>650</i>&nbsp;//					int xx = x + xOffsets[i];
+<i>651</i>&nbsp;//					int yy = y + yOffsets[i];
+<i>652</i>&nbsp;//					// Check if we are outside the image
+<i>653</i>&nbsp;//					if (xx &lt; 0 || xx &gt;= w || yy &lt; 0 || yy &gt;= h) {
+<i>654</i>&nbsp;//						lastOn = false;
+<i>655</i>&nbsp;//					} else {
+<i>656</i>&nbsp;//						if (binaryOn(bp, xx, yy)) {
+<i>657</i>&nbsp;//							if (!lastOn) {
+<i>658</i>&nbsp;//								count++;
+<i>659</i>&nbsp;//								lastOn = true;
+<i>660</i>&nbsp;//							}
+<i>661</i>&nbsp;//						} else
+<i>662</i>&nbsp;//							lastOn = false;
+<i>663</i>&nbsp;//					}
+<i>664</i>&nbsp;//				}
+<i>665</i>&nbsp;//				if (count &gt; 1)
+<i>666</i>&nbsp;//					bpOutput.set(x, y, (byte)255);
+<i>667</i>&nbsp;//				else
+<i>668</i>&nbsp;//					bpOutput.set(x, y, 0);
+<i>669</i>&nbsp;////				if (count &lt;= 1)
+<i>670</i>&nbsp;////					bp.set(x, y, 0);
+<i>671</i>&nbsp;//			}
+<i>672</i>&nbsp;//		}
+<i>673</i>&nbsp;//		return bpOutput;
+<i>674</i>&nbsp;//	}
+<i>675</i>&nbsp;
+<i>676</i>&nbsp;
+<i>677</i>&nbsp;	/**
+<i>678</i>&nbsp;	 * Fill in a region outside a specified ROI
+<i>679</i>&nbsp;	 * 
+<i>680</i>&nbsp;	 * @param ip
+<i>681</i>&nbsp;	 * @param roi
+<i>682</i>&nbsp;	 * @param value 
+<i>683</i>&nbsp;	 */
+<i>684</i>&nbsp;	public static void fillOutside(ImageProcessor ip, Roi roi, double value) {
+<i>685</i>&nbsp;		// Check we don&#39;t have a full rectangle
+<b class="nc"><i>686</i>&nbsp;		if (roi.getType() == Roi.RECTANGLE &amp;&amp; roi.getBounds().equals(new Rectangle(0, 0, ip.getWidth(), ip.getHeight())))</b>
+<i>687</i>&nbsp;			return;
+<i>688</i>&nbsp;//		if (roi instanceof ShapeRoi) {
+<i>689</i>&nbsp;			// Appears to be a bug with ShapeRois so that filling outside can fail using ImageJ&#39;s own code
+<b class="nc"><i>690</i>&nbsp;			ByteProcessor bpMask = new ByteProcessor(ip.getWidth(), ip.getHeight());</b>
+<b class="nc"><i>691</i>&nbsp;			bpMask.setValue(1);</b>
+<b class="nc"><i>692</i>&nbsp;			bpMask.fill(roi);</b>
+<b class="nc"><i>693</i>&nbsp;			if (value == 0)</b>
+<b class="nc"><i>694</i>&nbsp;				ip.copyBits(bpMask, 0, 0, Blitter.MULTIPLY);</b>
+<i>695</i>&nbsp;			else {
+<b class="nc"><i>696</i>&nbsp;				float floatValue = (float)value;</b>
+<b class="nc"><i>697</i>&nbsp;				byte[] px = (byte[])bpMask.getPixels();</b>
+<b class="nc"><i>698</i>&nbsp;				for (int i = 0; i &lt; px.length; i++) {</b>
+<b class="nc"><i>699</i>&nbsp;					if (px[i] == (byte)0)</b>
+<b class="nc"><i>700</i>&nbsp;						ip.setf(i, floatValue);</b>
+<i>701</i>&nbsp;				}
+<i>702</i>&nbsp;			}
+<i>703</i>&nbsp;//		} else {
+<i>704</i>&nbsp;//			ip.setValue(value);
+<i>705</i>&nbsp;//			ip.fillOutside(roi);
+<i>706</i>&nbsp;//		}
+<i>707</i>&nbsp;	}
+<i>708</i>&nbsp;
+<i>709</i>&nbsp;
+<i>710</i>&nbsp;	/**
+<i>711</i>&nbsp;	 * Clear (i.e. set pixels to zero) in a region outside a specified ROI
+<i>712</i>&nbsp;	 * 
+<i>713</i>&nbsp;	 * @param ip
+<i>714</i>&nbsp;	 * @param roi
+<i>715</i>&nbsp;	 */
+<i>716</i>&nbsp;	public static void clearOutside(ImageProcessor ip, Roi roi) {
+<b class="nc"><i>717</i>&nbsp;		fillOutside(ip, roi, 0);</b>
+<i>718</i>&nbsp;	}
+<i>719</i>&nbsp;	
+<i>720</i>&nbsp;	
+<i>721</i>&nbsp;	
+<i>722</i>&nbsp;	/**
+<i>723</i>&nbsp;	 * Starting from all white pixels (value = 255) on a ROI&#39;s boundary,
+<i>724</i>&nbsp;	 * fill the pixels with black
+<i>725</i>&nbsp;	 * 
+<i>726</i>&nbsp;	 * @param bp
+<i>727</i>&nbsp;	 * @param roi
+<i>728</i>&nbsp;	 * @param clearValue
+<i>729</i>&nbsp;	 */
+<i>730</i>&nbsp;	public static void clearBoundary(ByteProcessor bp, Roi roi, double clearValue) {
+<b class="nc"><i>731</i>&nbsp;		ByteProcessor bpEdgeMask = new ByteProcessor(bp.getWidth(), bp.getHeight());</b>
+<b class="nc"><i>732</i>&nbsp;		bpEdgeMask.setValue(255);</b>
+<b class="nc"><i>733</i>&nbsp;		if (roi == null)</b>
+<b class="nc"><i>734</i>&nbsp;			bpEdgeMask.fill();</b>
+<i>735</i>&nbsp;		else {
+<b class="nc"><i>736</i>&nbsp;			bpEdgeMask.fill(roi);</b>
+<i>737</i>&nbsp;		}
+<b class="nc"><i>738</i>&nbsp;		bpEdgeMask.filter(ByteProcessor.MIN);</b>
+<b class="nc"><i>739</i>&nbsp;		bpEdgeMask.invert();</b>
+<b class="nc"><i>740</i>&nbsp;		bpEdgeMask.copyBits(bp, 0, 0, Blitter.AND);</b>
+<b class="nc"><i>741</i>&nbsp;		bpEdgeMask = MorphologicalReconstruction.binaryReconstruction(bpEdgeMask, bp, false);</b>
+<b class="nc"><i>742</i>&nbsp;		bp.copyBits(bpEdgeMask, 0, 0, Blitter.SUBTRACT);</b>
+<i>743</i>&nbsp;//
+<i>744</i>&nbsp;//		ImagePlus imp = new ImagePlus(&quot;Edge&quot;, bp.duplicate());
+<i>745</i>&nbsp;//		imp.setRoi(roi);
+<i>746</i>&nbsp;//		imp.show();
+<i>747</i>&nbsp;
+<i>748</i>&nbsp;//		ByteProcessor bpEdgeMask = new ByteProcessor(bp.getWidth(), bp.getHeight());
+<i>749</i>&nbsp;//		bpEdgeMask.setValue(255);
+<i>750</i>&nbsp;//		bpEdgeMask.setLineWidth(2);
+<i>751</i>&nbsp;//		if (roi == null)
+<i>752</i>&nbsp;//			bpEdgeMask.draw(new Roi(0, 0, bp.getWidth(), bp.getHeight()));
+<i>753</i>&nbsp;//		else
+<i>754</i>&nbsp;//			bpEdgeMask.draw(roi);
+<i>755</i>&nbsp;//		bpEdgeMask.copyBits(bp, 0, 0, Blitter.AND);
+<i>756</i>&nbsp;//		bpEdgeMask = MorphologicalReconstruction.binaryReconstruction(bpEdgeMask, bp, false);
+<i>757</i>&nbsp;//		bp.copyBits(bpEdgeMask, 0, 0, Blitter.SUBTRACT);
+<i>758</i>&nbsp;//		new ImagePlus(&quot;Edge&quot;, bp.duplicate()).show();
+<i>759</i>&nbsp;	}
+<i>760</i>&nbsp;	
+<i>761</i>&nbsp;	
+<i>762</i>&nbsp;	
+<i>763</i>&nbsp;//	public static void removeSpurs(ByteProcessor bp) {
+<i>764</i>&nbsp;//		int w = bp.getWidth();
+<i>765</i>&nbsp;//		int h = bp.getHeight();
+<i>766</i>&nbsp;//		for (int y = 0; y &lt; h; y++) {
+<i>767</i>&nbsp;//			for (int x = 0; x &lt; w; x++) {
+<i>768</i>&nbsp;//				boolean val = binaryOn(bp, x, y);
+<i>769</i>&nbsp;//				if (!val)
+<i>770</i>&nbsp;//					continue;
+<i>771</i>&nbsp;//				// Count the number of &#39;on&#39; neighbors, and set pixel to zero if &lt; 2 (including pixel itself)
+<i>772</i>&nbsp;//				int count = 0;
+<i>773</i>&nbsp;//				for (int yy = Math.max(y-1, 0); yy &lt;= Math.min(y+1, h-1); yy++) {
+<i>774</i>&nbsp;//					for (int xx = Math.max(x-1, 0); xx &lt;= Math.min(x+1, w-1); xx++) {
+<i>775</i>&nbsp;//						if (binaryOn(bp, xx, yy)) {
+<i>776</i>&nbsp;//							count++;
+<i>777</i>&nbsp;//							if (count &gt; 2)
+<i>778</i>&nbsp;//								break;
+<i>779</i>&nbsp;//						}
+<i>780</i>&nbsp;//					}
+<i>781</i>&nbsp;//				}
+<i>782</i>&nbsp;//				if (count &lt;= 2)
+<i>783</i>&nbsp;//					bp.set(x, y, 0);
+<i>784</i>&nbsp;//			}
+<i>785</i>&nbsp;//		}
+<i>786</i>&nbsp;//	}
+<i>787</i>&nbsp;
+<i>788</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

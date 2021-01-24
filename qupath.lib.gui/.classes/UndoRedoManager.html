@@ -1,0 +1,619 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UndoRedoManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UndoRedoManager (qupath.lib.gui)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UndoRedoManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    52.9%
+  </span>
+  <span class="absValue">
+    (9/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    37.4%
+  </span>
+  <span class="absValue">
+    (43/ 115)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">UndoRedoManager$SerializableUndoRedoStack</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (4/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    24.2%
+  </span>
+  <span class="absValue">
+    (15/ 62)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    48.1%
+  </span>
+  <span class="absValue">
+    (13/ 27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    32.8%
+  </span>
+  <span class="absValue">
+    (58/ 177)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.Shape;
+<i>25</i>&nbsp;import java.awt.image.BufferedImage;
+<i>26</i>&nbsp;import java.io.ByteArrayInputStream;
+<i>27</i>&nbsp;import java.io.ByteArrayOutputStream;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.io.ObjectInputStream;
+<i>30</i>&nbsp;import java.io.ObjectOutputStream;
+<i>31</i>&nbsp;import java.util.ArrayDeque;
+<i>32</i>&nbsp;import java.util.Deque;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;import java.util.WeakHashMap;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.slf4j.Logger;
+<i>37</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import javafx.application.Platform;
+<i>40</i>&nbsp;import javafx.beans.property.IntegerProperty;
+<i>41</i>&nbsp;import javafx.beans.property.ReadOnlyBooleanProperty;
+<i>42</i>&nbsp;import javafx.beans.property.ReadOnlyObjectProperty;
+<i>43</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>44</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>45</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>46</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>47</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>48</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>49</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewerListener;
+<i>50</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewerPlus;
+<i>51</i>&nbsp;import qupath.lib.images.ImageData;
+<i>52</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>53</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>54</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>55</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>56</i>&nbsp;import qupath.lib.plugins.ParallelTileObject;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;/**
+<i>59</i>&nbsp; * Helper class to add undo/redo support to QuPath.
+<i>60</i>&nbsp; * &lt;p&gt;
+<i>61</i>&nbsp; * This is restricted to tracking changes in the PathObjectHierarchy for individual viewers, 
+<i>62</i>&nbsp; * and is intended mostly for cases where there aren&#39;t many objects - but where making mistakes 
+<i>63</i>&nbsp; * would be especially annoying (e.g. laboriously annotating images).
+<i>64</i>&nbsp; * &lt;p&gt;
+<i>65</i>&nbsp; * Preferences are created to control the maximum number of levels of undo, and also the maximum hierarchy 
+<i>66</i>&nbsp; * size.  This latter option is used to automatically turn off undo/redo support if the hierarchy size 
+<i>67</i>&nbsp; * grows beyond a specified number of objects.
+<i>68</i>&nbsp; * &lt;p&gt;
+<i>69</i>&nbsp; * The reason is because of the (fairly simple) implementation: every time the hierarchy is changed, 
+<i>70</i>&nbsp; * the &lt;i&gt;entire hierarchy&lt;/i&gt; is serialized in case it becomes necessary to revert back.
+<i>71</i>&nbsp; * &lt;p&gt;
+<i>72</i>&nbsp; * This is a lot easier than trying to figure out how to computationally revert every conceivable change 
+<i>73</i>&nbsp; * that the hierarchy might experience, but it is inevitably quite memory hungry and risks having a substantial 
+<i>74</i>&nbsp; * impact on performance for large object hierarchies.
+<i>75</i>&nbsp; * 
+<i>76</i>&nbsp; * @author Pete Bankhead
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; */
+<i>79</i>&nbsp;public class UndoRedoManager implements ChangeListener&lt;QuPathViewerPlus&gt;, QuPathViewerListener, PathObjectHierarchyListener {
+<i>80</i>&nbsp;	
+<b class="fc"><i>81</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(UndoRedoManager.class);</b>
+<i>82</i>&nbsp;	
+<b class="fc"><i>83</i>&nbsp;	private IntegerProperty maxUndoLevels = PathPrefs.createPersistentPreference(&quot;undoMaxLevels&quot;, 10);</b>
+<b class="fc"><i>84</i>&nbsp;	private IntegerProperty maxUndoHierarchySize = PathPrefs.createPersistentPreference(&quot;undoMaxHierarchySize&quot;, 10000);</b>
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	private ReadOnlyObjectProperty&lt;QuPathViewerPlus&gt; viewerProperty;
+<i>87</i>&nbsp;	
+<b class="fc"><i>88</i>&nbsp;	private SimpleBooleanProperty canUndo = new SimpleBooleanProperty(false);</b>
+<b class="fc"><i>89</i>&nbsp;	private SimpleBooleanProperty canRedo = new SimpleBooleanProperty(false);</b>
+<i>90</i>&nbsp;	
+<b class="fc"><i>91</i>&nbsp;	private boolean undoingOrRedoing = false;</b>
+<i>92</i>&nbsp;	
+<b class="fc"><i>93</i>&nbsp;	private Map&lt;QuPathViewer, SerializableUndoRedoStack&lt;PathObjectHierarchy&gt;&gt; map = new WeakHashMap&lt;&gt;();</b>
+<i>94</i>&nbsp;	
+<b class="fc"><i>95</i>&nbsp;	UndoRedoManager(final QuPathGUI qupath) {</b>
+<b class="fc"><i>96</i>&nbsp;		this.viewerProperty = qupath.viewerProperty();</b>
+<b class="fc"><i>97</i>&nbsp;		this.viewerProperty.addListener(this);</b>
+<i>98</i>&nbsp;		
+<b class="fc"><i>99</i>&nbsp;		qupath.getPreferencePane().addPropertyPreference(maxUndoLevels, Integer.class, &quot;Max undo levels&quot;, &quot;Undo/Redo&quot;, &quot;Maximum number of &#39;undo&#39; levels&quot;);</b>
+<b class="fc"><i>100</i>&nbsp;		qupath.getPreferencePane().addPropertyPreference(maxUndoHierarchySize, Integer.class, &quot;Max undo hierarchy size&quot;, &quot;Undo/Redo&quot;, &quot;Maximum number of objects in hierarchy before &#39;undo&#39; switches off (for performance)&quot;);</b>
+<i>101</i>&nbsp;		
+<b class="fc"><i>102</i>&nbsp;		changed(this.viewerProperty, null, this.viewerProperty.get());</b>
+<i>103</i>&nbsp;		
+<b class="fc"><i>104</i>&nbsp;	}</b>
+<i>105</i>&nbsp;	
+<i>106</i>&nbsp;	/**
+<i>107</i>&nbsp;	 * Refresh the properties for the current active viewer.
+<i>108</i>&nbsp;	 * These can be bound to the disabled status of GUI elements.
+<i>109</i>&nbsp;	 */
+<i>110</i>&nbsp;	private void refreshProperties() {
+<i>111</i>&nbsp;		// Call refresh on the JavaFX application thread, because it&#39;s likely that GUI elements depend on these
+<b class="fc"><i>112</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>113</i>&nbsp;			Platform.runLater(() -&gt; refreshProperties());</b>
+<b class="nc"><i>114</i>&nbsp;			return;</b>
+<i>115</i>&nbsp;		}
+<b class="fc"><i>116</i>&nbsp;		SerializableUndoRedoStack&lt;PathObjectHierarchy&gt; undoRedo = map.get(viewerProperty.get());</b>
+<b class="fc"><i>117</i>&nbsp;		if (undoRedo == null) {</b>
+<b class="fc"><i>118</i>&nbsp;			canUndo.set(false);</b>
+<b class="fc"><i>119</i>&nbsp;			canRedo.set(false);</b>
+<i>120</i>&nbsp;		} else {
+<b class="fc"><i>121</i>&nbsp;			canUndo.set(undoRedo.canUndo());			</b>
+<b class="fc"><i>122</i>&nbsp;			canRedo.set(undoRedo.canRedo());			</b>
+<i>123</i>&nbsp;		}
+<b class="fc"><i>124</i>&nbsp;	}</b>
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	/**
+<i>127</i>&nbsp;	 * Request to &#39;undo&#39; the last observed hierarchy change for the current active viewer.
+<i>128</i>&nbsp;	 * 
+<i>129</i>&nbsp;	 * @return {@code true} if any changes were made, false otherwise.
+<i>130</i>&nbsp;	 */
+<i>131</i>&nbsp;	public boolean undoOnce() {
+<b class="nc"><i>132</i>&nbsp;		return undoOnce(viewerProperty.get());</b>
+<i>133</i>&nbsp;	}
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	/**
+<i>136</i>&nbsp;	 * The total number of bytes used for all viewers.
+<i>137</i>&nbsp;	 * @return 
+<i>138</i>&nbsp;	 */
+<i>139</i>&nbsp;	public long totalBytes() {
+<b class="nc"><i>140</i>&nbsp;		long total = 0L;</b>
+<b class="nc"><i>141</i>&nbsp;		for (var manager : map.values()) {</b>
+<b class="nc"><i>142</i>&nbsp;			if (manager != null)</b>
+<b class="nc"><i>143</i>&nbsp;				total += manager.totalBytes();</b>
+<b class="nc"><i>144</i>&nbsp;		}</b>
+<b class="nc"><i>145</i>&nbsp;		return total;</b>
+<i>146</i>&nbsp;	}
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	/**
+<i>149</i>&nbsp;	 * Clear all undo/redo stacks (useful when memory is low).
+<i>150</i>&nbsp;	 */
+<i>151</i>&nbsp;	public void clear() {
+<b class="nc"><i>152</i>&nbsp;		for (var manager : map.values()) {</b>
+<b class="nc"><i>153</i>&nbsp;			manager.clear();</b>
+<b class="nc"><i>154</i>&nbsp;		}</b>
+<b class="nc"><i>155</i>&nbsp;		refreshProperties();</b>
+<b class="nc"><i>156</i>&nbsp;	}</b>
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * Request to &#39;redo&#39; the last &#39;undone&#39; hierarchy change for the current active viewer.
+<i>160</i>&nbsp;	 * 
+<i>161</i>&nbsp;	 * @return True if any changes were made, false otherwise.
+<i>162</i>&nbsp;	 */
+<i>163</i>&nbsp;	public boolean redoOnce() {
+<b class="nc"><i>164</i>&nbsp;		return redoOnce(viewerProperty.get());</b>
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * Request to &#39;undo&#39; the last observed hierarchy change for the specified viewer.
+<i>169</i>&nbsp;	 * 
+<i>170</i>&nbsp;	 * @param viewer
+<i>171</i>&nbsp;	 * @return {@code true} if any changes were made, {@code false} otherwise.
+<i>172</i>&nbsp;	 */
+<i>173</i>&nbsp;	boolean undoOnce(final QuPathViewer viewer) {
+<b class="nc"><i>174</i>&nbsp;		if (viewer == null) {</b>
+<b class="nc"><i>175</i>&nbsp;			logger.warn(&quot;Undo requested, but no viewer specified.&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;			return false;</b>
+<i>177</i>&nbsp;		}
+<i>178</i>&nbsp;		
+<b class="nc"><i>179</i>&nbsp;		SerializableUndoRedoStack&lt;PathObjectHierarchy&gt; undoRedo = map.get(viewer);</b>
+<b class="nc"><i>180</i>&nbsp;		if (undoRedo == null) {</b>
+<b class="nc"><i>181</i>&nbsp;			logger.warn(&quot;Undo requested, but undo stack available.&quot;);</b>
+<b class="nc"><i>182</i>&nbsp;			return false;</b>
+<i>183</i>&nbsp;		}
+<i>184</i>&nbsp;		
+<i>185</i>&nbsp;		// Update the hierarchy
+<b class="nc"><i>186</i>&nbsp;		PathObjectHierarchy hierarchy = undoRedo.undoOnce();</b>
+<b class="nc"><i>187</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="nc"><i>188</i>&nbsp;			logger.warn(&quot;Unable to call &#39;undo&#39; for {}&quot;, viewer);</b>
+<b class="nc"><i>189</i>&nbsp;			return false;</b>
+<i>190</i>&nbsp;		}
+<b class="nc"><i>191</i>&nbsp;		undoingOrRedoing = true;</b>
+<b class="nc"><i>192</i>&nbsp;		logger.debug(&quot;Called &#39;undo&#39; for {}&quot;, viewer);</b>
+<i>193</i>&nbsp;		// Need to make sure we&#39;ve no selection, since selected objects can linger
+<b class="nc"><i>194</i>&nbsp;		viewer.getImageData().getHierarchy().getSelectionModel().clearSelection();</b>
+<b class="nc"><i>195</i>&nbsp;		viewer.getImageData().getHierarchy().setHierarchy(hierarchy);</b>
+<b class="nc"><i>196</i>&nbsp;		undoingOrRedoing = false;</b>
+<b class="nc"><i>197</i>&nbsp;		refreshProperties();</b>
+<i>198</i>&nbsp;		
+<b class="nc"><i>199</i>&nbsp;		return true;</b>
+<i>200</i>&nbsp;	}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;	/**
+<i>203</i>&nbsp;	 * Request to &#39;redo&#39; the last &#39;undone&#39; hierarchy change for the specified viewer.
+<i>204</i>&nbsp;	 * 
+<i>205</i>&nbsp;	 * @param viewer
+<i>206</i>&nbsp;	 * @return True if any changes were made, false otherwise.
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	boolean redoOnce(final QuPathViewer viewer) {
+<b class="nc"><i>209</i>&nbsp;		if (viewer == null) {</b>
+<b class="nc"><i>210</i>&nbsp;			logger.warn(&quot;Redo requested, but no viewer specified.&quot;);</b>
+<b class="nc"><i>211</i>&nbsp;			return false;</b>
+<i>212</i>&nbsp;		}
+<i>213</i>&nbsp;		
+<b class="nc"><i>214</i>&nbsp;		SerializableUndoRedoStack&lt;PathObjectHierarchy&gt; undoRedo = map.get(viewer);</b>
+<b class="nc"><i>215</i>&nbsp;		if (undoRedo == null) {</b>
+<b class="nc"><i>216</i>&nbsp;			logger.warn(&quot;Redo requested, but redo stack available.&quot;);</b>
+<b class="nc"><i>217</i>&nbsp;			return false;</b>
+<i>218</i>&nbsp;		}
+<i>219</i>&nbsp;		
+<i>220</i>&nbsp;		// Update the hierarchy
+<b class="nc"><i>221</i>&nbsp;		PathObjectHierarchy hierarchy = undoRedo.redoOnce();</b>
+<b class="nc"><i>222</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="nc"><i>223</i>&nbsp;			logger.warn(&quot;Unable to call &#39;redo&#39; for {}&quot;, viewer);</b>
+<b class="nc"><i>224</i>&nbsp;			return false;</b>
+<i>225</i>&nbsp;		}
+<b class="nc"><i>226</i>&nbsp;		undoingOrRedoing = true;</b>
+<b class="nc"><i>227</i>&nbsp;		logger.debug(&quot;Called &#39;redo&#39; for {}&quot;, viewer);</b>
+<i>228</i>&nbsp;		// Need to make sure we&#39;ve no selection, since selected objects can linger
+<b class="nc"><i>229</i>&nbsp;		viewer.getImageData().getHierarchy().getSelectionModel().clearSelection();</b>
+<b class="nc"><i>230</i>&nbsp;		viewer.getImageData().getHierarchy().setHierarchy(hierarchy);</b>
+<b class="nc"><i>231</i>&nbsp;		undoingOrRedoing = false;</b>
+<b class="nc"><i>232</i>&nbsp;		refreshProperties();</b>
+<i>233</i>&nbsp;		
+<b class="nc"><i>234</i>&nbsp;		return true;</b>
+<i>235</i>&nbsp;	}
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;	/**
+<i>238</i>&nbsp;	 * True if it&#39;s possible to call undoOnce for the currently-active viewer in QuPath, false otherwise.
+<i>239</i>&nbsp;	 * @return
+<i>240</i>&nbsp;	 */
+<i>241</i>&nbsp;	public ReadOnlyBooleanProperty canUndo() {
+<b class="fc"><i>242</i>&nbsp;		return canUndo;</b>
+<i>243</i>&nbsp;	}
+<i>244</i>&nbsp;	
+<i>245</i>&nbsp;	/**
+<i>246</i>&nbsp;	 * True if it&#39;s possible to call redoOnce for the currently-active viewer in QuPath, false otherwise.
+<i>247</i>&nbsp;	 * @return
+<i>248</i>&nbsp;	 */
+<i>249</i>&nbsp;	public ReadOnlyBooleanProperty canRedo() {
+<b class="fc"><i>250</i>&nbsp;		return canRedo;</b>
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;	
+<i>253</i>&nbsp;	
+<i>254</i>&nbsp;	
+<i>255</i>&nbsp;	@Override
+<i>256</i>&nbsp;	public void changed(ObservableValue&lt;? extends QuPathViewerPlus&gt; observable, QuPathViewerPlus oldValue, QuPathViewerPlus newValue) {
+<i>257</i>&nbsp;		
+<b class="fc"><i>258</i>&nbsp;		if (newValue == null)</b>
+<b class="nc"><i>259</i>&nbsp;			return;</b>
+<i>260</i>&nbsp;		
+<i>261</i>&nbsp;		// Start listening for changes in the hierarchy for the current viewer
+<b class="fc"><i>262</i>&nbsp;		if (!map.containsKey(newValue)) {</b>
+<b class="fc"><i>263</i>&nbsp;			newValue.addViewerListener(this);</b>
+<b class="fc"><i>264</i>&nbsp;			imageDataChanged(newValue, null, newValue.getImageData());</b>
+<i>265</i>&nbsp;		}
+<i>266</i>&nbsp;		
+<b class="fc"><i>267</i>&nbsp;		refreshProperties();</b>
+<b class="fc"><i>268</i>&nbsp;	}</b>
+<i>269</i>&nbsp;	
+<i>270</i>&nbsp;	
+<i>271</i>&nbsp;	
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;	/**
+<i>275</i>&nbsp;	 * Serialize objects on request for use in undo/redo.
+<i>276</i>&nbsp;	 *
+<i>277</i>&nbsp;	 * @param &lt;T&gt;
+<i>278</i>&nbsp;	 */
+<i>279</i>&nbsp;	static class SerializableUndoRedoStack&lt;T&gt; {
+<i>280</i>&nbsp;		
+<b class="fc"><i>281</i>&nbsp;		private byte[] current = null;</b>
+<b class="fc"><i>282</i>&nbsp;		private Deque&lt;byte[]&gt; undoStack = new ArrayDeque&lt;&gt;();</b>
+<b class="fc"><i>283</i>&nbsp;		private Deque&lt;byte[]&gt; redoStack = new ArrayDeque&lt;&gt;();</b>
+<i>284</i>&nbsp;		
+<b class="fc"><i>285</i>&nbsp;		SerializableUndoRedoStack(T object) {</b>
+<b class="fc"><i>286</i>&nbsp;			if (object != null)</b>
+<b class="fc"><i>287</i>&nbsp;				current = serialize(object, 1024);</b>
+<b class="fc"><i>288</i>&nbsp;		}</b>
+<i>289</i>&nbsp;		
+<i>290</i>&nbsp;		/**
+<i>291</i>&nbsp;		 * Returns true if the undo stack is not empty.
+<i>292</i>&nbsp;		 * @return
+<i>293</i>&nbsp;		 */
+<i>294</i>&nbsp;		public boolean canUndo() {
+<b class="fc"><i>295</i>&nbsp;			return !undoStack.isEmpty();</b>
+<i>296</i>&nbsp;		}
+<i>297</i>&nbsp;		
+<i>298</i>&nbsp;		/**
+<i>299</i>&nbsp;		 * Returns true if the redo stack is not empty.
+<i>300</i>&nbsp;		 * @return
+<i>301</i>&nbsp;		 */
+<i>302</i>&nbsp;		public boolean canRedo() {
+<b class="fc"><i>303</i>&nbsp;			return !redoStack.isEmpty();</b>
+<i>304</i>&nbsp;		}
+<i>305</i>&nbsp;		
+<i>306</i>&nbsp;		/**
+<i>307</i>&nbsp;		 * Get the total number of allocated bytes.
+<i>308</i>&nbsp;		 * @return
+<i>309</i>&nbsp;		 */
+<i>310</i>&nbsp;		public synchronized long totalBytes() {
+<b class="nc"><i>311</i>&nbsp;			long total = 0L;</b>
+<b class="nc"><i>312</i>&nbsp;			if (current != null)</b>
+<b class="nc"><i>313</i>&nbsp;				total = current.length;</b>
+<b class="nc"><i>314</i>&nbsp;			for (byte[] bytes : undoStack)</b>
+<b class="nc"><i>315</i>&nbsp;				total += bytes.length;</b>
+<b class="nc"><i>316</i>&nbsp;			for (byte[] bytes : redoStack)</b>
+<b class="nc"><i>317</i>&nbsp;				total += bytes.length;</b>
+<b class="nc"><i>318</i>&nbsp;			return total;</b>
+<i>319</i>&nbsp;		}
+<i>320</i>&nbsp;		
+<i>321</i>&nbsp;		/**
+<i>322</i>&nbsp;		 * Clear the undo and redo stacks, in addition to the current bytes.
+<i>323</i>&nbsp;		 */
+<i>324</i>&nbsp;		public synchronized void clear() {
+<b class="nc"><i>325</i>&nbsp;			current = null;</b>
+<b class="nc"><i>326</i>&nbsp;			undoStack.clear();</b>
+<b class="nc"><i>327</i>&nbsp;			redoStack.clear();</b>
+<b class="nc"><i>328</i>&nbsp;		}</b>
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;		/**
+<i>331</i>&nbsp;		 * Request redo once, updating the current (serialized) object, 
+<i>332</i>&nbsp;		 * and return the deserialized version of the object at the top of the &#39;redo&#39; stack.
+<i>333</i>&nbsp;		 * @return
+<i>334</i>&nbsp;		 */
+<i>335</i>&nbsp;		public synchronized T redoOnce() {
+<b class="nc"><i>336</i>&nbsp;			if (redoStack.isEmpty()) {</b>
+<b class="nc"><i>337</i>&nbsp;				logger.debug(&quot;Cannot redo! Stack is empty.&quot;);</b>
+<b class="nc"><i>338</i>&nbsp;				return null;</b>
+<i>339</i>&nbsp;			}
+<b class="nc"><i>340</i>&nbsp;			if (current != null) {</b>
+<b class="nc"><i>341</i>&nbsp;				undoStack.push(current);</b>
+<i>342</i>&nbsp;			}
+<b class="nc"><i>343</i>&nbsp;			current = redoStack.pop();</b>
+<b class="nc"><i>344</i>&nbsp;			return deserialize(current);</b>
+<i>345</i>&nbsp;		}
+<i>346</i>&nbsp;		
+<i>347</i>&nbsp;		/**
+<i>348</i>&nbsp;		 * Request undo once, updating the current (serialized) object, 
+<i>349</i>&nbsp;		 * and return the deserialized version of the object at the top of the &#39;undo&#39; stack.
+<i>350</i>&nbsp;		 * @return
+<i>351</i>&nbsp;		 */
+<i>352</i>&nbsp;		public synchronized T undoOnce() {
+<b class="nc"><i>353</i>&nbsp;			if (undoStack.isEmpty()) {</b>
+<b class="nc"><i>354</i>&nbsp;				logger.debug(&quot;Cannot undo! Stack is empty.&quot;);</b>
+<b class="nc"><i>355</i>&nbsp;				return null;</b>
+<i>356</i>&nbsp;			}
+<b class="nc"><i>357</i>&nbsp;			if (current != null) {</b>
+<b class="nc"><i>358</i>&nbsp;				redoStack.push(current);</b>
+<i>359</i>&nbsp;			}
+<b class="nc"><i>360</i>&nbsp;			current = undoStack.pop();</b>
+<b class="nc"><i>361</i>&nbsp;			return deserialize(current);</b>
+<i>362</i>&nbsp;		}
+<i>363</i>&nbsp;		
+<i>364</i>&nbsp;		/**
+<i>365</i>&nbsp;		 * Record a new change event, updating the current object.
+<i>366</i>&nbsp;		 * This will clear any redo status, on the assumption that redo is no longer possible.
+<i>367</i>&nbsp;		 * 
+<i>368</i>&nbsp;		 * @param object
+<i>369</i>&nbsp;		 * @param historySize
+<i>370</i>&nbsp;		 */
+<i>371</i>&nbsp;		public synchronized void addLatest(final T object, int historySize) {
+<b class="nc"><i>372</i>&nbsp;			int initialSize = 1024;</b>
+<b class="nc"><i>373</i>&nbsp;			if (current != null) {</b>
+<i>374</i>&nbsp;				// If we are low on memory, clear the undo stack
+<b class="nc"><i>375</i>&nbsp;				long remainingMemory = GeneralTools.estimateAvailableMemory();</b>
+<b class="nc"><i>376</i>&nbsp;				if (remainingMemory &lt; current.length * 1.5) {</b>
+<b class="nc"><i>377</i>&nbsp;					undoStack.clear();</b>
+<i>378</i>&nbsp;				} else {
+<i>379</i>&nbsp;					// Default to something a bit bigger than the last things we had
+<b class="nc"><i>380</i>&nbsp;					initialSize = Math.min(Integer.MAX_VALUE-64, (int)(current.length * 1.1));</b>
+<b class="nc"><i>381</i>&nbsp;					undoStack.push(current);</b>
+<i>382</i>&nbsp;				}
+<i>383</i>&nbsp;			}
+<b class="nc"><i>384</i>&nbsp;			current = serialize(object, initialSize);</b>
+<i>385</i>&nbsp;			// Reset the ability to redo
+<b class="nc"><i>386</i>&nbsp;			redoStack.clear();</b>
+<i>387</i>&nbsp;			// Check the history size
+<b class="nc"><i>388</i>&nbsp;			if (historySize &gt; 0) {</b>
+<b class="nc"><i>389</i>&nbsp;				while (undoStack.size() &gt; historySize)</b>
+<b class="nc"><i>390</i>&nbsp;					undoStack.pollLast();</b>
+<i>391</i>&nbsp;			}
+<b class="nc"><i>392</i>&nbsp;		}</b>
+<i>393</i>&nbsp;		
+<i>394</i>&nbsp;		/**
+<i>395</i>&nbsp;		 * Serialize an object to an array of bytes.
+<i>396</i>&nbsp;		 * Providing an estimate of the initial array size can help performance.
+<i>397</i>&nbsp;		 * 
+<i>398</i>&nbsp;		 * @param object
+<i>399</i>&nbsp;		 * @param initialSize
+<i>400</i>&nbsp;		 * @return
+<i>401</i>&nbsp;		 */
+<i>402</i>&nbsp;		private byte[] serialize(T object, int initialSize) {
+<b class="fc"><i>403</i>&nbsp;			try (ByteArrayOutputStream stream = new ByteArrayOutputStream(initialSize)) {</b>
+<b class="fc"><i>404</i>&nbsp;				ObjectOutputStream out = new ObjectOutputStream(stream);</b>
+<b class="fc"><i>405</i>&nbsp;				out.writeObject(object);</b>
+<b class="fc"><i>406</i>&nbsp;				out.flush();</b>
+<b class="fc"><i>407</i>&nbsp;				return stream.toByteArray();</b>
+<b class="fc"><i>408</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>409</i>&nbsp;				logger.error(&quot;Error serializing &quot; + object, e);</b>
+<b class="nc"><i>410</i>&nbsp;				return null;</b>
+<i>411</i>&nbsp;			}
+<i>412</i>&nbsp;		}
+<i>413</i>&nbsp;		
+<i>414</i>&nbsp;		/**
+<i>415</i>&nbsp;		 * Deserialize an object from an array of bytes.
+<i>416</i>&nbsp;		 * It&#39;s assumed at the object is of the generic type used elsewhere in this class.
+<i>417</i>&nbsp;		 * 
+<i>418</i>&nbsp;		 * @param bytes
+<i>419</i>&nbsp;		 * @return
+<i>420</i>&nbsp;		 */
+<i>421</i>&nbsp;		@SuppressWarnings(&quot;unchecked&quot;)
+<i>422</i>&nbsp;		private T deserialize(byte[] bytes) {
+<b class="nc"><i>423</i>&nbsp;			try (ByteArrayInputStream stream = new ByteArrayInputStream(bytes)) {</b>
+<b class="nc"><i>424</i>&nbsp;				ObjectInputStream in = new ObjectInputStream(stream);</b>
+<b class="nc"><i>425</i>&nbsp;				return (T)in.readObject();</b>
+<b class="nc"><i>426</i>&nbsp;			} catch (ClassNotFoundException | IOException e) {</b>
+<b class="nc"><i>427</i>&nbsp;				logger.error(&quot;Error deserializing object&quot;, e);</b>
+<b class="nc"><i>428</i>&nbsp;				return null;</b>
+<i>429</i>&nbsp;			}
+<i>430</i>&nbsp;		}
+<i>431</i>&nbsp;		
+<i>432</i>&nbsp;	}
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;	@Override
+<i>437</i>&nbsp;	public void imageDataChanged(QuPathViewer viewer, ImageData&lt;BufferedImage&gt; imageDataOld,
+<i>438</i>&nbsp;			ImageData&lt;BufferedImage&gt; imageDataNew) {
+<i>439</i>&nbsp;		
+<i>440</i>&nbsp;		// Stop listening for changes on the old image
+<b class="fc"><i>441</i>&nbsp;		if (imageDataOld != null) {</b>
+<b class="fc"><i>442</i>&nbsp;			imageDataOld.getHierarchy().removePathObjectListener(this);</b>
+<i>443</i>&nbsp;		}
+<i>444</i>&nbsp;		
+<i>445</i>&nbsp;		// Start listening for changes on the new image... if we can
+<b class="fc"><i>446</i>&nbsp;		PathObjectHierarchy hierarchy = imageDataNew == null ? null : imageDataNew.getHierarchy();</b>
+<b class="fc"><i>447</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="fc"><i>448</i>&nbsp;			map.put(viewer, (SerializableUndoRedoStack&lt;PathObjectHierarchy&gt;)null);</b>
+<i>449</i>&nbsp;		} else {
+<b class="fc"><i>450</i>&nbsp;			int maxSize = maxUndoHierarchySize.get();</b>
+<b class="fc"><i>451</i>&nbsp;			if (maxSize &gt;= hierarchy.nObjects())</b>
+<b class="fc"><i>452</i>&nbsp;				map.put(viewer, new SerializableUndoRedoStack&lt;&gt;(hierarchy));</b>
+<i>453</i>&nbsp;			else
+<b class="nc"><i>454</i>&nbsp;				map.put(viewer, new SerializableUndoRedoStack&lt;&gt;(null));</b>
+<i>455</i>&nbsp;			// Listen for changes
+<b class="fc"><i>456</i>&nbsp;			hierarchy.addPathObjectListener(this);</b>
+<i>457</i>&nbsp;		}
+<i>458</i>&nbsp;		
+<b class="fc"><i>459</i>&nbsp;		refreshProperties();</b>
+<b class="fc"><i>460</i>&nbsp;	}</b>
+<i>461</i>&nbsp;
+<i>462</i>&nbsp;	@Override
+<b class="fc"><i>463</i>&nbsp;	public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {}</b>
+<i>464</i>&nbsp;
+<i>465</i>&nbsp;	@Override
+<b class="fc"><i>466</i>&nbsp;	public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {}</b>
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;	@Override
+<i>469</i>&nbsp;	public void viewerClosed(QuPathViewer viewer) {
+<b class="nc"><i>470</i>&nbsp;		map.remove(viewer);</b>
+<b class="nc"><i>471</i>&nbsp;		viewer.removeViewerListener(this);</b>
+<b class="nc"><i>472</i>&nbsp;	}</b>
+<i>473</i>&nbsp;
+<i>474</i>&nbsp;	@Override
+<i>475</i>&nbsp;	public void hierarchyChanged(PathObjectHierarchyEvent event) {
+<i>476</i>&nbsp;		// Try to avoid calling too often
+<b class="nc"><i>477</i>&nbsp;		if (undoingOrRedoing || event.isChanging() || maxUndoHierarchySize.get() &lt;= 0 || event.getChangedObjects().stream().allMatch(p -&gt; p instanceof ParallelTileObject))</b>
+<b class="nc"><i>478</i>&nbsp;			return;</b>
+<i>479</i>&nbsp;		
+<i>480</i>&nbsp;		// *Potentially* we might have the same hierarchy in multiple viewers
+<i>481</i>&nbsp;		// Since we don&#39;t have the viewer stored in the event, check to see what viewers are impacted
+<b class="nc"><i>482</i>&nbsp;		QuPathViewer[] viewers = map.keySet().toArray(new QuPathViewer[map.size()]);</b>
+<b class="nc"><i>483</i>&nbsp;		PathObjectHierarchy hierarchy = event.getHierarchy();</b>
+<b class="nc"><i>484</i>&nbsp;		int maxSize = maxUndoHierarchySize.get();</b>
+<b class="nc"><i>485</i>&nbsp;		boolean sizeOK = hierarchy.nObjects() &lt;= maxSize;</b>
+<b class="nc"><i>486</i>&nbsp;		for (QuPathViewer viewer : viewers) {</b>
+<b class="nc"><i>487</i>&nbsp;			if (viewer.getHierarchy() == hierarchy) {</b>
+<i>488</i>&nbsp;				
+<b class="nc"><i>489</i>&nbsp;				SerializableUndoRedoStack&lt;PathObjectHierarchy&gt; undoRedo = map.get(viewer);</b>
+<i>490</i>&nbsp;				// If the size is ok, register the change for potential undo-ing
+<b class="nc"><i>491</i>&nbsp;				if (sizeOK) {</b>
+<i>492</i>&nbsp;					// Consider trying to reduce these calls
+<i>493</i>&nbsp;//					if (event.getEventType() == HierarchyEventType.CHANGE_MEASUREMENTS &amp;&amp; 
+<i>494</i>&nbsp;//							!event.getChangedObjects().stream().anyMatch(p -&gt; p.isDetection()))
+<i>495</i>&nbsp;//						continue;
+<i>496</i>&nbsp;					
+<b class="nc"><i>497</i>&nbsp;					if (undoRedo == null)</b>
+<b class="nc"><i>498</i>&nbsp;						map.put(viewer, new SerializableUndoRedoStack&lt;&gt;(hierarchy));</b>
+<i>499</i>&nbsp;					else
+<b class="nc"><i>500</i>&nbsp;						undoRedo.addLatest(hierarchy, maxUndoLevels.get());</b>
+<i>501</i>&nbsp;				} else {
+<i>502</i>&nbsp;					// If the hierarchy is too big turn off undo/redo
+<b class="nc"><i>503</i>&nbsp;					map.put(viewer, (SerializableUndoRedoStack&lt;PathObjectHierarchy&gt;)null);</b>
+<i>504</i>&nbsp;				}
+<i>505</i>&nbsp;			}
+<i>506</i>&nbsp;		}
+<b class="nc"><i>507</i>&nbsp;		refreshProperties();</b>
+<b class="nc"><i>508</i>&nbsp;	}</b>
+<i>509</i>&nbsp;
+<i>510</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

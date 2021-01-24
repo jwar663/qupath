@@ -1,0 +1,429 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PointIO</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.io</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PointIO (qupath.lib.io)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PointIO</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 168)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.io;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.BufferedInputStream;
+<i>27</i>&nbsp;import java.io.BufferedWriter;
+<i>28</i>&nbsp;import java.io.File;
+<i>29</i>&nbsp;import java.io.FileInputStream;
+<i>30</i>&nbsp;import java.io.FileOutputStream;
+<i>31</i>&nbsp;import java.io.IOException;
+<i>32</i>&nbsp;import java.io.InputStream;
+<i>33</i>&nbsp;import java.io.OutputStream;
+<i>34</i>&nbsp;import java.io.OutputStreamWriter;
+<i>35</i>&nbsp;import java.io.Writer;
+<i>36</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>37</i>&nbsp;import java.util.ArrayList;
+<i>38</i>&nbsp;import java.util.Arrays;
+<i>39</i>&nbsp;import java.util.Collection;
+<i>40</i>&nbsp;import java.util.Enumeration;
+<i>41</i>&nbsp;import java.util.HashMap;
+<i>42</i>&nbsp;import java.util.List;
+<i>43</i>&nbsp;import java.util.Map;
+<i>44</i>&nbsp;import java.util.Scanner;
+<i>45</i>&nbsp;import java.util.stream.Collectors;
+<i>46</i>&nbsp;import java.util.zip.ZipEntry;
+<i>47</i>&nbsp;import java.util.zip.ZipException;
+<i>48</i>&nbsp;import java.util.zip.ZipFile;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import org.slf4j.Logger;
+<i>51</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;import qupath.lib.geom.Point2;
+<i>54</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>55</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>56</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>57</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>58</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>59</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>60</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>61</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;/**
+<i>64</i>&nbsp; * Helper class for reading/writing point objects in terms of their x,y coordinates.
+<i>65</i>&nbsp; * 
+<i>66</i>&nbsp; * @author Pete Bankhead
+<i>67</i>&nbsp; * @author Melvin Gelbard
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; */
+<b class="nc"><i>70</i>&nbsp;public class PointIO {</b>
+<i>71</i>&nbsp;	
+<b class="nc"><i>72</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PointIO.class);</b>
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	/**
+<i>75</i>&nbsp;	 * Read a list of point annotations from a stream.
+<i>76</i>&nbsp;	 * @param stream
+<i>77</i>&nbsp;	 * @return list of PathObjects
+<i>78</i>&nbsp;	 * @throws IOException
+<i>79</i>&nbsp;	 */
+<i>80</i>&nbsp;	public static List&lt;PathObject&gt; readPoints(InputStream stream) throws IOException {
+<b class="nc"><i>81</i>&nbsp;		List&lt;PathObject&gt; pathObjects = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>82</i>&nbsp;		Map&lt;String[], List&lt;Point2&gt;&gt; pointsMap = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>83</i>&nbsp;		Scanner scanner = null;</b>
+<b class="nc"><i>84</i>&nbsp;		String[] cols = null;</b>
+<i>85</i>&nbsp;		try {
+<b class="nc"><i>86</i>&nbsp;			scanner = new Scanner(stream);</b>
+<i>87</i>&nbsp;			
+<i>88</i>&nbsp;			// Header
+<b class="nc"><i>89</i>&nbsp;			cols = scanner.nextLine().split(&quot;\t&quot;);</b>
+<i>90</i>&nbsp;					
+<b class="nc"><i>91</i>&nbsp;			while(scanner.hasNextLine())  {</b>
+<b class="nc"><i>92</i>&nbsp;				putPointObjectFromString(scanner.nextLine(), cols, pointsMap);</b>
+<i>93</i>&nbsp;			}
+<i>94</i>&nbsp;		} finally {
+<b class="nc"><i>95</i>&nbsp;			if (scanner != null)</b>
+<b class="nc"><i>96</i>&nbsp;				scanner.close();</b>
+<b class="nc"><i>97</i>&nbsp;		}</b>
+<i>98</i>&nbsp;		
+<b class="nc"><i>99</i>&nbsp;		ImagePlane defaultPlane = ImagePlane.getDefaultPlane();</b>
+<b class="nc"><i>100</i>&nbsp;		for (var entry: pointsMap.entrySet()) {</b>
+<b class="nc"><i>101</i>&nbsp;			var temp = Arrays.asList(cols);</b>
+<b class="nc"><i>102</i>&nbsp;			String pathClass = temp.indexOf(&quot;class&quot;) &gt; -1 ? entry.getKey()[temp.indexOf(&quot;class&quot;)-2] : &quot;&quot;;</b>
+<b class="nc"><i>103</i>&nbsp;			String name = temp.indexOf(&quot;name&quot;) &gt; -1 ? entry.getKey()[temp.indexOf(&quot;name&quot;)-2] : &quot;&quot;;</b>
+<b class="nc"><i>104</i>&nbsp;			Integer color = null;</b>
+<b class="nc"><i>105</i>&nbsp;			if (temp.indexOf(&quot;color&quot;) &gt; -1) {</b>
+<b class="nc"><i>106</i>&nbsp;				var colorTemp = entry.getKey()[temp.indexOf(&quot;color&quot;)-2];</b>
+<b class="nc"><i>107</i>&nbsp;				if (colorTemp != null &amp;&amp; !colorTemp.isEmpty())</b>
+<b class="nc"><i>108</i>&nbsp;					color = Integer.parseInt(colorTemp);</b>
+<i>109</i>&nbsp;			}
+<b class="nc"><i>110</i>&nbsp;			int c = temp.indexOf(&quot;c&quot;) &gt; defaultPlane.getC() ? Integer.parseInt(entry.getKey()[temp.indexOf(&quot;c&quot;)-2]) : defaultPlane.getC();</b>
+<b class="nc"><i>111</i>&nbsp;			int z = temp.indexOf(&quot;z&quot;) &gt; defaultPlane.getZ() ? Integer.parseInt(entry.getKey()[temp.indexOf(&quot;z&quot;)-2]) : defaultPlane.getZ();</b>
+<b class="nc"><i>112</i>&nbsp;			int t = temp.indexOf(&quot;t&quot;) &gt; defaultPlane.getT() ? Integer.parseInt(entry.getKey()[temp.indexOf(&quot;t&quot;)-2]) : defaultPlane.getT();</b>
+<i>113</i>&nbsp;			
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;			ROI points = ROIs.createPointsROI(entry.getValue(), ImagePlane.getPlaneWithChannel(c, z, t));</b>
+<b class="nc"><i>116</i>&nbsp;			PathObject pathObject = PathObjects.createAnnotationObject(points);</b>
+<i>117</i>&nbsp;			
+<b class="nc"><i>118</i>&nbsp;			if (name != null &amp;&amp; name.length() &gt; 0 &amp;&amp; !&quot;null&quot;.equals(name))</b>
+<b class="nc"><i>119</i>&nbsp;				pathObject.setName(name);</b>
+<b class="nc"><i>120</i>&nbsp;			if (pathClass != null &amp;&amp; pathClass.length() &gt; 0 &amp;&amp; !&quot;null&quot;.equals(pathClass))</b>
+<b class="nc"><i>121</i>&nbsp;				pathObject.setPathClass(PathClassFactory.getPathClass(pathClass, color));</b>
+<b class="nc"><i>122</i>&nbsp;			pathObject.setColorRGB(color);</b>
+<i>123</i>&nbsp;			
+<b class="nc"><i>124</i>&nbsp;			if (pathObject != null)</b>
+<b class="nc"><i>125</i>&nbsp;				pathObjects.add(pathObject);</b>
+<b class="nc"><i>126</i>&nbsp;		}</b>
+<b class="nc"><i>127</i>&nbsp;		return pathObjects;</b>
+<i>128</i>&nbsp;	}
+<i>129</i>&nbsp;	
+<i>130</i>&nbsp;	/**
+<i>131</i>&nbsp;	 * Read a list of point annotations from a file.
+<i>132</i>&nbsp;	 * @param file
+<i>133</i>&nbsp;	 * @return list of PathObjects
+<i>134</i>&nbsp;	 * @throws IOException
+<i>135</i>&nbsp;	 */
+<i>136</i>&nbsp;	public static List&lt;PathObject&gt; readPoints(File file) throws IOException {
+<b class="nc"><i>137</i>&nbsp;		try (FileInputStream fis = new FileInputStream(file)){</b>
+<b class="nc"><i>138</i>&nbsp;			return readPoints(fis);</b>
+<b class="nc"><i>139</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>140</i>&nbsp;			logger.error(e.getLocalizedMessage(), e);</b>
+<i>141</i>&nbsp;		}
+<b class="nc"><i>142</i>&nbsp;		return null;</b>
+<i>143</i>&nbsp;	}
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;	
+<i>147</i>&nbsp;	/**
+<i>148</i>&nbsp;	 * Write a list of point annotations to a stream.
+<i>149</i>&nbsp;	 * @param stream
+<i>150</i>&nbsp;	 * @param pathObjects
+<i>151</i>&nbsp;	 * @throws IOException
+<i>152</i>&nbsp;	 */
+<i>153</i>&nbsp;	public static void writePoints(OutputStream stream, Collection&lt;? extends PathObject&gt; pathObjects) throws IOException {
+<i>154</i>&nbsp;		// Check that all PathObjects contain only point annotations
+<b class="nc"><i>155</i>&nbsp;		int unfilteredSize = pathObjects.size();</b>
+<b class="nc"><i>156</i>&nbsp;		pathObjects = pathObjects.stream()</b>
+<b class="nc"><i>157</i>&nbsp;								.filter(p -&gt; p.getROI() instanceof PointsROI)</b>
+<b class="nc"><i>158</i>&nbsp;								.collect(Collectors.toList());</b>
+<b class="nc"><i>159</i>&nbsp;		int filteredSize = pathObjects.size();</b>
+<b class="nc"><i>160</i>&nbsp;		if (unfilteredSize != filteredSize)</b>
+<b class="nc"><i>161</i>&nbsp;			logger.warn(unfilteredSize-filteredSize + &quot; of the &quot; + filteredSize </b>
+<i>162</i>&nbsp;					+ &quot; elements in list is/are not point annotations. These will be skipped.&quot;);
+<i>163</i>&nbsp;		
+<i>164</i>&nbsp;		
+<b class="nc"><i>165</i>&nbsp;		try (Writer writer = new BufferedWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8))) {</b>
+<i>166</i>&nbsp;			
+<b class="nc"><i>167</i>&nbsp;			List&lt;String&gt; cols = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>168</i>&nbsp;			cols.addAll(Arrays.asList(&quot;x&quot;, &quot;y&quot;));</b>
+<b class="nc"><i>169</i>&nbsp;			String sep = &quot;\t&quot;;</b>
+<i>170</i>&nbsp;			
+<b class="nc"><i>171</i>&nbsp;			ImagePlane defaultPlane = ImagePlane.getDefaultPlane();</b>
+<b class="nc"><i>172</i>&nbsp;			boolean hasClass = pathObjects.stream().anyMatch(p -&gt; p.getPathClass() != null);</b>
+<b class="nc"><i>173</i>&nbsp;			boolean hasName = pathObjects.stream().anyMatch(p -&gt; p.getName() != null);</b>
+<b class="nc"><i>174</i>&nbsp;			boolean hasColor = pathObjects.stream().anyMatch(p -&gt; p.getColorRGB() != null);</b>
+<b class="nc"><i>175</i>&nbsp;			boolean hasC = pathObjects.stream().anyMatch(p -&gt; p.getROI().getC() &gt; defaultPlane.getC());</b>
+<b class="nc"><i>176</i>&nbsp;			boolean hasZ = pathObjects.stream().anyMatch(p -&gt; p.getROI().getZ() &gt; defaultPlane.getZ());</b>
+<b class="nc"><i>177</i>&nbsp;			boolean hasT = pathObjects.stream().anyMatch(p -&gt; p.getROI().getT() &gt; defaultPlane.getT());</b>
+<i>178</i>&nbsp;			
+<b class="nc"><i>179</i>&nbsp;			if (hasC)</b>
+<b class="nc"><i>180</i>&nbsp;				cols.add(&quot;c&quot;);</b>
+<b class="nc"><i>181</i>&nbsp;			if (hasZ)</b>
+<b class="nc"><i>182</i>&nbsp;				cols.add(&quot;z&quot;);</b>
+<b class="nc"><i>183</i>&nbsp;			if (hasT)</b>
+<b class="nc"><i>184</i>&nbsp;				cols.add(&quot;t&quot;);</b>
+<b class="nc"><i>185</i>&nbsp;			if (hasClass)</b>
+<b class="nc"><i>186</i>&nbsp;				cols.add(&quot;class&quot;);</b>
+<b class="nc"><i>187</i>&nbsp;			if (hasName)</b>
+<b class="nc"><i>188</i>&nbsp;				cols.add(&quot;name&quot;);</b>
+<b class="nc"><i>189</i>&nbsp;			if (hasColor)</b>
+<b class="nc"><i>190</i>&nbsp;				cols.add(&quot;color&quot;);</b>
+<i>191</i>&nbsp;			
+<i>192</i>&nbsp;			
+<b class="nc"><i>193</i>&nbsp;			for (String col: cols)</b>
+<b class="nc"><i>194</i>&nbsp;				writer.write(col + sep);</b>
+<b class="nc"><i>195</i>&nbsp;			writer.write(System.lineSeparator());</b>
+<i>196</i>&nbsp;			
+<b class="nc"><i>197</i>&nbsp;			for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>198</i>&nbsp;				if (!PathObjectTools.hasPointROI(pathObject))</b>
+<b class="nc"><i>199</i>&nbsp;					continue;</b>
+<i>200</i>&nbsp;				
+<b class="nc"><i>201</i>&nbsp;				PointsROI points = (PointsROI)pathObject.getROI();</b>
+<i>202</i>&nbsp;				
+<b class="nc"><i>203</i>&nbsp;				for (Point2 point: points.getAllPoints()) {</b>
+<b class="nc"><i>204</i>&nbsp;					String[] row = new String[cols.size()];</b>
+<i>205</i>&nbsp;					
+<b class="nc"><i>206</i>&nbsp;					row[cols.indexOf(&quot;x&quot;)] = point.getX() + &quot;&quot;;</b>
+<b class="nc"><i>207</i>&nbsp;					row[cols.indexOf(&quot;y&quot;)] = sep + point.getY();</b>
+<b class="nc"><i>208</i>&nbsp;					if (hasC)</b>
+<b class="nc"><i>209</i>&nbsp;						row[cols.indexOf(&quot;c&quot;)] = sep + points.getC();</b>
+<b class="nc"><i>210</i>&nbsp;					if (hasZ)</b>
+<b class="nc"><i>211</i>&nbsp;						row[cols.indexOf(&quot;z&quot;)] = sep + points.getZ();</b>
+<b class="nc"><i>212</i>&nbsp;					if (hasT)</b>
+<b class="nc"><i>213</i>&nbsp;						row[cols.indexOf(&quot;t&quot;)] = sep + points.getT();</b>
+<b class="nc"><i>214</i>&nbsp;					if (hasClass)</b>
+<b class="nc"><i>215</i>&nbsp;						row[cols.indexOf(&quot;class&quot;)] = pathObject.getPathClass() != null ? sep + pathObject.getPathClass() : sep;</b>
+<b class="nc"><i>216</i>&nbsp;					if (hasName)</b>
+<b class="nc"><i>217</i>&nbsp;						row[cols.indexOf(&quot;name&quot;)] = pathObject.getName() != null ? sep + pathObject.getName() : sep;</b>
+<b class="nc"><i>218</i>&nbsp;					if (hasColor)</b>
+<b class="nc"><i>219</i>&nbsp;						row[cols.indexOf(&quot;color&quot;)] = pathObject.getColorRGB() != null ? sep + pathObject.getColorRGB() : sep;</b>
+<i>220</i>&nbsp;					
+<b class="nc"><i>221</i>&nbsp;					for (String val: row)</b>
+<b class="nc"><i>222</i>&nbsp;						writer.write(val);</b>
+<b class="nc"><i>223</i>&nbsp;					writer.write(System.lineSeparator());</b>
+<b class="nc"><i>224</i>&nbsp;				}</b>
+<b class="nc"><i>225</i>&nbsp;			}</b>
+<b class="nc"><i>226</i>&nbsp;		}</b>
+<b class="nc"><i>227</i>&nbsp;	}</b>
+<i>228</i>&nbsp;	
+<i>229</i>&nbsp;	
+<i>230</i>&nbsp;	/**
+<i>231</i>&nbsp;	 * Write a list of point annotations to a file.
+<i>232</i>&nbsp;	 * @param file
+<i>233</i>&nbsp;	 * @param pathObjects
+<i>234</i>&nbsp;	 * @throws IOException
+<i>235</i>&nbsp;	 */
+<i>236</i>&nbsp;	public static void writePoints(File file, Collection&lt;? extends PathObject&gt; pathObjects) throws IOException {
+<b class="nc"><i>237</i>&nbsp;		try(FileOutputStream fos = new FileOutputStream(file)) {</b>
+<b class="nc"><i>238</i>&nbsp;			writePoints(fos, pathObjects);</b>
+<b class="nc"><i>239</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>240</i>&nbsp;			logger.error(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>241</i>&nbsp;		}</b>
+<b class="nc"><i>242</i>&nbsp;	}</b>
+<i>243</i>&nbsp;	
+<i>244</i>&nbsp;	
+<i>245</i>&nbsp;	/**
+<i>246</i>&nbsp;	 * Helper method that takes a String representing any row taken from a &#39;Point2 annotations 
+<i>247</i>&nbsp;	 * TSV file&#39; and creates a Point2 object to put into the provided map.
+<i>248</i>&nbsp;	 * @param line
+<i>249</i>&nbsp;	 * @param cols
+<i>250</i>&nbsp;	 * @param pointsMap
+<i>251</i>&nbsp;	 */
+<i>252</i>&nbsp;	private static void putPointObjectFromString(String line, String[] cols, Map&lt;String[], List&lt;Point2&gt;&gt; pointsMap) {
+<b class="nc"><i>253</i>&nbsp;		String[] info = new String[cols.length-2];</b>
+<b class="nc"><i>254</i>&nbsp;		String[] values = line.split(&quot;(?&lt;=\t)&quot;);</b>
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;		// Core columns
+<b class="nc"><i>257</i>&nbsp;		double x = Double.parseDouble(values[0].trim());</b>
+<b class="nc"><i>258</i>&nbsp;		double y = Double.parseDouble(values[1].trim());</b>
+<i>259</i>&nbsp;		
+<i>260</i>&nbsp;		// Optional columns
+<b class="nc"><i>261</i>&nbsp;		for (int i = 2; i &lt; values.length; i++) {</b>
+<b class="nc"><i>262</i>&nbsp;				info[i-2] = values[i].trim();</b>
+<i>263</i>&nbsp;		}
+<i>264</i>&nbsp;		
+<b class="nc"><i>265</i>&nbsp;		boolean found = false;</b>
+<b class="nc"><i>266</i>&nbsp;		for (var key: pointsMap.keySet()) {</b>
+<b class="nc"><i>267</i>&nbsp;			if (Arrays.equals(key,  info)) {</b>
+<b class="nc"><i>268</i>&nbsp;				pointsMap.get(key).add(new Point2(x, y));</b>
+<b class="nc"><i>269</i>&nbsp;				found = true;</b>
+<b class="nc"><i>270</i>&nbsp;				break;</b>
+<i>271</i>&nbsp;			}
+<b class="nc"><i>272</i>&nbsp;		}</b>
+<b class="nc"><i>273</i>&nbsp;		if (!found) {</b>
+<b class="nc"><i>274</i>&nbsp;			List&lt;Point2&gt; newArray = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>275</i>&nbsp;			newArray.add(new Point2(x, y));</b>
+<b class="nc"><i>276</i>&nbsp;			pointsMap.put(info, newArray);</b>
+<i>277</i>&nbsp;		}
+<i>278</i>&nbsp;
+<b class="nc"><i>279</i>&nbsp;	}</b>
+<i>280</i>&nbsp;	
+<i>281</i>&nbsp;	
+<i>282</i>&nbsp;	/**
+<i>283</i>&nbsp;	 * Read a list of point annotations from a file. Not recommended for use (will be removed in future releases).
+<i>284</i>&nbsp;	 * @param file
+<i>285</i>&nbsp;	 * @return
+<i>286</i>&nbsp;	 * @throws ZipException
+<i>287</i>&nbsp;	 * @throws IOException
+<i>288</i>&nbsp;	 */
+<i>289</i>&nbsp;	@Deprecated
+<i>290</i>&nbsp;	public static List&lt;PathObject&gt; readPointsObjectList(File file) throws ZipException, IOException {
+<b class="nc"><i>291</i>&nbsp;		List&lt;PathObject&gt; pathObjects = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>292</i>&nbsp;		Scanner s = null;</b>
+<b class="nc"><i>293</i>&nbsp;		try (ZipFile zipFile = new ZipFile(file)) {</b>
+<b class="nc"><i>294</i>&nbsp;			Enumeration&lt;? extends ZipEntry&gt; entries = zipFile.entries();</b>
+<b class="nc"><i>295</i>&nbsp;			while (entries.hasMoreElements()) {</b>
+<b class="nc"><i>296</i>&nbsp;				ZipEntry entry = entries.nextElement();</b>
+<b class="nc"><i>297</i>&nbsp;				s = new Scanner(new BufferedInputStream(zipFile.getInputStream(entry)));</b>
+<b class="nc"><i>298</i>&nbsp;				s.useDelimiter(&quot;\\A&quot;);</b>
+<b class="nc"><i>299</i>&nbsp;				PathObject pathObject = readPointsObjectFromString(s.next());</b>
+<b class="nc"><i>300</i>&nbsp;				if (pathObject != null)</b>
+<b class="nc"><i>301</i>&nbsp;					pathObjects.add(pathObject);</b>
+<b class="nc"><i>302</i>&nbsp;				s.close();</b>
+<b class="nc"><i>303</i>&nbsp;			}</b>
+<b class="nc"><i>304</i>&nbsp;			zipFile.close();</b>
+<b class="nc"><i>305</i>&nbsp;		} finally {</b>
+<b class="nc"><i>306</i>&nbsp;			if (s != null)</b>
+<b class="nc"><i>307</i>&nbsp;				s.close();</b>
+<b class="nc"><i>308</i>&nbsp;		}</b>
+<b class="nc"><i>309</i>&nbsp;		return pathObjects;</b>
+<i>310</i>&nbsp;	}
+<i>311</i>&nbsp;	
+<i>312</i>&nbsp;	/**
+<i>313</i>&nbsp;	 * Helper method for readPointsObjectList(), will be removed in future releases.
+<i>314</i>&nbsp;	 * @param s
+<i>315</i>&nbsp;	 * @return
+<i>316</i>&nbsp;	 */
+<i>317</i>&nbsp;	@Deprecated
+<i>318</i>&nbsp;	private static PathObject readPointsObjectFromString(String s) {
+<b class="nc"><i>319</i>&nbsp;		List&lt;Point2&gt; pointsList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>320</i>&nbsp;		Scanner scanner = new Scanner(s);</b>
+<b class="nc"><i>321</i>&nbsp;		String name = scanner.nextLine().split(&quot;\t&quot;)[1].trim();</b>
+<b class="nc"><i>322</i>&nbsp;		Integer color = Integer.parseInt(scanner.nextLine().split(&quot;\t&quot;)[1]);</b>
+<i>323</i>&nbsp;		// Skip the coordinate count line...
+<b class="nc"><i>324</i>&nbsp;		int count = Integer.parseInt(scanner.nextLine().split(&quot;\t&quot;)[1]);</b>
+<b class="nc"><i>325</i>&nbsp;		while (scanner.hasNextLine()) {</b>
+<b class="nc"><i>326</i>&nbsp;			String line = scanner.nextLine().trim();</b>
+<b class="nc"><i>327</i>&nbsp;			if (line.length() == 0)</b>
+<b class="nc"><i>328</i>&nbsp;				break;</b>
+<b class="nc"><i>329</i>&nbsp;			String[] splits = line.split(&quot;\t&quot;);</b>
+<b class="nc"><i>330</i>&nbsp;			double x = Double.parseDouble(splits[0]);</b>
+<b class="nc"><i>331</i>&nbsp;			double y = Double.parseDouble(splits[1]);</b>
+<b class="nc"><i>332</i>&nbsp;			pointsList.add(new Point2(x, y));</b>
+<b class="nc"><i>333</i>&nbsp;		}</b>
+<b class="nc"><i>334</i>&nbsp;		scanner.close();</b>
+<i>335</i>&nbsp;		
+<b class="nc"><i>336</i>&nbsp;		if (count != pointsList.size())</b>
+<b class="nc"><i>337</i>&nbsp;			logger.warn(&quot;Warning: {} points expected, {} points found&quot;, count, pointsList.size());</b>
+<i>338</i>&nbsp;		
+<b class="nc"><i>339</i>&nbsp;		ROI points = ROIs.createPointsROI(pointsList, ImagePlane.getDefaultPlane());</b>
+<b class="nc"><i>340</i>&nbsp;		PathObject pathObject = PathObjects.createAnnotationObject(points);</b>
+<b class="nc"><i>341</i>&nbsp;		if (name != null &amp;&amp; name.length() &gt; 0 &amp;&amp; !&quot;null&quot;.equals(name))</b>
+<b class="nc"><i>342</i>&nbsp;			pathObject.setName(name);</b>
+<b class="nc"><i>343</i>&nbsp;		pathObject.setColorRGB(color);</b>
+<b class="nc"><i>344</i>&nbsp;		return pathObject;</b>
+<i>345</i>&nbsp;	}	
+<i>346</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,1278 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GuiTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GuiTools (qupath.lib.gui.tools)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GuiTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    15%
+  </span>
+  <span class="absValue">
+    (6/ 40)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    10.7%
+  </span>
+  <span class="absValue">
+    (45/ 420)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GuiTools$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GuiTools$CustomListCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GuiTools$NumberAndText</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GuiTools$SnapshotType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    11.8%
+  </span>
+  <span class="absValue">
+    (6/ 51)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.6%
+  </span>
+  <span class="absValue">
+    (45/ 469)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.tools;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.Desktop;
+<i>25</i>&nbsp;import java.awt.image.BufferedImage;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.net.URI;
+<i>28</i>&nbsp;import java.text.NumberFormat;
+<i>29</i>&nbsp;import java.text.ParsePosition;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.concurrent.Callable;
+<i>35</i>&nbsp;import java.util.concurrent.CountDownLatch;
+<i>36</i>&nbsp;import java.util.function.Function;
+<i>37</i>&nbsp;import java.util.function.UnaryOperator;
+<i>38</i>&nbsp;import java.util.stream.Collectors;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import org.controlsfx.control.CheckComboBox;
+<i>41</i>&nbsp;import org.slf4j.Logger;
+<i>42</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import javafx.application.Platform;
+<i>45</i>&nbsp;import javafx.beans.property.DoubleProperty;
+<i>46</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>47</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>48</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>49</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>50</i>&nbsp;import javafx.geometry.Side;
+<i>51</i>&nbsp;import javafx.scene.Node;
+<i>52</i>&nbsp;import javafx.scene.Scene;
+<i>53</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>54</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>55</i>&nbsp;import javafx.scene.control.Button;
+<i>56</i>&nbsp;import javafx.scene.control.CheckBox;
+<i>57</i>&nbsp;import javafx.scene.control.CheckMenuItem;
+<i>58</i>&nbsp;import javafx.scene.control.ColorPicker;
+<i>59</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>60</i>&nbsp;import javafx.scene.control.Label;
+<i>61</i>&nbsp;import javafx.scene.control.ListCell;
+<i>62</i>&nbsp;import javafx.scene.control.ListView;
+<i>63</i>&nbsp;import javafx.scene.control.Menu;
+<i>64</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>65</i>&nbsp;import javafx.scene.control.SeparatorMenuItem;
+<i>66</i>&nbsp;import javafx.scene.control.Slider;
+<i>67</i>&nbsp;import javafx.scene.control.Spinner;
+<i>68</i>&nbsp;import javafx.scene.control.TextArea;
+<i>69</i>&nbsp;import javafx.scene.control.TextField;
+<i>70</i>&nbsp;import javafx.scene.control.TextFormatter;
+<i>71</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>72</i>&nbsp;import javafx.scene.image.Image;
+<i>73</i>&nbsp;import javafx.scene.image.WritableImage;
+<i>74</i>&nbsp;import javafx.scene.input.Clipboard;
+<i>75</i>&nbsp;import javafx.scene.input.ClipboardContent;
+<i>76</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>77</i>&nbsp;import javafx.scene.paint.Color;
+<i>78</i>&nbsp;import javafx.scene.robot.Robot;
+<i>79</i>&nbsp;import javafx.stage.Screen;
+<i>80</i>&nbsp;import javafx.stage.Stage;
+<i>81</i>&nbsp;import javafx.stage.Window;
+<i>82</i>&nbsp;import qupath.lib.color.ColorDeconvolutionHelper;
+<i>83</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>84</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains.DefaultColorDeconvolutionStains;
+<i>85</i>&nbsp;import qupath.lib.color.StainVector;
+<i>86</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>87</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>88</i>&nbsp;import qupath.lib.gui.ActionTools;
+<i>89</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>90</i>&nbsp;import qupath.lib.gui.commands.Commands;
+<i>91</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>92</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>93</i>&nbsp;import qupath.lib.images.ImageData;
+<i>94</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>95</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>96</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>97</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>98</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>99</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>100</i>&nbsp;import qupath.lib.plugins.objects.SplitAnnotationsPlugin;
+<i>101</i>&nbsp;import qupath.lib.plugins.workflow.DefaultScriptableWorkflowStep;
+<i>102</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>103</i>&nbsp;import qupath.lib.roi.RoiTools.CombineOp;
+<i>104</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;/**
+<i>107</i>&nbsp; * Assorted static methods to help with JavaFX and QuPath GUI-related tasks.
+<i>108</i>&nbsp; * 
+<i>109</i>&nbsp; * @author Pete Bankhead
+<i>110</i>&nbsp; *
+<i>111</i>&nbsp; */
+<b class="nc"><i>112</i>&nbsp;public class GuiTools {</b>
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;	/**
+<i>115</i>&nbsp;	 * Vertical ellipsis, which can be used to indicate a &#39;more&#39; button.
+<i>116</i>&nbsp;	 */
+<b class="fc"><i>117</i>&nbsp;	private static String MORE_ELLIPSIS = &quot;\u22EE&quot;;</b>
+<i>118</i>&nbsp;	
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Create a {@link Button} with a standardized icon and tooltip text to indicate &#39;More&#39;, 
+<i>121</i>&nbsp;	 * which triggers a {@link ContextMenu} when clicked.
+<i>122</i>&nbsp;	 * 
+<i>123</i>&nbsp;	 * @param menu context menu to display on click
+<i>124</i>&nbsp;	 * @param side preferred side at which the context menu should be displayed
+<i>125</i>&nbsp;	 * @return an initialized button with icon, tooltip and onAction event to trigger the context menu.
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public static Button createMoreButton(ContextMenu menu, Side side) {
+<b class="fc"><i>128</i>&nbsp;		Button btnMore = new Button(MORE_ELLIPSIS);</b>
+<b class="fc"><i>129</i>&nbsp;		btnMore.setTooltip(new Tooltip(&quot;More options&quot;));</b>
+<b class="fc"><i>130</i>&nbsp;		btnMore.setOnAction(e -&gt; {</b>
+<b class="nc"><i>131</i>&nbsp;			menu.show(btnMore, side, 0, 0);</b>
+<b class="nc"><i>132</i>&nbsp;		});</b>
+<b class="fc"><i>133</i>&nbsp;		return btnMore;</b>
+<i>134</i>&nbsp;	}
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	
+<i>137</i>&nbsp;	/**
+<i>138</i>&nbsp;	 * Kinds of snapshot image that can be created for QuPath.
+<i>139</i>&nbsp;	 */
+<b class="nc"><i>140</i>&nbsp;	public static enum SnapshotType {</b>
+<i>141</i>&nbsp;		/**
+<i>142</i>&nbsp;		 * Snapshot of the current viewer content.
+<i>143</i>&nbsp;		 */
+<b class="nc"><i>144</i>&nbsp;		VIEWER,</b>
+<i>145</i>&nbsp;		/**
+<i>146</i>&nbsp;		 * Snapshot of the full Scene of the main QuPath Window.
+<i>147</i>&nbsp;		 * This excludes the titlebar and any overlapping windows.
+<i>148</i>&nbsp;		 */
+<b class="nc"><i>149</i>&nbsp;		MAIN_SCENE,</b>
+<i>150</i>&nbsp;		/**
+<i>151</i>&nbsp;		 * Screenshot of the full QuPath window as it currently appears, including any overlapping windows.
+<i>152</i>&nbsp;		 */
+<b class="nc"><i>153</i>&nbsp;		MAIN_WINDOW_SCREENSHOT,</b>
+<i>154</i>&nbsp;		/**
+<i>155</i>&nbsp;		 * Full screenshot, including items outside of QuPath.
+<i>156</i>&nbsp;		 */
+<b class="nc"><i>157</i>&nbsp;		FULL_SCREENSHOT</b>
+<i>158</i>&nbsp;	}
+<i>159</i>&nbsp;
+<b class="fc"><i>160</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(GuiTools.class);</b>
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Open the directory containing a file for browsing.
+<i>164</i>&nbsp;	 * @param file
+<i>165</i>&nbsp;	 * @return
+<i>166</i>&nbsp;	 */
+<i>167</i>&nbsp;	public static boolean browseDirectory(final File file) {
+<b class="nc"><i>168</i>&nbsp;		if (file == null || !file.exists()) {</b>
+<b class="nc"><i>169</i>&nbsp;			Dialogs.showErrorMessage(&quot;Open&quot;, &quot;File &quot; + file + &quot; does not exist!&quot;);</b>
+<b class="nc"><i>170</i>&nbsp;			return false;</b>
+<i>171</i>&nbsp;		}
+<b class="nc"><i>172</i>&nbsp;		if (Desktop.isDesktopSupported()) {</b>
+<b class="nc"><i>173</i>&nbsp;			var desktop = Desktop.getDesktop();</b>
+<i>174</i>&nbsp;			try {
+<i>175</i>&nbsp;				// Can open directory on Windows &amp; Mac
+<b class="nc"><i>176</i>&nbsp;				if (GeneralTools.isWindows() || GeneralTools.isMac()) {</b>
+<b class="nc"><i>177</i>&nbsp;					if (file.isDirectory())</b>
+<b class="nc"><i>178</i>&nbsp;						desktop.open(file);</b>
+<i>179</i>&nbsp;					else
+<b class="nc"><i>180</i>&nbsp;						desktop.open(file.getParentFile());</b>
+<b class="nc"><i>181</i>&nbsp;					return true;</b>
+<i>182</i>&nbsp;				}
+<i>183</i>&nbsp;				// Trouble on Linux - just copy
+<b class="nc"><i>184</i>&nbsp;				if (Dialogs.showConfirmDialog(&quot;Browse directory&quot;,</b>
+<i>185</i>&nbsp;						&quot;Directory browsing not supported on this platform!\nCopy directory path to clipboard instead?&quot;)) {
+<b class="nc"><i>186</i>&nbsp;					var content = new ClipboardContent();</b>
+<b class="nc"><i>187</i>&nbsp;					content.putString(file.getAbsolutePath());</b>
+<b class="nc"><i>188</i>&nbsp;					Clipboard.getSystemClipboard().setContent(content);</b>
+<i>189</i>&nbsp;				}
+<b class="nc"><i>190</i>&nbsp;				return true;</b>
+<b class="nc"><i>191</i>&nbsp;			} catch (Exception e1) {</b>
+<i>192</i>&nbsp;				// Browsing the directory (at least on Mac) seems to open the parent directory
+<b class="nc"><i>193</i>&nbsp;				if (desktop.isSupported(Desktop.Action.BROWSE_FILE_DIR))</b>
+<b class="nc"><i>194</i>&nbsp;					desktop.browseFileDirectory(file);</b>
+<i>195</i>&nbsp;				else
+<b class="nc"><i>196</i>&nbsp;					Dialogs.showErrorNotification(&quot;Browse directory&quot;, e1);</b>
+<i>197</i>&nbsp;			}
+<i>198</i>&nbsp;		}
+<b class="nc"><i>199</i>&nbsp;		return false;</b>
+<i>200</i>&nbsp;	}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;	/**
+<i>203</i>&nbsp;	 * Try to open a URI in a web browser.
+<i>204</i>&nbsp;	 * 
+<i>205</i>&nbsp;	 * @param uri
+<i>206</i>&nbsp;	 * @return True if the request succeeded, false otherwise.
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	public static boolean browseURI(final URI uri) {
+<b class="nc"><i>209</i>&nbsp;		return QuPathGUI.launchBrowserWindow(uri.toString());</b>
+<i>210</i>&nbsp;	}
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;	/**
+<i>213</i>&nbsp;	 * Return a result after executing a Callable on the JavaFX Platform thread.
+<i>214</i>&nbsp;	 * 
+<i>215</i>&nbsp;	 * @param callable
+<i>216</i>&nbsp;	 * @return
+<i>217</i>&nbsp;	 */
+<i>218</i>&nbsp;	public static &lt;T&gt; T callOnApplicationThread(final Callable&lt;T&gt; callable) {
+<b class="fc"><i>219</i>&nbsp;		if (Platform.isFxApplicationThread()) {</b>
+<i>220</i>&nbsp;			try {
+<b class="fc"><i>221</i>&nbsp;				return callable.call();</b>
+<b class="nc"><i>222</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>223</i>&nbsp;				logger.error(&quot;Error calling directly on Platform thread&quot;, e);</b>
+<b class="nc"><i>224</i>&nbsp;				return null;</b>
+<i>225</i>&nbsp;			}
+<i>226</i>&nbsp;		}
+<i>227</i>&nbsp;		
+<b class="nc"><i>228</i>&nbsp;		CountDownLatch latch = new CountDownLatch(1);</b>
+<b class="nc"><i>229</i>&nbsp;		ObjectProperty&lt;T&gt; result = new SimpleObjectProperty&lt;&gt;();</b>
+<b class="nc"><i>230</i>&nbsp;		Platform.runLater(() -&gt; {</b>
+<i>231</i>&nbsp;			T value;
+<i>232</i>&nbsp;			try {
+<b class="nc"><i>233</i>&nbsp;				value = callable.call();</b>
+<b class="nc"><i>234</i>&nbsp;				result.setValue(value);</b>
+<b class="nc"><i>235</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>236</i>&nbsp;				logger.error(&quot;Error calling on Platform thread&quot;, e);</b>
+<i>237</i>&nbsp;			} finally {
+<b class="nc"><i>238</i>&nbsp;				latch.countDown();</b>
+<b class="nc"><i>239</i>&nbsp;			}</b>
+<b class="nc"><i>240</i>&nbsp;		});</b>
+<i>241</i>&nbsp;		
+<i>242</i>&nbsp;		try {
+<b class="nc"><i>243</i>&nbsp;			latch.await();</b>
+<b class="nc"><i>244</i>&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc"><i>245</i>&nbsp;			logger.error(&quot;Interrupted while waiting result&quot;, e);</b>
+<b class="nc"><i>246</i>&nbsp;		}</b>
+<b class="nc"><i>247</i>&nbsp;		return result.getValue();</b>
+<i>248</i>&nbsp;	}
+<i>249</i>&nbsp;	
+<i>250</i>&nbsp;	/**
+<i>251</i>&nbsp;	 * Run on the application thread and wait until this is complete.
+<i>252</i>&nbsp;	 * @param runnable
+<i>253</i>&nbsp;	 */
+<i>254</i>&nbsp;	public static void runOnApplicationThread(final Runnable runnable) {
+<b class="nc"><i>255</i>&nbsp;		callOnApplicationThread(() -&gt; {</b>
+<b class="nc"><i>256</i>&nbsp;			runnable.run();</b>
+<b class="nc"><i>257</i>&nbsp;			return runnable;</b>
+<i>258</i>&nbsp;		});
+<b class="nc"><i>259</i>&nbsp;	}</b>
+<i>260</i>&nbsp;	
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;	/**
+<i>263</i>&nbsp;	 * Make a semi-educated guess at the image type of a PathImageServer.
+<i>264</i>&nbsp;	 * 
+<i>265</i>&nbsp;	 * @param server
+<i>266</i>&nbsp;	 * @param imgThumbnail Thumbnail for the image. This is now a required parameter (previously &amp;lt;= 0.1.2 it was optional).
+<i>267</i>&nbsp;	 * 
+<i>268</i>&nbsp;	 * @return
+<i>269</i>&nbsp;	 */
+<i>270</i>&nbsp;	public static ImageData.ImageType estimateImageType(final ImageServer&lt;BufferedImage&gt; server, final BufferedImage imgThumbnail) {
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;//		logger.warn(&quot;Image type will be automatically estimated&quot;);
+<i>273</i>&nbsp;		
+<b class="nc"><i>274</i>&nbsp;		if (!server.isRGB())</b>
+<b class="nc"><i>275</i>&nbsp;			return ImageData.ImageType.FLUORESCENCE;</b>
+<i>276</i>&nbsp;		
+<b class="nc"><i>277</i>&nbsp;		BufferedImage img = imgThumbnail;</b>
+<i>278</i>&nbsp;//		BufferedImage img;
+<i>279</i>&nbsp;//		if (imgThumbnail == null)
+<i>280</i>&nbsp;//			img = server.getBufferedThumbnail(220, 220, 0);
+<i>281</i>&nbsp;//		else {
+<i>282</i>&nbsp;//			img = imgThumbnail;
+<i>283</i>&nbsp;//			// Rescale if necessary
+<i>284</i>&nbsp;//			if (img.getWidth() * img.getHeight() &gt; 400*400) {
+<i>285</i>&nbsp;//				imgThumbnail.getS
+<i>286</i>&nbsp;//			}
+<i>287</i>&nbsp;//		}
+<b class="nc"><i>288</i>&nbsp;		int w = img.getWidth();</b>
+<b class="nc"><i>289</i>&nbsp;		int h = img.getHeight();</b>
+<b class="nc"><i>290</i>&nbsp;		int[] rgb = img.getRGB(0, 0, w, h, null, 0, w);</b>
+<b class="nc"><i>291</i>&nbsp;		long rSum = 0;</b>
+<b class="nc"><i>292</i>&nbsp;		long gSum = 0;</b>
+<b class="nc"><i>293</i>&nbsp;		long bSum = 0;</b>
+<b class="nc"><i>294</i>&nbsp;		int nDark = 0;</b>
+<b class="nc"><i>295</i>&nbsp;		int nLight = 0;</b>
+<b class="nc"><i>296</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>297</i>&nbsp;		int darkThreshold = 25;</b>
+<b class="nc"><i>298</i>&nbsp;		int lightThreshold = 220;</b>
+<b class="nc"><i>299</i>&nbsp;		for (int v : rgb) {</b>
+<b class="nc"><i>300</i>&nbsp;			int r = ColorTools.red(v);</b>
+<b class="nc"><i>301</i>&nbsp;			int g = ColorTools.green(v);</b>
+<b class="nc"><i>302</i>&nbsp;			int b = ColorTools.blue(v);</b>
+<b class="nc"><i>303</i>&nbsp;			if (r &lt; darkThreshold &amp; g &lt; darkThreshold &amp;&amp; b &lt; darkThreshold)</b>
+<b class="nc"><i>304</i>&nbsp;				nDark++;</b>
+<b class="nc"><i>305</i>&nbsp;			else if (r &gt; lightThreshold &amp; g &gt; lightThreshold &amp;&amp; b &gt; lightThreshold)</b>
+<b class="nc"><i>306</i>&nbsp;				nLight++;</b>
+<i>307</i>&nbsp;			else {
+<b class="nc"><i>308</i>&nbsp;				n++;</b>
+<b class="nc"><i>309</i>&nbsp;				rSum += r;</b>
+<b class="nc"><i>310</i>&nbsp;				gSum += g;</b>
+<b class="nc"><i>311</i>&nbsp;				bSum += b;</b>
+<i>312</i>&nbsp;			}
+<i>313</i>&nbsp;		}
+<b class="nc"><i>314</i>&nbsp;		if (nDark == 0 &amp;&amp; nLight == 0)</b>
+<b class="nc"><i>315</i>&nbsp;			return ImageData.ImageType.UNSET;</b>
+<i>316</i>&nbsp;		// If we have more dark than light pixels, assume fluorescence
+<b class="nc"><i>317</i>&nbsp;		if (nDark &gt;= nLight)</b>
+<b class="nc"><i>318</i>&nbsp;			return ImageData.ImageType.FLUORESCENCE;</b>
+<i>319</i>&nbsp;		
+<i>320</i>&nbsp;//		Color color = new Color(
+<i>321</i>&nbsp;//				(int)(rSum/n + .5),
+<i>322</i>&nbsp;//				(int)(gSum/n + .5),
+<i>323</i>&nbsp;//				(int)(bSum/n + .5));
+<i>324</i>&nbsp;//		logger.debug(&quot;Color: &quot; + color.toString());
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;		// Compare optical density vector angles with the defaults for hematoxylin, eosin &amp; DAB
+<b class="nc"><i>327</i>&nbsp;		ColorDeconvolutionStains stainsH_E = ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_E);</b>
+<b class="nc"><i>328</i>&nbsp;		double rOD = ColorDeconvolutionHelper.makeOD(rSum/n, stainsH_E.getMaxRed());</b>
+<b class="nc"><i>329</i>&nbsp;		double gOD = ColorDeconvolutionHelper.makeOD(gSum/n, stainsH_E.getMaxGreen());</b>
+<b class="nc"><i>330</i>&nbsp;		double bOD = ColorDeconvolutionHelper.makeOD(bSum/n, stainsH_E.getMaxBlue());</b>
+<b class="nc"><i>331</i>&nbsp;		StainVector stainMean = StainVector.createStainVector(&quot;Mean Stain&quot;, rOD, gOD, bOD);</b>
+<b class="nc"><i>332</i>&nbsp;		double angleH = StainVector.computeAngle(stainMean, stainsH_E.getStain(1));</b>
+<b class="nc"><i>333</i>&nbsp;		double angleE = StainVector.computeAngle(stainMean, stainsH_E.getStain(2));</b>
+<b class="nc"><i>334</i>&nbsp;		ColorDeconvolutionStains stainsH_DAB = ColorDeconvolutionStains.makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains.H_DAB);</b>
+<b class="nc"><i>335</i>&nbsp;		double angleDAB = StainVector.computeAngle(stainMean, stainsH_DAB.getStain(2));</b>
+<i>336</i>&nbsp;	
+<i>337</i>&nbsp;		// For H&amp;E staining, eosin is expected to predominate... if it doesn&#39;t, assume H-DAB
+<b class="nc"><i>338</i>&nbsp;		logger.debug(&quot;Angle hematoxylin: &quot; + angleH);</b>
+<b class="nc"><i>339</i>&nbsp;		logger.debug(&quot;Angle eosin: &quot; + angleE);</b>
+<b class="nc"><i>340</i>&nbsp;		logger.debug(&quot;Angle DAB: &quot; + angleDAB);</b>
+<b class="nc"><i>341</i>&nbsp;		if (angleDAB &lt; angleE || angleH &lt; angleE) {</b>
+<b class="nc"><i>342</i>&nbsp;			logger.info(&quot;Estimating H-DAB staining&quot;);</b>
+<b class="nc"><i>343</i>&nbsp;			return ImageData.ImageType.BRIGHTFIELD_H_DAB;</b>
+<i>344</i>&nbsp;		} else {
+<b class="nc"><i>345</i>&nbsp;			logger.info(&quot;Estimating H &amp; E staining&quot;);</b>
+<b class="nc"><i>346</i>&nbsp;			return ImageData.ImageType.BRIGHTFIELD_H_E;</b>
+<i>347</i>&nbsp;		}
+<i>348</i>&nbsp;	}
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;	/**
+<i>351</i>&nbsp;	 * Make a snapshot as a JavaFX {@link Image}, using the current viewer if a viewer is required.
+<i>352</i>&nbsp;	 * @param qupath
+<i>353</i>&nbsp;	 * @param type
+<i>354</i>&nbsp;	 * @return
+<i>355</i>&nbsp;	 */
+<i>356</i>&nbsp;	public static WritableImage makeSnapshotFX(final QuPathGUI qupath, final GuiTools.SnapshotType type) {
+<b class="nc"><i>357</i>&nbsp;		return makeSnapshotFX(qupath, qupath.getViewer(), type);</b>
+<i>358</i>&nbsp;	}
+<i>359</i>&nbsp;
+<i>360</i>&nbsp;	/**
+<i>361</i>&nbsp;	 * Make a snapshot as a JavaFX {@link Image}.
+<i>362</i>&nbsp;	 * @param qupath
+<i>363</i>&nbsp;	 * @param viewer the viewer to use (or null to use the current viewer)
+<i>364</i>&nbsp;	 * @param type
+<i>365</i>&nbsp;	 * @return
+<i>366</i>&nbsp;	 */
+<i>367</i>&nbsp;	public static WritableImage makeSnapshotFX(final QuPathGUI qupath, QuPathViewer viewer, final GuiTools.SnapshotType type) {
+<b class="nc"><i>368</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>369</i>&nbsp;			var temp = viewer;</b>
+<b class="nc"><i>370</i>&nbsp;			return callOnApplicationThread(() -&gt; makeSnapshotFX(qupath, temp, type));</b>
+<i>371</i>&nbsp;		}
+<b class="nc"><i>372</i>&nbsp;		Stage stage = qupath.getStage();</b>
+<b class="nc"><i>373</i>&nbsp;		Scene scene = stage.getScene();</b>
+<b class="nc"><i>374</i>&nbsp;		switch (type) {</b>
+<i>375</i>&nbsp;		case VIEWER:
+<b class="nc"><i>376</i>&nbsp;			if (viewer == null)</b>
+<b class="nc"><i>377</i>&nbsp;				viewer = qupath.getViewer();</b>
+<i>378</i>&nbsp;			// Temporarily remove the selected border color while copying
+<b class="nc"><i>379</i>&nbsp;			Color borderColor = viewer.getBorderColor();</b>
+<i>380</i>&nbsp;			try {
+<b class="nc"><i>381</i>&nbsp;				qupath.getViewer().setBorderColor(null);</b>
+<b class="nc"><i>382</i>&nbsp;				return viewer.getView().snapshot(null, null);</b>
+<i>383</i>&nbsp;			} finally {
+<b class="nc"><i>384</i>&nbsp;				viewer.setBorderColor(borderColor);</b>
+<b class="nc"><i>385</i>&nbsp;			}</b>
+<i>386</i>&nbsp;		case MAIN_SCENE:
+<b class="nc"><i>387</i>&nbsp;			return scene.snapshot(null);</b>
+<i>388</i>&nbsp;		case MAIN_WINDOW_SCREENSHOT:
+<b class="nc"><i>389</i>&nbsp;			double x = scene.getX() + stage.getX();</b>
+<b class="nc"><i>390</i>&nbsp;			double y = scene.getY() + stage.getY();</b>
+<b class="nc"><i>391</i>&nbsp;			double width = scene.getWidth();</b>
+<b class="nc"><i>392</i>&nbsp;			double height = scene.getHeight();</b>
+<i>393</i>&nbsp;			try {
+<i>394</i>&nbsp;				// For reasons I do not understand, this occasionally throws an ArrayIndexOutOfBoundsException
+<b class="nc"><i>395</i>&nbsp;				return new Robot().getScreenCapture(null,</b>
+<i>396</i>&nbsp;						x, y, width, height, false);
+<b class="nc"><i>397</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>398</i>&nbsp;				logger.error(&quot;Unable to make main window screenshot, will resort to trying to crop a full screenshot instead&quot;, e);</b>
+<b class="nc"><i>399</i>&nbsp;				var img2 = makeSnapshotFX(qupath, viewer, GuiTools.SnapshotType.FULL_SCREENSHOT);</b>
+<b class="nc"><i>400</i>&nbsp;				return new WritableImage(img2.getPixelReader(), </b>
+<i>401</i>&nbsp;						(int)x, (int)y, (int)width, (int)height);
+<i>402</i>&nbsp;			}
+<i>403</i>&nbsp;		case FULL_SCREENSHOT:
+<b class="nc"><i>404</i>&nbsp;			var screen = Screen.getPrimary();</b>
+<b class="nc"><i>405</i>&nbsp;			var bounds = screen.getBounds();</b>
+<b class="nc"><i>406</i>&nbsp;			return new Robot().getScreenCapture(null,</b>
+<b class="nc"><i>407</i>&nbsp;					bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight());</b>
+<i>408</i>&nbsp;		default:
+<b class="nc"><i>409</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown snapshot type &quot; + type);</b>
+<i>410</i>&nbsp;		}
+<i>411</i>&nbsp;	}
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;	/**
+<i>414</i>&nbsp;	 * Make a snapshot (image) showing what is currently displayed in a QuPath window
+<i>415</i>&nbsp;	 * or the active viewer within QuPath, as determined by the SnapshotType.
+<i>416</i>&nbsp;	 * 
+<i>417</i>&nbsp;	 * @param qupath
+<i>418</i>&nbsp;	 * @param type
+<i>419</i>&nbsp;	 * @return
+<i>420</i>&nbsp;	 */
+<i>421</i>&nbsp;	public static BufferedImage makeSnapshot(final QuPathGUI qupath, final GuiTools.SnapshotType type) {
+<b class="nc"><i>422</i>&nbsp;		return SwingFXUtils.fromFXImage(makeSnapshotFX(qupath, qupath.getViewer(), type), null);</b>
+<i>423</i>&nbsp;	}
+<i>424</i>&nbsp;	
+<i>425</i>&nbsp;	/**
+<i>426</i>&nbsp;	 * Make a BufferedImage snapshot of the specified viewer.
+<i>427</i>&nbsp;	 * @param viewer
+<i>428</i>&nbsp;	 * @return
+<i>429</i>&nbsp;	 */
+<i>430</i>&nbsp;	public static BufferedImage makeViewerSnapshot(final QuPathViewer viewer) {
+<b class="nc"><i>431</i>&nbsp;		return SwingFXUtils.fromFXImage(makeSnapshotFX(QuPathGUI.getInstance(), viewer, GuiTools.SnapshotType.VIEWER), null);</b>
+<i>432</i>&nbsp;	}
+<i>433</i>&nbsp;	
+<i>434</i>&nbsp;	/**
+<i>435</i>&nbsp;	 * Make a BufferedImage snapshot of the current GUI.
+<i>436</i>&nbsp;	 * @return
+<i>437</i>&nbsp;	 */
+<i>438</i>&nbsp;	public static BufferedImage makeSnapshot() {
+<b class="nc"><i>439</i>&nbsp;		return SwingFXUtils.fromFXImage(makeSnapshotFX(QuPathGUI.getInstance(), null, GuiTools.SnapshotType.MAIN_SCENE), null);</b>
+<i>440</i>&nbsp;	}
+<i>441</i>&nbsp;	
+<i>442</i>&nbsp;	/**
+<i>443</i>&nbsp;	 * Make a BufferedImage snapshot of the current viewer.
+<i>444</i>&nbsp;	 * @return
+<i>445</i>&nbsp;	 */
+<i>446</i>&nbsp;	public static BufferedImage makeViewerSnapshot() {
+<b class="nc"><i>447</i>&nbsp;		return SwingFXUtils.fromFXImage(makeSnapshotFX(QuPathGUI.getInstance(), QuPathGUI.getInstance().getViewer(), GuiTools.SnapshotType.VIEWER), null);</b>
+<i>448</i>&nbsp;	}
+<i>449</i>&nbsp;	
+<i>450</i>&nbsp;	/**
+<i>451</i>&nbsp;	 * Make a BufferedImage snapshot of the full screen.
+<i>452</i>&nbsp;	 * @return
+<i>453</i>&nbsp;	 */
+<i>454</i>&nbsp;	public static BufferedImage makeFullScreenshot() {
+<b class="nc"><i>455</i>&nbsp;		return SwingFXUtils.fromFXImage(makeSnapshotFX(QuPathGUI.getInstance(), null, GuiTools.SnapshotType.FULL_SCREENSHOT), null);</b>
+<i>456</i>&nbsp;	}
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;	/**
+<i>459</i>&nbsp;	 * Get an appropriate String to represent the magnification of the image currently in the viewer.
+<i>460</i>&nbsp;	 * @param viewer
+<i>461</i>&nbsp;	 * @return
+<i>462</i>&nbsp;	 */
+<i>463</i>&nbsp;	public static String getMagnificationString(final QuPathViewer viewer) {
+<b class="nc"><i>464</i>&nbsp;		if (viewer == null || !viewer.hasServer())</b>
+<b class="nc"><i>465</i>&nbsp;			return &quot;&quot;;</b>
+<i>466</i>&nbsp;//		if (Double.isFinite(viewer.getServer().getMetadata().getMagnification()))
+<b class="nc"><i>467</i>&nbsp;			return String.format(&quot;%.2fx&quot;, viewer.getMagnification());</b>
+<i>468</i>&nbsp;//		else
+<i>469</i>&nbsp;//			return String.format(&quot;Scale %.2f&quot;, viewer.getDownsampleFactor());
+<i>470</i>&nbsp;	}
+<i>471</i>&nbsp;
+<i>472</i>&nbsp;	/**
+<i>473</i>&nbsp;	 * Prompt user to select all currently-selected objects (except TMA core objects).
+<i>474</i>&nbsp;	 * 
+<i>475</i>&nbsp;	 * @param imageData
+<i>476</i>&nbsp;	 * @return
+<i>477</i>&nbsp;	 */
+<i>478</i>&nbsp;	public static boolean promptToClearAllSelectedObjects(final ImageData&lt;?&gt; imageData) {
+<i>479</i>&nbsp;		// Get all non-TMA core objects
+<b class="nc"><i>480</i>&nbsp;		PathObjectHierarchy hierarchy = imageData.getHierarchy();</b>
+<b class="nc"><i>481</i>&nbsp;		Collection&lt;PathObject&gt; selectedRaw = hierarchy.getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>482</i>&nbsp;		List&lt;PathObject&gt; selected = selectedRaw.stream().filter(p -&gt; !(p instanceof TMACoreObject)).collect(Collectors.toList());</b>
+<i>483</i>&nbsp;	
+<b class="nc"><i>484</i>&nbsp;		if (selected.isEmpty()) {</b>
+<b class="nc"><i>485</i>&nbsp;			if (selectedRaw.size() &gt; selected.size())</b>
+<b class="nc"><i>486</i>&nbsp;				Dialogs.showErrorMessage(&quot;Delete selected objects&quot;, &quot;No valid objects selected! \n\nNote: Individual TMA cores cannot be deleted with this method.&quot;);</b>
+<i>487</i>&nbsp;			else
+<b class="nc"><i>488</i>&nbsp;				Dialogs.showErrorMessage(&quot;Delete selected objects&quot;, &quot;No objects selected!&quot;);</b>
+<b class="nc"><i>489</i>&nbsp;			return false;</b>
+<i>490</i>&nbsp;		}
+<i>491</i>&nbsp;	
+<b class="nc"><i>492</i>&nbsp;		int n = selected.size();</b>
+<i>493</i>&nbsp;		String message;
+<b class="nc"><i>494</i>&nbsp;		if (n == 1)</b>
+<b class="nc"><i>495</i>&nbsp;			message = &quot;Delete selected object?&quot;;</b>
+<i>496</i>&nbsp;		else
+<b class="nc"><i>497</i>&nbsp;			message = &quot;Delete &quot; + n + &quot; selected objects?&quot;;</b>
+<b class="nc"><i>498</i>&nbsp;		if (Dialogs.showYesNoDialog(&quot;Delete objects&quot;, message)) {</b>
+<i>499</i>&nbsp;			// Check for descendants
+<b class="nc"><i>500</i>&nbsp;			List&lt;PathObject&gt; children = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>501</i>&nbsp;			for (PathObject temp : selected) {</b>
+<b class="nc"><i>502</i>&nbsp;				children.addAll(temp.getChildObjects());</b>
+<b class="nc"><i>503</i>&nbsp;			}</b>
+<b class="nc"><i>504</i>&nbsp;			children.removeAll(selected);</b>
+<b class="nc"><i>505</i>&nbsp;			boolean keepChildren = true;</b>
+<b class="nc"><i>506</i>&nbsp;			if (!children.isEmpty()) {</b>
+<b class="nc"><i>507</i>&nbsp;				Dialogs.DialogButton response = Dialogs.showYesNoCancelDialog(&quot;Delete objects&quot;, &quot;Keep descendant objects?&quot;);</b>
+<b class="nc"><i>508</i>&nbsp;				if (response == Dialogs.DialogButton.CANCEL)</b>
+<b class="nc"><i>509</i>&nbsp;					return false;</b>
+<b class="nc"><i>510</i>&nbsp;				keepChildren = response == Dialogs.DialogButton.YES;</b>
+<i>511</i>&nbsp;			}
+<i>512</i>&nbsp;			
+<i>513</i>&nbsp;			
+<b class="nc"><i>514</i>&nbsp;			hierarchy.removeObjects(selected, keepChildren);</b>
+<b class="nc"><i>515</i>&nbsp;			hierarchy.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>516</i>&nbsp;			imageData.getHistoryWorkflow().addStep(new DefaultScriptableWorkflowStep(&quot;Delete selected objects&quot;, &quot;clearSelectedObjects(&quot; + keepChildren + &quot;);&quot;));</b>
+<b class="nc"><i>517</i>&nbsp;			if (keepChildren)</b>
+<b class="nc"><i>518</i>&nbsp;				logger.info(selected.size() + &quot; object(s) deleted&quot;);</b>
+<i>519</i>&nbsp;			else
+<b class="nc"><i>520</i>&nbsp;				logger.info(selected.size() + &quot; object(s) deleted with descendants&quot;);</b>
+<b class="nc"><i>521</i>&nbsp;			imageData.getHistoryWorkflow().addStep(new DefaultScriptableWorkflowStep(&quot;Delete selected objects&quot;, &quot;clearSelectedObjects();&quot;));</b>
+<b class="nc"><i>522</i>&nbsp;			logger.info(selected.size() + &quot; object(s) deleted&quot;);</b>
+<b class="nc"><i>523</i>&nbsp;			return true;</b>
+<i>524</i>&nbsp;		} else
+<b class="nc"><i>525</i>&nbsp;			return false;</b>
+<i>526</i>&nbsp;	}
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;	/**
+<i>529</i>&nbsp;	 * Prompt to remove a single, specified selected object.
+<i>530</i>&nbsp;	 * 
+<i>531</i>&nbsp;	 * @param pathObjectSelected
+<i>532</i>&nbsp;	 * @param hierarchy
+<i>533</i>&nbsp;	 * @return
+<i>534</i>&nbsp;	 */
+<i>535</i>&nbsp;	public static boolean promptToRemoveSelectedObject(PathObject pathObjectSelected, PathObjectHierarchy hierarchy) {
+<i>536</i>&nbsp;		// Can&#39;t delete null - or a TMACoreObject
+<b class="nc"><i>537</i>&nbsp;		if (pathObjectSelected == null || pathObjectSelected instanceof TMACoreObject)</b>
+<b class="nc"><i>538</i>&nbsp;			return false;</b>
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;		// Deselect first
+<b class="nc"><i>541</i>&nbsp;		hierarchy.getSelectionModel().deselectObject(pathObjectSelected);</b>
+<i>542</i>&nbsp;
+<b class="nc"><i>543</i>&nbsp;		if (pathObjectSelected.hasChildren()) {</b>
+<b class="nc"><i>544</i>&nbsp;			Dialogs.DialogButton confirm = Dialogs.showYesNoCancelDialog(&quot;Delete object&quot;, String.format(&quot;Keep %d descendant object(s)?&quot;, PathObjectTools.countDescendants(pathObjectSelected)));</b>
+<b class="nc"><i>545</i>&nbsp;			if (confirm == Dialogs.DialogButton.CANCEL)</b>
+<b class="nc"><i>546</i>&nbsp;				return false;</b>
+<b class="nc"><i>547</i>&nbsp;			if (confirm == Dialogs.DialogButton.YES)</b>
+<b class="nc"><i>548</i>&nbsp;				hierarchy.removeObject(pathObjectSelected, true);</b>
+<i>549</i>&nbsp;			else
+<b class="nc"><i>550</i>&nbsp;				hierarchy.removeObject(pathObjectSelected, false);</b>
+<b class="nc"><i>551</i>&nbsp;		} else if (PathObjectTools.hasPointROI(pathObjectSelected)) {</b>
+<b class="nc"><i>552</i>&nbsp;			int nPoints = ((PointsROI)pathObjectSelected.getROI()).getNumPoints();</b>
+<b class="nc"><i>553</i>&nbsp;			if (nPoints &gt; 1) {</b>
+<b class="nc"><i>554</i>&nbsp;				if (!Dialogs.showYesNoDialog(&quot;Delete object&quot;, String.format(&quot;Delete %d points?&quot;, nPoints)))</b>
+<b class="nc"><i>555</i>&nbsp;					return false;</b>
+<i>556</i>&nbsp;				else
+<b class="nc"><i>557</i>&nbsp;					hierarchy.removeObject(pathObjectSelected, false);</b>
+<i>558</i>&nbsp;			} else
+<b class="nc"><i>559</i>&nbsp;				hierarchy.removeObject(pathObjectSelected, false);	</b>
+<b class="nc"><i>560</i>&nbsp;		} else if (pathObjectSelected.isDetection()) {</b>
+<i>561</i>&nbsp;			// Check whether to delete a detection object... can&#39;t simply be redrawn (like an annotation), so be cautious...
+<b class="nc"><i>562</i>&nbsp;			if (!Dialogs.showYesNoDialog(&quot;Delete object&quot;, &quot;Are you sure you want to delete this detection object?&quot;))</b>
+<b class="nc"><i>563</i>&nbsp;				return false;</b>
+<i>564</i>&nbsp;			else
+<b class="nc"><i>565</i>&nbsp;				hierarchy.removeObject(pathObjectSelected, false);</b>
+<i>566</i>&nbsp;		} else
+<b class="nc"><i>567</i>&nbsp;			hierarchy.removeObject(pathObjectSelected, false);</b>
+<i>568</i>&nbsp;		//		updateRoiEditor();
+<i>569</i>&nbsp;		//		pathROIs.getObjectList().remove(pathObjectSelected);
+<i>570</i>&nbsp;		//		repaint();
+<b class="nc"><i>571</i>&nbsp;		return true;</b>
+<i>572</i>&nbsp;	}
+<i>573</i>&nbsp;
+<i>574</i>&nbsp;
+<i>575</i>&nbsp;	/**
+<i>576</i>&nbsp;	 * Try to open a file in the native application.
+<i>577</i>&nbsp;	 * 
+<i>578</i>&nbsp;	 * This can be used to open a directory in Finder (Mac OSX) or Windows Explorer etc.
+<i>579</i>&nbsp;	 * This can however fail on Linux, so an effort is made to query Desktop support and 
+<i>580</i>&nbsp;	 * offer to copy the path instead of opening the file, if necessary.
+<i>581</i>&nbsp;	 * 
+<i>582</i>&nbsp;	 * @param file
+<i>583</i>&nbsp;	 * @return
+<i>584</i>&nbsp;	 */
+<i>585</i>&nbsp;	public static boolean openFile(final File file) {
+<b class="nc"><i>586</i>&nbsp;		if (file == null || !file.exists()) {</b>
+<b class="nc"><i>587</i>&nbsp;			Dialogs.showErrorMessage(&quot;Open&quot;, &quot;File &quot; + file + &quot; does not exist!&quot;);</b>
+<b class="nc"><i>588</i>&nbsp;			return false;</b>
+<i>589</i>&nbsp;		}
+<b class="nc"><i>590</i>&nbsp;		if (file.isDirectory())</b>
+<b class="nc"><i>591</i>&nbsp;			return browseDirectory(file);</b>
+<b class="nc"><i>592</i>&nbsp;		if (Desktop.isDesktopSupported()) {</b>
+<i>593</i>&nbsp;			try {
+<b class="nc"><i>594</i>&nbsp;				var desktop = Desktop.getDesktop();</b>
+<b class="nc"><i>595</i>&nbsp;				if (desktop.isSupported(Desktop.Action.OPEN))</b>
+<b class="nc"><i>596</i>&nbsp;					desktop.open(file);</b>
+<i>597</i>&nbsp;				else {
+<b class="nc"><i>598</i>&nbsp;					if (Dialogs.showConfirmDialog(&quot;Open file&quot;,</b>
+<i>599</i>&nbsp;							&quot;Opening files not supported on this platform!\nCopy directory path to clipboard instead?&quot;)) {
+<b class="nc"><i>600</i>&nbsp;						var content = new ClipboardContent();</b>
+<b class="nc"><i>601</i>&nbsp;						content.putString(file.getAbsolutePath());</b>
+<b class="nc"><i>602</i>&nbsp;						Clipboard.getSystemClipboard().setContent(content);</b>
+<i>603</i>&nbsp;					}
+<i>604</i>&nbsp;				}
+<b class="nc"><i>605</i>&nbsp;				return true;</b>
+<b class="nc"><i>606</i>&nbsp;			} catch (Exception e1) {</b>
+<b class="nc"><i>607</i>&nbsp;				Dialogs.showErrorNotification(&quot;Open file&quot;, e1);</b>
+<i>608</i>&nbsp;			}
+<i>609</i>&nbsp;		}
+<b class="nc"><i>610</i>&nbsp;		return false;</b>
+<i>611</i>&nbsp;	}
+<i>612</i>&nbsp;	
+<i>613</i>&nbsp;	/**
+<i>614</i>&nbsp;	 * Get the {@link Window} containing a specific {@link Node}.
+<i>615</i>&nbsp;	 * @param node
+<i>616</i>&nbsp;	 * @return
+<i>617</i>&nbsp;	 */
+<i>618</i>&nbsp;	public static Window getWindow(Node node) {
+<b class="nc"><i>619</i>&nbsp;		var scene = node.getScene();</b>
+<b class="nc"><i>620</i>&nbsp;		return scene == null ? null : scene.getWindow();</b>
+<i>621</i>&nbsp;	}
+<i>622</i>&nbsp;	
+<i>623</i>&nbsp;
+<i>624</i>&nbsp;	/**
+<i>625</i>&nbsp;	 * Paint an image centered within a canvas, scaled to be as large as possible while maintaining its aspect ratio.
+<i>626</i>&nbsp;	 * 
+<i>627</i>&nbsp;	 * Background is transparent.
+<i>628</i>&nbsp;	 * 
+<i>629</i>&nbsp;	 * @param canvas
+<i>630</i>&nbsp;	 * @param image
+<i>631</i>&nbsp;	 */
+<i>632</i>&nbsp;	public static void paintImage(final Canvas canvas, final Image image) {
+<b class="nc"><i>633</i>&nbsp;		GraphicsContext gc = canvas.getGraphicsContext2D();</b>
+<b class="nc"><i>634</i>&nbsp;		double w = canvas.getWidth();</b>
+<b class="nc"><i>635</i>&nbsp;		double h = canvas.getHeight();</b>
+<b class="nc"><i>636</i>&nbsp;		gc.setFill(Color.TRANSPARENT);</b>
+<b class="nc"><i>637</i>&nbsp;		if (image == null) {</b>
+<b class="nc"><i>638</i>&nbsp;			gc.clearRect(0, 0, w, h);</b>
+<b class="nc"><i>639</i>&nbsp;			return;</b>
+<i>640</i>&nbsp;		}
+<b class="nc"><i>641</i>&nbsp;		double scale = Math.min(</b>
+<b class="nc"><i>642</i>&nbsp;				w/image.getWidth(),</b>
+<b class="nc"><i>643</i>&nbsp;				h/image.getHeight());</b>
+<b class="nc"><i>644</i>&nbsp;		double sw = image.getWidth()*scale;</b>
+<b class="nc"><i>645</i>&nbsp;		double sh = image.getHeight()*scale;</b>
+<b class="nc"><i>646</i>&nbsp;		double sx = (w - sw)/2;</b>
+<b class="nc"><i>647</i>&nbsp;		double sy = (h - sh)/2;</b>
+<b class="nc"><i>648</i>&nbsp;		gc.clearRect(0, 0, w, h);</b>
+<b class="nc"><i>649</i>&nbsp;		gc.drawImage(image, sx, sy, sw, sh);</b>
+<b class="nc"><i>650</i>&nbsp;	}</b>
+<i>651</i>&nbsp;
+<i>652</i>&nbsp;	/**
+<i>653</i>&nbsp;	 * Refresh a {@link ListView} in the Application thread.
+<i>654</i>&nbsp;	 * @param &lt;T&gt;
+<i>655</i>&nbsp;	 * @param listView
+<i>656</i>&nbsp;	 */
+<i>657</i>&nbsp;	public static &lt;T&gt; void refreshList(final ListView&lt;T&gt; listView) {
+<b class="nc"><i>658</i>&nbsp;		if (Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>659</i>&nbsp;			listView.refresh();</b>
+<i>660</i>&nbsp;		} else
+<b class="nc"><i>661</i>&nbsp;			Platform.runLater(() -&gt; refreshList(listView));</b>
+<b class="nc"><i>662</i>&nbsp;	}</b>
+<i>663</i>&nbsp;	
+<i>664</i>&nbsp;	
+<i>665</i>&nbsp;	/**
+<i>666</i>&nbsp;	 * Restrict the possible spinner input to integer (or double) format.
+<i>667</i>&nbsp;	 * @param spinner
+<i>668</i>&nbsp;	 * @param allowDecimals
+<i>669</i>&nbsp;	 */
+<i>670</i>&nbsp;	public static void restrictSpinnerInputToNumber(Spinner&lt;? extends Number&gt; spinner, boolean allowDecimals) {
+<i>671</i>&nbsp;		NumberFormat format;
+<b class="nc"><i>672</i>&nbsp;		if (allowDecimals)</b>
+<b class="nc"><i>673</i>&nbsp;			format = NumberFormat.getNumberInstance();</b>
+<i>674</i>&nbsp;		else
+<b class="nc"><i>675</i>&nbsp;			format = NumberFormat.getIntegerInstance();</b>
+<i>676</i>&nbsp;		
+<b class="nc"><i>677</i>&nbsp;		UnaryOperator&lt;TextFormatter.Change&gt; filter = c -&gt; {</b>
+<b class="nc"><i>678</i>&nbsp;		    if (c.isContentChange()) {</b>
+<b class="nc"><i>679</i>&nbsp;		    	String newText = c.getControlNewText();</b>
+<b class="nc"><i>680</i>&nbsp;		        ParsePosition parsePosition = new ParsePosition(0);</b>
+<b class="nc"><i>681</i>&nbsp;		        format.parse(newText, parsePosition);</b>
+<b class="nc"><i>682</i>&nbsp;		        if (parsePosition.getIndex() &lt; c.getControlNewText().length()) {</b>
+<b class="nc"><i>683</i>&nbsp;		            return null;</b>
+<i>684</i>&nbsp;		        }
+<i>685</i>&nbsp;		    }
+<b class="nc"><i>686</i>&nbsp;		    return c;</b>
+<i>687</i>&nbsp;		};
+<b class="nc"><i>688</i>&nbsp;		TextFormatter&lt;Integer&gt; normalizeFormatter = new TextFormatter&lt;Integer&gt;(filter);</b>
+<b class="nc"><i>689</i>&nbsp;		spinner.getEditor().setTextFormatter(normalizeFormatter);		</b>
+<b class="nc"><i>690</i>&nbsp;	}</b>
+<i>691</i>&nbsp;	
+<i>692</i>&nbsp;
+<i>693</i>&nbsp;	/**
+<i>694</i>&nbsp;	 * Prompt the user to set properties for the currently-selected annotation(s).
+<i>695</i>&nbsp;	 * 
+<i>696</i>&nbsp;	 * @param hierarchy current hierarchy
+<i>697</i>&nbsp;	 * @return true if changes to annotation properties were made, false otherwise.
+<i>698</i>&nbsp;	 */
+<i>699</i>&nbsp;	public static boolean promptToSetActiveAnnotationProperties(final PathObjectHierarchy hierarchy) {
+<b class="nc"><i>700</i>&nbsp;		PathObject currentObject = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>701</i>&nbsp;		if (currentObject == null || !currentObject.isAnnotation())</b>
+<b class="nc"><i>702</i>&nbsp;			return false;</b>
+<b class="nc"><i>703</i>&nbsp;		ROI roi = currentObject.getROI();</b>
+<b class="nc"><i>704</i>&nbsp;		if (roi == null)</b>
+<b class="nc"><i>705</i>&nbsp;			return false;</b>
+<i>706</i>&nbsp;		
+<b class="nc"><i>707</i>&nbsp;		Collection&lt;PathAnnotationObject&gt; otherAnnotations = hierarchy.getSelectionModel().getSelectedObjects().stream()</b>
+<b class="nc"><i>708</i>&nbsp;				.filter(p -&gt; p.isAnnotation() &amp;&amp; p != currentObject)</b>
+<b class="nc"><i>709</i>&nbsp;				.map(p -&gt; (PathAnnotationObject)p)</b>
+<b class="nc"><i>710</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>711</i>&nbsp;		
+<b class="nc"><i>712</i>&nbsp;		if (promptToSetAnnotationProperties((PathAnnotationObject)currentObject, otherAnnotations)) {</b>
+<b class="nc"><i>713</i>&nbsp;			hierarchy.fireObjectsChangedEvent(null, Collections.singleton(currentObject));</b>
+<i>714</i>&nbsp;			// Ensure the object is still selected
+<b class="nc"><i>715</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObject(currentObject);</b>
+<b class="nc"><i>716</i>&nbsp;			return true;</b>
+<i>717</i>&nbsp;		}
+<b class="nc"><i>718</i>&nbsp;		return false;</b>
+<i>719</i>&nbsp;	}
+<i>720</i>&nbsp;	
+<i>721</i>&nbsp;	
+<i>722</i>&nbsp;	private static boolean promptToSetAnnotationProperties(final PathAnnotationObject annotation, Collection&lt;PathAnnotationObject&gt; otherAnnotations) {
+<i>723</i>&nbsp;		
+<b class="nc"><i>724</i>&nbsp;		GridPane panel = new GridPane();</b>
+<b class="nc"><i>725</i>&nbsp;		panel.setVgap(5);</b>
+<b class="nc"><i>726</i>&nbsp;		panel.setHgap(5);</b>
+<b class="nc"><i>727</i>&nbsp;		TextField textField = new TextField();</b>
+<b class="nc"><i>728</i>&nbsp;		if (annotation.getName() != null)</b>
+<b class="nc"><i>729</i>&nbsp;			textField.setText(annotation.getName());</b>
+<b class="nc"><i>730</i>&nbsp;		textField.setPrefColumnCount(20);</b>
+<i>731</i>&nbsp;		// Post focus request to run later, after dialog displayed
+<b class="nc"><i>732</i>&nbsp;		Platform.runLater(() -&gt; textField.requestFocus());</b>
+<i>733</i>&nbsp;		
+<b class="nc"><i>734</i>&nbsp;		panel.add(new Label(&quot;Name &quot;), 0, 0);</b>
+<b class="nc"><i>735</i>&nbsp;		panel.add(textField, 1, 0);</b>
+<i>736</i>&nbsp;
+<b class="nc"><i>737</i>&nbsp;		boolean promptForColor = true;</b>
+<b class="nc"><i>738</i>&nbsp;		ColorPicker panelColor = null;</b>
+<b class="nc"><i>739</i>&nbsp;		if (promptForColor) {</b>
+<b class="nc"><i>740</i>&nbsp;			panelColor = new ColorPicker(ColorToolsFX.getDisplayedColor(annotation));</b>
+<b class="nc"><i>741</i>&nbsp;			panel.add(new Label(&quot;Color &quot;), 0, 1);</b>
+<b class="nc"><i>742</i>&nbsp;			panel.add(panelColor, 1, 1);</b>
+<b class="nc"><i>743</i>&nbsp;			panelColor.prefWidthProperty().bind(textField.widthProperty());</b>
+<i>744</i>&nbsp;		}
+<i>745</i>&nbsp;		
+<b class="nc"><i>746</i>&nbsp;		Label labDescription = new Label(&quot;Description&quot;);</b>
+<b class="nc"><i>747</i>&nbsp;		TextArea textAreaDescription = new TextArea(annotation.getDescription());</b>
+<b class="nc"><i>748</i>&nbsp;		textAreaDescription.setPrefRowCount(3);</b>
+<b class="nc"><i>749</i>&nbsp;		textAreaDescription.setPrefColumnCount(25);</b>
+<b class="nc"><i>750</i>&nbsp;		labDescription.setLabelFor(textAreaDescription);</b>
+<b class="nc"><i>751</i>&nbsp;		panel.add(labDescription, 0, 2);</b>
+<b class="nc"><i>752</i>&nbsp;		panel.add(textAreaDescription, 1, 2);</b>
+<i>753</i>&nbsp;		
+<b class="nc"><i>754</i>&nbsp;		CheckBox cbLocked = new CheckBox(&quot;&quot;);</b>
+<b class="nc"><i>755</i>&nbsp;		cbLocked.setSelected(annotation.isLocked());</b>
+<b class="nc"><i>756</i>&nbsp;		Label labelLocked = new Label(&quot;Locked&quot;);</b>
+<b class="nc"><i>757</i>&nbsp;		panel.add(labelLocked, 0, 3);</b>
+<b class="nc"><i>758</i>&nbsp;		labelLocked.setLabelFor(cbLocked);</b>
+<b class="nc"><i>759</i>&nbsp;		panel.add(cbLocked, 1, 3);</b>
+<i>760</i>&nbsp;		
+<i>761</i>&nbsp;		
+<b class="nc"><i>762</i>&nbsp;		CheckBox cbAll = new CheckBox(&quot;&quot;);</b>
+<b class="nc"><i>763</i>&nbsp;		boolean hasOthers = otherAnnotations != null &amp;&amp; !otherAnnotations.isEmpty();</b>
+<b class="nc"><i>764</i>&nbsp;		cbAll.setSelected(hasOthers);</b>
+<b class="nc"><i>765</i>&nbsp;		Label labelApplyToAll = new Label(&quot;Apply to all&quot;);</b>
+<b class="nc"><i>766</i>&nbsp;		cbAll.setTooltip(new Tooltip(&quot;Apply properties to all &quot; + (otherAnnotations.size() + 1) + &quot; selected annotations&quot;));</b>
+<b class="nc"><i>767</i>&nbsp;		if (hasOthers) {</b>
+<b class="nc"><i>768</i>&nbsp;			panel.add(labelApplyToAll, 0, 4);</b>
+<b class="nc"><i>769</i>&nbsp;			labelApplyToAll.setLabelFor(cbAll);</b>
+<b class="nc"><i>770</i>&nbsp;			panel.add(cbAll, 1, 4);</b>
+<i>771</i>&nbsp;		}
+<i>772</i>&nbsp;		
+<i>773</i>&nbsp;
+<b class="nc"><i>774</i>&nbsp;		if (!Dialogs.showConfirmDialog(&quot;Set annotation properties&quot;, panel))</b>
+<b class="nc"><i>775</i>&nbsp;			return false;</b>
+<i>776</i>&nbsp;		
+<b class="nc"><i>777</i>&nbsp;		List&lt;PathAnnotationObject&gt; toChange = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>778</i>&nbsp;		toChange.add(annotation);</b>
+<b class="nc"><i>779</i>&nbsp;		if (cbAll.isSelected())</b>
+<b class="nc"><i>780</i>&nbsp;			toChange.addAll(otherAnnotations);</b>
+<i>781</i>&nbsp;		
+<b class="nc"><i>782</i>&nbsp;		String name = textField.getText().trim();</b>
+<i>783</i>&nbsp;		
+<b class="nc"><i>784</i>&nbsp;		for (var temp : toChange) {</b>
+<b class="nc"><i>785</i>&nbsp;			if (name.length() &gt; 0)</b>
+<b class="nc"><i>786</i>&nbsp;				temp.setName(name);</b>
+<i>787</i>&nbsp;			else
+<b class="nc"><i>788</i>&nbsp;				temp.setName(null);</b>
+<b class="nc"><i>789</i>&nbsp;			if (promptForColor)</b>
+<b class="nc"><i>790</i>&nbsp;				temp.setColorRGB(ColorToolsFX.getARGB(panelColor.getValue()));</b>
+<i>791</i>&nbsp;	
+<i>792</i>&nbsp;			// Set the description only if we have to
+<b class="nc"><i>793</i>&nbsp;			String description = textAreaDescription.getText();</b>
+<b class="nc"><i>794</i>&nbsp;			if (description == null || description.isEmpty())</b>
+<b class="nc"><i>795</i>&nbsp;				temp.setDescription(null);</b>
+<i>796</i>&nbsp;			else
+<b class="nc"><i>797</i>&nbsp;				temp.setDescription(description);</b>
+<i>798</i>&nbsp;			
+<b class="nc"><i>799</i>&nbsp;			temp.setLocked(cbLocked.isSelected());</b>
+<b class="nc"><i>800</i>&nbsp;		}</b>
+<i>801</i>&nbsp;		
+<b class="nc"><i>802</i>&nbsp;		return true;</b>
+<i>803</i>&nbsp;	}
+<i>804</i>&nbsp;	
+<i>805</i>&nbsp;	
+<i>806</i>&nbsp;	/**
+<i>807</i>&nbsp;	 * Populate a {@link Menu} with standard options to operate on selected annotation objects.
+<i>808</i>&nbsp;	 * @param qupath
+<i>809</i>&nbsp;	 * @param menu
+<i>810</i>&nbsp;	 * @return
+<i>811</i>&nbsp;	 */
+<i>812</i>&nbsp;	public static Menu populateAnnotationsMenu(QuPathGUI qupath, Menu menu) {
+<b class="fc"><i>813</i>&nbsp;		createAnnotationsMenuImpl(qupath, menu);</b>
+<b class="fc"><i>814</i>&nbsp;		return menu;</b>
+<i>815</i>&nbsp;	}
+<i>816</i>&nbsp;
+<i>817</i>&nbsp;	/**
+<i>818</i>&nbsp;	 * Populate a {@link ContextMenu} with standard options to operate on selected annotation objects.
+<i>819</i>&nbsp;	 * @param qupath
+<i>820</i>&nbsp;	 * @param menu
+<i>821</i>&nbsp;	 * @return
+<i>822</i>&nbsp;	 */	public static ContextMenu populateAnnotationsMenu(QuPathGUI qupath, ContextMenu menu) {
+<b class="fc"><i>823</i>&nbsp;		createAnnotationsMenuImpl(qupath, menu);</b>
+<b class="fc"><i>824</i>&nbsp;		return menu;</b>
+<i>825</i>&nbsp;	}
+<i>826</i>&nbsp;
+<i>827</i>&nbsp;	
+<i>828</i>&nbsp;	private static void createAnnotationsMenuImpl(QuPathGUI qupath, Object menu) {
+<i>829</i>&nbsp;		// Add annotation options
+<b class="fc"><i>830</i>&nbsp;		CheckMenuItem miLockAnnotations = new CheckMenuItem(&quot;Lock&quot;);</b>
+<b class="fc"><i>831</i>&nbsp;		CheckMenuItem miUnlockAnnotations = new CheckMenuItem(&quot;Unlock&quot;);</b>
+<b class="fc"><i>832</i>&nbsp;		miLockAnnotations.setOnAction(e -&gt; setSelectedAnnotationLock(qupath.getImageData(), true));</b>
+<b class="fc"><i>833</i>&nbsp;		miUnlockAnnotations.setOnAction(e -&gt; setSelectedAnnotationLock(qupath.getImageData(), false));</b>
+<i>834</i>&nbsp;		
+<b class="fc"><i>835</i>&nbsp;		MenuItem miSetProperties = new MenuItem(&quot;Set properties&quot;);</b>
+<b class="fc"><i>836</i>&nbsp;		miSetProperties.setOnAction(e -&gt; {</b>
+<b class="nc"><i>837</i>&nbsp;			var hierarchy = qupath.getViewer().getHierarchy();</b>
+<b class="nc"><i>838</i>&nbsp;			if (hierarchy != null)</b>
+<b class="nc"><i>839</i>&nbsp;				GuiTools.promptToSetActiveAnnotationProperties(hierarchy);</b>
+<b class="nc"><i>840</i>&nbsp;		});</b>
+<i>841</i>&nbsp;		
+<i>842</i>&nbsp;		
+<b class="fc"><i>843</i>&nbsp;		var actionInsertInHierarchy = qupath.createImageDataAction(imageData -&gt; Commands.insertSelectedObjectsInHierarchy(imageData));</b>
+<b class="fc"><i>844</i>&nbsp;		actionInsertInHierarchy.setText(&quot;Insert in hierarchy&quot;);</b>
+<b class="fc"><i>845</i>&nbsp;		var miInsertHierarchy = ActionTools.createMenuItem(actionInsertInHierarchy);</b>
+<i>846</i>&nbsp;		
+<b class="fc"><i>847</i>&nbsp;		var actionMerge = qupath.createImageDataAction(imageData -&gt; Commands.mergeSelectedAnnotations(imageData));</b>
+<b class="fc"><i>848</i>&nbsp;		actionMerge.setText(&quot;Merge selected&quot;);</b>
+<b class="fc"><i>849</i>&nbsp;		var actionSubtract = qupath.createImageDataAction(imageData -&gt; Commands.combineSelectedAnnotations(imageData, CombineOp.SUBTRACT));</b>
+<b class="fc"><i>850</i>&nbsp;		actionSubtract.setText(&quot;Subtract selected&quot;);</b>
+<b class="fc"><i>851</i>&nbsp;		var actionIntersect = qupath.createImageDataAction(imageData -&gt; Commands.combineSelectedAnnotations(imageData, CombineOp.INTERSECT));</b>
+<b class="fc"><i>852</i>&nbsp;		actionIntersect.setText(&quot;Intersect selected&quot;);</b>
+<i>853</i>&nbsp;		
+<b class="fc"><i>854</i>&nbsp;		var actionInverse = qupath.createImageDataAction(imageData -&gt; Commands.makeInverseAnnotation(imageData));</b>
+<b class="fc"><i>855</i>&nbsp;		actionInverse.setText(&quot;Make inverse&quot;);</b>
+<i>856</i>&nbsp;		
+<b class="fc"><i>857</i>&nbsp;		Menu menuCombine = MenuTools.createMenu(</b>
+<i>858</i>&nbsp;				&quot;Edit multiple&quot;,
+<i>859</i>&nbsp;				actionMerge,
+<i>860</i>&nbsp;				actionSubtract, // TODO: Make this less ambiguous!
+<i>861</i>&nbsp;				actionIntersect
+<i>862</i>&nbsp;				);
+<i>863</i>&nbsp;		
+<b class="fc"><i>864</i>&nbsp;		Menu menuEdit = MenuTools.createMenu(</b>
+<i>865</i>&nbsp;				&quot;Edit single&quot;,
+<i>866</i>&nbsp;				actionInverse,
+<b class="fc"><i>867</i>&nbsp;				qupath.createPluginAction(&quot;Split&quot;, SplitAnnotationsPlugin.class, null)</b>
+<i>868</i>&nbsp;				);
+<i>869</i>&nbsp;		
+<i>870</i>&nbsp;//		Menu menuPoints = MenuTools.createMenu(
+<i>871</i>&nbsp;//				&quot;Points&quot;,
+<i>872</i>&nbsp;//				QuPathGUI.createCommandAction(new MergePointsCommand(qupath, true), &quot;Merge all points for class&quot;),
+<i>873</i>&nbsp;//				QuPathGUI.createCommandAction(new MergePointsCommand(qupath, true), &quot;Merge selected points for class&quot;)
+<i>874</i>&nbsp;//				);
+<i>875</i>&nbsp;		
+<b class="fc"><i>876</i>&nbsp;		MenuItem separator = new SeparatorMenuItem();</b>
+<i>877</i>&nbsp;		
+<b class="fc"><i>878</i>&nbsp;		Runnable validator = () -&gt; {</b>
+<b class="nc"><i>879</i>&nbsp;			var imageData = qupath.getImageData();</b>
+<b class="nc"><i>880</i>&nbsp;			PathObject selected = null;</b>
+<b class="nc"><i>881</i>&nbsp;			Collection&lt;PathObject&gt; allSelected = Collections.emptyList();</b>
+<b class="nc"><i>882</i>&nbsp;			boolean allSelectedAnnotations = false;</b>
+<b class="nc"><i>883</i>&nbsp;			boolean hasSelectedAnnotation = false;</b>
+<b class="nc"><i>884</i>&nbsp;			if (imageData != null) {</b>
+<b class="nc"><i>885</i>&nbsp;				selected = imageData.getHierarchy().getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>886</i>&nbsp;				allSelected = new ArrayList&lt;&gt;(imageData.getHierarchy().getSelectionModel().getSelectedObjects());</b>
+<b class="nc"><i>887</i>&nbsp;				hasSelectedAnnotation = selected != null &amp;&amp; selected.isAnnotation();</b>
+<b class="nc"><i>888</i>&nbsp;				allSelectedAnnotations = allSelected.stream().allMatch(p -&gt; p.isAnnotation());</b>
+<i>889</i>&nbsp;			}
+<b class="nc"><i>890</i>&nbsp;			miLockAnnotations.setDisable(!hasSelectedAnnotation);</b>
+<b class="nc"><i>891</i>&nbsp;			miUnlockAnnotations.setDisable(!hasSelectedAnnotation);</b>
+<b class="nc"><i>892</i>&nbsp;			if (hasSelectedAnnotation) {</b>
+<b class="nc"><i>893</i>&nbsp;				boolean isLocked = selected.isLocked();</b>
+<b class="nc"><i>894</i>&nbsp;				miLockAnnotations.setSelected(isLocked);</b>
+<b class="nc"><i>895</i>&nbsp;				miUnlockAnnotations.setSelected(!isLocked);</b>
+<i>896</i>&nbsp;			}
+<i>897</i>&nbsp;			
+<b class="nc"><i>898</i>&nbsp;			miSetProperties.setDisable(!hasSelectedAnnotation);</b>
+<b class="nc"><i>899</i>&nbsp;			miInsertHierarchy.setVisible(selected != null);</b>
+<i>900</i>&nbsp;			
+<b class="nc"><i>901</i>&nbsp;			menuEdit.setVisible(hasSelectedAnnotation);</b>
+<b class="nc"><i>902</i>&nbsp;			menuCombine.setVisible(allSelectedAnnotations &amp;&amp; allSelected.size() &gt; 1);</b>
+<i>903</i>&nbsp;			
+<b class="nc"><i>904</i>&nbsp;			separator.setVisible(menuEdit.isVisible() || menuCombine.isVisible());</b>
+<b class="nc"><i>905</i>&nbsp;		};</b>
+<i>906</i>&nbsp;		
+<i>907</i>&nbsp;		List&lt;MenuItem&gt; items;
+<b class="fc"><i>908</i>&nbsp;		if (menu instanceof Menu) {</b>
+<b class="fc"><i>909</i>&nbsp;			Menu m = (Menu)menu;</b>
+<b class="fc"><i>910</i>&nbsp;			items = m.getItems();</b>
+<b class="fc"><i>911</i>&nbsp;			m.setOnMenuValidation(e -&gt; validator.run());	</b>
+<b class="fc"><i>912</i>&nbsp;		} else if (menu instanceof ContextMenu) {</b>
+<b class="fc"><i>913</i>&nbsp;			ContextMenu m = (ContextMenu)menu;</b>
+<b class="fc"><i>914</i>&nbsp;			items = m.getItems();</b>
+<b class="fc"><i>915</i>&nbsp;			m.setOnShowing(e -&gt; validator.run());	</b>
+<b class="fc"><i>916</i>&nbsp;		} else</b>
+<b class="nc"><i>917</i>&nbsp;			throw new IllegalArgumentException(&quot;Menu must be either a standard Menu or a ContextMenu!&quot;);</b>
+<i>918</i>&nbsp;		
+<b class="fc"><i>919</i>&nbsp;		MenuTools.addMenuItems(</b>
+<i>920</i>&nbsp;				items,
+<i>921</i>&nbsp;				miLockAnnotations,
+<i>922</i>&nbsp;				miUnlockAnnotations,
+<i>923</i>&nbsp;				miSetProperties,
+<i>924</i>&nbsp;				miInsertHierarchy,
+<i>925</i>&nbsp;				separator,
+<i>926</i>&nbsp;				menuEdit,
+<i>927</i>&nbsp;				menuCombine
+<i>928</i>&nbsp;				);
+<b class="fc"><i>929</i>&nbsp;	}</b>
+<i>930</i>&nbsp;	
+<i>931</i>&nbsp;	/**
+<i>932</i>&nbsp;	 * Set selected TMA cores to have the specified &#39;locked&#39; status.
+<i>933</i>&nbsp;	 * 
+<i>934</i>&nbsp;	 * @param hierarchy
+<i>935</i>&nbsp;	 * @param setToLocked
+<i>936</i>&nbsp;	 */
+<i>937</i>&nbsp;	private static void setSelectedAnnotationLock(final PathObjectHierarchy hierarchy, final boolean setToLocked) {
+<b class="nc"><i>938</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>939</i>&nbsp;			return;</b>
+<b class="nc"><i>940</i>&nbsp;		PathObject pathObject = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>941</i>&nbsp;		List&lt;PathObject&gt; changed = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>942</i>&nbsp;		if (pathObject instanceof PathAnnotationObject) {</b>
+<b class="nc"><i>943</i>&nbsp;			PathAnnotationObject annotation = (PathAnnotationObject)pathObject;</b>
+<b class="nc"><i>944</i>&nbsp;			annotation.setLocked(setToLocked);</b>
+<b class="nc"><i>945</i>&nbsp;			changed.add(annotation);</b>
+<i>946</i>&nbsp;			// Update any other selected cores to have the same status
+<b class="nc"><i>947</i>&nbsp;			for (PathObject pathObject2 : hierarchy.getSelectionModel().getSelectedObjects()) {</b>
+<b class="nc"><i>948</i>&nbsp;				if (pathObject2 instanceof PathAnnotationObject) {</b>
+<b class="nc"><i>949</i>&nbsp;					annotation = (PathAnnotationObject)pathObject2;</b>
+<b class="nc"><i>950</i>&nbsp;					if (annotation.isLocked() != setToLocked) {</b>
+<b class="nc"><i>951</i>&nbsp;						annotation.setLocked(setToLocked);</b>
+<b class="nc"><i>952</i>&nbsp;						changed.add(annotation);</b>
+<i>953</i>&nbsp;					}
+<i>954</i>&nbsp;				}
+<b class="nc"><i>955</i>&nbsp;			}</b>
+<i>956</i>&nbsp;		}
+<b class="nc"><i>957</i>&nbsp;		if (!changed.isEmpty())</b>
+<b class="nc"><i>958</i>&nbsp;			hierarchy.fireObjectsChangedEvent(GuiTools.class, changed);</b>
+<b class="nc"><i>959</i>&nbsp;	}</b>
+<i>960</i>&nbsp;	
+<i>961</i>&nbsp;	private static void setSelectedAnnotationLock(final ImageData&lt;?&gt; imageData, final boolean setToLocked) {
+<b class="nc"><i>962</i>&nbsp;		if (imageData == null)</b>
+<b class="nc"><i>963</i>&nbsp;			return;</b>
+<b class="nc"><i>964</i>&nbsp;		setSelectedAnnotationLock(imageData.getHierarchy(), setToLocked);</b>
+<b class="nc"><i>965</i>&nbsp;	}</b>
+<i>966</i>&nbsp;	
+<i>967</i>&nbsp;	
+<i>968</i>&nbsp;	/**
+<i>969</i>&nbsp;	 * Bind the value of a slider and contents of a text field, so that both may be used to 
+<i>970</i>&nbsp;	 * set a numeric (double) value.
+<i>971</i>&nbsp;	 * &lt;p&gt;
+<i>972</i>&nbsp;	 * This aims to overcome the challenge of keeping both synchronized, while also quietly handling 
+<i>973</i>&nbsp;	 * parsing errors that may occur whenever the text field is being edited.
+<i>974</i>&nbsp;	 * 
+<i>975</i>&nbsp;	 * @param slider slider that may be used to adjust the value
+<i>976</i>&nbsp;	 * @param tf text field that may also be used to adjust the value and show it visually
+<i>977</i>&nbsp;	 * @return a property representing the value represented by the slider and text field
+<i>978</i>&nbsp;	 */
+<i>979</i>&nbsp;	public static DoubleProperty bindSliderAndTextField(Slider slider, TextField tf) {
+<b class="nc"><i>980</i>&nbsp;		new NumberAndText(slider.valueProperty(), tf.textProperty()).synchronizeTextToNumber();</b>
+<b class="nc"><i>981</i>&nbsp;		return slider.valueProperty();</b>
+<i>982</i>&nbsp;	}
+<i>983</i>&nbsp;	
+<i>984</i>&nbsp;	
+<i>985</i>&nbsp;	/**
+<i>986</i>&nbsp;	 * Helper class to synchronize a properties between a Slider and TextField.
+<i>987</i>&nbsp;	 */
+<i>988</i>&nbsp;	private static class NumberAndText {
+<i>989</i>&nbsp;		
+<b class="nc"><i>990</i>&nbsp;		private static Logger logger = LoggerFactory.getLogger(NumberAndText.class);</b>
+<i>991</i>&nbsp;		
+<b class="nc"><i>992</i>&nbsp;		private boolean synchronizingNumber = false;</b>
+<b class="nc"><i>993</i>&nbsp;		private boolean synchronizingText = false;</b>
+<i>994</i>&nbsp;		
+<i>995</i>&nbsp;		private DoubleProperty number;
+<i>996</i>&nbsp;		private StringProperty text;
+<b class="nc"><i>997</i>&nbsp;		private NumberFormat format = GeneralTools.createFormatter(5);</b>
+<i>998</i>&nbsp;		
+<b class="nc"><i>999</i>&nbsp;		NumberAndText(DoubleProperty number, StringProperty text) {</b>
+<b class="nc"><i>1000</i>&nbsp;			this.number = number;</b>
+<b class="nc"><i>1001</i>&nbsp;			this.text = text;</b>
+<b class="nc"><i>1002</i>&nbsp;			this.number.addListener((v, o, n) -&gt; synchronizeTextToNumber());</b>
+<b class="nc"><i>1003</i>&nbsp;			this.text.addListener((v, o, n) -&gt; synchronizeNumberToText());</b>
+<i>1004</i>&nbsp;		}
+<i>1005</i>&nbsp;		
+<i>1006</i>&nbsp;		public void synchronizeNumberToText() {
+<b class="nc"><i>1007</i>&nbsp;			if (synchronizingText)</b>
+<i>1008</i>&nbsp;				return;
+<b class="nc"><i>1009</i>&nbsp;			synchronizingNumber = true;</b>
+<b class="nc"><i>1010</i>&nbsp;			String value = text.get();</b>
+<b class="nc"><i>1011</i>&nbsp;			if (value.isBlank())</b>
+<i>1012</i>&nbsp;				return;
+<i>1013</i>&nbsp;			try {
+<b class="nc"><i>1014</i>&nbsp;				var n = format.parse(value);</b>
+<b class="nc"><i>1015</i>&nbsp;				number.setValue(n);</b>
+<b class="nc"><i>1016</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>1017</i>&nbsp;				logger.debug(&quot;Error parsing number from &#39;{}&#39; ({})&quot;, value, e.getLocalizedMessage());</b>
+<b class="nc"><i>1018</i>&nbsp;			}</b>
+<b class="nc"><i>1019</i>&nbsp;			synchronizingNumber = false;</b>
+<i>1020</i>&nbsp;		}
+<i>1021</i>&nbsp;		
+<i>1022</i>&nbsp;		
+<i>1023</i>&nbsp;		public void synchronizeTextToNumber() {
+<b class="nc"><i>1024</i>&nbsp;			if (synchronizingNumber)</b>
+<i>1025</i>&nbsp;				return;
+<b class="nc"><i>1026</i>&nbsp;			synchronizingText = true;</b>
+<b class="nc"><i>1027</i>&nbsp;			double value = number.get();</b>
+<i>1028</i>&nbsp;			String s;
+<b class="nc"><i>1029</i>&nbsp;			if (Double.isNaN(value))</b>
+<b class="nc"><i>1030</i>&nbsp;				s = &quot;&quot;;</b>
+<b class="nc"><i>1031</i>&nbsp;			else if (Double.isFinite(value)) {</b>
+<b class="nc"><i>1032</i>&nbsp;				double log10 = Math.round(Math.log10(value));</b>
+<b class="nc"><i>1033</i>&nbsp;				int ndp = (int)Math.max(4, -log10 + 2);</b>
+<b class="nc"><i>1034</i>&nbsp;				s = GeneralTools.formatNumber(value, ndp);</b>
+<b class="nc"><i>1035</i>&nbsp;			} else</b>
+<b class="nc"><i>1036</i>&nbsp;				s = Double.toString(value);</b>
+<b class="nc"><i>1037</i>&nbsp;			text.set(s);</b>
+<b class="nc"><i>1038</i>&nbsp;			synchronizingText = false;</b>
+<i>1039</i>&nbsp;		}
+<i>1040</i>&nbsp;
+<i>1041</i>&nbsp;		
+<i>1042</i>&nbsp;	}
+<i>1043</i>&nbsp;
+<i>1044</i>&nbsp;
+<i>1045</i>&nbsp;	/**
+<i>1046</i>&nbsp;	 * Add a context menu to a CheckComboBox to quickly select all items, or clear selection.
+<i>1047</i>&nbsp;	 * @param combo
+<i>1048</i>&nbsp;	 */
+<i>1049</i>&nbsp;	public static void installSelectAllOrNoneMenu(CheckComboBox&lt;?&gt; combo) {
+<b class="nc"><i>1050</i>&nbsp;		var miAll = new MenuItem(&quot;Select all&quot;);</b>
+<b class="nc"><i>1051</i>&nbsp;		var miNone = new MenuItem(&quot;Select none&quot;);</b>
+<b class="nc"><i>1052</i>&nbsp;		miAll.setOnAction(e -&gt; combo.getCheckModel().checkAll());</b>
+<b class="nc"><i>1053</i>&nbsp;		miNone.setOnAction(e -&gt; combo.getCheckModel().clearChecks());</b>
+<b class="nc"><i>1054</i>&nbsp;		var menu = new ContextMenu(miAll, miNone);</b>
+<b class="nc"><i>1055</i>&nbsp;		combo.setContextMenu(menu);</b>
+<b class="nc"><i>1056</i>&nbsp;	}</b>
+<i>1057</i>&nbsp;	
+<i>1058</i>&nbsp;	
+<i>1059</i>&nbsp;	/**
+<i>1060</i>&nbsp;	 * Create a {@link ListCell} with custom methods to derive text and a graphic for a specific object.
+<i>1061</i>&nbsp;	 * @param &lt;T&gt;
+<i>1062</i>&nbsp;	 * @param stringFun function to extract a string
+<i>1063</i>&nbsp;	 * @param graphicFun function to extract a graphic
+<i>1064</i>&nbsp;	 * @return a new list cell
+<i>1065</i>&nbsp;	 */
+<i>1066</i>&nbsp;	public static &lt;T&gt; ListCell&lt;T&gt; createCustomListCell(Function&lt;T, String&gt; stringFun, Function&lt;T, Node&gt; graphicFun) {
+<b class="nc"><i>1067</i>&nbsp;		return new CustomListCell&lt;&gt;(stringFun, graphicFun);</b>
+<i>1068</i>&nbsp;	}
+<i>1069</i>&nbsp;	
+<i>1070</i>&nbsp;	/**
+<i>1071</i>&nbsp;	 * Create a {@link ListCell} with custom methods to derive text for a specific object.
+<i>1072</i>&nbsp;	 * @param &lt;T&gt;
+<i>1073</i>&nbsp;	 * @param stringFun function to extract a string
+<i>1074</i>&nbsp;	 * @return a new list cell
+<i>1075</i>&nbsp;	 */
+<i>1076</i>&nbsp;	public static &lt;T&gt; ListCell&lt;T&gt; createCustomListCell(Function&lt;T, String&gt; stringFun) {
+<b class="nc"><i>1077</i>&nbsp;		return createCustomListCell(stringFun, t -&gt; null);</b>
+<i>1078</i>&nbsp;	}
+<i>1079</i>&nbsp;	
+<i>1080</i>&nbsp;	
+<i>1081</i>&nbsp;	private static class CustomListCell&lt;T&gt; extends ListCell&lt;T&gt; {
+<i>1082</i>&nbsp;		
+<i>1083</i>&nbsp;		private Function&lt;T, String&gt; funString;
+<i>1084</i>&nbsp;		private Function&lt;T, Node&gt; funGraphic;
+<i>1085</i>&nbsp;		
+<i>1086</i>&nbsp;		/**
+<i>1087</i>&nbsp;		 * Constructor.
+<i>1088</i>&nbsp;		 * @param funString function capable of generating a String representation of an object.
+<i>1089</i>&nbsp;		 * @param funGraphic function capable of generating a Graphic representation of an object.
+<i>1090</i>&nbsp;		 */
+<i>1091</i>&nbsp;		private CustomListCell(Function&lt;T, String&gt; funString, Function&lt;T, Node&gt; funGraphic) {
+<b class="nc"><i>1092</i>&nbsp;			super();</b>
+<b class="nc"><i>1093</i>&nbsp;			this.funString = funString;</b>
+<b class="nc"><i>1094</i>&nbsp;			this.funGraphic = funGraphic;</b>
+<b class="nc"><i>1095</i>&nbsp;		}</b>
+<i>1096</i>&nbsp;		
+<i>1097</i>&nbsp;		@Override
+<i>1098</i>&nbsp;		protected void updateItem(T item, boolean empty) {
+<b class="nc"><i>1099</i>&nbsp;			super.updateItem(item, empty);</b>
+<b class="nc"><i>1100</i>&nbsp;			if (empty) {</b>
+<b class="nc"><i>1101</i>&nbsp;				setText(null);</b>
+<b class="nc"><i>1102</i>&nbsp;				setGraphic(null);</b>
+<i>1103</i>&nbsp;			} else {
+<b class="nc"><i>1104</i>&nbsp;				setText(funString.apply(item));</b>
+<b class="nc"><i>1105</i>&nbsp;				setGraphic(funGraphic.apply(item));</b>
+<i>1106</i>&nbsp;			}
+<b class="nc"><i>1107</i>&nbsp;		}</b>
+<i>1108</i>&nbsp;		
+<i>1109</i>&nbsp;	}
+<i>1110</i>&nbsp;	
+<i>1111</i>&nbsp;	
+<i>1112</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

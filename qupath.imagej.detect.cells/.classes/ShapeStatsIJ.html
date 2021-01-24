@@ -1,0 +1,202 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShapeStatsIJ</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.cells</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShapeStatsIJ (qupath.imagej.detect.cells)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShapeStatsIJ</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.cells;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import ij.gui.Roi;
+<i>27</i>&nbsp;import ij.measure.Measurements;
+<i>28</i>&nbsp;import ij.process.ImageStatistics;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * Class to help with adding shape measurements calculated by ImageJ to PathObjects.
+<i>32</i>&nbsp; * 
+<i>33</i>&nbsp; * @author Pete Bankhead
+<i>34</i>&nbsp; *
+<i>35</i>&nbsp; */
+<i>36</i>&nbsp;class ShapeStatsIJ {
+<i>37</i>&nbsp;	
+<b class="nc"><i>38</i>&nbsp;	public static int SHAPE_MEASUREMENT_OPTIONS = Measurements.AREA | Measurements.PERIMETER | Measurements.SKEWNESS | Measurements.ELLIPSE | Measurements.FERET;</b>
+<i>39</i>&nbsp;	
+<i>40</i>&nbsp;	private double area, perimeter, xCentroid, yCentroid, majorAxisLength, minorAxisLength;
+<i>41</i>&nbsp;	private double maxCaliper, minCaliper;
+<i>42</i>&nbsp;	
+<i>43</i>&nbsp;	// TODO: Introduce convex area &amp; solidity
+<i>44</i>&nbsp;	
+<b class="nc"><i>45</i>&nbsp;	public ShapeStatsIJ(Roi roi, ImageStatistics stats) {</b>
+<i>46</i>&nbsp;//		if (roi.isLine())
+<i>47</i>&nbsp;//			this.area = 0;
+<i>48</i>&nbsp;//		else
+<b class="nc"><i>49</i>&nbsp;		this.area = stats.area;</b>
+<b class="nc"><i>50</i>&nbsp;		this.perimeter = roi.getLength();</b>
+<b class="nc"><i>51</i>&nbsp;		this.xCentroid = stats.xCentroid;</b>
+<b class="nc"><i>52</i>&nbsp;		this.yCentroid = stats.yCentroid;</b>
+<b class="nc"><i>53</i>&nbsp;		this.majorAxisLength = stats.major;</b>
+<b class="nc"><i>54</i>&nbsp;		this.minorAxisLength = stats.minor;</b>
+<i>55</i>&nbsp;		
+<b class="nc"><i>56</i>&nbsp;		double[] feretValues = roi.getFeretValues();</b>
+<b class="nc"><i>57</i>&nbsp;		this.maxCaliper = feretValues[0];</b>
+<b class="nc"><i>58</i>&nbsp;		this.minCaliper = feretValues[2];</b>
+<i>59</i>&nbsp;	}
+<i>60</i>&nbsp;	
+<i>61</i>&nbsp;	public double area() {
+<b class="nc"><i>62</i>&nbsp;		return area;</b>
+<i>63</i>&nbsp;	}
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;	public double perimeter() {
+<b class="nc"><i>66</i>&nbsp;		return perimeter;</b>
+<i>67</i>&nbsp;	}
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	public double maxCaliper() {
+<b class="nc"><i>70</i>&nbsp;		return maxCaliper;</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	public double minCaliper() {
+<b class="nc"><i>74</i>&nbsp;		return minCaliper;</b>
+<i>75</i>&nbsp;	}
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;	public int xCentroidInt() {
+<b class="nc"><i>78</i>&nbsp;		return (int)(xCentroid + .5);</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;	public int yCentroidInt() {
+<b class="nc"><i>82</i>&nbsp;		return (int)(yCentroid + .5);</b>
+<i>83</i>&nbsp;	}
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;	public double xCentroid() {
+<b class="nc"><i>86</i>&nbsp;		return xCentroid;</b>
+<i>87</i>&nbsp;	}
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	public double yCentroid() {
+<b class="nc"><i>90</i>&nbsp;		return yCentroid;</b>
+<i>91</i>&nbsp;	}
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;	public double majorAxisLength() {
+<b class="nc"><i>94</i>&nbsp;		return majorAxisLength;</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;	public double minorAxisLength() {
+<b class="nc"><i>98</i>&nbsp;		return minorAxisLength;</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	public double eccentricity() {
+<b class="nc"><i>102</i>&nbsp;		double majAxis = majorAxisLength();</b>
+<b class="nc"><i>103</i>&nbsp;		double minAxis = minorAxisLength();</b>
+<b class="nc"><i>104</i>&nbsp;		return 2*Math.sqrt(((majAxis * majAxis * 0.25) - (minAxis * minAxis * 0.25))) / majAxis;</b>
+<i>105</i>&nbsp;	}
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;	public double aspectRatio() {
+<b class="nc"><i>108</i>&nbsp;		return majorAxisLength / minorAxisLength;</b>
+<i>109</i>&nbsp;	}
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;	public double roundness() {
+<b class="nc"><i>112</i>&nbsp;		return 1 / aspectRatio();</b>
+<i>113</i>&nbsp;	}
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;	public double circularity() {
+<b class="nc"><i>116</i>&nbsp;		return Math.min(4.0 * Math.PI * area / (perimeter * perimeter), 1);</b>
+<i>117</i>&nbsp;	}
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

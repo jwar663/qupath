@@ -1,0 +1,555 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BufferedImageTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.awt.common</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BufferedImageTools (qupath.lib.awt.common)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BufferedImageTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 145)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.awt.common;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Color;
+<i>27</i>&nbsp;import java.awt.Graphics2D;
+<i>28</i>&nbsp;import java.awt.Image;
+<i>29</i>&nbsp;import java.awt.Shape;
+<i>30</i>&nbsp;import java.awt.image.BufferedImage;
+<i>31</i>&nbsp;import java.awt.image.DataBuffer;
+<i>32</i>&nbsp;import java.awt.image.WritableRaster;
+<i>33</i>&nbsp;import java.util.Hashtable;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.bytedeco.javacpp.indexer.FloatIndexer;
+<i>36</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>37</i>&nbsp;import org.bytedeco.opencv.global.opencv_imgproc;
+<i>38</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>39</i>&nbsp;import org.bytedeco.opencv.opencv_core.Size;
+<i>40</i>&nbsp;import org.slf4j.Logger;
+<i>41</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>44</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>45</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>46</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>47</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Static methods for working with BufferedImages and QuPath objects.
+<i>51</i>&nbsp; * 
+<i>52</i>&nbsp; * @author Pete Bankhead
+<i>53</i>&nbsp; *
+<i>54</i>&nbsp; */
+<b class="nc"><i>55</i>&nbsp;public class BufferedImageTools {</b>
+<i>56</i>&nbsp;	
+<b class="nc"><i>57</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(AbstractTileableImageServer.class);</b>
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	/**
+<i>60</i>&nbsp;	 * Create a grayscale BufferedImage representing a mask for a specified ROI.
+<i>61</i>&nbsp;	 * &lt;p&gt;
+<i>62</i>&nbsp;	 * Pixels inside the ROI will be 255, pixels outside will be 0.
+<i>63</i>&nbsp;	 * 
+<i>64</i>&nbsp;	 * @param width width of the requested mask image
+<i>65</i>&nbsp;	 * @param height height of the requested mask image
+<i>66</i>&nbsp;	 * @param roi ROI for mask
+<i>67</i>&nbsp;	 * @param request region that the mask should correspond to, including the origin (x &amp;amp; y) and downsample factor to use.
+<i>68</i>&nbsp;	 * @return
+<i>69</i>&nbsp;	 */
+<i>70</i>&nbsp;	public static BufferedImage createROIMask(final int width, final int height, final ROI roi, final RegionRequest request) {
+<b class="nc"><i>71</i>&nbsp;		return createROIMask(width, height, roi, request.getX(), request.getY(), request.getDownsample());</b>
+<i>72</i>&nbsp;	}
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	/**
+<i>75</i>&nbsp;	 * Create a ROI mask using the minimal bounding box for the ROI.
+<i>76</i>&nbsp;	 * @param roi
+<i>77</i>&nbsp;	 * @param downsample
+<i>78</i>&nbsp;	 * @return
+<i>79</i>&nbsp;	 */
+<i>80</i>&nbsp;	public static BufferedImage createROIMask(final ROI roi, final double downsample) {
+<b class="nc"><i>81</i>&nbsp;		int width = (int)Math.ceil(roi.getBoundsWidth() / downsample);</b>
+<b class="nc"><i>82</i>&nbsp;		int height = (int)Math.ceil(roi.getBoundsHeight() / downsample);</b>
+<b class="nc"><i>83</i>&nbsp;		return createROIMask(width, height, roi, roi.getBoundsX(), roi.getBoundsY(), downsample);</b>
+<i>84</i>&nbsp;	}
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;	/**
+<i>87</i>&nbsp;	 * Create a grayscale BufferedImage representing a mask for a specified ROI.
+<i>88</i>&nbsp;	 * &lt;p&gt;
+<i>89</i>&nbsp;	 * Pixels inside the ROI will be 255, pixels outside will be 0.
+<i>90</i>&nbsp;	 * 
+<i>91</i>&nbsp;	 * @param width width of the requested mask image
+<i>92</i>&nbsp;	 * @param height height of the requested mask image
+<i>93</i>&nbsp;	 * @param roi ROI for mask
+<i>94</i>&nbsp;	 * @param xOrigin pixel x coordinate of the top left of the region to include in the mask.
+<i>95</i>&nbsp;	 * @param yOrigin pixel y coordinate of the top left of the region to include in the mask.
+<i>96</i>&nbsp;	 * @param downsample downsample factor to use when generating the mask, i.e. the amount to scale.
+<i>97</i>&nbsp;	 * @return
+<i>98</i>&nbsp;	 */
+<i>99</i>&nbsp;	public static BufferedImage createROIMask(final int width, final int height, final ROI roi, final double xOrigin, final double yOrigin, final double downsample) {
+<b class="nc"><i>100</i>&nbsp;		Shape shape = RoiTools.getShape(roi);</b>
+<b class="nc"><i>101</i>&nbsp;		return createShapeMask(width, height, shape, xOrigin, yOrigin, downsample);</b>
+<i>102</i>&nbsp;	}
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Create a Shape mask using the minimal bounding box for the Shape.
+<i>107</i>&nbsp;	 * @param shape
+<i>108</i>&nbsp;	 * @param downsample
+<i>109</i>&nbsp;	 * @return
+<i>110</i>&nbsp;	 */
+<i>111</i>&nbsp;	public static BufferedImage createROIMask(final Shape shape, final double downsample) {
+<b class="nc"><i>112</i>&nbsp;		var bounds = shape.getBounds2D();</b>
+<b class="nc"><i>113</i>&nbsp;		int width = (int)Math.ceil(bounds.getWidth() / downsample);</b>
+<b class="nc"><i>114</i>&nbsp;		int height = (int)Math.ceil(bounds.getHeight() / downsample);</b>
+<b class="nc"><i>115</i>&nbsp;		return createShapeMask(width, height, shape, bounds.getX(), bounds.getY(), downsample);</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	/**
+<i>119</i>&nbsp;	 * Create a grayscale BufferedImage representing a mask for a specified ROI.
+<i>120</i>&nbsp;	 * &lt;p&gt;
+<i>121</i>&nbsp;	 * Pixels inside the ROI will be 255, pixels outside will be 0.
+<i>122</i>&nbsp;	 * 
+<i>123</i>&nbsp;	 * @param width width of the requested mask image
+<i>124</i>&nbsp;	 * @param height height of the requested mask image
+<i>125</i>&nbsp;	 * @param shape Shape for mask
+<i>126</i>&nbsp;	 * @param xOrigin pixel x coordinate of the top left of the region to include in the mask.
+<i>127</i>&nbsp;	 * @param yOrigin pixel y coordinate of the top left of the region to include in the mask.
+<i>128</i>&nbsp;	 * @param downsample downsample factor to use when generating the mask, i.e. the amount to scale.
+<i>129</i>&nbsp;	 * @return
+<i>130</i>&nbsp;	 */
+<i>131</i>&nbsp;	public static BufferedImage createShapeMask(final int width, final int height, final Shape shape, final double xOrigin, final double yOrigin, final double downsample) {
+<b class="nc"><i>132</i>&nbsp;		BufferedImage imgMask = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);</b>
+<b class="nc"><i>133</i>&nbsp;		Graphics2D g2d = imgMask.createGraphics();</b>
+<b class="nc"><i>134</i>&nbsp;		g2d.scale(1.0/downsample, 1.0/downsample);</b>
+<b class="nc"><i>135</i>&nbsp;		g2d.translate(-xOrigin, -yOrigin);</b>
+<b class="nc"><i>136</i>&nbsp;		g2d.setColor(Color.WHITE);</b>
+<b class="nc"><i>137</i>&nbsp;		g2d.fill(shape);</b>
+<i>138</i>&nbsp;//		g2d.draw(shape);
+<b class="nc"><i>139</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>140</i>&nbsp;		return imgMask;</b>
+<i>141</i>&nbsp;	}
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;	/**
+<i>144</i>&nbsp;	 * Convert a BufferedImage to have a specified type.
+<i>145</i>&nbsp;	 * &lt;p&gt;
+<i>146</i>&nbsp;	 * This makes use of {@code Graphics2D.drawImage}, which imposes limits on supported types 
+<i>147</i>&nbsp;	 * (i.e. RGB or 8-bit grayscale), and is therefore &lt;b&gt;not&lt;/b&gt; suitable for arbitrary type conversion.
+<i>148</i>&nbsp;	 * &lt;p&gt;
+<i>149</i>&nbsp;	 * A possible use is to ensure that a BGR/RGB/ARGB image is converted to the same representation, 
+<i>150</i>&nbsp;	 * for example to allow packed int arrays to be treated in the same way.
+<i>151</i>&nbsp;	 * &lt;p&gt;
+<i>152</i>&nbsp;	 * Images that already have the same type are returned unchanged.
+<i>153</i>&nbsp;	 * 
+<i>154</i>&nbsp;	 * @param img the input image
+<i>155</i>&nbsp;	 * @param requestedType the type to which the image should be converted
+<i>156</i>&nbsp;	 * @return the (possibly-new) output image
+<i>157</i>&nbsp;	 * @see #is8bitColorType(int)
+<i>158</i>&nbsp;	 */
+<i>159</i>&nbsp;	public static BufferedImage ensureBufferedImageType(final BufferedImage img, int requestedType) {
+<b class="nc"><i>160</i>&nbsp;		if (img.getType() != requestedType) {</b>
+<b class="nc"><i>161</i>&nbsp;			BufferedImage img2 = new BufferedImage(img.getWidth(), img.getHeight(), requestedType);</b>
+<b class="nc"><i>162</i>&nbsp;			Graphics2D g2d = img2.createGraphics();</b>
+<b class="nc"><i>163</i>&nbsp;			g2d.drawImage(img, 0, 0, null);</b>
+<b class="nc"><i>164</i>&nbsp;			g2d.dispose();</b>
+<b class="nc"><i>165</i>&nbsp;			return img2;</b>
+<i>166</i>&nbsp;		}
+<b class="nc"><i>167</i>&nbsp;		return img;</b>
+<i>168</i>&nbsp;	}
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;	/**
+<i>171</i>&nbsp;	 * Convert an {@link Image} to a {@link BufferedImage} if necessary, or return the original image unchanged 
+<i>172</i>&nbsp;	 * if it is already a {@link BufferedImage}.
+<i>173</i>&nbsp;	 * @param image the image to (possible convert)
+<i>174</i>&nbsp;	 * @return a {@link BufferedImage}
+<i>175</i>&nbsp;	 */
+<i>176</i>&nbsp;	public static BufferedImage ensureBufferedImage(Image image) {
+<b class="nc"><i>177</i>&nbsp;		if (image instanceof BufferedImage)</b>
+<b class="nc"><i>178</i>&nbsp;			return (BufferedImage)image;</b>
+<b class="nc"><i>179</i>&nbsp;		var imgBuf = new BufferedImage(image.getWidth(null), image.getWidth(null), BufferedImage.TYPE_INT_ARGB);</b>
+<b class="nc"><i>180</i>&nbsp;		var g2d = imgBuf.createGraphics();</b>
+<b class="nc"><i>181</i>&nbsp;		g2d.drawImage(image, 0, 0, null);</b>
+<b class="nc"><i>182</i>&nbsp;		g2d.dispose();</b>
+<b class="nc"><i>183</i>&nbsp;		return imgBuf;</b>
+<i>184</i>&nbsp;	}
+<i>185</i>&nbsp;	
+<i>186</i>&nbsp;	/**
+<i>187</i>&nbsp;	 * Duplicate a BufferedImage. This retains the same color model, but copies the raster.
+<i>188</i>&nbsp;	 * Properties are copied if non-null.
+<i>189</i>&nbsp;	 * @param img
+<i>190</i>&nbsp;	 * @return
+<i>191</i>&nbsp;	 */
+<i>192</i>&nbsp;	public static BufferedImage duplicate(BufferedImage img) {
+<b class="nc"><i>193</i>&nbsp;		return new BufferedImage(</b>
+<b class="nc"><i>194</i>&nbsp;				img.getColorModel(),</b>
+<b class="nc"><i>195</i>&nbsp;				img.copyData(img.getRaster().createCompatibleWritableRaster()),</b>
+<b class="nc"><i>196</i>&nbsp;				img.isAlphaPremultiplied(),</b>
+<b class="nc"><i>197</i>&nbsp;				extractProperties(img));</b>
+<i>198</i>&nbsp;	}
+<i>199</i>&nbsp;	
+<i>200</i>&nbsp;	/**
+<i>201</i>&nbsp;	 * Extract a Hashtable of image properties, which can be passed to a constructor for BufferedImage.
+<i>202</i>&nbsp;	 * @param img
+<i>203</i>&nbsp;	 * @return
+<i>204</i>&nbsp;	 */
+<i>205</i>&nbsp;	static Hashtable&lt;Object, Object&gt; extractProperties(BufferedImage img) {
+<b class="nc"><i>206</i>&nbsp;		String[] names = img.getPropertyNames();</b>
+<b class="nc"><i>207</i>&nbsp;		if (names == null)</b>
+<b class="nc"><i>208</i>&nbsp;			return null;</b>
+<b class="nc"><i>209</i>&nbsp;		Hashtable&lt;Object, Object&gt; properties = null;</b>
+<b class="nc"><i>210</i>&nbsp;		if (names != null &amp;&amp; names.length &gt; 0) {</b>
+<b class="nc"><i>211</i>&nbsp;			properties = new Hashtable&lt;&gt;();</b>
+<b class="nc"><i>212</i>&nbsp;			for (String name : names)</b>
+<b class="nc"><i>213</i>&nbsp;				properties.put(name, img.getProperty(name));</b>
+<i>214</i>&nbsp;		}
+<b class="nc"><i>215</i>&nbsp;		return properties;</b>
+<i>216</i>&nbsp;	}
+<i>217</i>&nbsp;	
+<i>218</i>&nbsp;	/**
+<i>219</i>&nbsp;	 * Set all values in a DataBuffer.
+<i>220</i>&nbsp;	 * @param buffer the buffer containing the banks whose values should be set.
+<i>221</i>&nbsp;	 * @param val the requested value. This will be cast to an int or float if necessary.
+<i>222</i>&nbsp;	 */
+<i>223</i>&nbsp;	public static void setValues(DataBuffer buffer, double val) {
+<b class="nc"><i>224</i>&nbsp;		int n = buffer.getSize();</b>
+<b class="nc"><i>225</i>&nbsp;		int nBanks = buffer.getNumBanks();</b>
+<i>226</i>&nbsp;		
+<b class="nc"><i>227</i>&nbsp;		switch (buffer.getDataType()) {</b>
+<i>228</i>&nbsp;		case DataBuffer.TYPE_BYTE:
+<i>229</i>&nbsp;		case DataBuffer.TYPE_INT:
+<i>230</i>&nbsp;		case DataBuffer.TYPE_USHORT:
+<i>231</i>&nbsp;		case DataBuffer.TYPE_SHORT:
+<b class="nc"><i>232</i>&nbsp;			int ival = (int)val;</b>
+<b class="nc"><i>233</i>&nbsp;			for (int b = 0; b &lt; nBanks; b++) {</b>
+<b class="nc"><i>234</i>&nbsp;				for (int i = 0; i &lt; n; i++)</b>
+<b class="nc"><i>235</i>&nbsp;					buffer.setElem(b, i, ival);</b>
+<i>236</i>&nbsp;			}
+<i>237</i>&nbsp;		case DataBuffer.TYPE_FLOAT:
+<b class="nc"><i>238</i>&nbsp;			float fval = (float)val;</b>
+<b class="nc"><i>239</i>&nbsp;			for (int b = 0; b &lt; nBanks; b++) {</b>
+<b class="nc"><i>240</i>&nbsp;				for (int i = 0; i &lt; n; i++)</b>
+<b class="nc"><i>241</i>&nbsp;					buffer.setElemFloat(b, i, fval);</b>
+<i>242</i>&nbsp;			}
+<i>243</i>&nbsp;		case DataBuffer.TYPE_DOUBLE:
+<b class="nc"><i>244</i>&nbsp;			for (int b = 0; b &lt; nBanks; b++) {</b>
+<b class="nc"><i>245</i>&nbsp;				for (int i = 0; i &lt; n; i++)</b>
+<b class="nc"><i>246</i>&nbsp;					buffer.setElemDouble(b, i, val);</b>
+<i>247</i>&nbsp;			}
+<i>248</i>&nbsp;		default:
+<b class="nc"><i>249</i>&nbsp;			throw new IllegalArgumentException(&quot;Unable to set values for unknown data buffer type &quot; + buffer.getDataType());</b>
+<i>250</i>&nbsp;		}
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;	
+<i>253</i>&nbsp;	
+<i>254</i>&nbsp;	/**
+<i>255</i>&nbsp;	 * Returns true if a BufferedImage type represents an 8-bit color image.
+<i>256</i>&nbsp;	 * The precise representation (BGR, RGB, byte, int, with/without alpha) is not important.
+<i>257</i>&nbsp;	 * @param type
+<i>258</i>&nbsp;	 * @return 
+<i>259</i>&nbsp;	 * @see #ensureBufferedImageType(BufferedImage, int)
+<i>260</i>&nbsp;	 */
+<i>261</i>&nbsp;	public static boolean is8bitColorType(int type) {
+<b class="nc"><i>262</i>&nbsp;		switch(type) {</b>
+<i>263</i>&nbsp;		case BufferedImage.TYPE_3BYTE_BGR:
+<i>264</i>&nbsp;		case BufferedImage.TYPE_4BYTE_ABGR:
+<i>265</i>&nbsp;		case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+<i>266</i>&nbsp;		case BufferedImage.TYPE_INT_ARGB:
+<i>267</i>&nbsp;		case BufferedImage.TYPE_INT_ARGB_PRE:
+<i>268</i>&nbsp;		case BufferedImage.TYPE_INT_BGR:
+<i>269</i>&nbsp;		case BufferedImage.TYPE_INT_RGB:
+<b class="nc"><i>270</i>&nbsp;			return true;</b>
+<i>271</i>&nbsp;		default:
+<b class="nc"><i>272</i>&nbsp;			return false;</b>
+<i>273</i>&nbsp;		}
+<i>274</i>&nbsp;	}
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;	/**
+<i>277</i>&nbsp;	 * Resize the image to have the requested width/height, using area averaging and bilinear interpolation.
+<i>278</i>&nbsp;	 * 
+<i>279</i>&nbsp;	 * @param img input image to be resized
+<i>280</i>&nbsp;	 * @param finalWidth target output width
+<i>281</i>&nbsp;	 * @param finalHeight target output height
+<i>282</i>&nbsp;	 * @param smoothInterpolate if true, the resize method is permitted to use a smooth interpolation method. If false, nearest-neighbor interpolation is used.
+<i>283</i>&nbsp;	 * @return resized image
+<i>284</i>&nbsp;	 */
+<i>285</i>&nbsp;	public static BufferedImage resize(final BufferedImage img, final int finalWidth, final int finalHeight, boolean smoothInterpolate) {
+<i>286</i>&nbsp;
+<b class="nc"><i>287</i>&nbsp;		if (img.getWidth() == finalWidth &amp;&amp; img.getHeight() == finalHeight)</b>
+<b class="nc"><i>288</i>&nbsp;			return img;</b>
+<i>289</i>&nbsp;
+<b class="nc"><i>290</i>&nbsp;		logger.trace(String.format(&quot;Resizing %d x %d -&gt; %d x %d&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight));</b>
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;		double aspectRatio = (double)img.getWidth()/img.getHeight();</b>
+<b class="nc"><i>293</i>&nbsp;		double finalAspectRatio = (double)finalWidth/finalHeight;</b>
+<b class="nc"><i>294</i>&nbsp;		if (!GeneralTools.almostTheSame(aspectRatio, finalAspectRatio, 0.01)) {</b>
+<b class="nc"><i>295</i>&nbsp;			if (!GeneralTools.almostTheSame(aspectRatio, finalAspectRatio, 0.05))</b>
+<b class="nc"><i>296</i>&nbsp;				logger.debug(&quot;Substantial difference in aspect ratio for resized image: {}x{} -&gt; {}x{} ({}, {})&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight, aspectRatio, finalAspectRatio);</b>
+<i>297</i>&nbsp;			else
+<b class="nc"><i>298</i>&nbsp;				logger.trace(&quot;Slight difference in aspect ratio for resized image: {}x{} -&gt; {}x{} ({}, {})&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight, aspectRatio, finalAspectRatio);</b>
+<i>299</i>&nbsp;		}
+<i>300</i>&nbsp;
+<b class="nc"><i>301</i>&nbsp;		WritableRaster raster = img.getRaster();</b>
+<b class="nc"><i>302</i>&nbsp;		WritableRaster raster2 = raster.createCompatibleWritableRaster(finalWidth, finalHeight);</b>
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;		int w = img.getWidth();</b>
+<b class="nc"><i>305</i>&nbsp;		int h = img.getHeight();</b>
+<i>306</i>&nbsp;		
+<b class="nc"><i>307</i>&nbsp;		Mat matInput = new Mat(h, w, opencv_core.CV_32FC1);</b>
+<b class="nc"><i>308</i>&nbsp;		Size sizeOutput = new Size(finalWidth, finalHeight);</b>
+<b class="nc"><i>309</i>&nbsp;		Mat matOutput = new Mat(sizeOutput, opencv_core.CV_32FC1);</b>
+<b class="nc"><i>310</i>&nbsp;		FloatIndexer idxInput = matInput.createIndexer(true);</b>
+<b class="nc"><i>311</i>&nbsp;		FloatIndexer idxOutput = matOutput.createIndexer(true);</b>
+<b class="nc"><i>312</i>&nbsp;		float[] pixels = new float[w*h];</b>
+<b class="nc"><i>313</i>&nbsp;		float[] pixelsOut = new float[finalWidth*finalHeight];</b>
+<i>314</i>&nbsp;		
+<b class="nc"><i>315</i>&nbsp;		int interp = smoothInterpolate ? opencv_imgproc.INTER_AREA : opencv_imgproc.INTER_NEAREST;</b>
+<b class="nc"><i>316</i>&nbsp;		for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>317</i>&nbsp;			raster.getSamples(0, 0, w, h, b, pixels);</b>
+<b class="nc"><i>318</i>&nbsp;			idxInput.put(0L, pixels);</b>
+<b class="nc"><i>319</i>&nbsp;			opencv_imgproc.resize(matInput, matOutput, sizeOutput, 0, 0, interp);</b>
+<b class="nc"><i>320</i>&nbsp;			idxOutput.get(0, pixelsOut);</b>
+<b class="nc"><i>321</i>&nbsp;			raster2.setSamples(0, 0, finalWidth, finalHeight, b, pixelsOut);</b>
+<i>322</i>&nbsp;		}
+<i>323</i>&nbsp;		
+<b class="nc"><i>324</i>&nbsp;		idxInput.release();</b>
+<b class="nc"><i>325</i>&nbsp;		idxOutput.release();</b>
+<b class="nc"><i>326</i>&nbsp;		matInput.close();</b>
+<b class="nc"><i>327</i>&nbsp;		matOutput.close();</b>
+<b class="nc"><i>328</i>&nbsp;		sizeOutput.close();</b>
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;//		System.err.println(String.format(&quot;Resizing from %d x %d to %d x %d&quot;, w, h, finalWidth, finalHeight));
+<i>331</i>&nbsp;
+<b class="nc"><i>332</i>&nbsp;		return new BufferedImage(img.getColorModel(), raster2, img.isAlphaPremultiplied(), null);</b>
+<i>333</i>&nbsp;	}
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;	/**
+<i>336</i>&nbsp;	 * Compute the full histogram for a raster containing 8-bit or 16-bit unsigned integer values.
+<i>337</i>&nbsp;	 * @param raster the raster containing the data for the histogram; if not TYPE_BYTE or TYPE_USHORT an {@link IllegalArgumentException} will be thrown
+<i>338</i>&nbsp;	 * @param counts histogram counts; if null, a new array will be created. Its must be sufficient for the data type, i.e. 256 or 65536.
+<i>339</i>&nbsp;	 * 				 No size checking is performed, therefore if non-null it must be sufficiently large for the data type.
+<i>340</i>&nbsp;	 * @param rasterMask optional single-channel mask; if not null, corresponding pixels with 0 values in the mask will be skipped
+<i>341</i>&nbsp;	 * @return
+<i>342</i>&nbsp;	 */
+<i>343</i>&nbsp;	public static long[] computeUnsignedIntHistogram(WritableRaster raster, long[] counts, WritableRaster rasterMask) {
+<b class="nc"><i>344</i>&nbsp;		if (counts == null) {</b>
+<b class="nc"><i>345</i>&nbsp;			if (raster.getTransferType() == DataBuffer.TYPE_BYTE)</b>
+<b class="nc"><i>346</i>&nbsp;				counts = new long[256];</b>
+<b class="nc"><i>347</i>&nbsp;			else if (raster.getTransferType() == DataBuffer.TYPE_USHORT)</b>
+<b class="nc"><i>348</i>&nbsp;				counts = new long[65536];</b>
+<i>349</i>&nbsp;			else
+<b class="nc"><i>350</i>&nbsp;				throw new IllegalArgumentException(&quot;TransferType must be DataBuffer.TYPE_BYTE or DataBuffer.TYPE_USHORT!&quot;);</b>
+<i>351</i>&nbsp;		}
+<b class="nc"><i>352</i>&nbsp;		int h = raster.getHeight();</b>
+<b class="nc"><i>353</i>&nbsp;		int w = raster.getWidth();</b>
+<b class="nc"><i>354</i>&nbsp;		int nBands = raster.getNumBands();</b>
+<b class="nc"><i>355</i>&nbsp;		for (int b = 0; b &lt; nBands; b++) {</b>
+<b class="nc"><i>356</i>&nbsp;			for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>357</i>&nbsp;				for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>358</i>&nbsp;					if (rasterMask != null &amp;&amp; rasterMask.getSample(x, y, 0) == 0)</b>
+<b class="nc"><i>359</i>&nbsp;						continue;</b>
+<b class="nc"><i>360</i>&nbsp;					int ind = raster.getSample(x, y, b);</b>
+<b class="nc"><i>361</i>&nbsp;					counts[ind]++;</b>
+<i>362</i>&nbsp;				}
+<i>363</i>&nbsp;			}
+<i>364</i>&nbsp;		}
+<b class="nc"><i>365</i>&nbsp;		return counts;</b>
+<i>366</i>&nbsp;	}
+<i>367</i>&nbsp;
+<i>368</i>&nbsp;	/**
+<i>369</i>&nbsp;	 * Create a histogram that identifies the channels (bands) of an image with the maximum values according to the argmax criterion.
+<i>370</i>&nbsp;	 * 
+<i>371</i>&nbsp;	 * @param raster the multi-band raster containing values to check
+<i>372</i>&nbsp;	 * @param counts existing histogram if it should be updated, or null if a new histogram should be created. The length should 
+<i>373</i>&nbsp;	 * 				 match the number of bands in the raster.
+<i>374</i>&nbsp;	 * @param rasterMask optional single-channel mask; if not null, corresponding pixels with 0 values in the mask will be skipped
+<i>375</i>&nbsp;	 * @return
+<i>376</i>&nbsp;	 */
+<i>377</i>&nbsp;	public static long[] computeArgMaxHistogram(WritableRaster raster, long[] counts, WritableRaster rasterMask) {
+<b class="nc"><i>378</i>&nbsp;		if (counts == null) {</b>
+<b class="nc"><i>379</i>&nbsp;			counts = new long[raster.getNumBands()];</b>
+<i>380</i>&nbsp;		}
+<b class="nc"><i>381</i>&nbsp;		int h = raster.getHeight();</b>
+<b class="nc"><i>382</i>&nbsp;		int w = raster.getWidth();</b>
+<b class="nc"><i>383</i>&nbsp;		int nBands = raster.getNumBands();</b>
+<b class="nc"><i>384</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>385</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>386</i>&nbsp;				if (rasterMask != null &amp;&amp; rasterMask.getSample(x, y, 0) == 0)</b>
+<b class="nc"><i>387</i>&nbsp;					continue;</b>
+<b class="nc"><i>388</i>&nbsp;				double maxValue = raster.getSampleDouble(x, y, 0);</b>
+<b class="nc"><i>389</i>&nbsp;				int ind = 0;</b>
+<b class="nc"><i>390</i>&nbsp;				for (int i = 1; i &lt; nBands; i++) {</b>
+<b class="nc"><i>391</i>&nbsp;					double val = raster.getSampleDouble(x, y, i);</b>
+<b class="nc"><i>392</i>&nbsp;					if (val &gt; maxValue) {</b>
+<b class="nc"><i>393</i>&nbsp;						maxValue = val;</b>
+<b class="nc"><i>394</i>&nbsp;						ind = i;</b>
+<i>395</i>&nbsp;					}
+<i>396</i>&nbsp;				}
+<b class="nc"><i>397</i>&nbsp;				counts[ind]++;</b>
+<i>398</i>&nbsp;			}
+<i>399</i>&nbsp;		}
+<b class="nc"><i>400</i>&nbsp;		return counts;</b>
+<i>401</i>&nbsp;	}
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;	/**
+<i>404</i>&nbsp;	 * Count the number of above-threshold pixels in a specified band of a raster, with optional mask.
+<i>405</i>&nbsp;	 * 
+<i>406</i>&nbsp;	 * @param raster the multi-band raster containing values to check
+<i>407</i>&nbsp;	 * @param band the band (channel) to consider
+<i>408</i>&nbsp;	 * @param threshold threshold value; pixels with values &amp;gt; threshold this will be counted
+<i>409</i>&nbsp;	 * @param rasterMask optional single-channel mask; if not null, corresponding pixels with 0 values in the mask will be skipped
+<i>410</i>&nbsp;	 * @return
+<i>411</i>&nbsp;	 */
+<i>412</i>&nbsp;	public static long computeAboveThresholdCounts(WritableRaster raster, int band, double threshold, WritableRaster rasterMask) {
+<b class="nc"><i>413</i>&nbsp;		long count = 0L;</b>
+<b class="nc"><i>414</i>&nbsp;		int h = raster.getHeight();</b>
+<b class="nc"><i>415</i>&nbsp;		int w = raster.getWidth();</b>
+<b class="nc"><i>416</i>&nbsp;		for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>417</i>&nbsp;			for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>418</i>&nbsp;				if (rasterMask != null &amp;&amp; rasterMask.getSample(x, y, 0) == 0)</b>
+<b class="nc"><i>419</i>&nbsp;					continue;</b>
+<b class="nc"><i>420</i>&nbsp;				double val = raster.getSampleDouble(x, y, band);</b>
+<b class="nc"><i>421</i>&nbsp;				if (val &gt; threshold)</b>
+<b class="nc"><i>422</i>&nbsp;					count++;</b>
+<i>423</i>&nbsp;			}
+<i>424</i>&nbsp;		}
+<b class="nc"><i>425</i>&nbsp;		return count;</b>
+<i>426</i>&nbsp;	}
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;//	/**
+<i>429</i>&nbsp;//	 * Resize the image to have the requested width/height, using area averaging and bilinear interpolation.
+<i>430</i>&nbsp;//	 * 
+<i>431</i>&nbsp;//	 * @param img input image to be resized
+<i>432</i>&nbsp;//	 * @param finalWidth target output width
+<i>433</i>&nbsp;//	 * @param finalHeight target output height
+<i>434</i>&nbsp;//	 * @return resized image
+<i>435</i>&nbsp;//	 */
+<i>436</i>&nbsp;//	public static BufferedImage resize(final BufferedImage img, final int finalWidth, final int finalHeight) {
+<i>437</i>&nbsp;//
+<i>438</i>&nbsp;//		if (img.getWidth() == finalWidth &amp;&amp; img.getHeight() == finalHeight)
+<i>439</i>&nbsp;//			return img;
+<i>440</i>&nbsp;//
+<i>441</i>&nbsp;//		logger.trace(String.format(&quot;Resizing %d x %d -&gt; %d x %d&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight));
+<i>442</i>&nbsp;//
+<i>443</i>&nbsp;//		double aspectRatio = (double)img.getWidth()/img.getHeight();
+<i>444</i>&nbsp;//		double finalAspectRatio = (double)finalWidth/finalHeight;
+<i>445</i>&nbsp;//		if (!GeneralTools.almostTheSame(aspectRatio, finalAspectRatio, 0.01)) {
+<i>446</i>&nbsp;//			if (!GeneralTools.almostTheSame(aspectRatio, finalAspectRatio, 0.05))
+<i>447</i>&nbsp;//				logger.warn(&quot;Substantial difference in aspect ratio for resized image: {}x{} -&gt; {}x{} ({}, {})&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight, aspectRatio, finalAspectRatio);
+<i>448</i>&nbsp;//			else
+<i>449</i>&nbsp;//				logger.warn(&quot;Slight difference in aspect ratio for resized image: {}x{} -&gt; {}x{} ({}, {})&quot;, img.getWidth(), img.getHeight(), finalWidth, finalHeight, aspectRatio, finalAspectRatio);
+<i>450</i>&nbsp;//		}
+<i>451</i>&nbsp;//
+<i>452</i>&nbsp;//		boolean areaAveraging = true;
+<i>453</i>&nbsp;//
+<i>454</i>&nbsp;//		var raster = img.getRaster();
+<i>455</i>&nbsp;//		var raster2 = raster.createCompatibleWritableRaster(finalWidth, finalHeight);
+<i>456</i>&nbsp;//
+<i>457</i>&nbsp;//		int w = img.getWidth();
+<i>458</i>&nbsp;//		int h = img.getHeight();
+<i>459</i>&nbsp;//
+<i>460</i>&nbsp;//		var fp = new FloatProcessor(w, h);
+<i>461</i>&nbsp;//		fp.setInterpolationMethod(ImageProcessor.BILINEAR);
+<i>462</i>&nbsp;//		for (int b = 0; b &lt; raster.getNumBands(); b++) {
+<i>463</i>&nbsp;//			float[] pixels = (float[])fp.getPixels();
+<i>464</i>&nbsp;//			raster.getSamples(0, 0, w, h, b, pixels);
+<i>465</i>&nbsp;//			var fp2 = fp.resize(finalWidth, finalHeight, areaAveraging);
+<i>466</i>&nbsp;//			raster2.setSamples(0, 0, finalWidth, finalHeight, b, (float[])fp2.getPixels());
+<i>467</i>&nbsp;//		}
+<i>468</i>&nbsp;//
+<i>469</i>&nbsp;//		return new BufferedImage(img.getColorModel(), raster2, img.isAlphaPremultiplied(), null);
+<i>470</i>&nbsp;//	}
+<i>471</i>&nbsp;
+<i>472</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

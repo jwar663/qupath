@@ -1,0 +1,138 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageDataOp</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.opencv.ops</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageDataOp (qupath.opencv.ops)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ImageDataOp</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.opencv.ops;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.List;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import qupath.lib.images.ImageData;
+<i>31</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>32</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>33</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;/**
+<i>36</i>&nbsp; * Request pixels from an image, potentially applying further transforms.
+<i>37</i>&nbsp; * 
+<i>38</i>&nbsp; * @author Pete Bankhead
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;public interface ImageDataOp {
+<i>41</i>&nbsp;	
+<i>42</i>&nbsp;	/**
+<i>43</i>&nbsp;	 * Apply the operation to the requested region of the image.
+<i>44</i>&nbsp;	 * &lt;p&gt;
+<i>45</i>&nbsp;	 * The data and region are provided, rather than specified pixels, because the operation might require 
+<i>46</i>&nbsp;	 * additional information available within the {@link ImageData}, and optionally adjust the request 
+<i>47</i>&nbsp;	 * (e.g. to incorporate padding to remove boundary artifacts).
+<i>48</i>&nbsp;	 * &lt;p&gt;
+<i>49</i>&nbsp;	 * Note for implementers: Any such padding must be removed from the output before it is returned.
+<i>50</i>&nbsp;	 * 
+<i>51</i>&nbsp;	 * @param imageData
+<i>52</i>&nbsp;	 * @param request
+<i>53</i>&nbsp;	 * @return
+<i>54</i>&nbsp;	 * @throws IOException
+<i>55</i>&nbsp;	 */
+<i>56</i>&nbsp;	Mat apply(ImageData&lt;BufferedImage&gt; imageData, RegionRequest request) throws IOException;
+<i>57</i>&nbsp;	
+<i>58</i>&nbsp;	/**
+<i>59</i>&nbsp;	 * Query whether this transform can be applied to the specified image.
+<i>60</i>&nbsp;	 * Reasons why it may not be include the type or channel number being incompatible.
+<i>61</i>&nbsp;	 * @param imageData
+<i>62</i>&nbsp;	 * @return
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	boolean supportsImage(ImageData&lt;BufferedImage&gt; imageData);
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * Get appropriate channels to reflect the output of this transform, given the input.
+<i>68</i>&nbsp;	 * 
+<i>69</i>&nbsp;	 * @param imageData 
+<i>70</i>&nbsp;	 * 
+<i>71</i>&nbsp;	 * @return
+<i>72</i>&nbsp;	 */
+<i>73</i>&nbsp;	List&lt;ImageChannel&gt; getChannels(ImageData&lt;BufferedImage&gt; imageData);
+<i>74</i>&nbsp;	
+<i>75</i>&nbsp;	/**
+<i>76</i>&nbsp;	 * Append one or more additional {@link ImageOp}s sequentially.
+<i>77</i>&nbsp;	 * This {@link ImageDataOp} is unchanged, and a new one is created with the additional op appended.
+<i>78</i>&nbsp;	 * @param ops
+<i>79</i>&nbsp;	 * @return
+<i>80</i>&nbsp;	 */
+<i>81</i>&nbsp;	ImageDataOp appendOps(ImageOp... ops);
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	/**
+<i>84</i>&nbsp;	 * Get the output pixel type.
+<i>85</i>&nbsp;	 * 
+<i>86</i>&nbsp;	 * @param inputType the pixel type of the input image
+<i>87</i>&nbsp;	 * @return the output pixel type
+<i>88</i>&nbsp;	 */
+<i>89</i>&nbsp;	public PixelType getOutputType(PixelType inputType);
+<i>90</i>&nbsp;	
+<i>91</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

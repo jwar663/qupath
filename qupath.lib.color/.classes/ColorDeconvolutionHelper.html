@@ -1,0 +1,608 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ColorDeconvolutionHelper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.color</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ColorDeconvolutionHelper (qupath.lib.color)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ColorDeconvolutionHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17.6%
+  </span>
+  <span class="absValue">
+    (3/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.8%
+  </span>
+  <span class="absValue">
+    (6/ 213)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.color;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Arrays;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.slf4j.Logger;
+<i>29</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * Static methods to assist with color deconvolution.
+<i>36</i>&nbsp; * 
+<i>37</i>&nbsp; * @author Pete Bankhead
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; */
+<b class="nc"><i>40</i>&nbsp;public class ColorDeconvolutionHelper {</b>
+<i>41</i>&nbsp;	
+<b class="fc"><i>42</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ColorDeconvolutionHelper.class);</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;	/**
+<i>45</i>&nbsp;	 * Convert a single pixel value to an optical density as {@code max(0, -log10(val/max)}. where {@code val} is clipped to be &amp;gt;= 1.
+<i>46</i>&nbsp;	 * @param val
+<i>47</i>&nbsp;	 * @param max
+<i>48</i>&nbsp;	 * @return
+<i>49</i>&nbsp;	 */
+<i>50</i>&nbsp;	public static final double makeOD(double val, double max) {
+<b class="fc"><i>51</i>&nbsp;		return Math.max(0, -Math.log10(Math.max(val, 1)/max));</b>
+<i>52</i>&nbsp;	}
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	/**
+<i>55</i>&nbsp;	 * Convert an int pixel to an optical density value using a pre-computed lookup table. 
+<i>56</i>&nbsp;	 * This is likely to be much faster than calling {@link #makeOD(double, double)}.
+<i>57</i>&nbsp;	 * @param val
+<i>58</i>&nbsp;	 * @param OD_LUT
+<i>59</i>&nbsp;	 * @return
+<i>60</i>&nbsp;	 * 
+<i>61</i>&nbsp;	 * @see #makeOD(double, double)
+<i>62</i>&nbsp;	 */
+<i>63</i>&nbsp;	public static final double makeODByLUT(int val, double[] OD_LUT) {
+<b class="nc"><i>64</i>&nbsp;		if (val &gt;= 0 &amp;&amp; val &lt; OD_LUT.length)</b>
+<b class="nc"><i>65</i>&nbsp;			return OD_LUT[val];</b>
+<b class="nc"><i>66</i>&nbsp;		return Double.NaN;</b>
+<i>67</i>&nbsp;	}
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	/**
+<i>70</i>&nbsp;	 * Convert a float pixel to an optical density value using a pre-computed lookup table. 
+<i>71</i>&nbsp;	 * This is likely to be much faster than calling {@link #makeOD(double, double)}, but involves 
+<i>72</i>&nbsp;	 * rounding the float first.
+<i>73</i>&nbsp;	 * @param val
+<i>74</i>&nbsp;	 * @param OD_LUT
+<i>75</i>&nbsp;	 * @return
+<i>76</i>&nbsp;	 * 
+<i>77</i>&nbsp;	 * @see #makeOD(double, double)
+<i>78</i>&nbsp;	 */
+<i>79</i>&nbsp;	public static final double makeODByLUT(float val, double[] OD_LUT) {
+<b class="nc"><i>80</i>&nbsp;        return ColorDeconvolutionHelper.makeODByLUT((int)Math.round(val), OD_LUT);</b>
+<i>81</i>&nbsp;    }	
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	/**
+<i>84</i>&nbsp;	 * Create an optical density lookup table with 256 entries, normalizing to the specified background value.
+<i>85</i>&nbsp;	 * @param maxValue
+<i>86</i>&nbsp;	 * @return
+<i>87</i>&nbsp;	 * 
+<i>88</i>&nbsp;	 * @see #makeOD(double, double)
+<i>89</i>&nbsp;	 * @see #makeODByLUT(int, double[])
+<i>90</i>&nbsp;	 */
+<i>91</i>&nbsp;	public static double[] makeODLUT(double maxValue) {
+<b class="nc"><i>92</i>&nbsp;		return ColorDeconvolutionHelper.makeODLUT(maxValue, 256);</b>
+<i>93</i>&nbsp;	}
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Create an optical density lookup table, normalizing to the specified background value.
+<i>97</i>&nbsp;	 * @param maxValue background (white value)
+<i>98</i>&nbsp;	 * @param nValues number of values to include in the lookup table
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public static double[] makeODLUT(double maxValue, int nValues) {
+<b class="fc"><i>102</i>&nbsp;		double[] OD_LUT = new double[nValues];</b>
+<b class="fc"><i>103</i>&nbsp;		for (int i = 0; i &lt; nValues; i++) //J</b>
+<b class="fc"><i>104</i>&nbsp;			OD_LUT[i] = makeOD(i, maxValue);</b>
+<b class="fc"><i>105</i>&nbsp;		return OD_LUT;</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	/**
+<i>110</i>&nbsp;	 * For originally-8-bit images, optical densities can usually be computed faster by preallocating a LUT with the 0-255 required values.
+<i>111</i>&nbsp;	 * Otherwise, log values need to be calculated for every pixel (which can be relatively slow).
+<i>112</i>&nbsp;	 * 
+<i>113</i>&nbsp;	 * @param px
+<i>114</i>&nbsp;	 * @param maxValue
+<i>115</i>&nbsp;	 * @param use8BitLUT
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public static void convertPixelsToOpticalDensities(float[] px, double maxValue, boolean use8BitLUT) {
+<b class="nc"><i>118</i>&nbsp;		if (use8BitLUT) {</b>
+<b class="nc"><i>119</i>&nbsp;			double[] od_lut = makeODLUT(maxValue, 256);</b>
+<b class="nc"><i>120</i>&nbsp;			for (int i = 0; i &lt; px.length; i++)</b>
+<b class="nc"><i>121</i>&nbsp;				px[i] = (float)makeODByLUT(px[i], od_lut); </b>
+<b class="nc"><i>122</i>&nbsp;		} else {</b>
+<b class="nc"><i>123</i>&nbsp;			for (int i = 0; i &lt; px.length; i++)</b>
+<b class="nc"><i>124</i>&nbsp;				px[i] = (float)makeOD(px[i], maxValue);	</b>
+<i>125</i>&nbsp;		}
+<b class="nc"><i>126</i>&nbsp;	}</b>
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;	/**
+<i>130</i>&nbsp;	 * Convert red channel of packed rgb pixel to optical density values, using a specified maximum value.
+<i>131</i>&nbsp;	 * 
+<i>132</i>&nbsp;	 * @param rgb
+<i>133</i>&nbsp;	 * @param maxValue
+<i>134</i>&nbsp;	 * @param px optional array used for output
+<i>135</i>&nbsp;	 * @return
+<i>136</i>&nbsp;	 */
+<i>137</i>&nbsp;	public static float[] getRedOpticalDensities(int[] rgb, double maxValue, float[] px) {
+<b class="nc"><i>138</i>&nbsp;		if (px == null)</b>
+<b class="nc"><i>139</i>&nbsp;			px = new float[rgb.length];</b>
+<b class="nc"><i>140</i>&nbsp;		double[] od_lut = makeODLUT(maxValue, 256);</b>
+<b class="nc"><i>141</i>&nbsp;		for (int i = 0; i &lt; px.length; i++)</b>
+<b class="nc"><i>142</i>&nbsp;			px[i] = (float)makeODByLUT(ColorTools.red(rgb[i]), od_lut);</b>
+<b class="nc"><i>143</i>&nbsp;		return px;</b>
+<i>144</i>&nbsp;	}
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;	/**
+<i>147</i>&nbsp;	 * Convert red channel of packed rgb pixel to optical density values, using a specified maximum value.
+<i>148</i>&nbsp;	 * 
+<i>149</i>&nbsp;	 * @param rgb
+<i>150</i>&nbsp;	 * @param maxValue
+<i>151</i>&nbsp;	 * @param px optional array used for output
+<i>152</i>&nbsp;	 * @return
+<i>153</i>&nbsp;	 */
+<i>154</i>&nbsp;	public static float[] getGreenOpticalDensities(int[] rgb, double maxValue, float[] px) {
+<b class="nc"><i>155</i>&nbsp;		if (px == null)</b>
+<b class="nc"><i>156</i>&nbsp;			px = new float[rgb.length];</b>
+<b class="nc"><i>157</i>&nbsp;		double[] od_lut = makeODLUT(maxValue, 256);</b>
+<b class="nc"><i>158</i>&nbsp;		for (int i = 0; i &lt; px.length; i++)</b>
+<b class="nc"><i>159</i>&nbsp;			px[i] = (float)makeODByLUT(ColorTools.green(rgb[i]), od_lut);</b>
+<b class="nc"><i>160</i>&nbsp;		return px;</b>
+<i>161</i>&nbsp;	}
+<i>162</i>&nbsp;
+<i>163</i>&nbsp;	/**
+<i>164</i>&nbsp;	 * Convert red channel of packed rgb pixel to optical density values, using a specified maximum value.
+<i>165</i>&nbsp;	 * 
+<i>166</i>&nbsp;	 * @param rgb
+<i>167</i>&nbsp;	 * @param maxValue
+<i>168</i>&nbsp;	 * @param px optional array used for output
+<i>169</i>&nbsp;	 * @return
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public static float[] getBlueOpticalDensities(int[] rgb, double maxValue, float[] px) {
+<b class="nc"><i>172</i>&nbsp;		if (px == null)</b>
+<b class="nc"><i>173</i>&nbsp;			px = new float[rgb.length];</b>
+<b class="nc"><i>174</i>&nbsp;		double[] od_lut = makeODLUT(maxValue, 256);</b>
+<b class="nc"><i>175</i>&nbsp;		for (int i = 0; i &lt; px.length; i++)</b>
+<b class="nc"><i>176</i>&nbsp;			px[i] = (float)makeODByLUT(ColorTools.blue(rgb[i]), od_lut);</b>
+<b class="nc"><i>177</i>&nbsp;		return px;</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;	/**
+<i>182</i>&nbsp;	 * Determine median RGB optical densities for an array of pixels (packed RGB), and combine these into a StainVector with the specified name.
+<i>183</i>&nbsp;	 * 
+<i>184</i>&nbsp;	 * @param name
+<i>185</i>&nbsp;	 * @param rgb
+<i>186</i>&nbsp;	 * @param redMax
+<i>187</i>&nbsp;	 * @param greenMax
+<i>188</i>&nbsp;	 * @param blueMax
+<i>189</i>&nbsp;	 * @return
+<i>190</i>&nbsp;	 */
+<i>191</i>&nbsp;	public static StainVector generateMedianStainVectorFromPixels(String name, int[] rgb, double redMax, double greenMax, double blueMax) {
+<i>192</i>&nbsp;
+<i>193</i>&nbsp;		// TODO: Use getMedianRGB!  Should be no need to compute all optical densities...?
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;		// Extract the optical densities
+<b class="nc"><i>196</i>&nbsp;		int n = rgb.length;</b>
+<b class="nc"><i>197</i>&nbsp;		float[] red = ColorTransformer.getSimpleTransformedPixels(rgb, ColorTransformer.ColorTransformMethod.Red, null);</b>
+<b class="nc"><i>198</i>&nbsp;		float[] green = ColorTransformer.getSimpleTransformedPixels(rgb, ColorTransformer.ColorTransformMethod.Green, null);</b>
+<b class="nc"><i>199</i>&nbsp;		float[] blue = ColorTransformer.getSimpleTransformedPixels(rgb, ColorTransformer.ColorTransformMethod.Blue, null);</b>
+<b class="nc"><i>200</i>&nbsp;		convertPixelsToOpticalDensities(red, redMax, n &gt; 500);</b>
+<b class="nc"><i>201</i>&nbsp;		convertPixelsToOpticalDensities(green, greenMax, n &gt; 500); //J</b>
+<b class="nc"><i>202</i>&nbsp;		convertPixelsToOpticalDensities(blue, blueMax, n &gt; 500);</b>
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;		// Normalize to unit length
+<i>205</i>&nbsp;//J		int counter = 0;
+<b class="nc"><i>206</i>&nbsp;		for (int i = 0; i &lt; n; i++) {	</b>
+<b class="nc"><i>207</i>&nbsp;			double r = red[i];</b>
+<b class="nc"><i>208</i>&nbsp;			double g = green[i];</b>
+<b class="nc"><i>209</i>&nbsp;			double b = blue[i];</b>
+<i>210</i>&nbsp;
+<b class="nc"><i>211</i>&nbsp;			double denominator = Math.sqrt(r*r + g*g + b*b);</b>
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;			red[i] = (float)(r / denominator); </b>
+<b class="nc"><i>214</i>&nbsp;			green[i] = (float)(g / denominator);</b>
+<b class="nc"><i>215</i>&nbsp;			blue[i] = (float)(b / denominator);</b>
+<i>216</i>&nbsp;		}
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;		// Sort to compute medians
+<b class="nc"><i>219</i>&nbsp;		Arrays.sort(red);</b>
+<b class="nc"><i>220</i>&nbsp;		Arrays.sort(green);</b>
+<b class="nc"><i>221</i>&nbsp;		Arrays.sort(blue);</b>
+<b class="nc"><i>222</i>&nbsp;		int medianInd = n / 2;</b>
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;		// Compute median vectors
+<b class="nc"><i>225</i>&nbsp;		double r = red[medianInd];</b>
+<b class="nc"><i>226</i>&nbsp;		double g = green[medianInd];</b>
+<b class="nc"><i>227</i>&nbsp;		double b = blue[medianInd];</b>
+<i>228</i>&nbsp;
+<b class="nc"><i>229</i>&nbsp;		return StainVector.createStainVector(name, r, g, b); </b>
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;	/**
+<i>234</i>&nbsp;	 * Determine median of RGB values.
+<i>235</i>&nbsp;	 * The median of each channel is computed separately.
+<i>236</i>&nbsp;	 * 
+<i>237</i>&nbsp;	 * @param rgb array of packed RGB values
+<i>238</i>&nbsp;	 * @return
+<i>239</i>&nbsp;	 */
+<i>240</i>&nbsp;	public static int getMedianRGB(int[] rgb) {
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;		int n = rgb.length;</b>
+<i>243</i>&nbsp;		// Extract medians for each channel
+<b class="nc"><i>244</i>&nbsp;		int[] temp = new int[n];</b>
+<b class="nc"><i>245</i>&nbsp;		for (int i = 0; i &lt; rgb.length; i++)</b>
+<b class="nc"><i>246</i>&nbsp;			temp[i] = ColorTools.red(rgb[i]);</b>
+<b class="nc"><i>247</i>&nbsp;		int rMedian = getMedian(temp);</b>
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;		for (int i = 0; i &lt; rgb.length; i++)</b>
+<b class="nc"><i>250</i>&nbsp;			temp[i] = ColorTools.green(rgb[i]);</b>
+<b class="nc"><i>251</i>&nbsp;		int gMedian = getMedian(temp);</b>
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;		for (int i = 0; i &lt; rgb.length; i++)</b>
+<b class="nc"><i>254</i>&nbsp;			temp[i] = ColorTools.blue(rgb[i]);</b>
+<b class="nc"><i>255</i>&nbsp;		int bMedian = getMedian(temp);</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;		return ColorTools.makeRGB(rMedian, gMedian, bMedian);</b>
+<i>258</i>&nbsp;	}
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;
+<i>261</i>&nbsp;	private static int getMedian(int[] array) {
+<b class="nc"><i>262</i>&nbsp;		Arrays.sort(array);</b>
+<b class="nc"><i>263</i>&nbsp;		return array[array.length/2];</b>
+<i>264</i>&nbsp;	}
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;
+<i>267</i>&nbsp;	/**
+<i>268</i>&nbsp;	 * Attempt to automatically refine color deconvolution stains based upon pixel values.
+<i>269</i>&nbsp;	 * &lt;p&gt;
+<i>270</i>&nbsp;	 * Warning!  This is really only for testing - it has not be very extensively validated.
+<i>271</i>&nbsp;	 * &lt;p&gt;
+<i>272</i>&nbsp;	 * The method used is based very loosely on that of Macenko et al. (2009), but avoids eigenvalue computations in favor of
+<i>273</i>&nbsp;	 * determining an initial stain inputs.
+<i>274</i>&nbsp;	 * 
+<i>275</i>&nbsp;	 * TODO: Improve automatic stain vector refinement.
+<i>276</i>&nbsp;	 * 
+<i>277</i>&nbsp;	 * 
+<i>278</i>&nbsp;	 * @param rgb
+<i>279</i>&nbsp;	 * @param stains
+<i>280</i>&nbsp;	 * @param minStain minimum optical density for each RGB channel (default 0.15)
+<i>281</i>&nbsp;	 * @param percentageClipped 
+<i>282</i>&nbsp;	 * @return
+<i>283</i>&nbsp;	 */
+<i>284</i>&nbsp;	public static ColorDeconvolutionStains refineColorDeconvolutionStains(final int[] rgb, final ColorDeconvolutionStains stains, final double minStain, final double percentageClipped) {
+<i>285</i>&nbsp;
+<b class="nc"><i>286</i>&nbsp;		logger.warn(&quot;WARNING!  Stain vector refinement is only for testing - treat the results with caution!&quot;);</b>
+<i>287</i>&nbsp;		
+<b class="nc"><i>288</i>&nbsp;		int n = rgb.length;</b>
+<b class="nc"><i>289</i>&nbsp;		double[] whiteValues = estimateWhiteValues(rgb);</b>
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;		// Get optical densities
+<b class="nc"><i>292</i>&nbsp;		float[] redOD = ColorDeconvolutionHelper.getRedOpticalDensities(rgb, whiteValues[0], null);</b>
+<b class="nc"><i>293</i>&nbsp;		float[] greenOD = ColorDeconvolutionHelper.getGreenOpticalDensities(rgb, whiteValues[1], null);</b>
+<b class="nc"><i>294</i>&nbsp;		float[] blueOD = ColorDeconvolutionHelper.getBlueOpticalDensities(rgb, whiteValues[2], null);</b>
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;		// Create a basic stain mask
+<b class="nc"><i>297</i>&nbsp;		boolean[] mask = createStainMask(redOD, greenOD, blueOD, minStain, stains.isH_DAB() || stains.isH_E(), true, null);</b>
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;		// Count masked pixels
+<b class="nc"><i>300</i>&nbsp;		int nnz = 0;</b>
+<b class="nc"><i>301</i>&nbsp;		for (boolean m : mask) {</b>
+<b class="nc"><i>302</i>&nbsp;			if (m)</b>
+<b class="nc"><i>303</i>&nbsp;				nnz++;</b>
+<i>304</i>&nbsp;		}
+<i>305</i>&nbsp;
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;		// Project normalized optical densities onto reference vectors to assess similarity
+<b class="nc"><i>308</i>&nbsp;		double[] stain1 = stains.getStain(1).getArray();</b>
+<b class="nc"><i>309</i>&nbsp;		double[] stain2 = stains.getStain(2).getArray();</b>
+<b class="nc"><i>310</i>&nbsp;		float[] stain1Proj = new float[nnz];</b>
+<b class="nc"><i>311</i>&nbsp;		float[] stain2Proj = new float[nnz];</b>
+<b class="nc"><i>312</i>&nbsp;		int[] indices = new int[nnz];</b>
+<b class="nc"><i>313</i>&nbsp;		int ind = 0;</b>
+<b class="nc"><i>314</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>315</i>&nbsp;			if (!mask[i])</b>
+<b class="nc"><i>316</i>&nbsp;				continue;</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;			double r = redOD[i];</b>
+<b class="nc"><i>319</i>&nbsp;			double g = greenOD[i];</b>
+<b class="nc"><i>320</i>&nbsp;			double b = blueOD[i];</b>
+<b class="nc"><i>321</i>&nbsp;			double norm = Math.sqrt(r*r + g*g + b*b);</b>
+<i>322</i>&nbsp;
+<b class="nc"><i>323</i>&nbsp;			stain1Proj[ind] = (float)((r * stain1[0] + g * stain1[1] + b * stain1[2]) / norm);</b>
+<b class="nc"><i>324</i>&nbsp;			stain2Proj[ind] = (float)((r * stain2[0] + g * stain2[1] + b * stain2[2]) / norm);</b>
+<b class="nc"><i>325</i>&nbsp;			indices[ind] = i;</b>
+<b class="nc"><i>326</i>&nbsp;			ind++;</b>
+<i>327</i>&nbsp;		}
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;		// Sort projected values to ascertain thresholds (TODO: make this more efficient)
+<b class="nc"><i>330</i>&nbsp;		float[] temp = Arrays.copyOf(stain1Proj, nnz);</b>
+<b class="nc"><i>331</i>&nbsp;		Arrays.sort(temp);</b>
+<b class="nc"><i>332</i>&nbsp;		float stain1Threshold = temp[(int)(nnz * .98)];</b>
+<b class="nc"><i>333</i>&nbsp;		System.arraycopy(stain2Proj, 0, temp, 0, nnz);</b>
+<b class="nc"><i>334</i>&nbsp;		Arrays.sort(temp);</b>
+<b class="nc"><i>335</i>&nbsp;		float stain2Threshold = temp[(int)(nnz * .98)];</b>
+<i>336</i>&nbsp;
+<i>337</i>&nbsp;		// Loop once again and determine above-threshold means for each channel
+<b class="nc"><i>338</i>&nbsp;		double r1Sum = 0;</b>
+<b class="nc"><i>339</i>&nbsp;		double g1Sum = 0;</b>
+<b class="nc"><i>340</i>&nbsp;		double b1Sum = 0;</b>
+<b class="nc"><i>341</i>&nbsp;		int n1 = 0;</b>
+<b class="nc"><i>342</i>&nbsp;		double r2Sum = 0;</b>
+<b class="nc"><i>343</i>&nbsp;		double g2Sum = 0;</b>
+<b class="nc"><i>344</i>&nbsp;		double b2Sum = 0;</b>
+<b class="nc"><i>345</i>&nbsp;		int n2 = 0;</b>
+<b class="nc"><i>346</i>&nbsp;		for (int i = 0; i &lt; indices.length; i++) {</b>
+<b class="nc"><i>347</i>&nbsp;			ind = indices[i];</b>
+<b class="nc"><i>348</i>&nbsp;			if (stain1Proj[i] &gt;= stain1Threshold) {</b>
+<b class="nc"><i>349</i>&nbsp;				r1Sum += redOD[ind];</b>
+<b class="nc"><i>350</i>&nbsp;				g1Sum += greenOD[ind];</b>
+<b class="nc"><i>351</i>&nbsp;				b1Sum += blueOD[ind];</b>
+<b class="nc"><i>352</i>&nbsp;				n1++;</b>
+<i>353</i>&nbsp;			}
+<b class="nc"><i>354</i>&nbsp;			if (stain2Proj[i] &gt;= stain2Threshold) {</b>
+<b class="nc"><i>355</i>&nbsp;				r2Sum += redOD[ind];</b>
+<b class="nc"><i>356</i>&nbsp;				g2Sum += greenOD[ind];</b>
+<b class="nc"><i>357</i>&nbsp;				b2Sum += blueOD[ind];</b>
+<b class="nc"><i>358</i>&nbsp;				n2++;</b>
+<i>359</i>&nbsp;			}
+<i>360</i>&nbsp;		}
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;		// Create refined stains using means - these determine the main plane upon which pixels containing these stains are expected to fall
+<b class="nc"><i>363</i>&nbsp;		StainVector stainBase1 = StainVector.createStainVector(&quot;Basis 1&quot;, r1Sum/n1, g1Sum/n1, b1Sum/n1);</b>
+<b class="nc"><i>364</i>&nbsp;		StainVector stainBase2 = StainVector.createStainVector(&quot;Basis 2&quot;, r2Sum/n2, g2Sum/n2, b2Sum/n2);</b>
+<i>365</i>&nbsp;
+<i>366</i>&nbsp;		// Create orthonormal vectors
+<b class="nc"><i>367</i>&nbsp;		stainBase1 = StainVector.createStainVector(&quot;Basis 1&quot;, (stainBase1.getRed() + stainBase2.getRed())/2, (stainBase1.getGreen() + stainBase2.getGreen())/2, (stainBase1.getBlue() + stainBase2.getBlue())/2);</b>
+<b class="nc"><i>368</i>&nbsp;		StainVector stainNorm = StainVector.makeResidualStainVector(stainBase1, stainBase2);</b>
+<b class="nc"><i>369</i>&nbsp;		stainBase2 = StainVector.makeOrthogonalStainVector(&quot;Basis 2&quot;, stainBase1, stainNorm, false);</b>
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;
+<b class="nc"><i>373</i>&nbsp;		double[] base1 = stainBase1.getArray();</b>
+<b class="nc"><i>374</i>&nbsp;		double[] base2 = stainBase2.getArray();</b>
+<b class="nc"><i>375</i>&nbsp;		double[] angles = new double[nnz];</b>
+<i>376</i>&nbsp;//		Arrays.fill(angles, Double.POSITIVE_INFINITY);
+<b class="nc"><i>377</i>&nbsp;		int nAngles = 0;</b>
+<i>378</i>&nbsp;//		for (int i = 0; i &lt; indices.length; i++) {
+<i>379</i>&nbsp;//			ind = indices[i];
+<i>380</i>&nbsp;//		ind = 0;
+<b class="nc"><i>381</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>382</i>&nbsp;			if (!mask[i])</b>
+<b class="nc"><i>383</i>&nbsp;				continue;</b>
+<i>384</i>&nbsp;
+<i>385</i>&nbsp;			// TODO: Consider omitting angles too far from the required basis
+<b class="nc"><i>386</i>&nbsp;			double r = redOD[i];</b>
+<b class="nc"><i>387</i>&nbsp;			double g = greenOD[i];</b>
+<b class="nc"><i>388</i>&nbsp;			double b = blueOD[i];</b>
+<i>389</i>&nbsp;
+<b class="nc"><i>390</i>&nbsp;			double proj1 = r*base1[0] + g*base1[1] + b*base1[2];</b>
+<b class="nc"><i>391</i>&nbsp;			double proj2 = r*base2[0] + g*base2[1] + b*base2[2];</b>
+<b class="nc"><i>392</i>&nbsp;			angles[nAngles] = Math.atan2(proj2, proj1);</b>
+<i>393</i>&nbsp;
+<b class="nc"><i>394</i>&nbsp;			nAngles++;</b>
+<b class="nc"><i>395</i>&nbsp;			if (nAngles == nnz)</b>
+<b class="nc"><i>396</i>&nbsp;				break;</b>
+<i>397</i>&nbsp;		}
+<b class="nc"><i>398</i>&nbsp;		Arrays.sort(angles);</b>
+<b class="nc"><i>399</i>&nbsp;		double alpha = Math.min(Math.max(0.1, percentageClipped), 25) / 100.;</b>
+<b class="nc"><i>400</i>&nbsp;		double minAngle = angles[(int)(nAngles * alpha)];</b>
+<b class="nc"><i>401</i>&nbsp;		double maxAngle = angles[nAngles - (int)(nAngles * alpha) - 1];</b>
+<i>402</i>&nbsp;
+<i>403</i>&nbsp;		// Compute new stain vectors
+<b class="nc"><i>404</i>&nbsp;		double cos = Math.cos(minAngle);</b>
+<b class="nc"><i>405</i>&nbsp;		double sin = Math.sin(minAngle);</b>
+<b class="nc"><i>406</i>&nbsp;		StainVector stain2Refined = StainVector.createStainVector(stains.getStain(2).getName(), </b>
+<i>407</i>&nbsp;				base1[0]*cos + base2[0]*sin, base1[1]*cos + base2[1]*sin, base1[2]*cos + base2[2]*sin);
+<b class="nc"><i>408</i>&nbsp;		cos = Math.cos(maxAngle);</b>
+<b class="nc"><i>409</i>&nbsp;		sin = Math.sin(maxAngle);</b>
+<b class="nc"><i>410</i>&nbsp;		StainVector stain1Refined = StainVector.createStainVector(stains.getStain(1).getName(), </b>
+<i>411</i>&nbsp;				base1[0]*cos + base2[0]*sin, base1[1]*cos + base2[1]*sin, base1[2]*cos + base2[2]*sin);
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;		return new ColorDeconvolutionStains(stains.getName(), stain1Refined, stain2Refined, whiteValues[0], whiteValues[1], whiteValues[2]);</b>
+<i>417</i>&nbsp;	}
+<i>418</i>&nbsp;
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;	private static boolean[] createStainMask(float[] redOD, float[] greenOD, float[] blueOD, double stainThreshold, boolean excludeGray, boolean excludeUncommonColors, boolean[] mask) {
+<b class="nc"><i>423</i>&nbsp;		if (mask == null) {</b>
+<b class="nc"><i>424</i>&nbsp;			mask = new boolean[redOD.length];</b>
+<b class="nc"><i>425</i>&nbsp;			Arrays.fill(mask, true);</b>
+<i>426</i>&nbsp;		}
+<i>427</i>&nbsp;
+<b class="nc"><i>428</i>&nbsp;		double gray = 1/Math.sqrt(3);</b>
+<b class="nc"><i>429</i>&nbsp;		double grayThreshold = Math.cos(0.2);</b>
+<b class="nc"><i>430</i>&nbsp;		for (int i = 0; i &lt; mask.length; i++) {</b>
+<i>431</i>&nbsp;
+<b class="nc"><i>432</i>&nbsp;			double r = redOD[i];</b>
+<b class="nc"><i>433</i>&nbsp;			double g = greenOD[i];</b>
+<b class="nc"><i>434</i>&nbsp;			double b = blueOD[i];</b>
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;			//			if (r + g + b &lt; stainThreshold)
+<i>437</i>&nbsp;			//				mask[i] = false;
+<i>438</i>&nbsp;
+<i>439</i>&nbsp;			// All colors must exceed threshold
+<b class="nc"><i>440</i>&nbsp;			if (r &lt; stainThreshold || g &lt; stainThreshold || b &lt; stainThreshold)</b>
+<b class="nc"><i>441</i>&nbsp;				mask[i] = false;</b>
+<b class="nc"><i>442</i>&nbsp;			else if (excludeGray) {</b>
+<b class="nc"><i>443</i>&nbsp;				double norm = Math.sqrt(r*r + g*g + b*b);</b>
+<b class="nc"><i>444</i>&nbsp;				if (r*gray + g*gray + b*gray &gt;= grayThreshold * norm)</b>
+<b class="nc"><i>445</i>&nbsp;					mask[i] = false;</b>
+<b class="nc"><i>446</i>&nbsp;			} else if (excludeUncommonColors &amp;&amp;</b>
+<i>447</i>&nbsp;					((g &lt; r &amp;&amp; r &lt;= b) || (g &lt;= b &amp;&amp; b &lt; r))) {
+<i>448</i>&nbsp;				// Remove colors that can easily be determined as far from the expected pink/purple/brown of common stains in pathology
+<i>449</i>&nbsp;				// See http://en.wikipedia.org/wiki/Hue (inverted for ODs)
+<b class="nc"><i>450</i>&nbsp;				mask[i] = false;</b>
+<i>451</i>&nbsp;			}
+<i>452</i>&nbsp;
+<i>453</i>&nbsp;		}
+<i>454</i>&nbsp;
+<b class="nc"><i>455</i>&nbsp;		return mask;</b>
+<i>456</i>&nbsp;	}
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;
+<i>460</i>&nbsp;	/**
+<i>461</i>&nbsp;	 * Estimate white (background) values for a brightfield image.
+<i>462</i>&nbsp;	 * &lt;p&gt;
+<i>463</i>&nbsp;	 * The algorithm computes histograms for each RGB channel, and takes the mode
+<i>464</i>&nbsp;	 * of the histogram in the region of the histogram &amp;gt; the mean value for that channel.
+<i>465</i>&nbsp;	 * 
+<i>466</i>&nbsp;	 * @param rgb an array of packed RGB values
+<i>467</i>&nbsp;	 * @return an array containing estimated [red, green and blue] background values
+<i>468</i>&nbsp;	 */
+<i>469</i>&nbsp;	public static double[] estimateWhiteValues(int[] rgb) {
+<i>470</i>&nbsp;		// Create RGB histograms
+<b class="nc"><i>471</i>&nbsp;		int[] countsRed = new int[256];</b>
+<b class="nc"><i>472</i>&nbsp;		int[] countsGreen = new int[256];</b>
+<b class="nc"><i>473</i>&nbsp;		int[] countsBlue = new int[256];</b>
+<b class="nc"><i>474</i>&nbsp;		double meanRed = 0;</b>
+<b class="nc"><i>475</i>&nbsp;		double meanGreen = 0;</b>
+<b class="nc"><i>476</i>&nbsp;		double meanBlue = 0;</b>
+<b class="nc"><i>477</i>&nbsp;		double scale = 1.0/rgb.length;</b>
+<i>478</i>&nbsp;
+<b class="nc"><i>479</i>&nbsp;		for (int val : rgb) {</b>
+<i>480</i>&nbsp;
+<b class="nc"><i>481</i>&nbsp;			int red = ColorTools.red(val);</b>
+<b class="nc"><i>482</i>&nbsp;			int green = ColorTools.green(val);</b>
+<b class="nc"><i>483</i>&nbsp;			int blue = ColorTools.blue(val);</b>
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;			// Update counts
+<b class="nc"><i>486</i>&nbsp;			countsRed[red]++;</b>
+<b class="nc"><i>487</i>&nbsp;			countsGreen[green]++;</b>
+<b class="nc"><i>488</i>&nbsp;			countsBlue[blue]++;</b>
+<i>489</i>&nbsp;
+<i>490</i>&nbsp;			// Update means
+<b class="nc"><i>491</i>&nbsp;			meanRed += red * scale;</b>
+<b class="nc"><i>492</i>&nbsp;			meanGreen += green * scale;</b>
+<b class="nc"><i>493</i>&nbsp;			meanBlue += blue * scale;</b>
+<i>494</i>&nbsp;
+<i>495</i>&nbsp;		}
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;		// Determine modes above the mean
+<b class="nc"><i>498</i>&nbsp;		int modeRedCount = Integer.MIN_VALUE;</b>
+<b class="nc"><i>499</i>&nbsp;		int modeGreenCount = Integer.MIN_VALUE;</b>
+<b class="nc"><i>500</i>&nbsp;		int modeBlueCount = Integer.MIN_VALUE;</b>
+<b class="nc"><i>501</i>&nbsp;		int modeRed = 0;</b>
+<b class="nc"><i>502</i>&nbsp;		int modeGreen = 0;</b>
+<b class="nc"><i>503</i>&nbsp;		int modeBlue = 0;</b>
+<b class="nc"><i>504</i>&nbsp;		for (int i = 0; i &lt; 256; i++) {</b>
+<b class="nc"><i>505</i>&nbsp;			if (i &gt; meanRed &amp;&amp; countsRed[i] &gt;= modeRedCount) {</b>
+<b class="nc"><i>506</i>&nbsp;				modeRedCount = countsRed[i];</b>
+<b class="nc"><i>507</i>&nbsp;				modeRed = i;</b>
+<i>508</i>&nbsp;			}
+<i>509</i>&nbsp;
+<b class="nc"><i>510</i>&nbsp;			if (i &gt; meanGreen &amp;&amp; countsGreen[i] &gt;= modeGreenCount) {</b>
+<b class="nc"><i>511</i>&nbsp;				modeGreenCount = countsGreen[i];</b>
+<b class="nc"><i>512</i>&nbsp;				modeGreen = i;</b>
+<i>513</i>&nbsp;			}
+<i>514</i>&nbsp;
+<b class="nc"><i>515</i>&nbsp;			if (i &gt; meanBlue &amp;&amp; countsBlue[i] &gt;= modeBlueCount) {</b>
+<b class="nc"><i>516</i>&nbsp;				modeBlueCount = countsBlue[i];</b>
+<b class="nc"><i>517</i>&nbsp;				modeBlue = i;</b>
+<i>518</i>&nbsp;			}
+<i>519</i>&nbsp;
+<i>520</i>&nbsp;		}
+<i>521</i>&nbsp;
+<b class="nc"><i>522</i>&nbsp;		return new double[]{modeRed, modeGreen, modeBlue};</b>
+<i>523</i>&nbsp;
+<i>524</i>&nbsp;	}
+<i>525</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

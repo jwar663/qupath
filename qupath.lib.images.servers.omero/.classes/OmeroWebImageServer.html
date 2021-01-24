@@ -1,0 +1,535 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OmeroWebImageServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers.omero</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OmeroWebImageServer (qupath.lib.images.servers.omero)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OmeroWebImageServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 162)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.servers.omero;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.io.InputStreamReader;
+<i>27</i>&nbsp;import java.net.URI;
+<i>28</i>&nbsp;import java.net.URL;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Collection;
+<i>31</i>&nbsp;import java.util.Collections;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.regex.Matcher;
+<i>34</i>&nbsp;import java.util.regex.Pattern;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javax.imageio.ImageIO;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.slf4j.Logger;
+<i>39</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import com.google.gson.Gson;
+<i>42</i>&nbsp;import com.google.gson.GsonBuilder;
+<i>43</i>&nbsp;import com.google.gson.JsonArray;
+<i>44</i>&nbsp;import com.google.gson.JsonElement;
+<i>45</i>&nbsp;import com.google.gson.JsonObject;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import qupath.lib.awt.common.BufferedImageTools;
+<i>48</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>49</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>50</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder;
+<i>51</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>52</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>53</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>54</i>&nbsp;import qupath.lib.images.servers.TileRequest;
+<i>55</i>&nbsp;import qupath.lib.images.servers.omero.OmeroShapes.OmeroShape;
+<i>56</i>&nbsp;import qupath.lib.images.servers.omero.OmeroWebImageServerBuilder.OmeroWebClient;
+<i>57</i>&nbsp;import qupath.lib.io.GsonTools;
+<i>58</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>59</i>&nbsp;import qupath.lib.objects.PathObjectReader;
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;/**
+<i>62</i>&nbsp; * ImageServer that reads pixels using the OMERO web API.
+<i>63</i>&nbsp; * &lt;p&gt;
+<i>64</i>&nbsp; * Note that this does not provide access to the raw data, but rather RGB tiles only in the manner of a web viewer. 
+<i>65</i>&nbsp; * Consequently, only RGB images are supported and some small changes in pixel values can be expected due to compression.
+<i>66</i>&nbsp; * 
+<i>67</i>&nbsp; * @author Pete Bankhead
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; */
+<i>70</i>&nbsp;public class OmeroWebImageServer extends AbstractTileableImageServer implements PathObjectReader {
+<i>71</i>&nbsp;
+<b class="nc"><i>72</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(OmeroWebImageServer.class);</b>
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>75</i>&nbsp;	private URI uri;
+<i>76</i>&nbsp;	private String[] args;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;	/**
+<i>79</i>&nbsp;	 * Image ID
+<i>80</i>&nbsp;	 */
+<i>81</i>&nbsp;	private String id;
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	private final String host;
+<i>84</i>&nbsp;	private final String scheme;
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;	/**
+<i>87</i>&nbsp;	 * Quality of requested JPEG.
+<i>88</i>&nbsp;	 */
+<b class="nc"><i>89</i>&nbsp;	private static double QUALITY = 0.9;</b>
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	/**
+<i>92</i>&nbsp;	 * There appears to be a max size (hard-coded?) in OMERO, so we need to make sure we don&#39;t exceed that.
+<i>93</i>&nbsp;	 * Requesting anything larger just returns a truncated image.
+<i>94</i>&nbsp;	 */
+<i>95</i>&nbsp;//	private static int OMERO_MAX_SIZE = 1024;
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Instantiate an OMERO server.
+<i>99</i>&nbsp;	 * 
+<i>100</i>&nbsp;	 * Note that there are five URI options currently supported:
+<i>101</i>&nbsp;	 * &lt;ul&gt;
+<i>102</i>&nbsp;	 * 	&lt;li&gt; Copy and paste from web viewer (&quot;{@code /host/webclient/img_detail/id/}&quot;)&lt;/li&gt;
+<i>103</i>&nbsp;	 *  &lt;li&gt; Copy and paste from the &#39;Link&#39; button (&quot;{@code /host/webclient/?show=id}&quot;)&lt;/li&gt;
+<i>104</i>&nbsp;	 *  &lt;li&gt; Copy and paste from the old viewer (&quot;{@code /host/webgateway/img_detail/id}&quot;)&lt;/li&gt;
+<i>105</i>&nbsp;	 *  &lt;li&gt; Copy and paste from the new viewer (&quot;{@code /host/iviewer/?images=id}&quot;)&lt;/li&gt;
+<i>106</i>&nbsp;	 *  &lt;li&gt; Id provided as only fragment after host&lt;/li&gt;
+<i>107</i>&nbsp;	 * &lt;/ul&gt;
+<i>108</i>&nbsp;	 * The fifth option could be removed.
+<i>109</i>&nbsp;	 * 
+<i>110</i>&nbsp;	 * @param uri
+<i>111</i>&nbsp;	 * @param client
+<i>112</i>&nbsp;	 * @param args
+<i>113</i>&nbsp;	 * @throws IOException
+<i>114</i>&nbsp;	 */
+<i>115</i>&nbsp;	OmeroWebImageServer(URI uri, OmeroWebClient client, String...args) throws IOException {
+<b class="nc"><i>116</i>&nbsp;		super();</b>
+<i>117</i>&nbsp;		
+<b class="nc"><i>118</i>&nbsp;		this.uri = uri;</b>
+<b class="nc"><i>119</i>&nbsp;		this.scheme = uri.getScheme();</b>
+<b class="nc"><i>120</i>&nbsp;		this.host = uri.getHost();</b>
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;		String uriQuery = uri.getQuery();</b>
+<b class="nc"><i>123</i>&nbsp;		if (uriQuery != null &amp;&amp; !uriQuery.isEmpty() &amp;&amp; uriQuery.startsWith(&quot;show=image-&quot;)) {</b>
+<b class="nc"><i>124</i>&nbsp;			Pattern pattern = Pattern.compile(&quot;show=image-(\\d+)&quot;);</b>
+<b class="nc"><i>125</i>&nbsp;			Matcher matcher = pattern.matcher(uriQuery);</b>
+<b class="nc"><i>126</i>&nbsp;			if (matcher.find())</b>
+<b class="nc"><i>127</i>&nbsp;				this.id = matcher.group(1);</b>
+<i>128</i>&nbsp;		}
+<b class="nc"><i>129</i>&nbsp;		if (this.id == null)</b>
+<b class="nc"><i>130</i>&nbsp;			this.id = uri.getFragment();</b>
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;		int sizeX;
+<i>133</i>&nbsp;		int sizeY;
+<i>134</i>&nbsp;
+<b class="nc"><i>135</i>&nbsp;		String imageName = null;</b>
+<b class="nc"><i>136</i>&nbsp;		int sizeT = 1;</b>
+<b class="nc"><i>137</i>&nbsp;		int sizeZ = 1;</b>
+<b class="nc"><i>138</i>&nbsp;		int sizeC = 3;</b>
+<b class="nc"><i>139</i>&nbsp;		int[] tileSize = null;//{256, 256};</b>
+<b class="nc"><i>140</i>&nbsp;		double pixelWidthMicrons = Double.NaN;</b>
+<b class="nc"><i>141</i>&nbsp;		double pixelHeightMicrons = Double.NaN;</b>
+<b class="nc"><i>142</i>&nbsp;		double zSpacingMicrons = Double.NaN;</b>
+<b class="nc"><i>143</i>&nbsp;		PixelType pixelType = PixelType.UINT8;</b>
+<b class="nc"><i>144</i>&nbsp;		boolean isRGB = true;</b>
+<b class="nc"><i>145</i>&nbsp;		double magnification = Double.NaN;</b>
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;
+<b class="nc"><i>148</i>&nbsp;		URL urlMetadata = new URL(</b>
+<i>149</i>&nbsp;				scheme, host, -1, &quot;/webgateway/imgData/&quot; + id
+<i>150</i>&nbsp;				);
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;		InputStreamReader reader = new InputStreamReader(urlMetadata.openStream());</b>
+<b class="nc"><i>153</i>&nbsp;		JsonObject map = new Gson().fromJson(reader, JsonObject.class);</b>
+<b class="nc"><i>154</i>&nbsp;		reader.close();</b>
+<i>155</i>&nbsp;
+<b class="nc"><i>156</i>&nbsp;		JsonObject size = map.getAsJsonObject(&quot;size&quot;);</b>
+<i>157</i>&nbsp;
+<b class="nc"><i>158</i>&nbsp;		sizeX = size.getAsJsonPrimitive(&quot;width&quot;).getAsInt();</b>
+<b class="nc"><i>159</i>&nbsp;		sizeY = size.getAsJsonPrimitive(&quot;height&quot;).getAsInt();</b>
+<b class="nc"><i>160</i>&nbsp;		sizeC = size.getAsJsonPrimitive(&quot;c&quot;).getAsInt();</b>
+<b class="nc"><i>161</i>&nbsp;		sizeZ = size.getAsJsonPrimitive(&quot;z&quot;).getAsInt();</b>
+<b class="nc"><i>162</i>&nbsp;		sizeT = size.getAsJsonPrimitive(&quot;t&quot;).getAsInt();</b>
+<i>163</i>&nbsp;		
+<i>164</i>&nbsp;		
+<i>165</i>&nbsp;
+<b class="nc"><i>166</i>&nbsp;		JsonElement pixelSizeElement = map.get(&quot;pixel_size&quot;);</b>
+<b class="nc"><i>167</i>&nbsp;		if (pixelSizeElement != null) {</b>
+<b class="nc"><i>168</i>&nbsp;			JsonObject pixelSize = pixelSizeElement.getAsJsonObject();</b>
+<i>169</i>&nbsp;			// TODO: Check micron assumption
+<i>170</i>&nbsp;
+<b class="nc"><i>171</i>&nbsp;			if (pixelSize.has(&quot;x&quot;) &amp;&amp; !pixelSize.get(&quot;x&quot;).isJsonNull())</b>
+<b class="nc"><i>172</i>&nbsp;				pixelWidthMicrons = pixelSize.getAsJsonPrimitive(&quot;x&quot;).getAsDouble();</b>
+<b class="nc"><i>173</i>&nbsp;			if (pixelSize.has(&quot;y&quot;) &amp;&amp; !pixelSize.get(&quot;y&quot;).isJsonNull())</b>
+<b class="nc"><i>174</i>&nbsp;				pixelHeightMicrons = pixelSize.getAsJsonPrimitive(&quot;y&quot;).getAsDouble();</b>
+<b class="nc"><i>175</i>&nbsp;			if (pixelSize.has(&quot;z&quot;)) {</b>
+<b class="nc"><i>176</i>&nbsp;				JsonElement zSpacing = pixelSize.get(&quot;z&quot;);</b>
+<b class="nc"><i>177</i>&nbsp;				if (!zSpacing.isJsonNull())</b>
+<b class="nc"><i>178</i>&nbsp;					zSpacingMicrons = zSpacing.getAsDouble();</b>
+<i>179</i>&nbsp;			}
+<i>180</i>&nbsp;		}
+<i>181</i>&nbsp;		
+<b class="nc"><i>182</i>&nbsp;		String pixelsType = null;</b>
+<i>183</i>&nbsp;
+<b class="nc"><i>184</i>&nbsp;		if (map.has(&quot;meta&quot;)) {</b>
+<b class="nc"><i>185</i>&nbsp;			JsonObject meta = map.getAsJsonObject(&quot;meta&quot;);</b>
+<b class="nc"><i>186</i>&nbsp;			if (meta.has(&quot;imageName&quot;))</b>
+<b class="nc"><i>187</i>&nbsp;				imageName = meta.get(&quot;imageName&quot;).getAsString();</b>
+<b class="nc"><i>188</i>&nbsp;			if (meta.has(&quot;pixelsType&quot;))</b>
+<b class="nc"><i>189</i>&nbsp;				pixelsType = meta.get(&quot;pixelsType&quot;).getAsString();</b>
+<i>190</i>&nbsp;		}
+<i>191</i>&nbsp;		
+<i>192</i>&nbsp;		
+<b class="nc"><i>193</i>&nbsp;		List&lt;ImageChannel&gt; channels = null;</b>
+<b class="nc"><i>194</i>&nbsp;		if (sizeC == 3)</b>
+<b class="nc"><i>195</i>&nbsp;			channels = ImageChannel.getDefaultRGBChannels();</b>
+<i>196</i>&nbsp;//		else if (sizeC == 1)
+<i>197</i>&nbsp;//			channels = ImageChannel.getDefaultChannelList(1);
+<i>198</i>&nbsp;		
+<b class="nc"><i>199</i>&nbsp;		if (channels == null || (pixelsType != null &amp;&amp; !&quot;uint8&quot;.equals(pixelsType)))</b>
+<b class="nc"><i>200</i>&nbsp;			throw new IOException(&quot;Only 8-bit RGB images supported! Selected image has &quot; + sizeC + &quot; channel(s) &amp; pixel type &quot; + pixelsType);</b>
+<i>201</i>&nbsp;			
+<b class="nc"><i>202</i>&nbsp;		var levelBuilder = new ImageServerMetadata.ImageResolutionLevel.Builder(sizeX, sizeY);</b>
+<i>203</i>&nbsp;		
+<b class="nc"><i>204</i>&nbsp;		if (map.getAsJsonPrimitive(&quot;tiles&quot;).getAsBoolean()) {</b>
+<b class="nc"><i>205</i>&nbsp;			int levels = map.getAsJsonPrimitive(&quot;levels&quot;).getAsInt();</b>
+<b class="nc"><i>206</i>&nbsp;			if (levels &gt; 1) {</b>
+<b class="nc"><i>207</i>&nbsp;				JsonObject zoom = map.getAsJsonObject(&quot;zoomLevelScaling&quot;);</b>
+<b class="nc"><i>208</i>&nbsp;				for (int i = 0; i &lt; levels; i++) {</b>
+<b class="nc"><i>209</i>&nbsp;					levelBuilder.addLevelByDownsample(1.0 / zoom.getAsJsonPrimitive(Integer.toString(i)).getAsDouble());</b>
+<i>210</i>&nbsp;				}
+<b class="nc"><i>211</i>&nbsp;			} else {</b>
+<b class="nc"><i>212</i>&nbsp;				levelBuilder.addFullResolutionLevel();</b>
+<i>213</i>&nbsp;			}
+<i>214</i>&nbsp;
+<b class="nc"><i>215</i>&nbsp;			if (map.has(&quot;tile_size&quot;)) {</b>
+<b class="nc"><i>216</i>&nbsp;				JsonObject tileSizeJson = map.getAsJsonObject(&quot;tile_size&quot;);</b>
+<b class="nc"><i>217</i>&nbsp;				tileSize = new int[]{</b>
+<b class="nc"><i>218</i>&nbsp;						(int)tileSizeJson.getAsJsonPrimitive(&quot;width&quot;).getAsDouble(),</b>
+<b class="nc"><i>219</i>&nbsp;						(int)tileSizeJson.getAsJsonPrimitive(&quot;height&quot;).getAsDouble()</b>
+<i>220</i>&nbsp;				};
+<b class="nc"><i>221</i>&nbsp;			} else {</b>
+<b class="nc"><i>222</i>&nbsp;				tileSize = new int[] {sizeX, sizeY};</b>
+<i>223</i>&nbsp;			}
+<b class="nc"><i>224</i>&nbsp;		} else {</b>
+<b class="nc"><i>225</i>&nbsp;			int tileSizeX = Math.min(sizeX, 3192);</b>
+<b class="nc"><i>226</i>&nbsp;			int tileSizeY = Math.min(sizeY, 3192);</b>
+<b class="nc"><i>227</i>&nbsp;			tileSize = new int[] {tileSizeX, tileSizeY};</b>
+<i>228</i>&nbsp;		}
+<i>229</i>&nbsp;
+<b class="nc"><i>230</i>&nbsp;		if (map.has(&quot;nominalMagnification&quot;))</b>
+<b class="nc"><i>231</i>&nbsp;			magnification = map.getAsJsonPrimitive(&quot;nominalMagnification&quot;).getAsDouble();</b>
+<i>232</i>&nbsp;		
+<b class="nc"><i>233</i>&nbsp;		this.args = args;</b>
+<b class="nc"><i>234</i>&nbsp;		ImageServerMetadata.Builder builder = new ImageServerMetadata.Builder(getClass(), uri.toString(), sizeX, sizeY)</b>
+<b class="nc"><i>235</i>&nbsp;				.sizeT(sizeT)</b>
+<b class="nc"><i>236</i>&nbsp;				.channels(ImageChannel.getDefaultRGBChannels())</b>
+<b class="nc"><i>237</i>&nbsp;				.sizeZ(sizeZ)</b>
+<i>238</i>&nbsp;//				.args(args)
+<b class="nc"><i>239</i>&nbsp;				.name(imageName)</b>
+<b class="nc"><i>240</i>&nbsp;				.pixelType(pixelType)</b>
+<b class="nc"><i>241</i>&nbsp;				.rgb(isRGB)</b>
+<b class="nc"><i>242</i>&nbsp;				.magnification(magnification)</b>
+<b class="nc"><i>243</i>&nbsp;				.levels(levelBuilder.build());</b>
+<i>244</i>&nbsp;		
+<b class="nc"><i>245</i>&nbsp;		if (Double.isFinite(pixelWidthMicrons + pixelHeightMicrons))</b>
+<b class="nc"><i>246</i>&nbsp;			builder.pixelSizeMicrons(pixelWidthMicrons, pixelHeightMicrons);</b>
+<i>247</i>&nbsp;		
+<b class="nc"><i>248</i>&nbsp;		if (Double.isFinite(zSpacingMicrons) &amp;&amp; zSpacingMicrons &gt; 0)</b>
+<b class="nc"><i>249</i>&nbsp;			builder.zSpacingMicrons(zSpacingMicrons);</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;		if (tileSize != null &amp;&amp; tileSize.length &gt;= 2) {</b>
+<b class="nc"><i>252</i>&nbsp;			builder.preferredTileSize(tileSize[0], tileSize[1]);</b>
+<i>253</i>&nbsp;		}
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;		originalMetadata = builder.build();</b>
+<i>256</i>&nbsp;	}
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;	@Override
+<i>259</i>&nbsp;	protected String createID() {
+<b class="nc"><i>260</i>&nbsp;		return getClass().getName() + &quot;: &quot; + uri.toString();</b>
+<i>261</i>&nbsp;	}
+<i>262</i>&nbsp;
+<i>263</i>&nbsp;	@Override
+<i>264</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="nc"><i>265</i>&nbsp;		return Collections.singletonList(uri);</b>
+<i>266</i>&nbsp;	}
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;	
+<i>269</i>&nbsp;	/**
+<i>270</i>&nbsp;	 * Retrieve any ROIs stored with this image as annotation objects.
+<i>271</i>&nbsp;	 * &lt;p&gt;
+<i>272</i>&nbsp;	 * Warning: This method is subject to change in the future.
+<i>273</i>&nbsp;	 * 
+<i>274</i>&nbsp;	 * @return
+<i>275</i>&nbsp;	 * @throws IOException
+<i>276</i>&nbsp;	 */
+<i>277</i>&nbsp;	@Override
+<i>278</i>&nbsp;	public Collection&lt;PathObject&gt; readPathObjects() throws IOException {
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;		//		URL urlROIs = new URL(
+<i>281</i>&nbsp;		//				scheme, host, -1, &quot;/webgateway/get_rois_json/&quot; + id
+<i>282</i>&nbsp;		//				);
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;		// Options are: Rectangle, Ellipse, Point, Line, Polyline, Polygon and Label
+<b class="nc"><i>285</i>&nbsp;		URL urlROIs = new URL(</b>
+<i>286</i>&nbsp;				scheme, host, -1, &quot;/api/v0/m/rois/?image=&quot; + id
+<i>287</i>&nbsp;				);
+<i>288</i>&nbsp;
+<b class="nc"><i>289</i>&nbsp;		var data = readPaginated(urlROIs);</b>
+<b class="nc"><i>290</i>&nbsp;		List&lt;PathObject&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>291</i>&nbsp;		var gson = new GsonBuilder().registerTypeAdapter(OmeroShape.class, new OmeroShapes.GsonShapeDeserializer()).setLenient().create();</b>
+<i>292</i>&nbsp;			
+<b class="nc"><i>293</i>&nbsp;		for (int i = 0; i &lt; data.size(); i++) {</b>
+<b class="nc"><i>294</i>&nbsp;			JsonObject roiJson = data.get(i).getAsJsonObject();</b>
+<b class="nc"><i>295</i>&nbsp;			JsonArray shapesJson = roiJson.getAsJsonArray(&quot;shapes&quot;);</b>
+<i>296</i>&nbsp;			
+<b class="nc"><i>297</i>&nbsp;			for (int j = 0; j &lt; shapesJson.size(); j++) {</b>
+<i>298</i>&nbsp;				try {
+<b class="nc"><i>299</i>&nbsp;					var shape = gson.fromJson(shapesJson.get(j), OmeroShape.class);</b>
+<b class="nc"><i>300</i>&nbsp;					if (shape != null)</b>
+<b class="nc"><i>301</i>&nbsp;						list.add(shape.createAnnotation());</b>
+<b class="nc"><i>302</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>303</i>&nbsp;					logger.error(&quot;Error parsing shape: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>304</i>&nbsp;				}</b>
+<i>305</i>&nbsp;			}
+<i>306</i>&nbsp;		}
+<i>307</i>&nbsp;
+<b class="nc"><i>308</i>&nbsp;		return list;</b>
+<i>309</i>&nbsp;	}
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;	
+<i>312</i>&nbsp;	@Override
+<i>313</i>&nbsp;	public String getServerType() {
+<b class="nc"><i>314</i>&nbsp;		return &quot;OMERO web server&quot;;</b>
+<i>315</i>&nbsp;	}
+<i>316</i>&nbsp;
+<i>317</i>&nbsp;	@Override
+<i>318</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="nc"><i>319</i>&nbsp;		return originalMetadata;</b>
+<i>320</i>&nbsp;	}
+<i>321</i>&nbsp;	
+<i>322</i>&nbsp;	int getPreferredTileWidth() {
+<b class="nc"><i>323</i>&nbsp;		return getMetadata().getPreferredTileWidth();</b>
+<i>324</i>&nbsp;	}
+<i>325</i>&nbsp;
+<i>326</i>&nbsp;	int getPreferredTileHeight() {
+<b class="nc"><i>327</i>&nbsp;		return getMetadata().getPreferredTileHeight();</b>
+<i>328</i>&nbsp;	}
+<i>329</i>&nbsp;	
+<i>330</i>&nbsp;    /**
+<i>331</i>&nbsp;     * OMERO requests that return a list of items are paginated 
+<i>332</i>&nbsp;     * (see &lt;a href=&quot;https://docs.openmicroscopy.org/omero/5.6.1/developers/json-api.html#pagination&quot;&gt;OMERO API docs&lt;/a&gt;).
+<i>333</i>&nbsp;     * Using this helper method ensures that all the requested data is retrieved.
+<i>334</i>&nbsp;     * @param url
+<i>335</i>&nbsp;     * @return list of {@code Json Element}s
+<i>336</i>&nbsp;     * @throws IOException
+<i>337</i>&nbsp;     */
+<i>338</i>&nbsp;	// TODO: Consider using parallel/asynchronous requests
+<i>339</i>&nbsp;    static List&lt;JsonElement&gt; readPaginated(URL url) throws IOException {
+<b class="nc"><i>340</i>&nbsp;        String symbol = (url.getQuery() != null &amp;&amp; !url.getQuery().isEmpty()) ? &quot;&amp;&quot; : &quot;?&quot;;</b>
+<i>341</i>&nbsp;
+<b class="nc"><i>342</i>&nbsp;        InputStreamReader reader = new InputStreamReader(url.openStream());</b>
+<b class="nc"><i>343</i>&nbsp;        JsonObject map = GsonTools.getInstance().fromJson(reader, JsonObject.class);</b>
+<b class="nc"><i>344</i>&nbsp;        List&lt;JsonElement&gt; jsonList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>345</i>&nbsp;        map.get(&quot;data&quot;).getAsJsonArray().forEach(jsonList::add);</b>
+<b class="nc"><i>346</i>&nbsp;        reader.close();</b>
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;        JsonObject meta = map.getAsJsonObject(&quot;meta&quot;);</b>
+<b class="nc"><i>349</i>&nbsp;        int offset = 0;</b>
+<b class="nc"><i>350</i>&nbsp;        int totalCount = meta.get(&quot;totalCount&quot;).getAsInt();</b>
+<b class="nc"><i>351</i>&nbsp;        int limit = meta.get(&quot;limit&quot;).getAsInt();</b>
+<b class="nc"><i>352</i>&nbsp;        while (offset + limit &lt; totalCount) {</b>
+<b class="nc"><i>353</i>&nbsp;            offset += limit;</b>
+<b class="nc"><i>354</i>&nbsp;            URL nextURL = new URL(url + symbol + &quot;offset=&quot; + offset);</b>
+<b class="nc"><i>355</i>&nbsp;            InputStreamReader newPageReader = new InputStreamReader(nextURL.openStream());</b>
+<b class="nc"><i>356</i>&nbsp;            JsonObject newPageMap = GsonTools.getInstance().fromJson(newPageReader, JsonObject.class);</b>
+<b class="nc"><i>357</i>&nbsp;            newPageMap.get(&quot;data&quot;).getAsJsonArray().forEach(jsonList::add);</b>
+<b class="nc"><i>358</i>&nbsp;        }</b>
+<b class="nc"><i>359</i>&nbsp;        return jsonList;</b>
+<i>360</i>&nbsp;    }
+<i>361</i>&nbsp;
+<i>362</i>&nbsp;	@Override
+<i>363</i>&nbsp;	protected BufferedImage readTile(TileRequest request) throws IOException {
+<i>364</i>&nbsp;
+<b class="nc"><i>365</i>&nbsp;		int level = request.getLevel();</b>
+<i>366</i>&nbsp;
+<b class="nc"><i>367</i>&nbsp;		int targetWidth = request.getTileWidth();</b>
+<b class="nc"><i>368</i>&nbsp;		int targetHeight = request.getTileHeight();</b>
+<i>369</i>&nbsp;
+<i>370</i>&nbsp;		String urlFile;
+<i>371</i>&nbsp;
+<b class="nc"><i>372</i>&nbsp;		if (nResolutions() &gt; 1) {</b>
+<b class="nc"><i>373</i>&nbsp;			int x = (int)(request.getTileX() / getPreferredTileWidth());</b>
+<b class="nc"><i>374</i>&nbsp;			int y = (int)(request.getTileY() / getPreferredTileHeight());</b>
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;			// Note!  It&#39;s important to use the preferred tile size so that the correct x &amp; y can be used
+<i>377</i>&nbsp;			//			int width = request.getTileWidth();
+<i>378</i>&nbsp;			//			int height = request.getTileHeight();
+<b class="nc"><i>379</i>&nbsp;			int width = getPreferredTileWidth();</b>
+<b class="nc"><i>380</i>&nbsp;			int height = getPreferredTileHeight();</b>
+<i>381</i>&nbsp;
+<i>382</i>&nbsp;			// It&#39;s crucial not to request tiles that are too large, but the AbstractTileableImageServer should deal with this
+<i>383</i>&nbsp;//			// Incorporate max size OMERO supports
+<i>384</i>&nbsp;//			if (targetWidth &gt; OMERO_MAX_SIZE || targetHeight &gt; OMERO_MAX_SIZE) {
+<i>385</i>&nbsp;//				BufferedImage img = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+<i>386</i>&nbsp;//				Graphics2D g2d = img.createGraphics();
+<i>387</i>&nbsp;//				int requestSize = (int)Math.round(OMERO_MAX_SIZE * request.getRegionRequest().getDownsample());
+<i>388</i>&nbsp;//				for (int yy = 0; yy &lt; request.getImageHeight(); yy += requestSize) {
+<i>389</i>&nbsp;//					for (int xx = 0; xx &lt; request.getImageWidth(); xx += requestSize) {
+<i>390</i>&nbsp;//						RegionRequest requestTile = RegionRequest.createInstance(
+<i>391</i>&nbsp;//								request.getRegionRequest().getPath(), request.getRegionRequest().getDownsample(), 
+<i>392</i>&nbsp;//								request.getImageX() + xx, request.getImageY() + yy, requestSize, requestSize, request.getZ(), request.getT());
+<i>393</i>&nbsp;//						BufferedImage imgTile = readTile(
+<i>394</i>&nbsp;//								new TileRequest(requestTile, level, OMERO_MAX_SIZE, OMERO_MAX_SIZE));
+<i>395</i>&nbsp;//						g2d.drawImage(imgTile, (int)((xx / requestSize) * OMERO_MAX_SIZE), (int)((yy / requestSize) * OMERO_MAX_SIZE), null);
+<i>396</i>&nbsp;//					}
+<i>397</i>&nbsp;//
+<i>398</i>&nbsp;//				}
+<i>399</i>&nbsp;//				g2d.dispose();
+<i>400</i>&nbsp;//				return img;
+<i>401</i>&nbsp;//			}		
+<i>402</i>&nbsp;
+<b class="nc"><i>403</i>&nbsp;			urlFile = &quot;/webgateway/render_image_region/&quot; + id + </b>
+<b class="nc"><i>404</i>&nbsp;					&quot;/&quot; + request.getZ() + </b>
+<b class="nc"><i>405</i>&nbsp;					&quot;/&quot; + request.getT() +</b>
+<i>406</i>&nbsp;					&quot;/?tile=&quot; + level + &quot;,&quot; + x + &quot;,&quot; + y + &quot;,&quot; + width + &quot;,&quot; + height +
+<i>407</i>&nbsp;					&quot;&amp;c=1|0:255$FF0000,2|0:255$00FF00,3|0:255$0000FF&quot; +
+<i>408</i>&nbsp;					&quot;&amp;maps=[{%22inverted%22:{%22enabled%22:false}},{%22inverted%22:{%22enabled%22:false}},{%22inverted%22:{%22enabled%22:false}}]&quot; +
+<i>409</i>&nbsp;					&quot;&amp;m=c&amp;p=normal&amp;q=&quot; + QUALITY;
+<i>410</i>&nbsp;
+<b class="nc"><i>411</i>&nbsp;			URL url = new URL(scheme, host, urlFile);</b>
+<i>412</i>&nbsp;
+<b class="nc"><i>413</i>&nbsp;			BufferedImage img = ImageIO.read(url);</b>
+<i>414</i>&nbsp;
+<b class="nc"><i>415</i>&nbsp;			return img;</b>
+<i>416</i>&nbsp;
+<i>417</i>&nbsp;		} else {
+<b class="nc"><i>418</i>&nbsp;			int x = request.getTileX();</b>
+<b class="nc"><i>419</i>&nbsp;			int y = request.getTileY();</b>
+<i>420</i>&nbsp;			//			int width = request.getTileWidth();
+<i>421</i>&nbsp;			//			int height = request.getTileHeight();
+<b class="nc"><i>422</i>&nbsp;			int width = getPreferredTileWidth();</b>
+<b class="nc"><i>423</i>&nbsp;			int height = getPreferredTileHeight();</b>
+<i>424</i>&nbsp;
+<b class="nc"><i>425</i>&nbsp;			urlFile = &quot;/webgateway/render_image_region/&quot; + id + </b>
+<b class="nc"><i>426</i>&nbsp;					&quot;/&quot; + request.getZ() + </b>
+<b class="nc"><i>427</i>&nbsp;					&quot;/&quot; + request.getT() +</b>
+<i>428</i>&nbsp;					&quot;/?region=&quot; + x + &quot;,&quot; + y + &quot;,&quot; + width + &quot;,&quot; + height +
+<i>429</i>&nbsp;					&quot;&amp;c=1|0:255$FF0000,2|0:255$00FF00,3|0:255$0000FF&quot; +
+<i>430</i>&nbsp;					&quot;&amp;maps=[{%22inverted%22:{%22enabled%22:false}},{%22inverted%22:{%22enabled%22:false}},{%22inverted%22:{%22enabled%22:false}}]&quot; +
+<i>431</i>&nbsp;					&quot;&amp;m=c&amp;p=normal&amp;q=&quot; + QUALITY;			
+<i>432</i>&nbsp;		}
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;
+<b class="nc"><i>435</i>&nbsp;		URL url = new URL(scheme, host, urlFile);</b>
+<i>436</i>&nbsp;
+<b class="nc"><i>437</i>&nbsp;		BufferedImage img = ImageIO.read(url);</b>
+<i>438</i>&nbsp;
+<b class="nc"><i>439</i>&nbsp;		return BufferedImageTools.resize(img, targetWidth, targetHeight, allowSmoothInterpolation());</b>
+<i>440</i>&nbsp;	}
+<i>441</i>&nbsp;	
+<i>442</i>&nbsp;	
+<i>443</i>&nbsp;	@Override
+<i>444</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>445</i>&nbsp;		return ImageServerBuilder.DefaultImageServerBuilder.createInstance(</b>
+<i>446</i>&nbsp;				OmeroWebImageServerBuilder.class,
+<b class="nc"><i>447</i>&nbsp;				getMetadata(),</b>
+<i>448</i>&nbsp;				uri,
+<i>449</i>&nbsp;				args);
+<i>450</i>&nbsp;	}
+<i>451</i>&nbsp;
+<i>452</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

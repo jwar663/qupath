@@ -1,0 +1,374 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ProjectImageEntry</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.projects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ProjectImageEntry (qupath.lib.projects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProjectImageEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.projects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.net.URI;
+<i>28</i>&nbsp;import java.nio.file.Path;
+<i>29</i>&nbsp;import java.util.Collection;
+<i>30</i>&nbsp;import java.util.Map;
+<i>31</i>&nbsp;import java.util.Map.Entry;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import qupath.lib.images.ImageData;
+<i>34</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>35</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>36</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>37</i>&nbsp;import qupath.lib.projects.ResourceManager.Manager;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Class to represent an image entry within a project.
+<i>41</i>&nbsp; * &lt;p&gt;
+<i>42</i>&nbsp; * This stores the path to the image, and some optional metadata.
+<i>43</i>&nbsp; * 
+<i>44</i>&nbsp; * @author Pete Bankhead
+<i>45</i>&nbsp; *
+<i>46</i>&nbsp; * @param &lt;T&gt; Depends upon the project used; typically BufferedImage for QuPath
+<i>47</i>&nbsp; */
+<i>48</i>&nbsp;public interface ProjectImageEntry&lt;T&gt; {
+<i>49</i>&nbsp;	
+<i>50</i>&nbsp;//	/**
+<i>51</i>&nbsp;//	 * Get the path used to represent this image, which can be used to construct an &lt;code&gt;ImageServer&lt;/code&gt;.
+<i>52</i>&nbsp;//	 * 
+<i>53</i>&nbsp;//	 * @return
+<i>54</i>&nbsp;//	 */
+<i>55</i>&nbsp;//	public String getServerPath();
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	/**
+<i>58</i>&nbsp;	 * Get a unique ID to represent this entry.
+<i>59</i>&nbsp;	 * @return
+<i>60</i>&nbsp;	 */
+<i>61</i>&nbsp;	public String getID();
+<i>62</i>&nbsp;	
+<i>63</i>&nbsp;	/**
+<i>64</i>&nbsp;	 * Set the image name for this project entry.
+<i>65</i>&nbsp;	 * 
+<i>66</i>&nbsp;	 * @param name
+<i>67</i>&nbsp;	 */
+<i>68</i>&nbsp;	public void setImageName(String name);
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Get a name that may be used for this entry.
+<i>72</i>&nbsp;	 * &lt;p&gt;
+<i>73</i>&nbsp;	 * This may be derived automatically from the server path, or set explicitly to be something else. 
+<i>74</i>&nbsp;	 * It may also be randomized to support blinded analysis.
+<i>75</i>&nbsp;	 * 
+<i>76</i>&nbsp;	 * @return
+<i>77</i>&nbsp;	 * 
+<i>78</i>&nbsp;	 * @see #getOriginalImageName()
+<i>79</i>&nbsp;	 * @see qupath.lib.projects.Project#setMaskImageNames(boolean)
+<i>80</i>&nbsp;	 * @see qupath.lib.projects.Project#getMaskImageNames()
+<i>81</i>&nbsp;	 */
+<i>82</i>&nbsp;	public String getImageName();
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	/**
+<i>85</i>&nbsp;	 * Get the original image name, without any randomization.  Most UI elements should prefer {@link #getImageName} to 
+<i>86</i>&nbsp;	 * ensure that the randomization does its job.
+<i>87</i>&nbsp;	 * 
+<i>88</i>&nbsp;	 * @return
+<i>89</i>&nbsp;	 */
+<i>90</i>&nbsp;	public String getOriginalImageName();
+<i>91</i>&nbsp;		
+<i>92</i>&nbsp;	
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Get a path to the data for this image entry, or null if this entry is not 
+<i>95</i>&nbsp;	 * stored on the local file system.
+<i>96</i>&nbsp;	 * &lt;p&gt;
+<i>97</i>&nbsp;	 * If not null, the path may be a file or a directory and is &lt;i&gt;not&lt;/i&gt; guaranteed to exist. 
+<i>98</i>&nbsp;	 * Rather, it represents where the data for this entry either is or would be stored.
+<i>99</i>&nbsp;	 * 
+<i>100</i>&nbsp;	 * @return
+<i>101</i>&nbsp;	 */
+<i>102</i>&nbsp;	public Path getEntryPath();
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Remove a metadata value.
+<i>107</i>&nbsp;	 * 
+<i>108</i>&nbsp;	 * @param key
+<i>109</i>&nbsp;	 * @return
+<i>110</i>&nbsp;	 */
+<i>111</i>&nbsp;	public String removeMetadataValue(final String key);
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	/**
+<i>114</i>&nbsp;	 * Request a metadata value.
+<i>115</i>&nbsp;	 * &lt;p&gt;
+<i>116</i>&nbsp;	 * Note that this may return &lt;code&gt;null&lt;/code&gt;.
+<i>117</i>&nbsp;	 * 
+<i>118</i>&nbsp;	 * @param key
+<i>119</i>&nbsp;	 * @return
+<i>120</i>&nbsp;	 */
+<i>121</i>&nbsp;	public String getMetadataValue(final String key);
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;	/**
+<i>124</i>&nbsp;	 * Store a metadata value.
+<i>125</i>&nbsp;	 * &lt;p&gt;
+<i>126</i>&nbsp;	 * This is intended as storage of short key-value pairs.
+<i>127</i>&nbsp;	 * Extended text should be stored under &lt;code&gt;setDescription&lt;/code&gt;.
+<i>128</i>&nbsp;	 * 
+<i>129</i>&nbsp;	 * @param key
+<i>130</i>&nbsp;	 * @param value
+<i>131</i>&nbsp;	 * @return
+<i>132</i>&nbsp;	 */
+<i>133</i>&nbsp;	public String putMetadataValue(final String key, final String value);
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	/**
+<i>136</i>&nbsp;	 * Check if a metadata value is present for a specified key.
+<i>137</i>&nbsp;	 * 
+<i>138</i>&nbsp;	 * @param key
+<i>139</i>&nbsp;	 * @return &lt;code&gt;true&lt;/code&gt; if &lt;code&gt;getDescription()&lt;/code&gt; does not return null or an empty string, &lt;code&gt;false&lt;/code&gt; otherwise.
+<i>140</i>&nbsp;	 */
+<i>141</i>&nbsp;	public boolean containsMetadata(final String key);
+<i>142</i>&nbsp;	
+<i>143</i>&nbsp;	/**
+<i>144</i>&nbsp;	 * Get a description; this is free text describing the image.
+<i>145</i>&nbsp;	 * @return
+<i>146</i>&nbsp;	 */
+<i>147</i>&nbsp;	public String getDescription();
+<i>148</i>&nbsp;	
+<i>149</i>&nbsp;	/**
+<i>150</i>&nbsp;	 * Set the description.
+<i>151</i>&nbsp;	 * 
+<i>152</i>&nbsp;	 * @see #getDescription
+<i>153</i>&nbsp;	 * @param description
+<i>154</i>&nbsp;	 */
+<i>155</i>&nbsp;	public void setDescription(final String description);
+<i>156</i>&nbsp;	
+<i>157</i>&nbsp;	/**
+<i>158</i>&nbsp;	 * Remove all metadata.
+<i>159</i>&nbsp;	 */
+<i>160</i>&nbsp;	public void clearMetadata();
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Get an unmodifiable view of the underlying metadata map.
+<i>164</i>&nbsp;	 * 
+<i>165</i>&nbsp;	 * @return
+<i>166</i>&nbsp;	 */
+<i>167</i>&nbsp;	public Map&lt;String, String&gt; getMetadataMap();
+<i>168</i>&nbsp;	
+<i>169</i>&nbsp;	/**
+<i>170</i>&nbsp;	 * Get an unmodifiable collection of the metadata map&#39;s keys.
+<i>171</i>&nbsp;	 * 
+<i>172</i>&nbsp;	 * @return
+<i>173</i>&nbsp;	 */
+<i>174</i>&nbsp;	public Collection&lt;String&gt; getMetadataKeys();
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;	/**
+<i>177</i>&nbsp;	 * Get a {@link ServerBuilder} that can be used to open this image.
+<i>178</i>&nbsp;	 * 
+<i>179</i>&nbsp;	 * @return
+<i>180</i>&nbsp;	 */
+<i>181</i>&nbsp;	public ServerBuilder&lt;T&gt; getServerBuilder();
+<i>182</i>&nbsp;	
+<i>183</i>&nbsp;	/**
+<i>184</i>&nbsp;	 * Read the {@link ImageData} associated with this entry, or create a new ImageData if none is currently present.
+<i>185</i>&nbsp;	 * &lt;p&gt;
+<i>186</i>&nbsp;	 * If the full data is not needed, but rather only the objects {@link #readHierarchy()} can be much faster.
+<i>187</i>&nbsp;	 * 
+<i>188</i>&nbsp;	 * @return
+<i>189</i>&nbsp;	 * @throws IOException 
+<i>190</i>&nbsp;	 * 
+<i>191</i>&nbsp;	 * @see #readHierarchy()
+<i>192</i>&nbsp;	 */
+<i>193</i>&nbsp;	public ImageData&lt;T&gt; readImageData() throws IOException;
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	/**
+<i>196</i>&nbsp;	 * Save the {@link ImageData} for this entry using the default storage location for the project.
+<i>197</i>&nbsp;	 * @param imageData 
+<i>198</i>&nbsp;	 * @throws IOException 
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	public void saveImageData(ImageData&lt;T&gt; imageData) throws IOException;
+<i>201</i>&nbsp;	
+<i>202</i>&nbsp;	/**
+<i>203</i>&nbsp;	 * Read the {@link PathObjectHierarchy} for this entry, or return an empty hierarchy if none is available.
+<i>204</i>&nbsp;	 * @return
+<i>205</i>&nbsp;	 * @throws IOException 
+<i>206</i>&nbsp;	 * 
+<i>207</i>&nbsp;	 * @see #readImageData()
+<i>208</i>&nbsp;	 * @see #hasImageData()
+<i>209</i>&nbsp;	 */
+<i>210</i>&nbsp;	public PathObjectHierarchy readHierarchy() throws IOException;
+<i>211</i>&nbsp;	
+<i>212</i>&nbsp;	/**
+<i>213</i>&nbsp;	 * Check if this entry has saved {@link ImageData} already available.
+<i>214</i>&nbsp;	 * 
+<i>215</i>&nbsp;	 * @return
+<i>216</i>&nbsp;	 */
+<i>217</i>&nbsp;	public boolean hasImageData();
+<i>218</i>&nbsp;	
+<i>219</i>&nbsp;	/**
+<i>220</i>&nbsp;	 * Get a summary string representing this image entry.
+<i>221</i>&nbsp;	 * @return
+<i>222</i>&nbsp;	 */
+<i>223</i>&nbsp;	public String getSummary();
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;	 * Request a thumbnail for the image.
+<i>227</i>&nbsp;	 * 
+<i>228</i>&nbsp;	 * @return a thumbnail if one has already been set, otherwise null.
+<i>229</i>&nbsp;	 * @throws IOException
+<i>230</i>&nbsp;	 */
+<i>231</i>&nbsp;	public T getThumbnail() throws IOException;
+<i>232</i>&nbsp;	
+<i>233</i>&nbsp;	/**
+<i>234</i>&nbsp;	 * Set a thumbnail for the image. This will replace any existing thumbnail.
+<i>235</i>&nbsp;	 * 
+<i>236</i>&nbsp;	 * @param img
+<i>237</i>&nbsp;	 * @throws IOException
+<i>238</i>&nbsp;	 */
+<i>239</i>&nbsp;	public void setThumbnail(T img) throws IOException;	
+<i>240</i>&nbsp;	
+<i>241</i>&nbsp;	/**
+<i>242</i>&nbsp;	 * Get a collection of the URIs required by this project&#39;s ImageServer.
+<i>243</i>&nbsp;	 * &lt;p&gt;
+<i>244</i>&nbsp;	 * The purpose of this is to help query if they can be found. They might not be 
+<i>245</i>&nbsp;	 * e.g. if the images have been moved.
+<i>246</i>&nbsp;	 * 
+<i>247</i>&nbsp;	 * @return
+<i>248</i>&nbsp;	 * @throws IOException
+<i>249</i>&nbsp;	 */
+<i>250</i>&nbsp;	public Collection&lt;URI&gt; getServerURIs() throws IOException;
+<i>251</i>&nbsp;	
+<i>252</i>&nbsp;	/**
+<i>253</i>&nbsp;	 * Update the URIs for the server (optional operation).
+<i>254</i>&nbsp;	 * 
+<i>255</i>&nbsp;	 * @param replacements a map with current URIs as keys, and desired URIs as values.
+<i>256</i>&nbsp;	 * @return true if changes were made
+<i>257</i>&nbsp;	 * @throws IOException
+<i>258</i>&nbsp;	 */
+<i>259</i>&nbsp;	public boolean updateServerURIs(Map&lt;URI, URI&gt; replacements) throws IOException;
+<i>260</i>&nbsp;	
+<i>261</i>&nbsp;	/**
+<i>262</i>&nbsp;	 * Get a formatted string representation of the metadata map&#39;s contents.
+<i>263</i>&nbsp;	 * 
+<i>264</i>&nbsp;	 * @return
+<i>265</i>&nbsp;	 */
+<i>266</i>&nbsp;	default public String getMetadataSummaryString() {
+<b class="nc"><i>267</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>268</i>&nbsp;		sb.append(&quot;{&quot;);</b>
+<b class="nc"><i>269</i>&nbsp;		for (Entry&lt;String, String&gt; entry : getMetadataMap().entrySet()) {</b>
+<b class="nc"><i>270</i>&nbsp;			if (sb.length() &gt; 1)</b>
+<b class="nc"><i>271</i>&nbsp;				sb.append(&quot;, &quot;);</b>
+<b class="nc"><i>272</i>&nbsp;			sb.append(entry.getKey());</b>
+<b class="nc"><i>273</i>&nbsp;			sb.append(&quot;:&quot;);</b>
+<b class="nc"><i>274</i>&nbsp;			sb.append(entry.getValue());</b>
+<b class="nc"><i>275</i>&nbsp;		}</b>
+<b class="nc"><i>276</i>&nbsp;		sb.append(&quot;}&quot;);</b>
+<b class="nc"><i>277</i>&nbsp;		return sb.toString();</b>
+<i>278</i>&nbsp;	}
+<i>279</i>&nbsp;	
+<i>280</i>&nbsp;	
+<i>281</i>&nbsp;	/**
+<i>282</i>&nbsp;	 * Access additional images associated with the project entry, e.g. pixel classifications or
+<i>283</i>&nbsp;	 * aligned slides.
+<i>284</i>&nbsp;	 * 
+<i>285</i>&nbsp;	 * @return
+<i>286</i>&nbsp;	 */
+<i>287</i>&nbsp;	public Manager&lt;ImageServer&lt;T&gt;&gt; getImages();
+<i>288</i>&nbsp;	
+<i>289</i>&nbsp;	
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

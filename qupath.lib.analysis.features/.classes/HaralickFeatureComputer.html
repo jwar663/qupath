@@ -1,0 +1,255 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HaralickFeatureComputer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.features</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HaralickFeatureComputer (qupath.lib.analysis.features)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HaralickFeatureComputer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 46)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.features;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>27</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Static methods for computing Haralick texture features.
+<i>31</i>&nbsp; * 
+<i>32</i>&nbsp; * @author Pete Bankhead
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; */
+<b class="nc"><i>35</i>&nbsp;public class HaralickFeatureComputer {</b>
+<i>36</i>&nbsp;	
+<i>37</i>&nbsp;	/**
+<i>38</i>&nbsp;	 * Compute mean Haralick features from a SimpleImage, with optional masking.
+<i>39</i>&nbsp;	 * 
+<i>40</i>&nbsp;	 * @param ip input image
+<i>41</i>&nbsp;	 * @param bpMask binary mask (may be null)
+<i>42</i>&nbsp;	 * @param nBins number of bins in co-occurrence matrix
+<i>43</i>&nbsp;	 * @param minValue minimum value for binning in the co-occurrence matrix
+<i>44</i>&nbsp;	 * @param maxValue maximum value for binning in the co-occurrence matrix
+<i>45</i>&nbsp;	 * @param d separation between pixels considered adjacent, usually 1
+<i>46</i>&nbsp;	 * @return
+<i>47</i>&nbsp;	 */
+<i>48</i>&nbsp;	public static HaralickFeatures measureHaralick(final SimpleImage ip, final SimpleImage bpMask, final int nBins, final double minValue, final double maxValue, final int d) {
+<b class="nc"><i>49</i>&nbsp;		return measureHaralick(ip, bpMask, 0, 0, ip.getWidth(), ip.getHeight(), nBins, minValue, maxValue, d);</b>
+<i>50</i>&nbsp;	}
+<i>51</i>&nbsp;	
+<i>52</i>&nbsp;	/**
+<i>53</i>&nbsp;	 * Compute Haralick texture features within a specified bounding box (given by xx, yy, ww, and hh).
+<i>54</i>&nbsp;	 * &lt;p&gt;
+<i>55</i>&nbsp;	 * A mask can also optionally be applied within the bounding box (or may be null).  Only non-zero pixels in the mask are included.
+<i>56</i>&nbsp;	 * 
+<i>57</i>&nbsp;	 * @param ip
+<i>58</i>&nbsp;	 * @param bpMask
+<i>59</i>&nbsp;	 * @param xx
+<i>60</i>&nbsp;	 * @param yy
+<i>61</i>&nbsp;	 * @param ww
+<i>62</i>&nbsp;	 * @param hh
+<i>63</i>&nbsp;	 * @param nBins
+<i>64</i>&nbsp;	 * @param minValue
+<i>65</i>&nbsp;	 * @param maxValue
+<i>66</i>&nbsp;	 * @param d
+<i>67</i>&nbsp;	 * @return
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	private static HaralickFeatures measureHaralick(final SimpleImage ip, final SimpleImage bpMask, final int xx, final int yy, final int ww, final int hh, final int nBins, double minValue, double maxValue, final int d) {
+<i>70</i>&nbsp;		
+<i>71</i>&nbsp;		// If we have NaNs, compute data min &amp; max
+<b class="nc"><i>72</i>&nbsp;		if (Double.isNaN(minValue) || Double.isNaN(maxValue)) {</b>
+<b class="nc"><i>73</i>&nbsp;			RunningStatistics stats = getStatistics(ip);</b>
+<b class="nc"><i>74</i>&nbsp;			minValue = stats.getMin();</b>
+<b class="nc"><i>75</i>&nbsp;			maxValue = stats.getMax();</b>
+<i>76</i>&nbsp;		}
+<i>77</i>&nbsp;		
+<i>78</i>&nbsp;		// Create &amp; update cooccurrance matrices
+<b class="nc"><i>79</i>&nbsp;		CoocurranceMatrices matrices = updateCooccurrenceMatrices(null, ip, bpMask, xx, yy, ww, hh, nBins, minValue, maxValue, d);</b>
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;		// Get features
+<b class="nc"><i>82</i>&nbsp;		HaralickFeatures features = matrices.getMeanFeatures();</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;		return features;</b>
+<i>85</i>&nbsp;	}
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Update existing CoocurranceMatrices with the values in a SimpleImage.
+<i>89</i>&nbsp;	 * @param matrices
+<i>90</i>&nbsp;	 * @param ip input image
+<i>91</i>&nbsp;	 * @param bpMask binary mask (may be null)
+<i>92</i>&nbsp;	 * @param nBins number of bins in co-occurrence matrix
+<i>93</i>&nbsp;	 * @param minValue minimum value for binning in the co-occurrence matrix
+<i>94</i>&nbsp;	 * @param maxValue maximum value for binning in the co-occurrence matrix
+<i>95</i>&nbsp;	 * @param d separation between pixels considered adjacent, usually 1
+<i>96</i>&nbsp;	 * @return
+<i>97</i>&nbsp;	 */
+<i>98</i>&nbsp;	public static CoocurranceMatrices updateCooccurrenceMatrices(final CoocurranceMatrices matrices, final SimpleImage ip, final SimpleImage bpMask, final int nBins, double minValue, double maxValue, final int d) {
+<b class="nc"><i>99</i>&nbsp;		return updateCooccurrenceMatrices(matrices, ip, bpMask, 0, 0, ip.getWidth(), ip.getHeight(), nBins, minValue, maxValue, d);</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	private static CoocurranceMatrices updateCooccurrenceMatrices(CoocurranceMatrices matrices, final SimpleImage ip, final SimpleImage bpMask, final int xx, final int yy, final int ww, final int hh, final int nBins, double minValue, double maxValue, final int d) {
+<i>103</i>&nbsp;		// Create matrices if necessary
+<b class="nc"><i>104</i>&nbsp;		if (matrices == null)</b>
+<b class="nc"><i>105</i>&nbsp;			matrices = new CoocurranceMatrices(nBins);</b>
+<i>106</i>&nbsp;		
+<i>107</i>&nbsp;		// Dimensions
+<b class="nc"><i>108</i>&nbsp;		int width = ip.getWidth();</b>
+<b class="nc"><i>109</i>&nbsp;		int height = ip.getHeight();</b>
+<i>110</i>&nbsp;		
+<b class="nc"><i>111</i>&nbsp;		double binDepth = (maxValue - minValue) / nBins;</b>
+<i>112</i>&nbsp;		
+<i>113</i>&nbsp;		// Loop through pixels
+<b class="nc"><i>114</i>&nbsp;		boolean noMask = bpMask == null;</b>
+<b class="nc"><i>115</i>&nbsp;		for (int y = yy; y &lt; yy + hh; y++) {</b>
+<b class="nc"><i>116</i>&nbsp;			for (int x = xx; x &lt; xx + ww; x++) {</b>
+<b class="nc"><i>117</i>&nbsp;				if (!noMask &amp;&amp; bpMask.getValue(x, y) == 0)</b>
+<b class="nc"><i>118</i>&nbsp;					continue;</b>
+<i>119</i>&nbsp;				// Extract binned pixel value
+<b class="nc"><i>120</i>&nbsp;				int binValue = getBinValue(ip, x, y, minValue, binDepth, nBins);</b>
+<b class="nc"><i>121</i>&nbsp;				if (binValue &lt; 0) </b>
+<b class="nc"><i>122</i>&nbsp;					continue;</b>
+<i>123</i>&nbsp;				// Test neighbors
+<b class="nc"><i>124</i>&nbsp;				if (x &lt; width-d &amp;&amp; (noMask || bpMask.getValue(x+d, y) != 0))</b>
+<b class="nc"><i>125</i>&nbsp;					matrices.put0(binValue, getBinValue(ip, x+d, y, minValue, binDepth, nBins));</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;				if (y &lt; height-d &amp;&amp; (noMask || bpMask.getValue(x, y+d) != 0))</b>
+<b class="nc"><i>128</i>&nbsp;					matrices.put90(binValue, getBinValue(ip, x, y+d, minValue, binDepth, nBins));</b>
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;				// Note (Pete): The angles here may differ from the original paper
+<i>131</i>&nbsp;				// Switching the order may help, but note that put45 and put135 are also called in another method (below)
+<i>132</i>&nbsp;				// so this change has been reverted for consistency... we may want to consider modifying this (or just renaming the methods) at some point
+<i>133</i>&nbsp;				// Here, it is assumed that the zero angle is -&gt; (horizontal, left to right), and rotations are clockwise
+<b class="nc"><i>134</i>&nbsp;				if (x &lt; width-d &amp;&amp; y &lt; height-d &amp;&amp; (noMask || bpMask.getValue(x+d, y+d) != 0))</b>
+<b class="nc"><i>135</i>&nbsp;					matrices.put45(binValue, getBinValue(ip, x+d, y+d, minValue, binDepth, nBins)); //J check with Haralick paper</b>
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;				if (x &gt;= d &amp;&amp; y &lt; height-d &amp;&amp; (noMask || bpMask.getValue(x-d, y+d) != 0))</b>
+<b class="nc"><i>138</i>&nbsp;					matrices.put135(binValue, getBinValue(ip, x-d, y+d, minValue, binDepth, nBins)); </b>
+<i>139</i>&nbsp;			}			
+<i>140</i>&nbsp;		}
+<b class="nc"><i>141</i>&nbsp;		return matrices;</b>
+<i>142</i>&nbsp;	}
+<i>143</i>&nbsp;	
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	
+<i>146</i>&nbsp;	
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	private static int getBinValue(SimpleImage ip, int x, int y, double minValue, double binDepth, int nBins) {
+<b class="nc"><i>149</i>&nbsp;		float val = ip.getValue(x, y);</b>
+<i>150</i>&nbsp;		// If we have NaN, return -1 to indicate a NaN value
+<b class="nc"><i>151</i>&nbsp;		if (Float.isNaN(val))</b>
+<b class="nc"><i>152</i>&nbsp;			return -1;</b>
+<b class="nc"><i>153</i>&nbsp;		int ind = (int)((val - minValue) / binDepth);</b>
+<b class="nc"><i>154</i>&nbsp;		if (ind &lt; 0)</b>
+<b class="nc"><i>155</i>&nbsp;			return 0;</b>
+<b class="nc"><i>156</i>&nbsp;		else if (ind &gt;= nBins)</b>
+<b class="nc"><i>157</i>&nbsp;			return nBins-1;</b>
+<b class="nc"><i>158</i>&nbsp;		return ind;</b>
+<i>159</i>&nbsp;	}
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	private static RunningStatistics getStatistics(SimpleImage img) {
+<b class="nc"><i>163</i>&nbsp;		RunningStatistics stats = new RunningStatistics();</b>
+<b class="nc"><i>164</i>&nbsp;		for (int y = 0; y &lt; img.getHeight(); y++) {</b>
+<b class="nc"><i>165</i>&nbsp;			for (int x = 0; x &lt; img.getWidth(); x++) {</b>
+<b class="nc"><i>166</i>&nbsp;				stats.addValue(img.getValue(x, y));</b>
+<i>167</i>&nbsp;			}
+<i>168</i>&nbsp;		}
+<b class="nc"><i>169</i>&nbsp;		return stats;</b>
+<i>170</i>&nbsp;	}
+<i>171</i>&nbsp;	
+<i>172</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

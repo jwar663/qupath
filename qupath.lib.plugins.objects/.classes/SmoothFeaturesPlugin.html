@@ -1,0 +1,551 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SmoothFeaturesPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SmoothFeaturesPlugin (qupath.lib.plugins.objects)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SmoothFeaturesPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 149)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SmoothFeaturesPlugin$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">SmoothFeaturesPlugin$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 177)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.Comparator;
+<i>30</i>&nbsp;import java.util.Iterator;
+<i>31</i>&nbsp;import java.util.List;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.classifiers.PathClassifierTools;
+<i>37</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>38</i>&nbsp;import qupath.lib.images.ImageData;
+<i>39</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>40</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>41</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>42</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>43</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>44</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>45</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>46</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>47</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>48</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>49</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>50</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>51</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>52</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>53</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;/**
+<i>56</i>&nbsp; * Plugin to supplement the measurements for detection objects with the weighted sum of measurements 
+<i>57</i>&nbsp; * from nearby objects, using weights derived from a 2D Gaussian function.
+<i>58</i>&nbsp; * &lt;p&gt;
+<i>59</i>&nbsp; * This effectively adds in some contextual information.
+<i>60</i>&nbsp; * 
+<i>61</i>&nbsp; * @author Pete Bankhead
+<i>62</i>&nbsp; *
+<i>63</i>&nbsp; * @param &lt;T&gt;
+<i>64</i>&nbsp; */
+<i>65</i>&nbsp;public class SmoothFeaturesPlugin&lt;T&gt; extends AbstractInteractivePlugin&lt;T&gt; {
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	private ParameterList params;
+<i>68</i>&nbsp;	
+<b class="nc"><i>69</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(SmoothFeaturesPlugin.class);</b>
+<i>70</i>&nbsp;	
+<i>71</i>&nbsp;	/**
+<i>72</i>&nbsp;	 * Default constructor.
+<i>73</i>&nbsp;	 */
+<b class="nc"><i>74</i>&nbsp;	public SmoothFeaturesPlugin() {</b>
+<b class="nc"><i>75</i>&nbsp;		params = new ParameterList()</b>
+<b class="nc"><i>76</i>&nbsp;				.addDoubleParameter(&quot;fwhmMicrons&quot;, &quot;Radius (FWHM)&quot;, 25, GeneralTools.micrometerSymbol(), &quot;Smoothing filter size - higher values indicate more smoothing&quot;)</b>
+<b class="nc"><i>77</i>&nbsp;				.addDoubleParameter(&quot;fwhmPixels&quot;, &quot;Radius (FWHM)&quot;, 100, &quot;pixels&quot;, &quot;Smoothing filter size - higher values indicate more smoothing&quot;)</b>
+<b class="nc"><i>78</i>&nbsp;				.addBooleanParameter(&quot;smoothWithinClasses&quot;, &quot;Smooth within classes&quot;, false, &quot;Restrict smoothing to only be applied within objects with the same base classification&quot;)</b>
+<i>79</i>&nbsp;//				.addBooleanParameter(&quot;useLegacyNames&quot;, &quot;Use legacy feature names&quot;, false, &quot;Use previous naming strategy for smoothed features - only retained here for backwards compatibility&quot;)
+<i>80</i>&nbsp;				;
+<b class="nc"><i>81</i>&nbsp;	}</b>
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;	@Override
+<i>86</i>&nbsp;	public String getName() {
+<b class="nc"><i>87</i>&nbsp;		return &quot;Smooth object features&quot;;</b>
+<i>88</i>&nbsp;	}
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;	@Override
+<i>91</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>92</i>&nbsp;		return &quot;Apply weighted smoothing to feature measurements, and append to the end of a list&quot;;</b>
+<i>93</i>&nbsp;	}
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;	@Override
+<i>96</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>97</i>&nbsp;		return &quot;&quot;;</b>
+<i>98</i>&nbsp;	}
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;	@Override
+<i>101</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>102</i>&nbsp;		Collection&lt;Class&lt;? extends PathObject&gt;&gt; parentClasses = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>103</i>&nbsp;		parentClasses.add(TMACoreObject.class);</b>
+<b class="nc"><i>104</i>&nbsp;		parentClasses.add(PathAnnotationObject.class);</b>
+<b class="nc"><i>105</i>&nbsp;		return parentClasses;</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;	@Override
+<i>111</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;T&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<i>112</i>&nbsp;		
+<i>113</i>&nbsp;		double fwhm;
+<b class="nc"><i>114</i>&nbsp;		ImageServer&lt;T&gt; server = imageData.getServer();</b>
+<i>115</i>&nbsp;		String fwhmStringTemp;
+<b class="nc"><i>116</i>&nbsp;		PixelCalibration cal = server == null ? null : server.getPixelCalibration();</b>
+<b class="nc"><i>117</i>&nbsp;		if (cal != null &amp;&amp; cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>118</i>&nbsp;			fwhm = getParameterList(imageData).getDoubleParameterValue(&quot;fwhmMicrons&quot;);</b>
+<b class="nc"><i>119</i>&nbsp;			fwhmStringTemp = GeneralTools.createFormatter(2).format(fwhm) + &quot; &quot; + GeneralTools.micrometerSymbol();</b>
+<b class="nc"><i>120</i>&nbsp;			fwhm /= cal.getAveragedPixelSizeMicrons();</b>
+<i>121</i>&nbsp;//			params.addDoubleParameter(&quot;fwhmPixels&quot;, &quot;Radius (FWHM)&quot;, fwhm, &quot;pixels&quot;); // Set the FWHM in pixels too
+<i>122</i>&nbsp;		}
+<i>123</i>&nbsp;		else {
+<b class="nc"><i>124</i>&nbsp;			fwhm = getParameterList(imageData).getDoubleParameterValue(&quot;fwhmPixels&quot;);</b>
+<b class="nc"><i>125</i>&nbsp;			fwhmStringTemp = GeneralTools.createFormatter(2).format(fwhm) + &quot; px&quot;;</b>
+<i>126</i>&nbsp;		}
+<i>127</i>&nbsp;//		sigma = 50;
+<b class="nc"><i>128</i>&nbsp;		final String fwhmString = fwhmStringTemp;</b>
+<b class="nc"><i>129</i>&nbsp;		final double fwhmPixels = fwhm;</b>
+<b class="nc"><i>130</i>&nbsp;		final boolean withinClass = params.getBooleanParameterValue(&quot;smoothWithinClasses&quot;);</b>
+<b class="nc"><i>131</i>&nbsp;		final boolean useLegacyNames = params.containsKey(&quot;useLegacyNames&quot;) &amp;&amp; Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;useLegacyNames&quot;));</b>
+<b class="nc"><i>132</i>&nbsp;		tasks.add(new Runnable() {</b>
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;			@Override
+<i>135</i>&nbsp;			public void run() {
+<i>136</i>&nbsp;				try {
+<b class="nc"><i>137</i>&nbsp;					if (!parentObject.hasChildren())</b>
+<i>138</i>&nbsp;						return;
+<i>139</i>&nbsp;	//				System.out.println(&quot;Smoothing with FWHM &quot; +fwhmPixels);
+<i>140</i>&nbsp;					// TODO: MAKE A MORE ELEGANT LIST!!!!
+<b class="nc"><i>141</i>&nbsp;					List&lt;PathObject&gt; pathObjects = PathObjectTools.getFlattenedObjectList(parentObject, null, false);</b>
+<b class="nc"><i>142</i>&nbsp;					Iterator&lt;PathObject&gt; iterObjects = pathObjects.iterator();</b>
+<b class="nc"><i>143</i>&nbsp;					while (iterObjects.hasNext()) {</b>
+<b class="nc"><i>144</i>&nbsp;						PathObject temp = iterObjects.next();</b>
+<b class="nc"><i>145</i>&nbsp;						if (!(temp instanceof PathDetectionObject || temp instanceof PathTileObject))</b>
+<b class="nc"><i>146</i>&nbsp;							iterObjects.remove();</b>
+<b class="nc"><i>147</i>&nbsp;					}</b>
+<b class="nc"><i>148</i>&nbsp;					if (pathObjects.isEmpty())</b>
+<i>149</i>&nbsp;						return;
+<i>150</i>&nbsp;					
+<i>151</i>&nbsp;					// TODO: ACCESS &amp; USE THE CLASSIFIER DATA!!!!
+<b class="nc"><i>152</i>&nbsp;					List&lt;String&gt; measurements = new ArrayList&lt;&gt;(PathClassifierTools.getAvailableFeatures(pathObjects));</b>
+<b class="nc"><i>153</i>&nbsp;					Iterator&lt;String&gt; iter = measurements.iterator();</b>
+<b class="nc"><i>154</i>&nbsp;					while (iter.hasNext()) {</b>
+<b class="nc"><i>155</i>&nbsp;						String name = iter.next().toLowerCase();</b>
+<b class="nc"><i>156</i>&nbsp;						if (name.endsWith(&quot;smoothed&quot;) || name.startsWith(&quot;smoothed&quot;) ||</b>
+<b class="nc"><i>157</i>&nbsp;								name.contains(&quot; - smoothed (fwhm &quot;) || name.startsWith(&quot;smoothed denominator (local density, &quot;) || name.startsWith(&quot;nearby detection counts&quot;))</b>
+<b class="nc"><i>158</i>&nbsp;							iter.remove();</b>
+<b class="nc"><i>159</i>&nbsp;					}</b>
+<i>160</i>&nbsp;					
+<b class="nc"><i>161</i>&nbsp;					logger.debug(String.format(&quot;Smooth features: %s (FWHM: %.2f px)&quot;, parentObject.getDisplayedName(), fwhmPixels));</b>
+<b class="nc"><i>162</i>&nbsp;					smoothMeasurements(pathObjects, measurements, fwhmPixels, fwhmString, withinClass, useLegacyNames);</b>
+<i>163</i>&nbsp;					
+<i>164</i>&nbsp;					
+<i>165</i>&nbsp;//					// REMOVE - the purpose was to test a &#39;difference of Gaussians&#39; type of thing
+<i>166</i>&nbsp;//					List&lt;String&gt; namesAdded1 = new ArrayList&lt;&gt;(smoothMeasurements(pathObjects, measurements, fwhmPixels));
+<i>167</i>&nbsp;//					List&lt;String&gt; namesAdded2 = new ArrayList&lt;&gt;(smoothMeasurements(pathObjects, measurements, fwhmPixels * 2));
+<i>168</i>&nbsp;//					for (PathObject pathObject : pathObjects) {
+<i>169</i>&nbsp;//						MeasurementList ml = pathObject.getMeasurementList();
+<i>170</i>&nbsp;//						ml.ensureListOpen();
+<i>171</i>&nbsp;//						for (int i = 0; i &lt; namesAdded1.size(); i++) {
+<i>172</i>&nbsp;//							String name1 = namesAdded1.get(i);
+<i>173</i>&nbsp;//							String name2 = namesAdded2.get(i);
+<i>174</i>&nbsp;//							double m1 = ml.getMeasurementValue(name1);
+<i>175</i>&nbsp;//							double m2 = ml.getMeasurementValue(name2);
+<i>176</i>&nbsp;//							ml.addMeasurement(name1 + &quot; - &quot; + name2, m1 - m2);
+<i>177</i>&nbsp;//						}
+<i>178</i>&nbsp;//						ml.closeList();
+<i>179</i>&nbsp;//					}
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>182</i>&nbsp;					e.printStackTrace();</b>
+<b class="nc"><i>183</i>&nbsp;					throw(e);</b>
+<b class="nc"><i>184</i>&nbsp;				}</b>
+<i>185</i>&nbsp;			}
+<i>186</i>&nbsp;		});
+<b class="nc"><i>187</i>&nbsp;	}</b>
+<i>188</i>&nbsp;	
+<i>189</i>&nbsp;	
+<i>190</i>&nbsp;	
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;	/**
+<i>193</i>&nbsp;	 * Using the centroids of the ROIs within PathObjects, &#39;smooth&#39; measurements by summing up the corresponding measurements of
+<i>194</i>&nbsp;	 * nearby objects, weighted by centroid distance.
+<i>195</i>&nbsp;	 * 
+<i>196</i>&nbsp;	 * @param pathObjects
+<i>197</i>&nbsp;	 * @param measurements
+<i>198</i>&nbsp;	 * @param fwhmPixels
+<i>199</i>&nbsp;	 * @param fwhmString
+<i>200</i>&nbsp;	 * @param withinClass
+<i>201</i>&nbsp;	 * @param useLegacyNames
+<i>202</i>&nbsp;	 */
+<i>203</i>&nbsp;//	public static Set&lt;String&gt; smoothMeasurements(List&lt;PathObject&gt; pathObjects, List&lt;String&gt; measurements, double fwhmPixels) {
+<i>204</i>&nbsp;	public static void smoothMeasurements(List&lt;PathObject&gt; pathObjects, List&lt;String&gt; measurements, double fwhmPixels, String fwhmString, boolean withinClass, boolean useLegacyNames) {
+<b class="nc"><i>205</i>&nbsp;		if (measurements.isEmpty() || pathObjects.size() &lt;= 1)</b>
+<b class="nc"><i>206</i>&nbsp;			return; //Collections.emptySet();</b>
+<i>207</i>&nbsp;		
+<i>208</i>&nbsp;//		Set&lt;String&gt; measurementsAdded = new LinkedHashSet&lt;&gt;();
+<i>209</i>&nbsp;		
+<b class="nc"><i>210</i>&nbsp;		if (fwhmString == null)</b>
+<b class="nc"><i>211</i>&nbsp;			fwhmString = String.format(&quot;%.2f px&quot;, fwhmPixels);</b>
+<i>212</i>&nbsp;
+<b class="nc"><i>213</i>&nbsp;		double fwhmPixels2 = fwhmPixels * fwhmPixels;</b>
+<b class="nc"><i>214</i>&nbsp;		double sigmaPixels = fwhmPixels / Math.sqrt(8 * Math.log(2));</b>
+<b class="nc"><i>215</i>&nbsp;		double sigma2 = 2 * sigmaPixels * sigmaPixels;</b>
+<b class="nc"><i>216</i>&nbsp;		double maxDist = sigmaPixels * 3;</b>
+<b class="nc"><i>217</i>&nbsp;		double maxDistSq = maxDist * maxDist; // Maximum separation</b>
+<i>218</i>&nbsp;
+<b class="nc"><i>219</i>&nbsp;		int nObjects = pathObjects.size();</b>
+<i>220</i>&nbsp;		//		int counter = 0;
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;		// Sort by x-coordinate - this gives us a method of breaking early
+<b class="nc"><i>223</i>&nbsp;		Collections.sort(pathObjects, new Comparator&lt;PathObject&gt;() {</b>
+<i>224</i>&nbsp;			@Override
+<i>225</i>&nbsp;			public int compare(PathObject o1, PathObject o2) {
+<b class="nc"><i>226</i>&nbsp;				double x1 = o1.getROI().getCentroidX();</b>
+<b class="nc"><i>227</i>&nbsp;				double x2 = o2.getROI().getCentroidX();</b>
+<i>228</i>&nbsp;//				int value = Double.compare(x1, x2);
+<i>229</i>&nbsp;//				if (value == 0) {
+<i>230</i>&nbsp;//					System.out.println(x1 + &quot; vs. &quot; + x2);
+<i>231</i>&nbsp;//					System.out.println(String.format(&quot;(%.2f, %.2f) vs (%.2f, %.2f)&quot;, o1.getROI().getCentroidX(), o1.getROI().getCentroidY(), o2.getROI().getCentroidX(), o2.getROI().getCentroidY()));				}
+<b class="nc"><i>232</i>&nbsp;				return Double.compare(x1, x2);</b>
+<i>233</i>&nbsp;//				if (x1 &gt; x2)
+<i>234</i>&nbsp;//					return 1;
+<i>235</i>&nbsp;//				if (x2 &lt; x1)
+<i>236</i>&nbsp;//					return -1;
+<i>237</i>&nbsp;//				System.out.println(x1 + &quot; vs. &quot; + x2);
+<i>238</i>&nbsp;//				System.out.println(String.format(&quot;(%.2f, %.2f) vs (%.2f, %.2f)&quot;, o1.getROI().getCentroidX(), o1.getROI().getCentroidY(), o2.getROI().getCentroidX(), o2.getROI().getCentroidY()));
+<i>239</i>&nbsp;//				return 0;
+<i>240</i>&nbsp;//				return (int)Math.signum(o1.getROI().getCentroidX() - o2.getROI().getCentroidX());
+<i>241</i>&nbsp;			}
+<i>242</i>&nbsp;		});
+<i>243</i>&nbsp;		
+<i>244</i>&nbsp;		
+<i>245</i>&nbsp;		// Create a LUT for distances - calculating exp every time is expensive
+<b class="nc"><i>246</i>&nbsp;		double[] distanceWeights = new double[(int)(maxDist + .5) + 1];</b>
+<b class="nc"><i>247</i>&nbsp;		for (int i = 0; i &lt; distanceWeights.length; i++) {</b>
+<b class="nc"><i>248</i>&nbsp;			distanceWeights[i] = Math.exp(-(i * i)/sigma2);</b>
+<i>249</i>&nbsp;		}
+<i>250</i>&nbsp;		
+<i>251</i>&nbsp;
+<b class="nc"><i>252</i>&nbsp;		System.currentTimeMillis();</b>
+<i>253</i>&nbsp;		
+<b class="nc"><i>254</i>&nbsp;		float[] xCentroids = new float[nObjects];</b>
+<b class="nc"><i>255</i>&nbsp;		float[] yCentroids = new float[nObjects];</b>
+<b class="nc"><i>256</i>&nbsp;		PathClass[] pathClasses = new PathClass[nObjects];</b>
+<b class="nc"><i>257</i>&nbsp;		int[] nearbyDetectionCounts = new int[nObjects];</b>
+<b class="nc"><i>258</i>&nbsp;		float[][] measurementsWeighted = new float[nObjects][measurements.size()];</b>
+<b class="nc"><i>259</i>&nbsp;		float[][] measurementDenominators = new float[nObjects][measurements.size()];</b>
+<b class="nc"><i>260</i>&nbsp;		float[][] measurementValues = new float[nObjects][measurements.size()];</b>
+<b class="nc"><i>261</i>&nbsp;		for (int i = 0; i &lt; nObjects; i++) {</b>
+<b class="nc"><i>262</i>&nbsp;			PathObject pathObject = pathObjects.get(i);</b>
+<b class="nc"><i>263</i>&nbsp;			if (withinClass)</b>
+<b class="nc"><i>264</i>&nbsp;				pathClasses[i] = pathObject.getPathClass() == null ? null : pathObject.getPathClass().getBaseClass();</b>
+<b class="nc"><i>265</i>&nbsp;			ROI roi = pathObject.getROI();</b>
+<b class="nc"><i>266</i>&nbsp;			xCentroids[i] = (float)roi.getCentroidX();</b>
+<b class="nc"><i>267</i>&nbsp;			yCentroids[i] = (float)roi.getCentroidY();</b>
+<b class="nc"><i>268</i>&nbsp;			MeasurementList measurementList = pathObject.getMeasurementList();</b>
+<b class="nc"><i>269</i>&nbsp;			int ind = 0;</b>
+<b class="nc"><i>270</i>&nbsp;			for (String name : measurements) {</b>
+<b class="nc"><i>271</i>&nbsp;				float value = (float)measurementList.getMeasurementValue(name);</b>
+<i>272</i>&nbsp;				
+<b class="nc"><i>273</i>&nbsp;				measurementValues[i][ind] = value;   // Used to cache values</b>
+<b class="nc"><i>274</i>&nbsp;				measurementsWeighted[i][ind] = value; // Based on distances and measurements</b>
+<b class="nc"><i>275</i>&nbsp;				measurementDenominators[i][ind] = 1; // Based on distances along</b>
+<b class="nc"><i>276</i>&nbsp;				ind++;</b>
+<b class="nc"><i>277</i>&nbsp;			}</b>
+<i>278</i>&nbsp;		}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;		String prefix, postfix, denomName, countsName;
+<i>281</i>&nbsp;		
+<i>282</i>&nbsp;		// Use previous syntax for naming smoothed measurements
+<b class="nc"><i>283</i>&nbsp;		if (useLegacyNames) {</b>
+<b class="nc"><i>284</i>&nbsp;			prefix = &quot;&quot;;</b>
+<b class="nc"><i>285</i>&nbsp;			postfix = String.format(&quot; - Smoothed (FWHM %s)&quot;, fwhmString);			</b>
+<b class="nc"><i>286</i>&nbsp;			denomName = String.format(&quot;Smoothed denominator (local density, FWHM %s)&quot;, fwhmString);</b>
+<b class="nc"><i>287</i>&nbsp;			countsName = String.format(&quot;Nearby detection counts (radius %s)&quot;, fwhmString);</b>
+<i>288</i>&nbsp;		} else {
+<b class="nc"><i>289</i>&nbsp;			prefix = String.format(&quot;Smoothed: %s: &quot;, fwhmString);</b>
+<b class="nc"><i>290</i>&nbsp;			postfix = &quot;&quot;;</b>
+<b class="nc"><i>291</i>&nbsp;			denomName = null; //prefix + &quot;Weighted density&quot;;</b>
+<b class="nc"><i>292</i>&nbsp;			countsName = prefix + &quot;Nearby detection counts&quot;;</b>
+<i>293</i>&nbsp;//			denomName = prefix + &quot;Denominator (local density)&quot;;
+<i>294</i>&nbsp;//			countsName = prefix + &quot;Nearby detection counts&quot;;
+<i>295</i>&nbsp;		}
+<i>296</i>&nbsp;		
+<i>297</i>&nbsp;		// Loop through objects, computing predominant class based on distance weighting
+<b class="nc"><i>298</i>&nbsp;		for (int i = 0; i &lt; nObjects; i++) {</b>
+<i>299</i>&nbsp;			// Extract the current class index
+<b class="nc"><i>300</i>&nbsp;			PathObject pathObject = pathObjects.get(i);</b>
+<b class="nc"><i>301</i>&nbsp;			PathClass pathClass = pathClasses[i];</b>
+<b class="nc"><i>302</i>&nbsp;			MeasurementList measurementList = pathObject.getMeasurementList();</b>
+<b class="nc"><i>303</i>&nbsp;			float[] mValues = measurementValues[i];</b>
+<b class="nc"><i>304</i>&nbsp;			float[] mWeighted = measurementsWeighted[i];</b>
+<b class="nc"><i>305</i>&nbsp;			float[] mDenominator = measurementDenominators[i];</b>
+<i>306</i>&nbsp;			
+<i>307</i>&nbsp;			// Compute centroid distances
+<b class="nc"><i>308</i>&nbsp;			double xi = xCentroids[i];</b>
+<b class="nc"><i>309</i>&nbsp;			double yi = yCentroids[i];</b>
+<b class="nc"><i>310</i>&nbsp;			for (int j = i+1; j &lt; nObjects; j++) {</b>
+<i>311</i>&nbsp;				
+<b class="nc"><i>312</i>&nbsp;				double xj = xCentroids[j];</b>
+<b class="nc"><i>313</i>&nbsp;				double yj = yCentroids[j];</b>
+<i>314</i>&nbsp;				//				counter++;
+<i>315</i>&nbsp;				// Break early if we are already too far away
+<b class="nc"><i>316</i>&nbsp;				if (Math.abs(xj - xi) &gt; maxDist) {</b>
+<b class="nc"><i>317</i>&nbsp;					break;</b>
+<i>318</i>&nbsp;				}
+<i>319</i>&nbsp;
+<b class="nc"><i>320</i>&nbsp;				double distSq = (xj - xi)*(xj - xi) + (yj - yi)*(yj - yi);</b>
+<i>321</i>&nbsp;//				// Check if we are close enough to have an influence
+<b class="nc"><i>322</i>&nbsp;				if (distSq &gt; maxDistSq || Double.isNaN(distSq))</b>
+<b class="nc"><i>323</i>&nbsp;					continue;</b>
+<i>324</i>&nbsp;				
+<i>325</i>&nbsp;				// Check if the class is ok, if check needed
+<b class="nc"><i>326</i>&nbsp;				if (withinClass &amp;&amp; pathClass != pathClasses[j])</b>
+<b class="nc"><i>327</i>&nbsp;					continue;</b>
+<i>328</i>&nbsp;				
+<i>329</i>&nbsp;				// Update the counts, if close enough
+<b class="nc"><i>330</i>&nbsp;				if (distSq &lt; fwhmPixels2) {</b>
+<b class="nc"><i>331</i>&nbsp;					nearbyDetectionCounts[i]++;</b>
+<b class="nc"><i>332</i>&nbsp;					nearbyDetectionCounts[j]++;</b>
+<i>333</i>&nbsp;				}
+<i>334</i>&nbsp;
+<i>335</i>&nbsp;				// Update the class weights for both objects currently being tested
+<i>336</i>&nbsp;				// Compute weight based on centroid distances
+<i>337</i>&nbsp;//				double weight = Math.exp(-distSq/sigma2);
+<b class="nc"><i>338</i>&nbsp;				double weight = distanceWeights[(int)(Math.sqrt(distSq) + .5)];// * pathObjects.get(j).getClassProbability();</b>
+<b class="nc"><i>339</i>&nbsp;				float [] temp = measurementValues[j];</b>
+<b class="nc"><i>340</i>&nbsp;				float [] tempWeighted = measurementsWeighted[j];</b>
+<b class="nc"><i>341</i>&nbsp;				float [] tempDenominator = measurementDenominators[j];</b>
+<b class="nc"><i>342</i>&nbsp;				for (int ind = 0; ind &lt; measurements.size(); ind++) {</b>
+<b class="nc"><i>343</i>&nbsp;					float tempVal = temp[ind];</b>
+<b class="nc"><i>344</i>&nbsp;					if (Float.isNaN(tempVal))</b>
+<b class="nc"><i>345</i>&nbsp;						continue;</b>
+<b class="nc"><i>346</i>&nbsp;					mWeighted[ind] += tempVal * weight;</b>
+<b class="nc"><i>347</i>&nbsp;					mDenominator[ind] += weight;</b>
+<i>348</i>&nbsp;					
+<b class="nc"><i>349</i>&nbsp;					float tempVal2 = mValues[ind];</b>
+<b class="nc"><i>350</i>&nbsp;					if (Float.isNaN(tempVal2))</b>
+<b class="nc"><i>351</i>&nbsp;						continue;</b>
+<b class="nc"><i>352</i>&nbsp;					tempWeighted[ind] += tempVal2 * weight;</b>
+<b class="nc"><i>353</i>&nbsp;					tempDenominator[ind] += weight;</b>
+<i>354</i>&nbsp;				}
+<i>355</i>&nbsp;			}
+<i>356</i>&nbsp;			
+<i>357</i>&nbsp;			// Store the measurements
+<b class="nc"><i>358</i>&nbsp;			int ind = 0;</b>
+<b class="nc"><i>359</i>&nbsp;			float maxDenominator = Float.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>360</i>&nbsp;			for (String name : measurements) {</b>
+<i>361</i>&nbsp;//				if (name.contains(&quot; - Smoothed (FWHM &quot;) || name.startsWith(&quot;Smoothed denominator (local density, &quot;) || name.startsWith(&quot;Nearby detection counts&quot;))
+<i>362</i>&nbsp;//					continue;
+<b class="nc"><i>363</i>&nbsp;				float denominator = mDenominator[ind];</b>
+<b class="nc"><i>364</i>&nbsp;				if (denominator &gt; maxDenominator)</b>
+<b class="nc"><i>365</i>&nbsp;					maxDenominator = denominator;</b>
+<i>366</i>&nbsp;				
+<b class="nc"><i>367</i>&nbsp;				String nameToAdd = prefix + name + postfix;</b>
+<b class="nc"><i>368</i>&nbsp;				measurementList.putMeasurement(nameToAdd, mWeighted[ind] / denominator);</b>
+<i>369</i>&nbsp;				
+<i>370</i>&nbsp;//				measurementsAdded.add(nameToAdd);
+<i>371</i>&nbsp;//				measurementList.putMeasurement(name + &quot; - weighted sum&quot;, mWeighted[ind]); // TODO: Support optionally providing weighted sums
+<i>372</i>&nbsp;				
+<i>373</i>&nbsp;//				measurementList.addMeasurement(name + &quot; - smoothed&quot;, mWeighted[ind] / mDenominator[ind]);
+<b class="nc"><i>374</i>&nbsp;				ind++;</b>
+<b class="nc"><i>375</i>&nbsp;			}</b>
+<b class="nc"><i>376</i>&nbsp;			if (pathObject instanceof PathDetectionObject &amp;&amp; denomName != null) {</b>
+<b class="nc"><i>377</i>&nbsp;				measurementList.putMeasurement(denomName, maxDenominator);</b>
+<i>378</i>&nbsp;//				measurementsAdded.add(denomName);
+<i>379</i>&nbsp;			}
+<b class="nc"><i>380</i>&nbsp;			if (pathObject instanceof PathDetectionObject &amp;&amp; countsName != null) {</b>
+<b class="nc"><i>381</i>&nbsp;				measurementList.putMeasurement(countsName, nearbyDetectionCounts[i]);</b>
+<i>382</i>&nbsp;//				measurementsAdded.add(countsName);
+<i>383</i>&nbsp;			}
+<b class="nc"><i>384</i>&nbsp;			measurementList.close();</b>
+<i>385</i>&nbsp;		}
+<i>386</i>&nbsp;		
+<b class="nc"><i>387</i>&nbsp;		System.currentTimeMillis();</b>
+<i>388</i>&nbsp;		
+<i>389</i>&nbsp;//		return measurementsAdded;
+<b class="nc"><i>390</i>&nbsp;	}</b>
+<i>391</i>&nbsp;
+<i>392</i>&nbsp;	@Override
+<i>393</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;T&gt; imageData) {
+<b class="nc"><i>394</i>&nbsp;		ImageServer&lt;? extends T&gt; server = imageData.getServer();</b>
+<b class="nc"><i>395</i>&nbsp;		boolean pixelSizeMicrons = server != null &amp;&amp; server.getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>396</i>&nbsp;		params.getParameters().get(&quot;fwhmMicrons&quot;).setHidden(!pixelSizeMicrons);</b>
+<b class="nc"><i>397</i>&nbsp;		params.getParameters().get(&quot;fwhmPixels&quot;).setHidden(pixelSizeMicrons);</b>
+<b class="nc"><i>398</i>&nbsp;		return params;</b>
+<i>399</i>&nbsp;	}
+<i>400</i>&nbsp;
+<i>401</i>&nbsp;	@Override
+<i>402</i>&nbsp;	protected Collection&lt;PathObject&gt; getParentObjects(final PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>403</i>&nbsp;		PathObjectHierarchy hierarchy = runner.getImageData().getHierarchy();</b>
+<b class="nc"><i>404</i>&nbsp;		List&lt;PathObject&gt; parents = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>405</i>&nbsp;		if (hierarchy.getTMAGrid() != null) {</b>
+<b class="nc"><i>406</i>&nbsp;			logger.info(&quot;Smoothing using TMA cores&quot;);</b>
+<b class="nc"><i>407</i>&nbsp;			for (TMACoreObject core : hierarchy.getTMAGrid().getTMACoreList()) {</b>
+<b class="nc"><i>408</i>&nbsp;				if (core.hasChildren())</b>
+<b class="nc"><i>409</i>&nbsp;					parents.add(core);</b>
+<b class="nc"><i>410</i>&nbsp;			}</b>
+<i>411</i>&nbsp;		} else {
+<b class="nc"><i>412</i>&nbsp;			for (PathObject pathObject : hierarchy.getSelectionModel().getSelectedObjects()) {</b>
+<b class="nc"><i>413</i>&nbsp;				if (pathObject.isAnnotation() &amp;&amp; pathObject.hasChildren())</b>
+<b class="nc"><i>414</i>&nbsp;					parents.add(pathObject);</b>
+<b class="nc"><i>415</i>&nbsp;			}			</b>
+<b class="nc"><i>416</i>&nbsp;			if (!parents.isEmpty())</b>
+<b class="nc"><i>417</i>&nbsp;				logger.warn(&quot;Smoothing using annotations&quot;);</b>
+<i>418</i>&nbsp;		}
+<b class="nc"><i>419</i>&nbsp;		return parents;</b>
+<i>420</i>&nbsp;	}
+<i>421</i>&nbsp;	
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

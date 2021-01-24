@@ -1,0 +1,418 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CountingPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CountingPane (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CountingPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 126)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Toolkit;
+<i>27</i>&nbsp;import java.awt.datatransfer.Clipboard;
+<i>28</i>&nbsp;import java.awt.datatransfer.StringSelection;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Collection;
+<i>31</i>&nbsp;import java.util.Collections;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.stream.Collectors;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.controlsfx.control.action.Action;
+<i>36</i>&nbsp;import org.controlsfx.control.action.ActionUtils;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.application.Platform;
+<i>39</i>&nbsp;import javafx.geometry.Side;
+<i>40</i>&nbsp;import javafx.scene.control.Button;
+<i>41</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>42</i>&nbsp;import javafx.scene.control.ListView;
+<i>43</i>&nbsp;import javafx.scene.control.Menu;
+<i>44</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>45</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>46</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>47</i>&nbsp;import javafx.scene.layout.Pane;
+<i>48</i>&nbsp;import javafx.scene.shape.Rectangle;
+<i>49</i>&nbsp;import qupath.lib.geom.Point2;
+<i>50</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>51</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>52</i>&nbsp;import qupath.lib.gui.panes.PathObjectListCell;
+<i>53</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>54</i>&nbsp;import qupath.lib.gui.tools.ColorToolsFX;
+<i>55</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>56</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>57</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>58</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>59</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>60</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>61</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>62</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>63</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>64</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>65</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>66</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectSelectionListener;
+<i>67</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectSelectionModel;
+<i>68</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>69</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>70</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;/**
+<i>73</i>&nbsp; * Component for creating and modifying point objects.
+<i>74</i>&nbsp; * 
+<i>75</i>&nbsp; * @author Pete Bankhead
+<i>76</i>&nbsp; *
+<i>77</i>&nbsp; */
+<i>78</i>&nbsp;class CountingPane implements PathObjectSelectionListener, PathObjectHierarchyListener {
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	private QuPathGUI qupath;
+<i>81</i>&nbsp;	
+<b class="nc"><i>82</i>&nbsp;	private BorderPane pane = new BorderPane();</b>
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	private ListView&lt;PathObject&gt; listCounts;
+<i>87</i>&nbsp;	
+<b class="nc"><i>88</i>&nbsp;	private Action btnAdd = new Action(&quot;Add&quot;, e -&gt; {</b>
+<b class="nc"><i>89</i>&nbsp;		PathObject pathObjectCounts = PathObjects.createAnnotationObject(ROIs.createPointsROI(ImagePlane.getDefaultPlane()));</b>
+<b class="nc"><i>90</i>&nbsp;		hierarchy.addPathObject(pathObjectCounts);</b>
+<i>91</i>&nbsp;//		hierarchy.fireChangeEvent(pathObjectCounts.getParent());
+<b class="nc"><i>92</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObject(pathObjectCounts);</b>
+<i>93</i>&nbsp;//		promptToSetProperties();
+<i>94</i>&nbsp;	});
+<b class="nc"><i>95</i>&nbsp;	private Action btnEdit = new Action(&quot;Edit&quot;, e -&gt; promptToSetProperties());</b>
+<b class="nc"><i>96</i>&nbsp;	private Action btnDelete = new Action(&quot;Delete&quot;, e -&gt; {</b>
+<b class="nc"><i>97</i>&nbsp;		PathObject pathObjectSelected = listCounts.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>98</i>&nbsp;		if (pathObjectSelected != null &amp;&amp; PathObjectTools.hasPointROI(pathObjectSelected))</b>
+<b class="nc"><i>99</i>&nbsp;			GuiTools.promptToRemoveSelectedObject(pathObjectSelected, hierarchy);</b>
+<i>100</i>&nbsp;	});
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	/**
+<i>103</i>&nbsp;	 * Create point annotations for all available classifications
+<i>104</i>&nbsp;	 */
+<b class="nc"><i>105</i>&nbsp;	private Action btnCreateForClasses = new Action(&quot;Create points for all classes&quot;, e -&gt; {</b>
+<b class="nc"><i>106</i>&nbsp;		var viewer = qupath.getViewer();</b>
+<b class="nc"><i>107</i>&nbsp;		var hierarchy = viewer.getHierarchy();</b>
+<b class="nc"><i>108</i>&nbsp;		var availableClasses = qupath.getAvailablePathClasses()</b>
+<b class="nc"><i>109</i>&nbsp;				.stream()</b>
+<b class="nc"><i>110</i>&nbsp;				.filter(p -&gt; p != null &amp;&amp; p != PathClassFactory.getPathClassUnclassified())</b>
+<b class="nc"><i>111</i>&nbsp;				.collect(Collectors.toList());</b>
+<b class="nc"><i>112</i>&nbsp;		if (hierarchy == null || availableClasses.isEmpty())</b>
+<i>113</i>&nbsp;			return;
+<b class="nc"><i>114</i>&nbsp;		var plane = viewer.getImagePlane();</b>
+<b class="nc"><i>115</i>&nbsp;		var pathObjects = new ArrayList&lt;PathObject&gt;();</b>
+<b class="nc"><i>116</i>&nbsp;		for (PathClass pathClass : availableClasses) {</b>
+<b class="nc"><i>117</i>&nbsp;			pathObjects.add(PathObjects.createAnnotationObject(ROIs.createPointsROI(plane), pathClass));</b>
+<b class="nc"><i>118</i>&nbsp;		}</b>
+<b class="nc"><i>119</i>&nbsp;		hierarchy.addPathObjects(pathObjects);</b>
+<i>120</i>&nbsp;	});
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	
+<b class="nc"><i>123</i>&nbsp;	public CountingPane(final QuPathGUI qupath, final PathObjectHierarchy hierarchy) {</b>
+<i>124</i>&nbsp;		
+<b class="nc"><i>125</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>126</i>&nbsp;		listCounts = new ListView&lt;&gt;();</b>
+<i>127</i>&nbsp;		
+<b class="nc"><i>128</i>&nbsp;		setHierarchy(hierarchy);</b>
+<i>129</i>&nbsp;		
+<b class="nc"><i>130</i>&nbsp;		listCounts.getSelectionModel().selectedItemProperty().addListener((e, oldSelection, selectedObject) -&gt; {</b>
+<b class="nc"><i>131</i>&nbsp;			updateSelectedObjectFromList(selectedObject);</b>
+<i>132</i>&nbsp;		});
+<i>133</i>&nbsp;		
+<i>134</i>&nbsp;		// Make buttons
+<b class="nc"><i>135</i>&nbsp;		GridPane paneMainButtons = PaneTools.createColumnGridControls(</b>
+<b class="nc"><i>136</i>&nbsp;				ActionUtils.createButton(btnAdd),</b>
+<b class="nc"><i>137</i>&nbsp;				ActionUtils.createButton(btnEdit),</b>
+<b class="nc"><i>138</i>&nbsp;				ActionUtils.createButton(btnDelete)</b>
+<i>139</i>&nbsp;				);
+<i>140</i>&nbsp;		
+<i>141</i>&nbsp;		// Add additional options
+<b class="nc"><i>142</i>&nbsp;		var popup = new ContextMenu();</b>
+<b class="nc"><i>143</i>&nbsp;		popup.getItems()</b>
+<b class="nc"><i>144</i>&nbsp;			.add(ActionUtils.createMenuItem(btnCreateForClasses));</b>
+<i>145</i>&nbsp;		
+<b class="nc"><i>146</i>&nbsp;		var paneButtons = new BorderPane(paneMainButtons);</b>
+<b class="nc"><i>147</i>&nbsp;		Button btnMore = GuiTools.createMoreButton(popup, Side.RIGHT);</b>
+<b class="nc"><i>148</i>&nbsp;		paneButtons.setRight(btnMore);</b>
+<i>149</i>&nbsp;				
+<i>150</i>&nbsp;		// Add double-click listener
+<b class="nc"><i>151</i>&nbsp;		listCounts.setOnMouseClicked(e -&gt; {</b>
+<b class="nc"><i>152</i>&nbsp;			if (e.getClickCount() &gt; 1)</b>
+<b class="nc"><i>153</i>&nbsp;				promptToSetProperties();</b>
+<i>154</i>&nbsp;			// TODO: Consider reimplementing deselection
+<i>155</i>&nbsp;//			else {
+<i>156</i>&nbsp;//				int index = listCounts.locationToIndex(e.getPoint());
+<i>157</i>&nbsp;//				if (index &lt; 0)
+<i>158</i>&nbsp;//					return;
+<i>159</i>&nbsp;//				if (!listCounts.getCellBounds(index, index).contains(e.getPoint())) {
+<i>160</i>&nbsp;//					hierarchy.getSelectionModel().resetSelection();
+<i>161</i>&nbsp;//					//						listCounts.clearSelection();
+<i>162</i>&nbsp;//					//						e.consume();
+<i>163</i>&nbsp;//				}
+<i>164</i>&nbsp;//			}
+<i>165</i>&nbsp;		}
+<i>166</i>&nbsp;				);
+<b class="nc"><i>167</i>&nbsp;		ContextMenu menu = new ContextMenu();</b>
+<b class="nc"><i>168</i>&nbsp;		Menu menuSetClass = new Menu(&quot;Set class&quot;);</b>
+<b class="nc"><i>169</i>&nbsp;		menu.setOnShowing(e -&gt; {</b>
+<b class="nc"><i>170</i>&nbsp;			menuSetClass.getItems().setAll(</b>
+<b class="nc"><i>171</i>&nbsp;					qupath.getAvailablePathClasses().stream()</b>
+<b class="nc"><i>172</i>&nbsp;					.map(p -&gt; createPathClassMenuItem(p))</b>
+<b class="nc"><i>173</i>&nbsp;					.collect(Collectors.toList()));</b>
+<i>174</i>&nbsp;		});
+<b class="nc"><i>175</i>&nbsp;		MenuItem miCopy = new MenuItem(&quot;Copy to clipboard&quot;);</b>
+<b class="nc"><i>176</i>&nbsp;		miCopy.setOnAction(e -&gt; {</b>
+<b class="nc"><i>177</i>&nbsp;			copyCoordinatesToClipboard(listCounts.getSelectionModel().getSelectedItem());</b>
+<i>178</i>&nbsp;			}
+<i>179</i>&nbsp;		);
+<b class="nc"><i>180</i>&nbsp;		miCopy.disableProperty().bind(listCounts.getSelectionModel().selectedItemProperty().isNull());</b>
+<b class="nc"><i>181</i>&nbsp;		menuSetClass.disableProperty().bind(listCounts.getSelectionModel().selectedItemProperty().isNull());</b>
+<b class="nc"><i>182</i>&nbsp;		menu.getItems().addAll(menuSetClass, miCopy);</b>
+<b class="nc"><i>183</i>&nbsp;		listCounts.setContextMenu(menu);</b>
+<i>184</i>&nbsp;		
+<b class="nc"><i>185</i>&nbsp;		listCounts.setCellFactory(v -&gt; new PathObjectListCell(p -&gt; p.toString().replace(&quot; (Points)&quot;, &quot;&quot;)));</b>
+<i>186</i>&nbsp;		
+<i>187</i>&nbsp;		
+<b class="nc"><i>188</i>&nbsp;		PathPrefs.colorDefaultObjectsProperty().addListener((v, o, n) -&gt; listCounts.refresh());</b>
+<i>189</i>&nbsp;		
+<i>190</i>&nbsp;		// Add to panel
+<b class="nc"><i>191</i>&nbsp;		BorderPane panelList = new BorderPane();</b>
+<b class="nc"><i>192</i>&nbsp;		panelList.setCenter(listCounts);</b>
+<b class="nc"><i>193</i>&nbsp;		panelList.setBottom(paneButtons);</b>
+<i>194</i>&nbsp;//		panelList.setBorder(BorderFactory.createTitledBorder(&quot;Counts&quot;));		
+<i>195</i>&nbsp;		
+<b class="nc"><i>196</i>&nbsp;		pane.setCenter(panelList);</b>
+<i>197</i>&nbsp;	}
+<i>198</i>&nbsp;	
+<i>199</i>&nbsp;	
+<i>200</i>&nbsp;	MenuItem createPathClassMenuItem(PathClass pathClass) {
+<b class="nc"><i>201</i>&nbsp;		var mi = new MenuItem(pathClass.toString());</b>
+<b class="nc"><i>202</i>&nbsp;		var color = pathClass.getColor();</b>
+<b class="nc"><i>203</i>&nbsp;		var rect = new Rectangle(8, 8, color == null ? ColorToolsFX.TRANSLUCENT_WHITE_FX : ColorToolsFX.getCachedColor(color));</b>
+<b class="nc"><i>204</i>&nbsp;		mi.setGraphic(rect);</b>
+<b class="nc"><i>205</i>&nbsp;		mi.setOnAction(e -&gt; {</b>
+<b class="nc"><i>206</i>&nbsp;			var pathObject = listCounts.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>207</i>&nbsp;			if (pathClass == PathClassFactory.getPathClassUnclassified())</b>
+<b class="nc"><i>208</i>&nbsp;				pathObject.setPathClass(null);</b>
+<i>209</i>&nbsp;			else
+<b class="nc"><i>210</i>&nbsp;				pathObject.setPathClass(pathClass);</b>
+<b class="nc"><i>211</i>&nbsp;			if (hierarchy != null)</b>
+<b class="nc"><i>212</i>&nbsp;				hierarchy.fireObjectClassificationsChangedEvent(mi, Collections.singleton(pathObject));</b>
+<i>213</i>&nbsp;		});
+<b class="nc"><i>214</i>&nbsp;		return mi;</b>
+<i>215</i>&nbsp;	}
+<i>216</i>&nbsp;	
+<i>217</i>&nbsp;	
+<i>218</i>&nbsp;	public Pane getPane() {
+<b class="nc"><i>219</i>&nbsp;		return pane;</b>
+<i>220</i>&nbsp;	}
+<i>221</i>&nbsp;	
+<i>222</i>&nbsp;	public ListView&lt;PathObject&gt; getListView() {
+<b class="nc"><i>223</i>&nbsp;		return listCounts;</b>
+<i>224</i>&nbsp;	}
+<i>225</i>&nbsp;	
+<i>226</i>&nbsp;	
+<i>227</i>&nbsp;	public List&lt;PathObject&gt; getPathObjects() {
+<b class="nc"><i>228</i>&nbsp;		return new ArrayList&lt;&gt;(listCounts.getItems());</b>
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	
+<i>233</i>&nbsp;	public void setHierarchy(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>234</i>&nbsp;		if (this.hierarchy == hierarchy)</b>
+<i>235</i>&nbsp;			return;
+<b class="nc"><i>236</i>&nbsp;		if (this.hierarchy != null) {</b>
+<b class="nc"><i>237</i>&nbsp;			this.hierarchy.getSelectionModel().removePathObjectSelectionListener(this);</b>
+<b class="nc"><i>238</i>&nbsp;			this.hierarchy.removePathObjectListener(this);</b>
+<i>239</i>&nbsp;		}
+<b class="nc"><i>240</i>&nbsp;		this.hierarchy = hierarchy;</b>
+<b class="nc"><i>241</i>&nbsp;		PathObject objectSelected = null;</b>
+<i>242</i>&nbsp;		
+<b class="nc"><i>243</i>&nbsp;		if (this.hierarchy != null) {</b>
+<b class="nc"><i>244</i>&nbsp;			PathObjectSelectionModel model = this.hierarchy.getSelectionModel();</b>
+<b class="nc"><i>245</i>&nbsp;			model.addPathObjectSelectionListener(this);</b>
+<b class="nc"><i>246</i>&nbsp;			objectSelected = model.getSelectedObject();</b>
+<b class="nc"><i>247</i>&nbsp;			this.hierarchy.addPathObjectListener(this);</b>
+<i>248</i>&nbsp;		}
+<i>249</i>&nbsp;		// Update selected object in list, if suitable
+<b class="nc"><i>250</i>&nbsp;		if (objectSelected != null &amp;&amp; PathObjectTools.hasPointROI(objectSelected))</b>
+<b class="nc"><i>251</i>&nbsp;			listCounts.getSelectionModel().select(objectSelected);</b>
+<i>252</i>&nbsp;		else
+<b class="nc"><i>253</i>&nbsp;			listCounts.getSelectionModel().clearSelection();</b>
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		// Force update
+<b class="nc"><i>256</i>&nbsp;		hierarchyChanged(null);</b>
+<i>257</i>&nbsp;	}
+<i>258</i>&nbsp;	
+<i>259</i>&nbsp;	
+<i>260</i>&nbsp;	public static void copyCoordinatesToClipboard(PathObject pathObject) {
+<i>261</i>&nbsp;//		PathObject pathObject = viewer.getPathObjectHierarchy().getSelectionModel().getSelectedPathObject();
+<b class="nc"><i>262</i>&nbsp;		if (pathObject == null || !pathObject.hasROI() || !(pathObject.getROI() instanceof PointsROI)) {</b>
+<b class="nc"><i>263</i>&nbsp;			Dialogs.showErrorMessage(&quot;Copy points to clipboard&quot;, &quot;No points selected!&quot;);</b>
+<i>264</i>&nbsp;			return;
+<i>265</i>&nbsp;		}
+<b class="nc"><i>266</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>267</i>&nbsp;		String name = pathObject.getDisplayedName();</b>
+<b class="nc"><i>268</i>&nbsp;		PointsROI points = (PointsROI)pathObject.getROI();</b>
+<b class="nc"><i>269</i>&nbsp;		for (Point2 p : points.getAllPoints())</b>
+<b class="nc"><i>270</i>&nbsp;			sb.append(name).append(&quot;\t&quot;).append(p.getX()).append(&quot;\t&quot;).append(p.getY()).append(&quot;\n&quot;);</b>
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;		StringSelection stringSelection = new StringSelection(sb.toString());</b>
+<b class="nc"><i>273</i>&nbsp;		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();</b>
+<b class="nc"><i>274</i>&nbsp;		clipboard.setContents(stringSelection, null);</b>
+<i>275</i>&nbsp;	}
+<i>276</i>&nbsp;	
+<i>277</i>&nbsp;	
+<i>278</i>&nbsp;	@Override
+<i>279</i>&nbsp;	public void selectedPathObjectChanged(PathObject pathObjectSelected, PathObject previousObject, Collection&lt;PathObject&gt; allSelected) {
+<i>280</i>&nbsp;		// Check if we have points
+<b class="nc"><i>281</i>&nbsp;		boolean hasPoints = pathObjectSelected != null &amp;&amp; PathObjectTools.hasPointROI(pathObjectSelected);</b>
+<b class="nc"><i>282</i>&nbsp;		btnEdit.setDisabled(!hasPoints);</b>
+<b class="nc"><i>283</i>&nbsp;		btnDelete.setDisabled(!hasPoints);</b>
+<b class="nc"><i>284</i>&nbsp;		if (pathObjectSelected == listCounts.getSelectionModel().getSelectedItem())</b>
+<i>285</i>&nbsp;			return;
+<b class="nc"><i>286</i>&nbsp;		if (pathObjectSelected != null &amp;&amp; PathObjectTools.hasPointROI(pathObjectSelected))</b>
+<b class="nc"><i>287</i>&nbsp;			listCounts.getSelectionModel().select(pathObjectSelected);</b>
+<i>288</i>&nbsp;		else
+<b class="nc"><i>289</i>&nbsp;			listCounts.getSelectionModel().clearSelection();</b>
+<i>290</i>&nbsp;	}
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;	private void promptToSetProperties() {
+<b class="nc"><i>294</i>&nbsp;		PathObject pathObjectSelected = listCounts.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>295</i>&nbsp;		if (pathObjectSelected != null &amp;&amp; PathObjectTools.hasPointROI(pathObjectSelected)) {</b>
+<b class="nc"><i>296</i>&nbsp;			GuiTools.promptToSetActiveAnnotationProperties(hierarchy);</b>
+<i>297</i>&nbsp;		}
+<i>298</i>&nbsp;	}
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;	private void updateSelectedObjectFromList(final PathObject selectedObject) {
+<b class="nc"><i>301</i>&nbsp;		if (selectedObject == null || hierarchy == null || hierarchy.getSelectionModel().getSelectedObject() == selectedObject)</b>
+<i>302</i>&nbsp;			return;
+<i>303</i>&nbsp;		// Set the currently-selected object
+<b class="nc"><i>304</i>&nbsp;		hierarchy.getSelectionModel().setSelectedObject(selectedObject);</b>
+<i>305</i>&nbsp;	}
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;	@Override
+<i>308</i>&nbsp;	public void hierarchyChanged(PathObjectHierarchyEvent event) {
+<b class="nc"><i>309</i>&nbsp;		if (hierarchy == null) {</b>
+<b class="nc"><i>310</i>&nbsp;			listCounts.getItems().clear();</b>
+<i>311</i>&nbsp;			return;
+<b class="nc"><i>312</i>&nbsp;		} else if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>313</i>&nbsp;			Platform.runLater(() -&gt; hierarchyChanged(event));</b>
+<i>314</i>&nbsp;			return;
+<i>315</i>&nbsp;		}
+<i>316</i>&nbsp;		
+<b class="nc"><i>317</i>&nbsp;		Collection&lt;PathObject&gt; newList = hierarchy.getPointObjects(PathAnnotationObject.class);</b>
+<i>318</i>&nbsp;		
+<i>319</i>&nbsp;		// We want to avoid shuffling the list if possible we adding points
+<b class="nc"><i>320</i>&nbsp;		var items = listCounts.getItems();</b>
+<b class="nc"><i>321</i>&nbsp;		if (items.size() == newList.size() &amp;&amp; (</b>
+<b class="nc"><i>322</i>&nbsp;				newList.equals(items) || newList.containsAll(items))) {</b>
+<i>323</i>&nbsp;//			if (event != null &amp;&amp; event.getEventType() == HierarchyEventType.CHANGE_CLASSIFICATION || event.getEventType() == HierarchyEventType.CHANGE_MEASUREMENTS || (event.getStructureChangeBase() != null &amp;&amp; event.getStructureChangeBase().isPoint()) || PathObjectTools.containsPointObject(event.getChangedObjects()))
+<b class="nc"><i>324</i>&nbsp;			listCounts.refresh();</b>
+<i>325</i>&nbsp;		} else {
+<i>326</i>&nbsp;			// Update the items if we need to
+<b class="nc"><i>327</i>&nbsp;			listCounts.getItems().setAll(newList);</b>
+<i>328</i>&nbsp;		}
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;		// We want to retain selection status
+<b class="nc"><i>331</i>&nbsp;		selectedPathObjectChanged(hierarchy.getSelectionModel().getSelectedObject(), null, hierarchy.getSelectionModel().getSelectedObjects());</b>
+<i>332</i>&nbsp;	}	
+<i>333</i>&nbsp;	
+<i>334</i>&nbsp;	
+<i>335</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

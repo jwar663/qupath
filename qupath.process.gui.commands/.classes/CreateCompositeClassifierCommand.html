@@ -1,0 +1,384 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CreateCompositeClassifierCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CreateCompositeClassifierCommand (qupath.process.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CreateCompositeClassifierCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    28.6%
+  </span>
+  <span class="absValue">
+    (2/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.1%
+  </span>
+  <span class="absValue">
+    (5/ 98)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CreateCompositeClassifierCommand$ProjectClassifierWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 28)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    16.7%
+  </span>
+  <span class="absValue">
+    (2/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4%
+  </span>
+  <span class="absValue">
+    (5/ 126)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;import java.util.LinkedHashSet;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import org.controlsfx.control.ListSelectionView;
+<i>30</i>&nbsp;import org.slf4j.Logger;
+<i>31</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import javafx.geometry.Pos;
+<i>34</i>&nbsp;import javafx.scene.control.Button;
+<i>35</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>36</i>&nbsp;import javafx.scene.control.Dialog;
+<i>37</i>&nbsp;import javafx.scene.control.Label;
+<i>38</i>&nbsp;import javafx.scene.control.TextField;
+<i>39</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>40</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>41</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>42</i>&nbsp;import javafx.scene.layout.Priority;
+<i>43</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifier;
+<i>44</i>&nbsp;import qupath.lib.classifiers.object.ObjectClassifiers;
+<i>45</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>46</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>47</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>48</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>49</i>&nbsp;import qupath.lib.projects.Project;
+<i>50</i>&nbsp;import qupath.process.gui.ml.ProjectClassifierBindings;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * Command to create a composite classifier by merging together two or more other classifiers.
+<i>54</i>&nbsp; * 
+<i>55</i>&nbsp; * @author Pete Bankhead
+<i>56</i>&nbsp; */
+<i>57</i>&nbsp;public class CreateCompositeClassifierCommand implements Runnable {
+<i>58</i>&nbsp;	
+<b class="fc"><i>59</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(CreateCompositeClassifierCommand.class);</b>
+<i>60</i>&nbsp;	
+<b class="fc"><i>61</i>&nbsp;	private static String title = &quot;Create composite classifier&quot;;</b>
+<i>62</i>&nbsp;	
+<i>63</i>&nbsp;	private QuPathGUI qupath;
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;	 * Constructor.
+<i>67</i>&nbsp;	 * @param qupath
+<i>68</i>&nbsp;	 */
+<b class="fc"><i>69</i>&nbsp;	public CreateCompositeClassifierCommand(QuPathGUI qupath) {</b>
+<b class="fc"><i>70</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>71</i>&nbsp;	}</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	@Override
+<i>74</i>&nbsp;	public void run() {
+<i>75</i>&nbsp;		
+<b class="nc"><i>76</i>&nbsp;		ListSelectionView&lt;ClassifierWrapper&lt;BufferedImage&gt;&gt; view = new ListSelectionView&lt;&gt;();</b>
+<i>77</i>&nbsp;		
+<i>78</i>&nbsp;		try {
+<b class="nc"><i>79</i>&nbsp;			updateAvailableClassifiers(view);</b>
+<b class="nc"><i>80</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>81</i>&nbsp;			Dialogs.showErrorNotification(title, e);</b>
+<b class="nc"><i>82</i>&nbsp;		}</b>
+<i>83</i>&nbsp;		
+<b class="nc"><i>84</i>&nbsp;		String instructions = </b>
+<i>85</i>&nbsp;				&quot;Move individual classifiers to the column on the right to be included in the composite classifier.\n&quot; +
+<i>86</i>&nbsp;				&quot;Note that the order of classifiers in the list determines the order in which they will be applied.&quot;;
+<i>87</i>&nbsp;				
+<b class="nc"><i>88</i>&nbsp;		var labelInstructions = new Label(instructions);</b>
+<b class="nc"><i>89</i>&nbsp;		labelInstructions.setAlignment(Pos.CENTER);</b>
+<i>90</i>&nbsp;		
+<b class="nc"><i>91</i>&nbsp;		view.setTooltip(new Tooltip(&quot;Classifier selection view.&quot;));</b>
+<i>92</i>&nbsp;		
+<b class="nc"><i>93</i>&nbsp;		var paneName = new GridPane();</b>
+<b class="nc"><i>94</i>&nbsp;		var labelName = new Label(&quot;Classifier name&quot;);</b>
+<b class="nc"><i>95</i>&nbsp;		var tfName = new TextField();</b>
+<b class="nc"><i>96</i>&nbsp;		ProjectClassifierBindings.bindObjectClassifierNameInput(tfName, qupath.projectProperty());</b>
+<b class="nc"><i>97</i>&nbsp;		tfName.setPromptText(&quot;Enter composite classifier name&quot;);</b>
+<b class="nc"><i>98</i>&nbsp;		labelName.setLabelFor(tfName);</b>
+<b class="nc"><i>99</i>&nbsp;		PaneTools.setMaxWidth(Double.MAX_VALUE, tfName);</b>
+<b class="nc"><i>100</i>&nbsp;		PaneTools.setFillWidth(Boolean.TRUE, tfName);</b>
+<b class="nc"><i>101</i>&nbsp;		PaneTools.setHGrowPriority(Priority.ALWAYS, tfName);</b>
+<i>102</i>&nbsp;		
+<b class="nc"><i>103</i>&nbsp;		Button btnSave = new Button(&quot;Save&quot;);</b>
+<b class="nc"><i>104</i>&nbsp;		btnSave.setTooltip(new Tooltip(&quot;Save the composite classifier without applying it&quot;));</b>
+<b class="nc"><i>105</i>&nbsp;		btnSave.setOnAction(e -&gt; {</b>
+<b class="nc"><i>106</i>&nbsp;			tryToSave(qupath.getProject(), view.getTargetItems(), tfName.getText());</b>
+<b class="nc"><i>107</i>&nbsp;			tfName.requestFocus();</b>
+<b class="nc"><i>108</i>&nbsp;			btnSave.requestFocus();</b>
+<b class="nc"><i>109</i>&nbsp;		});</b>
+<i>110</i>&nbsp;		
+<b class="nc"><i>111</i>&nbsp;		PaneTools.addGridRow(paneName, 0, 0, &quot;Enter a name for the composite classifier&quot;, labelName, tfName, btnSave);</b>
+<b class="nc"><i>112</i>&nbsp;		paneName.setHgap(5.0);</b>
+<i>113</i>&nbsp;		
+<b class="nc"><i>114</i>&nbsp;		var pane = new BorderPane(view);</b>
+<b class="nc"><i>115</i>&nbsp;		pane.setTop(labelInstructions);</b>
+<b class="nc"><i>116</i>&nbsp;		pane.setBottom(paneName);</b>
+<i>117</i>&nbsp;		
+<i>118</i>&nbsp;//		var scene = new Scene(pane);
+<b class="nc"><i>119</i>&nbsp;		var dialog = new Dialog&lt;ButtonType&gt;();</b>
+<b class="nc"><i>120</i>&nbsp;		dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>121</i>&nbsp;		dialog.setTitle(title);</b>
+<b class="nc"><i>122</i>&nbsp;		dialog.getDialogPane().setContent(pane);</b>
+<b class="nc"><i>123</i>&nbsp;		dialog.getDialogPane().getButtonTypes().setAll(ButtonType.APPLY, ButtonType.CANCEL);</b>
+<b class="nc"><i>124</i>&nbsp;		var btnApply = dialog.getDialogPane().lookupButton(ButtonType.APPLY);</b>
+<b class="nc"><i>125</i>&nbsp;		if (btnApply instanceof Button)</b>
+<b class="nc"><i>126</i>&nbsp;			((Button)btnApply).setText(&quot;Save &amp; apply&quot;);</b>
+<b class="nc"><i>127</i>&nbsp;		var option = dialog.showAndWait();</b>
+<i>128</i>&nbsp;		
+<i>129</i>&nbsp;		// Apply to the current image
+<b class="nc"><i>130</i>&nbsp;		if (option.orElse(ButtonType.CANCEL).equals(ButtonType.APPLY)) {</b>
+<i>131</i>&nbsp;			try {
+<b class="nc"><i>132</i>&nbsp;				var classifier = tryToSave(qupath.getProject(), view.getTargetItems(), tfName.getText());</b>
+<i>133</i>&nbsp;//				var classifier = tryToBuild(view.getTargetItems());
+<b class="nc"><i>134</i>&nbsp;				if (classifier == null)</b>
+<b class="nc"><i>135</i>&nbsp;					return;</b>
+<b class="nc"><i>136</i>&nbsp;				logger.warn(&quot;Object classifier isn&#39;t currently written to the workflow history, sorry...&quot;);</b>
+<b class="nc"><i>137</i>&nbsp;				var imageData = qupath.getImageData();</b>
+<b class="nc"><i>138</i>&nbsp;				if (imageData != null) {</b>
+<b class="nc"><i>139</i>&nbsp;					var pathObjects = classifier.getCompatibleObjects(imageData);</b>
+<b class="nc"><i>140</i>&nbsp;					if (classifier.classifyObjects(imageData, pathObjects, true) &gt; 0)</b>
+<b class="nc"><i>141</i>&nbsp;						imageData.getHierarchy().fireObjectClassificationsChangedEvent(classifier, pathObjects);</b>
+<i>142</i>&nbsp;				}
+<b class="nc"><i>143</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>144</i>&nbsp;				Dialogs.showErrorMessage(title, e);</b>
+<b class="nc"><i>145</i>&nbsp;			}</b>
+<i>146</i>&nbsp;		}
+<b class="nc"><i>147</i>&nbsp;	}</b>
+<i>148</i>&nbsp;	
+<i>149</i>&nbsp;	
+<i>150</i>&nbsp;	private static ObjectClassifier&lt;BufferedImage&gt; tryToBuild(Collection&lt;ClassifierWrapper&lt;BufferedImage&gt;&gt; wrappers) throws IOException {
+<b class="nc"><i>151</i>&nbsp;		var classifiers = new LinkedHashSet&lt;ObjectClassifier&lt;BufferedImage&gt;&gt;();</b>
+<b class="nc"><i>152</i>&nbsp;		for (var wrapper : wrappers) {</b>
+<b class="nc"><i>153</i>&nbsp;			classifiers.add(wrapper.getClassifier());</b>
+<b class="nc"><i>154</i>&nbsp;		}</b>
+<b class="nc"><i>155</i>&nbsp;		if (classifiers.size() &lt; 2) {</b>
+<b class="nc"><i>156</i>&nbsp;			Dialogs.showErrorMessage(title, &quot;At least two different classifiers must be selected to create a composite!&quot;);</b>
+<b class="nc"><i>157</i>&nbsp;			return null;</b>
+<i>158</i>&nbsp;		}
+<b class="nc"><i>159</i>&nbsp;		return ObjectClassifiers.createCompositeClassifier(classifiers);</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	
+<i>163</i>&nbsp;	private static ObjectClassifier&lt;BufferedImage&gt; tryToSave(Project&lt;BufferedImage&gt; project, Collection&lt;ClassifierWrapper&lt;BufferedImage&gt;&gt; wrappers, String name) {
+<i>164</i>&nbsp;		try {
+<b class="nc"><i>165</i>&nbsp;			var composite = tryToBuild(wrappers);</b>
+<b class="nc"><i>166</i>&nbsp;			if (composite == null)</b>
+<b class="nc"><i>167</i>&nbsp;				return null;</b>
+<i>168</i>&nbsp;			
+<b class="nc"><i>169</i>&nbsp;			name = name == null ? null : GeneralTools.stripInvalidFilenameChars(name);</b>
+<b class="nc"><i>170</i>&nbsp;			if (project != null &amp;&amp; name != null &amp;&amp; !name.isBlank()) {</b>
+<b class="nc"><i>171</i>&nbsp;				if (project.getObjectClassifiers().contains(name)) {</b>
+<b class="nc"><i>172</i>&nbsp;					if (!Dialogs.showConfirmDialog(title, &quot;Overwrite existing classifier called &#39;&quot; + name + &quot;&#39;?&quot;))</b>
+<b class="nc"><i>173</i>&nbsp;						return null;</b>
+<i>174</i>&nbsp;				}
+<b class="nc"><i>175</i>&nbsp;				logger.info(&quot;Saving classifier to project as {}&quot;, name);</b>
+<b class="nc"><i>176</i>&nbsp;				project.getObjectClassifiers().put(name, composite);</b>
+<b class="nc"><i>177</i>&nbsp;				Dialogs.showInfoNotification(title, &quot;Classifier written to project as &quot; + name);</b>
+<i>178</i>&nbsp;			} else {
+<b class="nc"><i>179</i>&nbsp;				var file = Dialogs.promptToSaveFile(title, null, name, &quot;JSON&quot;, &quot;.json&quot;);</b>
+<b class="nc"><i>180</i>&nbsp;				if (file != null) {</b>
+<b class="nc"><i>181</i>&nbsp;					logger.info(&quot;Writing classifier to {}&quot;, file.getAbsolutePath());</b>
+<b class="nc"><i>182</i>&nbsp;					ObjectClassifiers.writeClassifier(composite, file.toPath());</b>
+<b class="nc"><i>183</i>&nbsp;					Dialogs.showInfoNotification(title, &quot;Classifier written to &quot; + file.getAbsolutePath());</b>
+<i>184</i>&nbsp;				}
+<i>185</i>&nbsp;			}
+<b class="nc"><i>186</i>&nbsp;			return composite;</b>
+<b class="nc"><i>187</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>188</i>&nbsp;			Dialogs.showErrorMessage(title, e);</b>
+<b class="nc"><i>189</i>&nbsp;			return null;</b>
+<i>190</i>&nbsp;		}
+<i>191</i>&nbsp;		
+<i>192</i>&nbsp;	}
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	/**
+<i>196</i>&nbsp;	 * Ensure we have all classifiers for the current project represented.
+<i>197</i>&nbsp;	 * @param view
+<i>198</i>&nbsp;	 * @throws IOException
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	private void updateAvailableClassifiers(ListSelectionView&lt;ClassifierWrapper&lt;BufferedImage&gt;&gt; view) throws IOException {
+<b class="nc"><i>201</i>&nbsp;		var project = qupath.getProject();</b>
+<b class="nc"><i>202</i>&nbsp;		if (project == null)</b>
+<b class="nc"><i>203</i>&nbsp;			return;</b>
+<b class="nc"><i>204</i>&nbsp;		var manager = project.getObjectClassifiers();</b>
+<b class="nc"><i>205</i>&nbsp;		var source = view.getSourceItems();</b>
+<b class="nc"><i>206</i>&nbsp;		var target = view.getTargetItems();</b>
+<b class="nc"><i>207</i>&nbsp;		for (String name : manager.getNames()) {</b>
+<b class="nc"><i>208</i>&nbsp;			var wrapper = new ProjectClassifierWrapper&lt;&gt;(project, name);</b>
+<b class="nc"><i>209</i>&nbsp;			if (!source.contains(wrapper) &amp;&amp; !target.contains(wrapper))</b>
+<b class="nc"><i>210</i>&nbsp;				source.add(wrapper);</b>
+<b class="nc"><i>211</i>&nbsp;		}</b>
+<b class="nc"><i>212</i>&nbsp;	}</b>
+<i>213</i>&nbsp;	
+<i>214</i>&nbsp;	
+<i>215</i>&nbsp;	static interface ClassifierWrapper&lt;T&gt; {
+<i>216</i>&nbsp;		
+<i>217</i>&nbsp;		public ObjectClassifier&lt;T&gt; getClassifier() throws IOException ;
+<i>218</i>&nbsp;		
+<i>219</i>&nbsp;	}
+<i>220</i>&nbsp;	
+<i>221</i>&nbsp;	static class ProjectClassifierWrapper&lt;T&gt; implements ClassifierWrapper&lt;T&gt; {
+<i>222</i>&nbsp;		
+<i>223</i>&nbsp;		private Project&lt;T&gt; project;
+<i>224</i>&nbsp;		private String name;
+<i>225</i>&nbsp;		
+<b class="nc"><i>226</i>&nbsp;		public ProjectClassifierWrapper(Project&lt;T&gt; project, String name) {</b>
+<b class="nc"><i>227</i>&nbsp;			this.project = project;</b>
+<b class="nc"><i>228</i>&nbsp;			this.name = name;</b>
+<i>229</i>&nbsp;		}
+<i>230</i>&nbsp;		
+<i>231</i>&nbsp;		@Override
+<i>232</i>&nbsp;		public ObjectClassifier&lt;T&gt; getClassifier() throws IOException {
+<b class="nc"><i>233</i>&nbsp;			return project.getObjectClassifiers().get(name);</b>
+<i>234</i>&nbsp;		}
+<i>235</i>&nbsp;		
+<i>236</i>&nbsp;		@Override
+<i>237</i>&nbsp;		public String toString() {
+<b class="nc"><i>238</i>&nbsp;			return name;</b>
+<i>239</i>&nbsp;		}
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;		@Override
+<i>242</i>&nbsp;		public int hashCode() {
+<b class="nc"><i>243</i>&nbsp;			final int prime = 31;</b>
+<b class="nc"><i>244</i>&nbsp;			int result = 1;</b>
+<b class="nc"><i>245</i>&nbsp;			result = prime * result + ((name == null) ? 0 : name.hashCode());</b>
+<b class="nc"><i>246</i>&nbsp;			result = prime * result + ((project == null) ? 0 : project.hashCode());</b>
+<b class="nc"><i>247</i>&nbsp;			return result;</b>
+<i>248</i>&nbsp;		}
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;		@Override
+<i>251</i>&nbsp;		public boolean equals(Object obj) {
+<b class="nc"><i>252</i>&nbsp;			if (this == obj)</b>
+<b class="nc"><i>253</i>&nbsp;				return true;</b>
+<b class="nc"><i>254</i>&nbsp;			if (obj == null)</b>
+<b class="nc"><i>255</i>&nbsp;				return false;</b>
+<b class="nc"><i>256</i>&nbsp;			if (getClass() != obj.getClass())</b>
+<b class="nc"><i>257</i>&nbsp;				return false;</b>
+<b class="nc"><i>258</i>&nbsp;			ProjectClassifierWrapper other = (ProjectClassifierWrapper) obj;</b>
+<b class="nc"><i>259</i>&nbsp;			if (name == null) {</b>
+<b class="nc"><i>260</i>&nbsp;				if (other.name != null)</b>
+<b class="nc"><i>261</i>&nbsp;					return false;</b>
+<b class="nc"><i>262</i>&nbsp;			} else if (!name.equals(other.name))</b>
+<b class="nc"><i>263</i>&nbsp;				return false;</b>
+<b class="nc"><i>264</i>&nbsp;			if (project == null) {</b>
+<b class="nc"><i>265</i>&nbsp;				if (other.project != null)</b>
+<b class="nc"><i>266</i>&nbsp;					return false;</b>
+<b class="nc"><i>267</i>&nbsp;			} else if (!project.equals(other.project))</b>
+<b class="nc"><i>268</i>&nbsp;				return false;</b>
+<b class="nc"><i>269</i>&nbsp;			return true;</b>
+<i>270</i>&nbsp;		}
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;	}
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

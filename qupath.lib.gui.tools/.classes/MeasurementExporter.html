@@ -1,0 +1,381 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MeasurementExporter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MeasurementExporter (qupath.lib.gui.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MeasurementExporter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 90)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.tools;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.File;
+<i>26</i>&nbsp;import java.io.FileOutputStream;
+<i>27</i>&nbsp;import java.io.OutputStream;
+<i>28</i>&nbsp;import java.io.OutputStreamWriter;
+<i>29</i>&nbsp;import java.io.PrintWriter;
+<i>30</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Arrays;
+<i>33</i>&nbsp;import java.util.Collections;
+<i>34</i>&nbsp;import java.util.HashMap;
+<i>35</i>&nbsp;import java.util.Iterator;
+<i>36</i>&nbsp;import java.util.List;
+<i>37</i>&nbsp;import java.util.Map;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import org.slf4j.Logger;
+<i>40</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import com.google.common.collect.LinkedListMultimap;
+<i>43</i>&nbsp;import com.google.common.collect.Multimap;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import qupath.lib.gui.commands.SummaryMeasurementTableCommand;
+<i>46</i>&nbsp;import qupath.lib.gui.measure.ObservableMeasurementTableData;
+<i>47</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>48</i>&nbsp;import qupath.lib.images.ImageData;
+<i>49</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>50</i>&nbsp;import qupath.lib.objects.PathRootObject;
+<i>51</i>&nbsp;import qupath.lib.projects.ProjectImageEntry;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;/**
+<i>55</i>&nbsp; * Helper class for exporting the measurements of one or more entries in a project.
+<i>56</i>&nbsp; * 
+<i>57</i>&nbsp; * @author Melvin Gelbard
+<i>58</i>&nbsp; */
+<i>59</i>&nbsp;public class MeasurementExporter {
+<i>60</i>&nbsp;	
+<b class="nc"><i>61</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(MeasurementExporter.class);</b>
+<i>62</i>&nbsp;	
+<b class="nc"><i>63</i>&nbsp;	private List&lt;String&gt; includeOnlyColumns = new ArrayList&lt;String&gt;();</b>
+<b class="nc"><i>64</i>&nbsp;	private List&lt;String&gt; excludeColumns = new ArrayList&lt;String&gt;();</b>
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	// Default: Exporting annotations
+<b class="nc"><i>67</i>&nbsp;	private Class&lt;? extends PathObject&gt; type = PathRootObject.class;</b>
+<i>68</i>&nbsp;	
+<b class="nc"><i>69</i>&nbsp;	private String separator = PathPrefs.tableDelimiterProperty().get();</b>
+<i>70</i>&nbsp;	
+<i>71</i>&nbsp;	private List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; imageList;
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>74</i>&nbsp;	public MeasurementExporter() {}
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Specify what type of object should be exported. 
+<i>78</i>&nbsp;	 * Default: image (root object).
+<i>79</i>&nbsp;	 * @param type
+<i>80</i>&nbsp;	 * @return this exporter
+<i>81</i>&nbsp;	 */
+<i>82</i>&nbsp;	public MeasurementExporter exportType(Class&lt;? extends PathObject&gt; type) {
+<b class="nc"><i>83</i>&nbsp;		this.type = type;</b>
+<b class="nc"><i>84</i>&nbsp;		return this;</b>
+<i>85</i>&nbsp;	}
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Specify the columns that will be included in the export.
+<i>89</i>&nbsp;	 * The column names are case sensitive.
+<i>90</i>&nbsp;	 * @param includeOnlyColumns
+<i>91</i>&nbsp;	 * @return this exporter
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public MeasurementExporter includeOnlyColumns(String... includeOnlyColumns) {
+<b class="nc"><i>94</i>&nbsp;		this.includeOnlyColumns = Arrays.asList(includeOnlyColumns);</b>
+<b class="nc"><i>95</i>&nbsp;		return this;</b>
+<i>96</i>&nbsp;	}
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	/**
+<i>99</i>&nbsp;	 * Specify the columns that will be excluded during the export.
+<i>100</i>&nbsp;	 * The column names are case sensitive.
+<i>101</i>&nbsp;	 * @param excludeColumns
+<i>102</i>&nbsp;	 * @return this exporter
+<i>103</i>&nbsp;	 */
+<i>104</i>&nbsp;	public MeasurementExporter excludeColumns(String... excludeColumns) {
+<b class="nc"><i>105</i>&nbsp;		this.excludeColumns = Arrays.asList(excludeColumns);</b>
+<b class="nc"><i>106</i>&nbsp;		return this;</b>
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	/**
+<i>110</i>&nbsp;	 * Specify the separator used between measurement values.
+<i>111</i>&nbsp;	 * To avoid unexpected behavior, it is recommended to
+<i>112</i>&nbsp;	 * use either tab ({@code \t}), comma ({@code ,}) or 
+<i>113</i>&nbsp;	 * semicolon ({@code ;}).
+<i>114</i>&nbsp;	 * @param sep
+<i>115</i>&nbsp;	 * @return this exporter
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public MeasurementExporter separator(String sep) {
+<b class="nc"><i>118</i>&nbsp;		this.separator = sep;</b>
+<b class="nc"><i>119</i>&nbsp;		return this;</b>
+<i>120</i>&nbsp;	}
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Specify the list of images ({@code ProjectImageEntry}) to export.
+<i>124</i>&nbsp;	 * @param imageList
+<i>125</i>&nbsp;	 * @return this exporter
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public MeasurementExporter imageList(List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; imageList) {
+<b class="nc"><i>128</i>&nbsp;		this.imageList = imageList;</b>
+<b class="nc"><i>129</i>&nbsp;		return this;</b>
+<i>130</i>&nbsp;	}
+<i>131</i>&nbsp;	
+<i>132</i>&nbsp;	/**
+<i>133</i>&nbsp;	 * Returns the list of images ({@code ProjectImageEntry}).
+<i>134</i>&nbsp;	 * @return imageList
+<i>135</i>&nbsp;	 */
+<i>136</i>&nbsp;	public List&lt;ProjectImageEntry&lt;BufferedImage&gt;&gt; getImageList() {
+<b class="nc"><i>137</i>&nbsp;		return imageList;</b>
+<i>138</i>&nbsp;	}
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	/**
+<i>141</i>&nbsp;	 * Returns the list of columns to exclude from export.
+<i>142</i>&nbsp;	 * @return list of column names
+<i>143</i>&nbsp;	 */
+<i>144</i>&nbsp;	public List&lt;String&gt; getExcludeColumns() {
+<b class="nc"><i>145</i>&nbsp;		return excludeColumns;</b>
+<i>146</i>&nbsp;	}
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	/**
+<i>149</i>&nbsp;	 * Returns the list of columns to include in the export.
+<i>150</i>&nbsp;	 * @return list of column names
+<i>151</i>&nbsp;	 */
+<i>152</i>&nbsp;	public List&lt;String&gt; getIncludeColumns() {
+<b class="nc"><i>153</i>&nbsp;		return includeOnlyColumns;</b>
+<i>154</i>&nbsp;	}
+<i>155</i>&nbsp;	
+<i>156</i>&nbsp;	/**
+<i>157</i>&nbsp;	 * Returns the separator used in between measurements.
+<i>158</i>&nbsp;	 * @return separator
+<i>159</i>&nbsp;	 */
+<i>160</i>&nbsp;	public String getSeparator() {
+<b class="nc"><i>161</i>&nbsp;		return separator;</b>
+<i>162</i>&nbsp;	}
+<i>163</i>&nbsp;	
+<i>164</i>&nbsp;	/**
+<i>165</i>&nbsp;	 * Returns the type of path objects used in the export.
+<i>166</i>&nbsp;	 * @return path object
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;	public Class&lt;? extends PathObject&gt; getType() {
+<b class="nc"><i>169</i>&nbsp;		return type;</b>
+<i>170</i>&nbsp;	}
+<i>171</i>&nbsp;	
+<i>172</i>&nbsp;	/**
+<i>173</i>&nbsp;	 * Exports the measurements of one or more entries in the project.
+<i>174</i>&nbsp;	 * This function first opens all the images in the project to store 
+<i>175</i>&nbsp;	 * all the column names and values of the measurements.
+<i>176</i>&nbsp;	 * Then, it loops through the maps containing the values to write
+<i>177</i>&nbsp;	 * them to the given output file.
+<i>178</i>&nbsp;	 * @param file
+<i>179</i>&nbsp;	 */
+<i>180</i>&nbsp;	public void exportMeasurements(File file) {
+<b class="nc"><i>181</i>&nbsp;		try(FileOutputStream fos = new FileOutputStream(file)) {</b>
+<b class="nc"><i>182</i>&nbsp;			exportMeasurements(fos);</b>
+<b class="nc"><i>183</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>184</i>&nbsp;			logger.error(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>185</i>&nbsp;		}</b>
+<i>186</i>&nbsp;	}
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	
+<i>189</i>&nbsp;	/**
+<i>190</i>&nbsp;	 * Exports the measurements of one or more entries in the project.
+<i>191</i>&nbsp;	 * This function first opens all the images in the project to store 
+<i>192</i>&nbsp;	 * all the column names and values of the measurements.
+<i>193</i>&nbsp;	 * Then, it loops through the maps containing the values to write
+<i>194</i>&nbsp;	 * them to the given output stream.
+<i>195</i>&nbsp;	 * @param stream
+<i>196</i>&nbsp;	 */
+<i>197</i>&nbsp;	public void exportMeasurements(OutputStream stream) {
+<b class="nc"><i>198</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<i>199</i>&nbsp;		
+<b class="nc"><i>200</i>&nbsp;		Map&lt;ProjectImageEntry&lt;?&gt;, String[]&gt; imageCols = new HashMap&lt;ProjectImageEntry&lt;?&gt;, String[]&gt;();</b>
+<b class="nc"><i>201</i>&nbsp;		Map&lt;ProjectImageEntry&lt;?&gt;, Integer&gt; nImageEntries = new HashMap&lt;ProjectImageEntry&lt;?&gt;, Integer&gt;();</b>
+<b class="nc"><i>202</i>&nbsp;		List&lt;String&gt; allColumns = new ArrayList&lt;String&gt;();</b>
+<b class="nc"><i>203</i>&nbsp;		Multimap&lt;String, String&gt; valueMap = LinkedListMultimap.create();</b>
+<b class="nc"><i>204</i>&nbsp;		String pattern = &quot;(?=(?:[^\&quot;]*\&quot;[^\&quot;]*\&quot;)*[^\&quot;]*$)&quot;;</b>
+<i>205</i>&nbsp;		
+<b class="nc"><i>206</i>&nbsp;		for (ProjectImageEntry&lt;?&gt; entry: imageList) {</b>
+<i>207</i>&nbsp;			try {
+<b class="nc"><i>208</i>&nbsp;				ImageData&lt;?&gt; imageData = entry.readImageData();</b>
+<b class="nc"><i>209</i>&nbsp;				ObservableMeasurementTableData model = new ObservableMeasurementTableData();</b>
+<b class="nc"><i>210</i>&nbsp;				model.setImageData(imageData, imageData == null ? Collections.emptyList() : imageData.getHierarchy().getObjects(null, type));</b>
+<b class="nc"><i>211</i>&nbsp;				List&lt;String&gt; data = SummaryMeasurementTableCommand.getTableModelStrings(model, separator, excludeColumns);</b>
+<i>212</i>&nbsp;				
+<i>213</i>&nbsp;				// Get header
+<i>214</i>&nbsp;				String[] header;
+<b class="nc"><i>215</i>&nbsp;				String headerString = data.get(0);</b>
+<b class="nc"><i>216</i>&nbsp;				if (headerString.chars().filter(e -&gt; e == &#39;&quot;&#39;).count() &gt; 1)</b>
+<b class="nc"><i>217</i>&nbsp;					header = headerString.split(separator.equals(&quot;\t&quot;) ? &quot;\\&quot; + separator : separator + pattern , -1);</b>
+<i>218</i>&nbsp;				else
+<b class="nc"><i>219</i>&nbsp;					header = headerString.split(separator);</b>
+<i>220</i>&nbsp;				
+<b class="nc"><i>221</i>&nbsp;				imageCols.put(entry, header);</b>
+<b class="nc"><i>222</i>&nbsp;				nImageEntries.put(entry, data.size()-1);</b>
+<i>223</i>&nbsp;				
+<b class="nc"><i>224</i>&nbsp;				for (String col: header) {</b>
+<b class="nc"><i>225</i>&nbsp;					if (!allColumns.contains(col)  &amp;&amp; !excludeColumns.contains(col))</b>
+<b class="nc"><i>226</i>&nbsp;						allColumns.add(col);</b>
+<i>227</i>&nbsp;				}
+<i>228</i>&nbsp;				
+<i>229</i>&nbsp;				// To keep the same column order, just delete non-relevant columns
+<b class="nc"><i>230</i>&nbsp;				if (!includeOnlyColumns.isEmpty())</b>
+<b class="nc"><i>231</i>&nbsp;					allColumns.removeIf(n -&gt; !includeOnlyColumns.contains(n));</b>
+<i>232</i>&nbsp;				
+<b class="nc"><i>233</i>&nbsp;				for (int i = 1; i &lt; data.size(); i++) {</b>
+<i>234</i>&nbsp;					String[] row;
+<b class="nc"><i>235</i>&nbsp;					String rowString = data.get(i);</b>
+<i>236</i>&nbsp;					
+<i>237</i>&nbsp;					// Check if some values in the row are escaped
+<b class="nc"><i>238</i>&nbsp;					if (rowString.chars().filter(e -&gt; e == &#39;&quot;&#39;).count() &gt; 1)</b>
+<b class="nc"><i>239</i>&nbsp;						row = rowString.split(separator.equals(&quot;\t&quot;) ? &quot;\\&quot; + separator : separator + pattern , -1);</b>
+<i>240</i>&nbsp;					else
+<b class="nc"><i>241</i>&nbsp;						row = rowString.split(separator);</b>
+<i>242</i>&nbsp;					
+<i>243</i>&nbsp;					// Put value in map
+<b class="nc"><i>244</i>&nbsp;					for (int elem = 0; elem &lt; row.length; elem++) {</b>
+<b class="nc"><i>245</i>&nbsp;						if (allColumns.contains(header[elem]))</b>
+<b class="nc"><i>246</i>&nbsp;							valueMap.put(header[elem], row[elem]);</b>
+<i>247</i>&nbsp;					}
+<i>248</i>&nbsp;				}
+<i>249</i>&nbsp;				
+<b class="nc"><i>250</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>251</i>&nbsp;				logger.error(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>252</i>&nbsp;			}</b>
+<b class="nc"><i>253</i>&nbsp;		}</b>
+<i>254</i>&nbsp;		
+<b class="nc"><i>255</i>&nbsp;		try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.UTF_8))){</b>
+<b class="nc"><i>256</i>&nbsp;			writer.write(String.join(separator, allColumns));</b>
+<b class="nc"><i>257</i>&nbsp;			writer.write(System.lineSeparator());</b>
+<i>258</i>&nbsp;
+<b class="nc"><i>259</i>&nbsp;			Iterator[] its = new Iterator[allColumns.size()];</b>
+<b class="nc"><i>260</i>&nbsp;			for (int col = 0; col &lt; allColumns.size(); col++) {</b>
+<b class="nc"><i>261</i>&nbsp;				its[col] = valueMap.get(allColumns.get(col)).iterator();</b>
+<i>262</i>&nbsp;			}
+<i>263</i>&nbsp;
+<b class="nc"><i>264</i>&nbsp;			for (ProjectImageEntry&lt;?&gt; entry: imageList) {</b>
+<i>265</i>&nbsp;				
+<b class="nc"><i>266</i>&nbsp;				for (int nObject = 0; nObject &lt; nImageEntries.get(entry); nObject++) {</b>
+<b class="nc"><i>267</i>&nbsp;					for (int nCol = 0; nCol &lt; allColumns.size(); nCol++) {</b>
+<b class="nc"><i>268</i>&nbsp;						if (Arrays.stream(imageCols.get(entry)).anyMatch(allColumns.get(nCol)::equals)) {</b>
+<b class="nc"><i>269</i>&nbsp;							String val = (String)its[nCol].next();</b>
+<i>270</i>&nbsp;							// NaN values -&gt; blank
+<b class="nc"><i>271</i>&nbsp;							if (val.equals(&quot;NaN&quot;))</b>
+<b class="nc"><i>272</i>&nbsp;								val = &quot;&quot;;</b>
+<b class="nc"><i>273</i>&nbsp;							writer.write(val);</b>
+<i>274</i>&nbsp;						}
+<b class="nc"><i>275</i>&nbsp;						if (nCol &lt; allColumns.size()-1)</b>
+<b class="nc"><i>276</i>&nbsp;							writer.write(separator);</b>
+<i>277</i>&nbsp;					}
+<b class="nc"><i>278</i>&nbsp;					writer.write(System.lineSeparator());</b>
+<i>279</i>&nbsp;				}
+<b class="nc"><i>280</i>&nbsp;			}</b>
+<b class="nc"><i>281</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>282</i>&nbsp;			logger.error(&quot;Error writing to file: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>283</i>&nbsp;		}</b>
+<i>284</i>&nbsp;		
+<b class="nc"><i>285</i>&nbsp;		long endTime = System.currentTimeMillis();</b>
+<i>286</i>&nbsp;		
+<b class="nc"><i>287</i>&nbsp;		long timeMillis = endTime - startTime;</b>
+<b class="nc"><i>288</i>&nbsp;		String time = null;</b>
+<b class="nc"><i>289</i>&nbsp;		if (timeMillis &gt; 1000*60)</b>
+<b class="nc"><i>290</i>&nbsp;			time = String.format(&quot;Total processing time: %.2f minutes&quot;, timeMillis/(1000.0 * 60.0));</b>
+<b class="nc"><i>291</i>&nbsp;		else if (timeMillis &gt; 1000)</b>
+<b class="nc"><i>292</i>&nbsp;			time = String.format(&quot;Total processing time: %.2f seconds&quot;, timeMillis/(1000.0));</b>
+<i>293</i>&nbsp;		else
+<b class="nc"><i>294</i>&nbsp;			time = String.format(&quot;Total processing time: %d milliseconds&quot;, timeMillis);</b>
+<b class="nc"><i>295</i>&nbsp;		logger.info(&quot;Processed {} images&quot;, imageList.size());</b>
+<b class="nc"><i>296</i>&nbsp;		logger.info(time);</b>
+<i>297</i>&nbsp;	}
+<i>298</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

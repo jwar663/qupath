@@ -1,0 +1,546 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HaralickFeatures</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.features</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HaralickFeatures (qupath.lib.analysis.features)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HaralickFeatures</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 207)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.features;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * Helper class for computing Haralick features given a cooccurrence matrix.
+<i>30</i>&nbsp; * 
+<i>31</i>&nbsp; * @author Pete Bankhead
+<i>32</i>&nbsp; *
+<i>33</i>&nbsp; */
+<i>34</i>&nbsp;public class HaralickFeatures {
+<i>35</i>&nbsp;	
+<i>36</i>&nbsp;	/**
+<i>37</i>&nbsp;	 * Value of {@code Math.log(2)} (natural logarithm).
+<i>38</i>&nbsp;	 */
+<b class="nc"><i>39</i>&nbsp;	private final static double LOG2 = Math.log(2);</b>
+<i>40</i>&nbsp;	// Add a small constant to avoid log of zero
+<i>41</i>&nbsp;//	public final static double eps = 0.0000001;
+<i>42</i>&nbsp;	
+<i>43</i>&nbsp;	private CoocMatrix matrix;
+<i>44</i>&nbsp;	
+<b class="nc"><i>45</i>&nbsp;	private double[] f = new double[13];</b>
+<i>46</i>&nbsp;	
+<b class="nc"><i>47</i>&nbsp;	private final static String[] FEATURE_NAMES = new String[]{</b>
+<i>48</i>&nbsp;		&quot;Angular second moment&quot;,
+<i>49</i>&nbsp;		&quot;Contrast&quot;,
+<i>50</i>&nbsp;		&quot;Correlation&quot;,
+<i>51</i>&nbsp;		&quot;Sum of squares&quot;,
+<i>52</i>&nbsp;		&quot;Inverse difference moment&quot;,
+<i>53</i>&nbsp;		&quot;Sum average&quot;,
+<i>54</i>&nbsp;		&quot;Sum variance&quot;,
+<i>55</i>&nbsp;		&quot;Sum entropy&quot;,
+<i>56</i>&nbsp;		&quot;Entropy&quot;,
+<i>57</i>&nbsp;		&quot;Difference variance&quot;,
+<i>58</i>&nbsp;		&quot;Difference entropy&quot;,
+<i>59</i>&nbsp;		&quot;Information measure of correlation 1&quot;,
+<i>60</i>&nbsp;		&quot;Information measure of correlation 2&quot;
+<i>61</i>&nbsp;	};
+<i>62</i>&nbsp;	
+<i>63</i>&nbsp;	/**
+<i>64</i>&nbsp;	 * Constructor.
+<i>65</i>&nbsp;	 * @param matrix precomputed co-occurrence matrix.
+<i>66</i>&nbsp;	 */
+<b class="nc"><i>67</i>&nbsp;	HaralickFeatures(final CoocMatrix matrix) {</b>
+<b class="nc"><i>68</i>&nbsp;		this.matrix = matrix;</b>
+<b class="nc"><i>69</i>&nbsp;		computeFeatures();</b>
+<i>70</i>&nbsp;	}
+<i>71</i>&nbsp;	
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	@Override
+<i>74</i>&nbsp;	public String toString() {
+<b class="nc"><i>75</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>76</i>&nbsp;		for (double d : f)</b>
+<b class="nc"><i>77</i>&nbsp;			sb.append(d + &quot;, &quot;);</b>
+<b class="nc"><i>78</i>&nbsp;		return sb.toString();</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	private static RunningStatistics getStatistics(double[] array) {
+<b class="nc"><i>82</i>&nbsp;		RunningStatistics stats = new RunningStatistics();</b>
+<b class="nc"><i>83</i>&nbsp;		for (double d : array)</b>
+<b class="nc"><i>84</i>&nbsp;			stats.addValue(d);</b>
+<b class="nc"><i>85</i>&nbsp;		return stats;</b>
+<i>86</i>&nbsp;	}
+<i>87</i>&nbsp;		
+<i>88</i>&nbsp;	private void computeFeatures() {
+<b class="nc"><i>89</i>&nbsp;		if (matrix == null)</b>
+<i>90</i>&nbsp;			return;
+<i>91</i>&nbsp;		
+<i>92</i>&nbsp;//		IJ.log(matrix.toString());
+<i>93</i>&nbsp;				
+<i>94</i>&nbsp;		double[] px, py, px_and_y, px_y;
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;		
+<b class="nc"><i>97</i>&nbsp;		matrix.finalizeMatrix();</b>
+<b class="nc"><i>98</i>&nbsp;		int n = matrix.getN();</b>
+<i>99</i>&nbsp;		
+<i>100</i>&nbsp;		// Normalize to sum while computing required vectors
+<b class="nc"><i>101</i>&nbsp;		px = new double[n];</b>
+<b class="nc"><i>102</i>&nbsp;		py = new double[n];</b>
+<b class="nc"><i>103</i>&nbsp;		px_and_y = new double[2*n+1];</b>
+<b class="nc"><i>104</i>&nbsp;		px_y = new double[n];</b>
+<b class="nc"><i>105</i>&nbsp;		double mx = 0; </b>
+<b class="nc"><i>106</i>&nbsp;		double my = 0;  </b>
+<b class="nc"><i>107</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>108</i>&nbsp;			for (int j = 0; j &lt; n; j++) {</b>
+<b class="nc"><i>109</i>&nbsp;				double val = matrix.get(i, j);</b>
+<b class="nc"><i>110</i>&nbsp;				px[i] += val;</b>
+<b class="nc"><i>111</i>&nbsp;				py[j] += val;</b>
+<b class="nc"><i>112</i>&nbsp;				px_and_y[i + j] += val;</b>
+<b class="nc"><i>113</i>&nbsp;				px_y[Math.abs(i - j)] += val;</b>
+<i>114</i>&nbsp;				
+<b class="nc"><i>115</i>&nbsp;				mx += (i + 1) * val; </b>
+<b class="nc"><i>116</i>&nbsp;				my += (j + 1) * val;</b>
+<i>117</i>&nbsp;			}
+<i>118</i>&nbsp;		}
+<i>119</i>&nbsp;		
+<i>120</i>&nbsp;		// Standard deviations for marginal-probability matrices
+<b class="nc"><i>121</i>&nbsp;		double sx = 0;</b>
+<b class="nc"><i>122</i>&nbsp;		double sy = 0;</b>
+<b class="nc"><i>123</i>&nbsp;		for (int i = 1; i &lt;= n; i++) {</b>
+<b class="nc"><i>124</i>&nbsp;			for (int j = 1; j &lt;= n; j++) {</b>
+<b class="nc"><i>125</i>&nbsp;				double val = matrix.get(i-1, j-1);</b>
+<b class="nc"><i>126</i>&nbsp;				sx += (i - mx) * (i - mx) * val;</b>
+<b class="nc"><i>127</i>&nbsp;				sy += (j - my) * (j - my) * val;</b>
+<i>128</i>&nbsp;			}
+<i>129</i>&nbsp;		}
+<b class="nc"><i>130</i>&nbsp;		sx = Math.sqrt(sx);</b>
+<b class="nc"><i>131</i>&nbsp;		sy = Math.sqrt(sy);</b>
+<i>132</i>&nbsp;		
+<i>133</i>&nbsp;		// Compute textural features
+<i>134</i>&nbsp;		
+<i>135</i>&nbsp;		// Angular second moment (f1)
+<i>136</i>&nbsp;		// Correlation (f3)
+<i>137</i>&nbsp;		// Inverse difference moment (f5)
+<i>138</i>&nbsp;		// Entropy (f9)
+<b class="nc"><i>139</i>&nbsp;		double f1 = 0;</b>
+<b class="nc"><i>140</i>&nbsp;		double f3 = 0;</b>
+<b class="nc"><i>141</i>&nbsp;		double f5 = 0;</b>
+<b class="nc"><i>142</i>&nbsp;		double f9 = 0;</b>
+<i>143</i>&nbsp;				
+<b class="nc"><i>144</i>&nbsp;		double Hxy1 = 0; // Hxy1 &amp; Hxy2 for (more) entropies</b>
+<b class="nc"><i>145</i>&nbsp;		double Hxy2 = 0;</b>
+<b class="nc"><i>146</i>&nbsp;		for (int i = 1; i &lt;= n; i++) {</b>
+<b class="nc"><i>147</i>&nbsp;			for (int j = 1; j &lt;= n; j++) {</b>
+<b class="nc"><i>148</i>&nbsp;				double val = matrix.get(i-1, j-1);</b>
+<b class="nc"><i>149</i>&nbsp;				double logVal = matrix.getLog(i-1, j-1) / LOG2;</b>
+<b class="nc"><i>150</i>&nbsp;				f1 += val * val;</b>
+<i>151</i>&nbsp;				
+<b class="nc"><i>152</i>&nbsp;				f3 += i*j * val;</b>
+<i>153</i>&nbsp;				
+<b class="nc"><i>154</i>&nbsp;				f5 += val / (1 + (i - j)*(i - j));</b>
+<i>155</i>&nbsp;				
+<b class="nc"><i>156</i>&nbsp;				f9 -= val * logVal;</b>
+<i>157</i>&nbsp;				
+<b class="nc"><i>158</i>&nbsp;				double temp = px[i-1] * py[j-1];</b>
+<b class="nc"><i>159</i>&nbsp;				if (temp != 0) {</b>
+<b class="nc"><i>160</i>&nbsp;					double logTemp = Math.log(temp) / LOG2;</b>
+<b class="nc"><i>161</i>&nbsp;					Hxy1 -= val * logTemp;</b>
+<b class="nc"><i>162</i>&nbsp;					Hxy2 -= temp * logTemp;</b>
+<i>163</i>&nbsp;				}
+<i>164</i>&nbsp;				
+<i>165</i>&nbsp;			}
+<i>166</i>&nbsp;		}
+<b class="nc"><i>167</i>&nbsp;		double Hxy = f9;</b>
+<b class="nc"><i>168</i>&nbsp;		f3 -= mx*my;</b>
+<b class="nc"><i>169</i>&nbsp;		f3 /= sx*sy;</b>
+<i>170</i>&nbsp;		
+<i>171</i>&nbsp;		// Sum of squares (f4)
+<b class="nc"><i>172</i>&nbsp;		double f4 = sx*sx;</b>
+<i>173</i>&nbsp;				
+<i>174</i>&nbsp;		// Contrast (f2)
+<b class="nc"><i>175</i>&nbsp;		double f2 = 0;</b>
+<b class="nc"><i>176</i>&nbsp;		for (int nn = 0; nn &lt; n; nn++) {</b>
+<b class="nc"><i>177</i>&nbsp;			f2 += nn * nn * px_y[nn];</b>
+<i>178</i>&nbsp;		}
+<i>179</i>&nbsp;		
+<i>180</i>&nbsp;		// Sum average (f6)
+<i>181</i>&nbsp;		// Sum entropy (f8)
+<b class="nc"><i>182</i>&nbsp;		double f6 = 0;</b>
+<b class="nc"><i>183</i>&nbsp;		double f8 = 0;</b>
+<b class="nc"><i>184</i>&nbsp;		for (int i = 2; i &lt;= 2*n; i++) {</b>
+<b class="nc"><i>185</i>&nbsp;			double val = px_and_y[i];</b>
+<b class="nc"><i>186</i>&nbsp;			if (val != 0) {</b>
+<i>187</i>&nbsp;				//J double logVal = Math.log(val) / LOG2;
+<b class="nc"><i>188</i>&nbsp;				f6 += i * val;</b>
+<b class="nc"><i>189</i>&nbsp;				f8 -= val * (Math.log(val) / LOG2); //J</b>
+<i>190</i>&nbsp;			}
+<i>191</i>&nbsp;		}
+<i>192</i>&nbsp;		
+<i>193</i>&nbsp;		// Sum variance (f7)
+<b class="nc"><i>194</i>&nbsp;		double f7 = 0;</b>
+<b class="nc"><i>195</i>&nbsp;		for (int i = 2; i &lt;= 2*n; i++) {</b>
+<i>196</i>&nbsp;			//J double val = px_and_y[i];
+<i>197</i>&nbsp;			// f6 rather than f8 in Haralick&#39;s original paper... see
+<i>198</i>&nbsp;			// https://github.com/CellProfiler/CellProfiler/blob/master/cellprofiler/cpmath/haralick.py and
+<i>199</i>&nbsp;			// http://xy-27.pythonxy.googlecode.com/hg-history/fec21bbbbd9f0a71cca43858991f4c468c6ce211/src/python/mahotas/PLATLIB/mahotas/features/texture.py
+<b class="nc"><i>200</i>&nbsp;			f7 += (i - f6) * (i - f6) * px_and_y[i]; //J</b>
+<i>201</i>&nbsp;//			f7 += (i - f8)*(i - f8)*val;
+<i>202</i>&nbsp;		}
+<i>203</i>&nbsp;		
+<i>204</i>&nbsp;		// Difference entropy (f11)
+<b class="nc"><i>205</i>&nbsp;		double f11 = 0;</b>
+<b class="nc"><i>206</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>207</i>&nbsp;			double val = px_y[i];</b>
+<b class="nc"><i>208</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>209</i>&nbsp;				f11 -= val * (Math.log(val) / LOG2); //J</b>
+<i>210</i>&nbsp;		}
+<i>211</i>&nbsp;		
+<i>212</i>&nbsp;		// Difference variance (f10)
+<b class="nc"><i>213</i>&nbsp;		RunningStatistics px_yStats = getStatistics(px_y);</b>
+<b class="nc"><i>214</i>&nbsp;		double f10 = px_yStats.getVariance();</b>
+<i>215</i>&nbsp;		
+<i>216</i>&nbsp;
+<b class="nc"><i>217</i>&nbsp;		double Hx = 0; // Hx &amp; Hy for entropies</b>
+<b class="nc"><i>218</i>&nbsp;		double Hy = 0;</b>
+<b class="nc"><i>219</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>220</i>&nbsp;			double val = px[i];</b>
+<b class="nc"><i>221</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>222</i>&nbsp;				Hx -= val * Math.log(val)/LOG2;</b>
+<b class="nc"><i>223</i>&nbsp;			val = py[i];</b>
+<b class="nc"><i>224</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>225</i>&nbsp;				Hy -= val * Math.log(val)/LOG2;</b>
+<i>226</i>&nbsp;		}
+<i>227</i>&nbsp;//		IJ.log(String.format(&quot;%.3f, %.3f, %.3f, %.3f, %.3f, &quot;, Hx, Hy, Hxy, Hxy1, Hxy2));
+<i>228</i>&nbsp;		// Information measures of correlation
+<b class="nc"><i>229</i>&nbsp;		double f12 = (Hxy - Hxy1) / Math.max(Hx, Hy);</b>
+<b class="nc"><i>230</i>&nbsp;		double f13 = Math.sqrt(1 - Math.exp(-2 * (Hxy2 - Hxy)));</b>
+<i>231</i>&nbsp;		
+<i>232</i>&nbsp;		
+<b class="nc"><i>233</i>&nbsp;		f[0] = f1; // Agrees with Mahotas</b>
+<b class="nc"><i>234</i>&nbsp;		f[1] = f2; // Agrees</b>
+<b class="nc"><i>235</i>&nbsp;		f[2] = f3;</b>
+<i>236</i>&nbsp;		
+<b class="nc"><i>237</i>&nbsp;		f[3] = f4;</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;		f[4] = f5; // Agrees</b>
+<b class="nc"><i>240</i>&nbsp;		f[5] = f6; // Agrees (almost?)</b>
+<b class="nc"><i>241</i>&nbsp;		f[6] = f7; // Agrees</b>
+<b class="nc"><i>242</i>&nbsp;		f[7] = f8; // Agrees</b>
+<b class="nc"><i>243</i>&nbsp;		f[8] = f9; // Agrees</b>
+<i>244</i>&nbsp;		
+<b class="nc"><i>245</i>&nbsp;		f[9] = f10; // Agrees except for variance definition (I think)</b>
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;		f[10] = f11; // Agrees</b>
+<i>248</i>&nbsp;
+<b class="nc"><i>249</i>&nbsp;		f[11] = f12; // Agrees (apart from eps)</b>
+<b class="nc"><i>250</i>&nbsp;		f[12] = f13; // Agrees (apart from eps)</b>
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;	//J alternative function with different mean and SD calculations - to compare with above for performance
+<i>254</i>&nbsp;	private void computeFeaturesJ() {
+<b class="nc"><i>255</i>&nbsp;		if (matrix == null)</b>
+<i>256</i>&nbsp;			return;
+<i>257</i>&nbsp;		
+<i>258</i>&nbsp;//		IJ.log(matrix.toString());
+<i>259</i>&nbsp;				
+<i>260</i>&nbsp;		double[] px, py, px_and_y, px_y;
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;		
+<b class="nc"><i>263</i>&nbsp;		matrix.finalizeMatrix();</b>
+<b class="nc"><i>264</i>&nbsp;		int n = matrix.getN();</b>
+<i>265</i>&nbsp;		
+<i>266</i>&nbsp;		// Normalize to sum while computing required vectors
+<b class="nc"><i>267</i>&nbsp;		px = new double[n];</b>
+<b class="nc"><i>268</i>&nbsp;		py = new double[n];</b>
+<b class="nc"><i>269</i>&nbsp;		px_and_y = new double[2*n+1];</b>
+<b class="nc"><i>270</i>&nbsp;		px_y = new double[n];</b>
+<b class="nc"><i>271</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>272</i>&nbsp;			for (int j = 0; j &lt; n; j++) {</b>
+<b class="nc"><i>273</i>&nbsp;				double val = matrix.get(i, j);</b>
+<b class="nc"><i>274</i>&nbsp;				px[i] += val;</b>
+<b class="nc"><i>275</i>&nbsp;				py[j] += val;</b>
+<b class="nc"><i>276</i>&nbsp;				px_and_y[i + j] += val;</b>
+<b class="nc"><i>277</i>&nbsp;				px_y[Math.abs(i - j)] += val;</b>
+<i>278</i>&nbsp;				
+<i>279</i>&nbsp;				//J mx += (i + 1) * val; 
+<i>280</i>&nbsp;				//J my += (j + 1) * val;
+<i>281</i>&nbsp;			}
+<i>282</i>&nbsp;		}
+<i>283</i>&nbsp;		
+<i>284</i>&nbsp;		// Mean values for marginal-probability matrices
+<b class="nc"><i>285</i>&nbsp;		double mx = 0; //J</b>
+<b class="nc"><i>286</i>&nbsp;		double my = 0; //J </b>
+<b class="nc"><i>287</i>&nbsp;		for (int i = 0; i &lt; n; i++){ //J</b>
+<b class="nc"><i>288</i>&nbsp;			mx += px[i]; //J</b>
+<b class="nc"><i>289</i>&nbsp;			my += py[i]; //J</b>
+<i>290</i>&nbsp;		} //J
+<b class="nc"><i>291</i>&nbsp;		mx /= n; //J there is an implicit cast here - keep an eye on this</b>
+<b class="nc"><i>292</i>&nbsp;		my /= n; //J		</b>
+<i>293</i>&nbsp;		
+<i>294</i>&nbsp;		// Standard deviations for marginal-probability matrices
+<b class="nc"><i>295</i>&nbsp;		double sx = 0;</b>
+<b class="nc"><i>296</i>&nbsp;		double sy = 0;</b>
+<i>297</i>&nbsp;//J		for (int i = 1; i &lt;= n; i++) {
+<i>298</i>&nbsp;//J			for (int j = 1; j &lt;= n; j++) {
+<i>299</i>&nbsp;//J				double val = matrix.get(i-1, j-1);
+<i>300</i>&nbsp;//J				sx += (i - mx) * (i - mx) * val;
+<i>301</i>&nbsp;//J				sy += (j - my) * (j - my) * val;
+<i>302</i>&nbsp;//J			}
+<i>303</i>&nbsp;//J		}
+<i>304</i>&nbsp;//J		sx = Math.sqrt(sx);
+<i>305</i>&nbsp;//J		sy = Math.sqrt(sy);
+<b class="nc"><i>306</i>&nbsp;		for (int i = 0; i &lt; n; i++){ //J</b>
+<b class="nc"><i>307</i>&nbsp;			sx += (px[i] - mx) * (px[i] - mx); //J</b>
+<b class="nc"><i>308</i>&nbsp;			sy += (py[i] - my) * (py[i] - my); //J</b>
+<i>309</i>&nbsp;		} //J
+<b class="nc"><i>310</i>&nbsp;		sx = Math.sqrt(sx/(n-1)); //J</b>
+<b class="nc"><i>311</i>&nbsp;		sy = Math.sqrt(sy/(n-1)); //J</b>
+<i>312</i>&nbsp;		
+<i>313</i>&nbsp;		// Compute textural features
+<i>314</i>&nbsp;		
+<i>315</i>&nbsp;		// Angular second moment (f1)
+<i>316</i>&nbsp;		// Correlation (f3)
+<i>317</i>&nbsp;		// Inverse difference moment (f5)
+<i>318</i>&nbsp;		// Entropy (f9)
+<b class="nc"><i>319</i>&nbsp;		double f1 = 0;</b>
+<b class="nc"><i>320</i>&nbsp;		double f3 = 0;</b>
+<b class="nc"><i>321</i>&nbsp;		double f5 = 0;</b>
+<b class="nc"><i>322</i>&nbsp;		double f9 = 0;</b>
+<i>323</i>&nbsp;				
+<b class="nc"><i>324</i>&nbsp;		double Hxy1 = 0; // Hxy1 &amp; Hxy2 for (more) entropies</b>
+<b class="nc"><i>325</i>&nbsp;		double Hxy2 = 0;</b>
+<b class="nc"><i>326</i>&nbsp;		for (int i = 1; i &lt;= n; i++) {</b>
+<b class="nc"><i>327</i>&nbsp;			for (int j = 1; j &lt;= n; j++) {</b>
+<b class="nc"><i>328</i>&nbsp;				double val = matrix.get(i-1, j-1);</b>
+<b class="nc"><i>329</i>&nbsp;				double logVal = matrix.getLog(i-1, j-1) / LOG2;</b>
+<b class="nc"><i>330</i>&nbsp;				f1 += val * val;</b>
+<i>331</i>&nbsp;				
+<b class="nc"><i>332</i>&nbsp;				f3 += i*j * val;</b>
+<i>333</i>&nbsp;				
+<b class="nc"><i>334</i>&nbsp;				f5 += val / (1 + (i - j)*(i - j));</b>
+<i>335</i>&nbsp;				
+<b class="nc"><i>336</i>&nbsp;				f9 -= val * logVal;</b>
+<i>337</i>&nbsp;				
+<b class="nc"><i>338</i>&nbsp;				double temp = px[i-1] * py[j-1];</b>
+<b class="nc"><i>339</i>&nbsp;				if (temp != 0) {</b>
+<b class="nc"><i>340</i>&nbsp;					double logTemp = Math.log(temp) / LOG2;</b>
+<b class="nc"><i>341</i>&nbsp;					Hxy1 -= val * logTemp;</b>
+<b class="nc"><i>342</i>&nbsp;					Hxy2 -= temp * logTemp;</b>
+<i>343</i>&nbsp;				}
+<i>344</i>&nbsp;				
+<i>345</i>&nbsp;			}
+<i>346</i>&nbsp;		}
+<b class="nc"><i>347</i>&nbsp;		double Hxy = f9;</b>
+<b class="nc"><i>348</i>&nbsp;		f3 -= mx*my;</b>
+<b class="nc"><i>349</i>&nbsp;		f3 /= sx*sy;</b>
+<i>350</i>&nbsp;		
+<i>351</i>&nbsp;		// Sum of squares (f4)
+<b class="nc"><i>352</i>&nbsp;		double f4 = sx*sx;</b>
+<i>353</i>&nbsp;				
+<i>354</i>&nbsp;		// Contrast (f2)
+<b class="nc"><i>355</i>&nbsp;		double f2 = 0;</b>
+<b class="nc"><i>356</i>&nbsp;		for (int nn = 0; nn &lt; n; nn++) {</b>
+<b class="nc"><i>357</i>&nbsp;			f2 += nn * nn * px_y[nn];</b>
+<i>358</i>&nbsp;		}
+<i>359</i>&nbsp;		
+<i>360</i>&nbsp;		// Sum average (f6)
+<i>361</i>&nbsp;		// Sum entropy (f8)
+<b class="nc"><i>362</i>&nbsp;		double f6 = 0;</b>
+<b class="nc"><i>363</i>&nbsp;		double f8 = 0;</b>
+<b class="nc"><i>364</i>&nbsp;		for (int i = 2; i &lt;= 2*n; i++) {</b>
+<b class="nc"><i>365</i>&nbsp;			double val = px_and_y[i];</b>
+<b class="nc"><i>366</i>&nbsp;			if (val != 0) {</b>
+<i>367</i>&nbsp;				//J double logVal = Math.log(val) / LOG2;
+<b class="nc"><i>368</i>&nbsp;				f6 += i * val;</b>
+<b class="nc"><i>369</i>&nbsp;				f8 -= val * (Math.log(val) / LOG2); //J</b>
+<i>370</i>&nbsp;			}
+<i>371</i>&nbsp;		}
+<i>372</i>&nbsp;		
+<i>373</i>&nbsp;		// Sum variance (f7)
+<b class="nc"><i>374</i>&nbsp;		double f7 = 0;</b>
+<b class="nc"><i>375</i>&nbsp;		for (int i = 2; i &lt;= 2*n; i++) {</b>
+<i>376</i>&nbsp;			//J double val = px_and_y[i];
+<i>377</i>&nbsp;			// f6 rather than f8 in Haralick&#39;s original paper... see
+<i>378</i>&nbsp;			// https://github.com/CellProfiler/CellProfiler/blob/master/cellprofiler/cpmath/haralick.py and
+<i>379</i>&nbsp;			// http://xy-27.pythonxy.googlecode.com/hg-history/fec21bbbbd9f0a71cca43858991f4c468c6ce211/src/python/mahotas/PLATLIB/mahotas/features/texture.py
+<b class="nc"><i>380</i>&nbsp;			f7 += (i - f6) * (i - f6) * px_and_y[i]; //J</b>
+<i>381</i>&nbsp;//			f7 += (i - f8)*(i - f8)*val;
+<i>382</i>&nbsp;		}
+<i>383</i>&nbsp;		
+<i>384</i>&nbsp;		// Difference entropy (f11)
+<b class="nc"><i>385</i>&nbsp;		double f11 = 0;</b>
+<b class="nc"><i>386</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>387</i>&nbsp;			double val = px_y[i];</b>
+<b class="nc"><i>388</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>389</i>&nbsp;				f11 -= val * (Math.log(val) / LOG2); //J</b>
+<i>390</i>&nbsp;		}
+<i>391</i>&nbsp;		
+<i>392</i>&nbsp;		// Difference variance (f10)
+<b class="nc"><i>393</i>&nbsp;		RunningStatistics px_yStats = getStatistics(px_y);</b>
+<b class="nc"><i>394</i>&nbsp;		double f10 = px_yStats.getVariance();</b>
+<i>395</i>&nbsp;		
+<i>396</i>&nbsp;
+<b class="nc"><i>397</i>&nbsp;		double Hx = 0; // Hx &amp; Hy for entropies</b>
+<b class="nc"><i>398</i>&nbsp;		double Hy = 0;</b>
+<b class="nc"><i>399</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>400</i>&nbsp;			double val = px[i];</b>
+<b class="nc"><i>401</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>402</i>&nbsp;				Hx -= val * Math.log(val)/LOG2;</b>
+<b class="nc"><i>403</i>&nbsp;			val = py[i];</b>
+<b class="nc"><i>404</i>&nbsp;			if (val != 0)</b>
+<b class="nc"><i>405</i>&nbsp;				Hy -= val * Math.log(val)/LOG2;</b>
+<i>406</i>&nbsp;		}
+<i>407</i>&nbsp;//		IJ.log(String.format(&quot;%.3f, %.3f, %.3f, %.3f, %.3f, &quot;, Hx, Hy, Hxy, Hxy1, Hxy2));
+<i>408</i>&nbsp;		// Information measures of correlation
+<b class="nc"><i>409</i>&nbsp;		double f12 = (Hxy - Hxy1) / Math.max(Hx, Hy);</b>
+<b class="nc"><i>410</i>&nbsp;		double f13 = Math.sqrt(1 - Math.exp(-2 * (Hxy2 - Hxy)));</b>
+<i>411</i>&nbsp;		
+<i>412</i>&nbsp;		
+<b class="nc"><i>413</i>&nbsp;		f[0] = f1; // Agrees with Mahotas</b>
+<b class="nc"><i>414</i>&nbsp;		f[1] = f2; // Agrees</b>
+<b class="nc"><i>415</i>&nbsp;		f[2] = f3;</b>
+<i>416</i>&nbsp;		
+<b class="nc"><i>417</i>&nbsp;		f[3] = f4;</b>
+<i>418</i>&nbsp;
+<b class="nc"><i>419</i>&nbsp;		f[4] = f5; // Agrees</b>
+<b class="nc"><i>420</i>&nbsp;		f[5] = f6; // Agrees (almost?)</b>
+<b class="nc"><i>421</i>&nbsp;		f[6] = f7; // Agrees</b>
+<b class="nc"><i>422</i>&nbsp;		f[7] = f8; // Agrees</b>
+<b class="nc"><i>423</i>&nbsp;		f[8] = f9; // Agrees</b>
+<i>424</i>&nbsp;		
+<b class="nc"><i>425</i>&nbsp;		f[9] = f10; // Agrees except for variance definition (I think)</b>
+<i>426</i>&nbsp;
+<b class="nc"><i>427</i>&nbsp;		f[10] = f11; // Agrees</b>
+<i>428</i>&nbsp;
+<b class="nc"><i>429</i>&nbsp;		f[11] = f12; // Agrees (apart from eps)</b>
+<b class="nc"><i>430</i>&nbsp;		f[12] = f13; // Agrees (apart from eps)</b>
+<i>431</i>&nbsp;	}
+<i>432</i>&nbsp;	
+<i>433</i>&nbsp;	/**
+<i>434</i>&nbsp;	 * Get the name of the specified feature.
+<i>435</i>&nbsp;	 * @param n
+<i>436</i>&nbsp;	 * @return
+<i>437</i>&nbsp;	 */
+<i>438</i>&nbsp;	public String getFeatureName(int n) {
+<b class="nc"><i>439</i>&nbsp;		return FEATURE_NAMES[n];</b>
+<i>440</i>&nbsp;	}
+<i>441</i>&nbsp;	
+<i>442</i>&nbsp;	/**
+<i>443</i>&nbsp;	 * Total number of Haralick features.
+<i>444</i>&nbsp;	 * @return
+<i>445</i>&nbsp;	 */
+<i>446</i>&nbsp;	public int nFeatures() {
+<b class="nc"><i>447</i>&nbsp;		return 13;</b>
+<i>448</i>&nbsp;	}
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;	/**
+<i>451</i>&nbsp;	 * Get the value of the specified feature.
+<i>452</i>&nbsp;	 * @param n
+<i>453</i>&nbsp;	 * @return
+<i>454</i>&nbsp;	 */
+<i>455</i>&nbsp;	public double getFeature(int n) {
+<b class="nc"><i>456</i>&nbsp;		return f[n];</b>
+<i>457</i>&nbsp;	}
+<i>458</i>&nbsp;	
+<i>459</i>&nbsp;	double[] features() {
+<b class="nc"><i>460</i>&nbsp;		return f;</b>
+<i>461</i>&nbsp;	}
+<i>462</i>&nbsp;	
+<i>463</i>&nbsp;} 
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

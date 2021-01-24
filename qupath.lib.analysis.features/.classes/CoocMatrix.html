@@ -1,0 +1,221 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CoocMatrix</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.features</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CoocMatrix (qupath.lib.analysis.features)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CoocMatrix</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.features;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;/**
+<i>27</i>&nbsp; * Data structure for containing co-occurrence matrix for Haralick texture features.
+<i>28</i>&nbsp; * 
+<i>29</i>&nbsp; * @author Pete Bankhead
+<i>30</i>&nbsp; *
+<i>31</i>&nbsp; */
+<i>32</i>&nbsp;class CoocMatrix {
+<i>33</i>&nbsp;	
+<i>34</i>&nbsp;	private int[] mat;
+<i>35</i>&nbsp;	private int n;
+<b class="nc"><i>36</i>&nbsp;	private int sum = 0;</b>
+<b class="nc"><i>37</i>&nbsp;	private double logSum = 0;</b>
+<i>38</i>&nbsp;	// Compute all the logs we need in one go
+<i>39</i>&nbsp;	// TODO: Preallocate this!
+<i>40</i>&nbsp;	private static double[] logTable;
+<i>41</i>&nbsp;	
+<i>42</i>&nbsp;	static {
+<i>43</i>&nbsp;		
+<b class="nc"><i>44</i>&nbsp;		logTable = new double[256*256];</b>
+<b class="nc"><i>45</i>&nbsp;		for (int i = 1; i &lt; logTable.length; i++)</b>
+<b class="nc"><i>46</i>&nbsp;			logTable[i] = Math.log(i);</b>
+<i>47</i>&nbsp;		
+<i>48</i>&nbsp;	}
+<i>49</i>&nbsp;	
+<b class="nc"><i>50</i>&nbsp;	public CoocMatrix(int n) {</b>
+<b class="nc"><i>51</i>&nbsp;		this.n = n;</b>
+<b class="nc"><i>52</i>&nbsp;		this.mat = new int[n * n];</b>
+<i>53</i>&nbsp;	}
+<i>54</i>&nbsp;	
+<i>55</i>&nbsp;	public int getN() {
+<b class="nc"><i>56</i>&nbsp;		return n;</b>
+<i>57</i>&nbsp;	}
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	public void addToEntrySymmetric(int row, int col) {
+<b class="nc"><i>60</i>&nbsp;		addToEntry(row, col);</b>
+<b class="nc"><i>61</i>&nbsp;		addToEntry(col, row);</b>
+<i>62</i>&nbsp;	}
+<i>63</i>&nbsp;	
+<i>64</i>&nbsp;	public void addToEntry(int row, int col) {
+<b class="nc"><i>65</i>&nbsp;		mat[row * n + col] += 1;</b>
+<b class="nc"><i>66</i>&nbsp;		sum++;</b>
+<i>67</i>&nbsp;	}
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	/**
+<i>70</i>&nbsp;	 * Call this after populating the matrix
+<i>71</i>&nbsp;	 */
+<i>72</i>&nbsp;	public void finalizeMatrix() {
+<b class="nc"><i>73</i>&nbsp;		logSum = Math.log(sum);</b>
+<i>74</i>&nbsp;//J		int max = 0;
+<i>75</i>&nbsp;//J		for (int v : mat)
+<i>76</i>&nbsp;//J			if (v &gt; max)
+<i>77</i>&nbsp;//J				max = v; //J this is not really leading anywhere!
+<i>78</i>&nbsp;//		System.out.println(&quot;Logs with max &quot; + max);
+<i>79</i>&nbsp;//		logTable = new double[max+1];
+<i>80</i>&nbsp;//		logTable[0] = Math.log(0.000001);
+<i>81</i>&nbsp;//		for (int i = 1; i &lt; logTable.length; i++) {
+<i>82</i>&nbsp;//			logTable[i] = Math.log(i);
+<i>83</i>&nbsp;//		}
+<i>84</i>&nbsp;	}
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;	/**
+<i>87</i>&nbsp;	 * Return probability (i.e. value divided by sum)
+<i>88</i>&nbsp;	 * 
+<i>89</i>&nbsp;	 * @param row
+<i>90</i>&nbsp;	 * @param col
+<i>91</i>&nbsp;	 * @return
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public double get(int row, int col) {
+<b class="nc"><i>94</i>&nbsp;		return (double)mat[row * n + col] / sum;</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	public int getRawCounts(int row, int col) {
+<b class="nc"><i>98</i>&nbsp;		return mat[row * n + col];</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Return log of probability value
+<i>103</i>&nbsp;	 * 
+<i>104</i>&nbsp;	 * @param row
+<i>105</i>&nbsp;	 * @param col
+<i>106</i>&nbsp;	 * @return
+<i>107</i>&nbsp;	 */
+<i>108</i>&nbsp;	public double getLog(int row, int col) {
+<b class="nc"><i>109</i>&nbsp;		int ind = mat[row * n + col];</b>
+<b class="nc"><i>110</i>&nbsp;		if (ind &lt; logTable.length)</b>
+<b class="nc"><i>111</i>&nbsp;			return logTable[ind] - logSum;</b>
+<i>112</i>&nbsp;		else
+<b class="nc"><i>113</i>&nbsp;			return Math.log(ind) - logSum;</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;	public double getMean() {
+<b class="nc"><i>117</i>&nbsp;		return (double)sum / (n * n);</b>
+<i>118</i>&nbsp;	}
+<i>119</i>&nbsp;	
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	@Override
+<i>122</i>&nbsp;	public String toString() {
+<b class="nc"><i>123</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>124</i>&nbsp;		sb.append(&quot;[&quot;);</b>
+<b class="nc"><i>125</i>&nbsp;		for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>126</i>&nbsp;			for (int j = 0; j &lt; n; j++) {</b>
+<b class="nc"><i>127</i>&nbsp;				sb.append(getRawCounts(i, j));</b>
+<b class="nc"><i>128</i>&nbsp;				if (j &lt; n-1)</b>
+<b class="nc"><i>129</i>&nbsp;					sb.append(&quot;, &quot;);</b>
+<i>130</i>&nbsp;			}
+<b class="nc"><i>131</i>&nbsp;			if (i &lt; n-1)</b>
+<b class="nc"><i>132</i>&nbsp;				sb.append(&quot;\n&quot;);</b>
+<i>133</i>&nbsp;		}
+<b class="nc"><i>134</i>&nbsp;		sb.append(&quot;]&quot;);</b>
+<b class="nc"><i>135</i>&nbsp;		return sb.toString();</b>
+<i>136</i>&nbsp;	}
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

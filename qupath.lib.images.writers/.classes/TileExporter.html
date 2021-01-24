@@ -1,0 +1,533 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TileExporter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.writers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TileExporter (qupath.lib.images.writers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TileExporter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 134)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TileExporter$ExportTask</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 150)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.writers;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.File;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.LinkedHashSet;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.concurrent.Executors;
+<i>32</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import qupath.lib.awt.common.BufferedImageTools;
+<i>38</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>39</i>&nbsp;import qupath.lib.images.ImageData;
+<i>40</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>41</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ChannelType;
+<i>42</i>&nbsp;import qupath.lib.images.servers.TransformedServerBuilder;
+<i>43</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>44</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * Helper class for exporting image tiles, typically for further analysis elsewhere or for training up an AI algorithm.
+<i>48</i>&nbsp; * 
+<i>49</i>&nbsp; * @author Pete Bankhead
+<i>50</i>&nbsp; */
+<i>51</i>&nbsp;public class TileExporter  {
+<i>52</i>&nbsp;
+<b class="nc"><i>53</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(TileExporter.class);</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<i>56</i>&nbsp;	private ImageServer&lt;BufferedImage&gt; server;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;	private double downsample;
+<b class="nc"><i>59</i>&nbsp;	private int tileWidth = 512, tileHeight = 512;</b>
+<b class="nc"><i>60</i>&nbsp;	private int overlapX = 0, overlapY = 0;</b>
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;	private boolean includePartialTiles = false;</b>
+<b class="nc"><i>63</i>&nbsp;	private boolean annotatedTilesOnly = false;</b>
+<i>64</i>&nbsp;
+<b class="nc"><i>65</i>&nbsp;	private String ext = &quot;.tif&quot;;</b>
+<b class="nc"><i>66</i>&nbsp;	private String extLabeled = null;</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;	private ImageServer&lt;BufferedImage&gt; serverLabeled;
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Create a builder to export tiles.
+<i>72</i>&nbsp;	 * @param imageData
+<i>73</i>&nbsp;	 */
+<b class="nc"><i>74</i>&nbsp;	public TileExporter(ImageData&lt;BufferedImage&gt; imageData) {</b>
+<b class="nc"><i>75</i>&nbsp;		this.imageData = imageData;</b>
+<b class="nc"><i>76</i>&nbsp;		this.server = imageData.getServer();</b>
+<b class="nc"><i>77</i>&nbsp;	}</b>
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;	/**
+<i>80</i>&nbsp;	 * Define the tile size in pixel units at the export resolution.
+<i>81</i>&nbsp;	 * @param tileSize
+<i>82</i>&nbsp;	 * @return this exporter
+<i>83</i>&nbsp;	 */
+<i>84</i>&nbsp;	public TileExporter tileSize(int tileSize) {
+<b class="nc"><i>85</i>&nbsp;		return tileSize(tileSize, tileSize);</b>
+<i>86</i>&nbsp;	}
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;	/**
+<i>89</i>&nbsp;	 * Define the horizontal and vertical tile size in pixel units at the export resolution.
+<i>90</i>&nbsp;	 * @param tileWidth
+<i>91</i>&nbsp;	 * @param tileHeight
+<i>92</i>&nbsp;	 * @return this exporter
+<i>93</i>&nbsp;	 */
+<i>94</i>&nbsp;	public TileExporter tileSize(int tileWidth, int tileHeight) {
+<b class="nc"><i>95</i>&nbsp;		this.tileWidth = tileWidth;</b>
+<b class="nc"><i>96</i>&nbsp;		this.tileHeight = tileHeight;</b>
+<b class="nc"><i>97</i>&nbsp;		return this;</b>
+<i>98</i>&nbsp;	}
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	/**
+<i>101</i>&nbsp;	 * Export only specified channels.
+<i>102</i>&nbsp;	 * @param channels channels to export (0-based indexing)
+<i>103</i>&nbsp;	 * @return this exporter
+<i>104</i>&nbsp;	 */
+<i>105</i>&nbsp;	public TileExporter channels(int... channels) {
+<b class="nc"><i>106</i>&nbsp;		this.server = new TransformedServerBuilder(this.server)</b>
+<b class="nc"><i>107</i>&nbsp;				.extractChannels(channels)</b>
+<b class="nc"><i>108</i>&nbsp;				.build();</b>
+<b class="nc"><i>109</i>&nbsp;		return this;</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	/**
+<i>113</i>&nbsp;	 * Export only specified channels, identified by name.
+<i>114</i>&nbsp;	 * @param channelNames channels to export
+<i>115</i>&nbsp;	 * @return this exporter
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public TileExporter channels(String... channelNames) {
+<b class="nc"><i>118</i>&nbsp;		this.server = new TransformedServerBuilder(this.server)</b>
+<b class="nc"><i>119</i>&nbsp;				.extractChannels(channelNames)</b>
+<b class="nc"><i>120</i>&nbsp;				.build();</b>
+<b class="nc"><i>121</i>&nbsp;		return this;</b>
+<i>122</i>&nbsp;	}
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;	/**
+<i>125</i>&nbsp;	 * Define tile overlap (both x and y) in pixel units at the export resolution.
+<i>126</i>&nbsp;	 * @param overlap
+<i>127</i>&nbsp;	 * @return this exporter
+<i>128</i>&nbsp;	 */
+<i>129</i>&nbsp;	public TileExporter overlap(int overlap) {
+<b class="nc"><i>130</i>&nbsp;		return overlap(overlap, overlap);</b>
+<i>131</i>&nbsp;	}
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;	/**
+<i>134</i>&nbsp;	 * Define tile overlap (x and y separately) in pixel units at the export resolution.
+<i>135</i>&nbsp;	 * @param overlapX
+<i>136</i>&nbsp;	 * @param overlapY
+<i>137</i>&nbsp;	 * @return this exporter
+<i>138</i>&nbsp;	 */
+<i>139</i>&nbsp;	public TileExporter overlap(int overlapX, int overlapY) {
+<b class="nc"><i>140</i>&nbsp;		this.overlapX = overlapX;</b>
+<b class="nc"><i>141</i>&nbsp;		this.overlapY = overlapY;</b>
+<b class="nc"><i>142</i>&nbsp;		return this;</b>
+<i>143</i>&nbsp;	}
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;	/**
+<i>146</i>&nbsp;	 * Define resolution as a downsample value.
+<i>147</i>&nbsp;	 * @param downsample
+<i>148</i>&nbsp;	 * @return this exporter
+<i>149</i>&nbsp;	 * @see #requestedPixelSize(double)
+<i>150</i>&nbsp;	 */
+<i>151</i>&nbsp;	public TileExporter downsample(double downsample) {
+<b class="nc"><i>152</i>&nbsp;		this.downsample = downsample;</b>
+<b class="nc"><i>153</i>&nbsp;		return this;</b>
+<i>154</i>&nbsp;	}
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;	/**
+<i>157</i>&nbsp;	 * Define resolution as a pixel size in calibrated units. The actual units depend upon those stored within the server.
+<i>158</i>&nbsp;	 * @param pixelSize
+<i>159</i>&nbsp;	 * @return this exporter
+<i>160</i>&nbsp;	 */
+<i>161</i>&nbsp;	public TileExporter requestedPixelSize(double pixelSize) {
+<b class="nc"><i>162</i>&nbsp;		this.downsample = server.getPixelCalibration().getAveragedPixelSize().doubleValue() / pixelSize;</b>
+<b class="nc"><i>163</i>&nbsp;		return this;</b>
+<i>164</i>&nbsp;	}
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;	/**
+<i>167</i>&nbsp;	 * Specify whether incomplete tiles at image boundaries should be included. Default is false.
+<i>168</i>&nbsp;	 * @param includePartialTiles
+<i>169</i>&nbsp;	 * @return this exporter
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public TileExporter includePartialTiles(boolean includePartialTiles) {
+<b class="nc"><i>172</i>&nbsp;		this.includePartialTiles = includePartialTiles;</b>
+<b class="nc"><i>173</i>&nbsp;		return this;</b>
+<i>174</i>&nbsp;	}
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;	/**
+<i>177</i>&nbsp;	 * Specify whether tiles without any annotations should be included. Default is false.
+<i>178</i>&nbsp;	 * @param annotatedTilesOnly
+<i>179</i>&nbsp;	 * @return this exporter
+<i>180</i>&nbsp;	 */
+<i>181</i>&nbsp;	public TileExporter annotatedTilesOnly(boolean annotatedTilesOnly) {
+<b class="nc"><i>182</i>&nbsp;		this.annotatedTilesOnly = annotatedTilesOnly;</b>
+<b class="nc"><i>183</i>&nbsp;		return this;</b>
+<i>184</i>&nbsp;	}
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;	/**
+<i>187</i>&nbsp;	 * Specify a file extension for the original pixels, which determines the export file format.
+<i>188</i>&nbsp;	 * @param ext
+<i>189</i>&nbsp;	 * @return this exporter
+<i>190</i>&nbsp;	 */
+<i>191</i>&nbsp;	public TileExporter imageExtension(String ext) {
+<b class="nc"><i>192</i>&nbsp;		if (!ext.startsWith(&quot;.&quot;))</b>
+<b class="nc"><i>193</i>&nbsp;			ext = &quot;.&quot; + ext;</b>
+<b class="nc"><i>194</i>&nbsp;		this.ext = ext;</b>
+<b class="nc"><i>195</i>&nbsp;		return this;</b>
+<i>196</i>&nbsp;	}
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;	/**
+<i>199</i>&nbsp;	 * Specify a file extension for the labelled image, which determines the export file format.
+<i>200</i>&nbsp;	 * @param ext
+<i>201</i>&nbsp;	 * @return this exporter
+<i>202</i>&nbsp;	 */
+<i>203</i>&nbsp;	public TileExporter labeledImageExtension(String ext) {
+<b class="nc"><i>204</i>&nbsp;		if (!ext.startsWith(&quot;.&quot;))</b>
+<b class="nc"><i>205</i>&nbsp;			ext = &quot;.&quot; + ext;</b>
+<b class="nc"><i>206</i>&nbsp;		this.extLabeled = ext;</b>
+<b class="nc"><i>207</i>&nbsp;		return this;</b>
+<i>208</i>&nbsp;	}
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;	/**
+<i>211</i>&nbsp;	 * Optional server providing image labels.
+<i>212</i>&nbsp;	 * These may be export as corresponding images alongside the &#39;original&#39; pixels, e.g. to create 
+<i>213</i>&nbsp;	 * training data for an AI algorithm.
+<i>214</i>&nbsp;	 * @param server the labeled server
+<i>215</i>&nbsp;	 * @return this exporter
+<i>216</i>&nbsp;	 */
+<i>217</i>&nbsp;	public TileExporter labeledServer(ImageServer&lt;BufferedImage&gt; server) {
+<b class="nc"><i>218</i>&nbsp;		this.serverLabeled = server;</b>
+<b class="nc"><i>219</i>&nbsp;		return this;</b>
+<i>220</i>&nbsp;	}
+<i>221</i>&nbsp;
+<i>222</i>&nbsp;	/**
+<i>223</i>&nbsp;	 * Export the image tiles to the specified directory.
+<i>224</i>&nbsp;	 * @param dirOutput full path to th export directory
+<i>225</i>&nbsp;	 * @throws IOException if an error occurs during export
+<i>226</i>&nbsp;	 */
+<i>227</i>&nbsp;	public void writeTiles(String dirOutput) throws IOException {
+<i>228</i>&nbsp;
+<b class="nc"><i>229</i>&nbsp;		if (!new File(dirOutput).isDirectory())</b>
+<b class="nc"><i>230</i>&nbsp;			throw new IOException(&quot;Output directory &quot; + dirOutput + &quot; does not exist!&quot;);</b>
+<i>231</i>&nbsp;
+<b class="nc"><i>232</i>&nbsp;		if (serverLabeled != null) {</b>
+<b class="nc"><i>233</i>&nbsp;			if (extLabeled == null)</b>
+<b class="nc"><i>234</i>&nbsp;				extLabeled = serverLabeled.getMetadata().getChannelType() == ChannelType.CLASSIFICATION ? &quot;.png&quot; : &quot;.tif&quot;;</b>
+<i>235</i>&nbsp;		}
+<i>236</i>&nbsp;
+<b class="nc"><i>237</i>&nbsp;		var pool = Executors.newWorkStealingPool(4);</b>
+<i>238</i>&nbsp;
+<b class="nc"><i>239</i>&nbsp;		var server = this.server;</b>
+<b class="nc"><i>240</i>&nbsp;		var labeledServer = serverLabeled;</b>
+<b class="nc"><i>241</i>&nbsp;		var requests = getTiledRegionRequests(server,</b>
+<i>242</i>&nbsp;				downsample, tileWidth, tileHeight, overlapX, overlapY, includePartialTiles);
+<i>243</i>&nbsp;
+<b class="nc"><i>244</i>&nbsp;		String imageName = GeneralTools.stripInvalidFilenameChars(</b>
+<b class="nc"><i>245</i>&nbsp;				GeneralTools.getNameWithoutExtension(server.getMetadata().getName())</b>
+<i>246</i>&nbsp;				);
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;		int tileWidth = includePartialTiles ? -1 : this.tileWidth;</b>
+<b class="nc"><i>249</i>&nbsp;		int tileHeight = includePartialTiles ? -1 : this.tileHeight;</b>
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;		for (var r : requests) {</b>
+<b class="nc"><i>252</i>&nbsp;			String name = String.format(&quot;%s [%s]%s&quot;, imageName, getRegionString(r), ext);</b>
+<b class="nc"><i>253</i>&nbsp;			File fileOutput = new File(dirOutput, name);</b>
+<b class="nc"><i>254</i>&nbsp;			ExportTask taskImage = new ExportTask(server, r, fileOutput.getAbsolutePath(), tileWidth, tileHeight);</b>
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;			ExportTask taskLabels = null;</b>
+<b class="nc"><i>257</i>&nbsp;			if (labeledServer != null) {</b>
+<b class="nc"><i>258</i>&nbsp;				name = String.format(&quot;%s [%s]-labelled%s&quot;, imageName, getRegionString(r), extLabeled);</b>
+<b class="nc"><i>259</i>&nbsp;				fileOutput = new File(dirOutput, name);</b>
+<b class="nc"><i>260</i>&nbsp;				r = RegionRequest.createInstance(labeledServer.getPath(), r);</b>
+<b class="nc"><i>261</i>&nbsp;				if (annotatedTilesOnly &amp;&amp; labeledServer.isEmptyRegion(r))</b>
+<b class="nc"><i>262</i>&nbsp;					taskImage = null;</b>
+<i>263</i>&nbsp;				else
+<b class="nc"><i>264</i>&nbsp;					taskLabels = new ExportTask(labeledServer, r, fileOutput.getAbsolutePath(), tileWidth, tileHeight);</b>
+<b class="nc"><i>265</i>&nbsp;			} else if (imageData != null &amp;&amp; annotatedTilesOnly) {</b>
+<b class="nc"><i>266</i>&nbsp;				if (imageData.getHierarchy().getObjectsForRegion(PathAnnotationObject.class, r, null).isEmpty())</b>
+<b class="nc"><i>267</i>&nbsp;					taskImage = null;</b>
+<i>268</i>&nbsp;			}
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;			if (taskImage != null)</b>
+<b class="nc"><i>271</i>&nbsp;				pool.submit(taskImage);</b>
+<b class="nc"><i>272</i>&nbsp;			if (taskLabels != null) {</b>
+<b class="nc"><i>273</i>&nbsp;				pool.submit(taskLabels);</b>
+<i>274</i>&nbsp;			}
+<b class="nc"><i>275</i>&nbsp;		}</b>
+<i>276</i>&nbsp;
+<b class="nc"><i>277</i>&nbsp;		pool.shutdown();</b>
+<i>278</i>&nbsp;		try {
+<b class="nc"><i>279</i>&nbsp;			pool.awaitTermination(24, TimeUnit.HOURS);</b>
+<b class="nc"><i>280</i>&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc"><i>281</i>&nbsp;			pool.shutdownNow();</b>
+<b class="nc"><i>282</i>&nbsp;			logger.error(&quot;Tile export interrupted: {}&quot;, e);</b>
+<b class="nc"><i>283</i>&nbsp;			logger.error(&quot;&quot;, e);</b>
+<b class="nc"><i>284</i>&nbsp;		}</b>
+<b class="nc"><i>285</i>&nbsp;	}</b>
+<i>286</i>&nbsp;
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;	static class ExportTask implements Runnable {
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;		private ImageServer&lt;BufferedImage&gt; server;
+<i>291</i>&nbsp;		private RegionRequest request;
+<i>292</i>&nbsp;		private String path;
+<i>293</i>&nbsp;		private int tileWidth, tileHeight;
+<i>294</i>&nbsp;
+<b class="nc"><i>295</i>&nbsp;		private ExportTask(ImageServer&lt;BufferedImage&gt; server, RegionRequest request, String path, int tileWidth, int tileHeight) {</b>
+<b class="nc"><i>296</i>&nbsp;			this.server = server;</b>
+<b class="nc"><i>297</i>&nbsp;			this.request = request;</b>
+<b class="nc"><i>298</i>&nbsp;			this.path = path;</b>
+<b class="nc"><i>299</i>&nbsp;			this.tileWidth = tileWidth;</b>
+<b class="nc"><i>300</i>&nbsp;			this.tileHeight = tileHeight;</b>
+<i>301</i>&nbsp;		}
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;		@Override
+<i>304</i>&nbsp;		public void run() {
+<i>305</i>&nbsp;			try {
+<b class="nc"><i>306</i>&nbsp;				var img = server.readBufferedImage(request);</b>
+<b class="nc"><i>307</i>&nbsp;				if ((tileWidth &gt; 0 &amp;&amp; tileHeight &gt; 0) &amp;&amp; (img.getWidth() != tileWidth || img.getHeight() != tileHeight)) {</b>
+<b class="nc"><i>308</i>&nbsp;					logger.warn(&quot;Resizing tile from {}x{} to {}x{}&quot;, img.getWidth(), img.getHeight(), tileWidth, tileHeight);</b>
+<b class="nc"><i>309</i>&nbsp;					img = BufferedImageTools.resize(img, tileWidth, tileHeight, false);</b>
+<i>310</i>&nbsp;				}
+<b class="nc"><i>311</i>&nbsp;				if (!Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>312</i>&nbsp;					ImageWriterTools.writeImageRegion(server, request, path);</b>
+<i>313</i>&nbsp;				else
+<b class="nc"><i>314</i>&nbsp;					logger.debug(&quot;Interrupted! Will not write image to {}&quot;, path);</b>
+<i>315</i>&nbsp;				//				ImageWriterTools.writeImage(img, path);
+<b class="nc"><i>316</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>317</i>&nbsp;				logger.error(&quot;Error writing tile: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>318</i>&nbsp;			}</b>
+<i>319</i>&nbsp;		}
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;	}
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;	static String getRegionString(RegionRequest request) {
+<b class="nc"><i>324</i>&nbsp;		String s = &quot;x=&quot;+request.getX()+&quot;,y=&quot;+request.getY()+&quot;,w=&quot;+request.getWidth()+&quot;,h=&quot;+request.getHeight();</b>
+<b class="nc"><i>325</i>&nbsp;		if (request.getZ() != 0)</b>
+<b class="nc"><i>326</i>&nbsp;			s += &quot;,z=&quot;+request.getZ();</b>
+<b class="nc"><i>327</i>&nbsp;		if (request.getT() != 0)</b>
+<b class="nc"><i>328</i>&nbsp;			s += &quot;,t=&quot;+request.getT();</b>
+<b class="nc"><i>329</i>&nbsp;		return s;</b>
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;
+<i>334</i>&nbsp;	static Collection&lt;RegionRequest&gt; getTiledRegionRequests(
+<i>335</i>&nbsp;			ImageServer&lt;?&gt; server, double downsample, 
+<i>336</i>&nbsp;			int tileWidth, int tileHeight, int xOverlap, int yOverlap, boolean includePartialTiles) {
+<b class="nc"><i>337</i>&nbsp;		List&lt;RegionRequest&gt; requests = new ArrayList&lt;&gt;();</b>
+<i>338</i>&nbsp;
+<b class="nc"><i>339</i>&nbsp;		for (int t = 0; t &lt; server.nTimepoints(); t++) {</b>
+<b class="nc"><i>340</i>&nbsp;			for (int z = 0; z &lt; server.nZSlices(); z++) {</b>
+<b class="nc"><i>341</i>&nbsp;				requests.addAll(</b>
+<b class="nc"><i>342</i>&nbsp;						splitRegionRequests(RegionRequest.createInstance(server, downsample), tileWidth, tileHeight, xOverlap, yOverlap, includePartialTiles)</b>
+<i>343</i>&nbsp;						);
+<i>344</i>&nbsp;			}
+<i>345</i>&nbsp;		}
+<b class="nc"><i>346</i>&nbsp;		return requests;</b>
+<i>347</i>&nbsp;	}
+<i>348</i>&nbsp;
+<i>349</i>&nbsp;	/**
+<i>350</i>&nbsp;	 * Split a single RegionRequest into multiple requests, specifying a tile size and overlap at the output resolution.
+<i>351</i>&nbsp;	 * This is useful, for example, to export fixed-size image tiles using a particular downsample value.
+<i>352</i>&nbsp;	 * &lt;p&gt;
+<i>353</i>&nbsp;	 * Note: one should be careful in case rounding errors within specific servers result in some off-by-one tile sizes, 
+<i>354</i>&nbsp;	 * so that additional cropping/padding/scaling may be necessary in some cases.
+<i>355</i>&nbsp;	 * 
+<i>356</i>&nbsp;	 * @param request
+<i>357</i>&nbsp;	 * @param tileWidth
+<i>358</i>&nbsp;	 * @param tileHeight
+<i>359</i>&nbsp;	 * @param xOverlap
+<i>360</i>&nbsp;	 * @param yOverlap
+<i>361</i>&nbsp;	 * @param includePartialTiles
+<i>362</i>&nbsp;	 * @return
+<i>363</i>&nbsp;	 */
+<i>364</i>&nbsp;	static Collection&lt;RegionRequest&gt; splitRegionRequests(
+<i>365</i>&nbsp;			RegionRequest request, 
+<i>366</i>&nbsp;			int tileWidth, int tileHeight,
+<i>367</i>&nbsp;			int xOverlap, int yOverlap,
+<i>368</i>&nbsp;			boolean includePartialTiles) {
+<i>369</i>&nbsp;
+<b class="nc"><i>370</i>&nbsp;		var set = new LinkedHashSet&lt;RegionRequest&gt;();</b>
+<i>371</i>&nbsp;
+<b class="nc"><i>372</i>&nbsp;		double downsample = request.getDownsample();</b>
+<b class="nc"><i>373</i>&nbsp;		String path = request.getPath();</b>
+<i>374</i>&nbsp;
+<b class="nc"><i>375</i>&nbsp;		int fullWidth = request.getWidth();</b>
+<b class="nc"><i>376</i>&nbsp;		int fullHeight = request.getHeight();</b>
+<i>377</i>&nbsp;
+<b class="nc"><i>378</i>&nbsp;		int maxX = (int)(request.getMaxX() / downsample);</b>
+<b class="nc"><i>379</i>&nbsp;		int maxY = (int)(request.getMaxY() / downsample);</b>
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;		int z = request.getZ();</b>
+<b class="nc"><i>382</i>&nbsp;		int t = request.getT();</b>
+<i>383</i>&nbsp;
+<b class="nc"><i>384</i>&nbsp;		for (int y = request.getY(); y &lt; maxY; y += tileHeight-yOverlap) {</b>
+<b class="nc"><i>385</i>&nbsp;			int th = tileHeight;</b>
+<b class="nc"><i>386</i>&nbsp;			if (y + th &gt; maxY)</b>
+<b class="nc"><i>387</i>&nbsp;				th = maxY - y;</b>
+<i>388</i>&nbsp;
+<b class="nc"><i>389</i>&nbsp;			int yi = (int)Math.round(y * downsample);</b>
+<b class="nc"><i>390</i>&nbsp;			int y2i = (int)Math.round((y + tileHeight) * downsample);</b>
+<i>391</i>&nbsp;
+<b class="nc"><i>392</i>&nbsp;			if (y2i &gt; fullHeight) {</b>
+<b class="nc"><i>393</i>&nbsp;				if (!includePartialTiles)</b>
+<b class="nc"><i>394</i>&nbsp;					continue;</b>
+<b class="nc"><i>395</i>&nbsp;				y2i = fullHeight;</b>
+<b class="nc"><i>396</i>&nbsp;			} else if (y2i == yi)</b>
+<b class="nc"><i>397</i>&nbsp;				continue;</b>
+<i>398</i>&nbsp;
+<b class="nc"><i>399</i>&nbsp;			for (int x = request.getX(); x &lt; maxX; x += tileWidth-xOverlap) {</b>
+<b class="nc"><i>400</i>&nbsp;				int tw = tileWidth;</b>
+<b class="nc"><i>401</i>&nbsp;				if (x + tw &gt; maxX)</b>
+<b class="nc"><i>402</i>&nbsp;					tw = maxX - x;</b>
+<i>403</i>&nbsp;
+<b class="nc"><i>404</i>&nbsp;				int xi = (int)Math.round(x * downsample);</b>
+<b class="nc"><i>405</i>&nbsp;				int x2i = (int)Math.round((x + tileWidth) * downsample);</b>
+<i>406</i>&nbsp;
+<b class="nc"><i>407</i>&nbsp;				if (x2i &gt; fullWidth) {</b>
+<b class="nc"><i>408</i>&nbsp;					if (!includePartialTiles)</b>
+<b class="nc"><i>409</i>&nbsp;						continue;</b>
+<b class="nc"><i>410</i>&nbsp;					x2i = fullWidth;</b>
+<b class="nc"><i>411</i>&nbsp;				} else if (x2i == xi)</b>
+<b class="nc"><i>412</i>&nbsp;					continue;</b>
+<i>413</i>&nbsp;
+<b class="nc"><i>414</i>&nbsp;				var tile = RegionRequest.createInstance(path, downsample,</b>
+<i>415</i>&nbsp;						xi, yi, x2i-xi, y2i-yi, z, t
+<i>416</i>&nbsp;						);
+<b class="nc"><i>417</i>&nbsp;				set.add(tile);</b>
+<i>418</i>&nbsp;			}
+<i>419</i>&nbsp;		}					
+<i>420</i>&nbsp;
+<b class="nc"><i>421</i>&nbsp;		return set;</b>
+<i>422</i>&nbsp;	}
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

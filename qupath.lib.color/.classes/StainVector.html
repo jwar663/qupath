@@ -1,0 +1,473 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StainVector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.color</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StainVector (qupath.lib.color)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StainVector</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (15/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    45.6%
+  </span>
+  <span class="absValue">
+    (36/ 79)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StainVector$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">StainVector$DefaultStains</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (8/ 8)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (20/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.1%
+  </span>
+  <span class="absValue">
+    (45/ 88)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.color;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Externalizable;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.ObjectInput;
+<i>29</i>&nbsp;import java.io.ObjectOutput;
+<i>30</i>&nbsp;import java.util.Locale;
+<i>31</i>&nbsp;import java.util.Locale.Category;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>37</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Representation of a color deconvolution stain vector, defined in terms of RGB optical densities.
+<i>41</i>&nbsp; * 
+<i>42</i>&nbsp; * @author Pete Bankhead
+<i>43</i>&nbsp; *
+<i>44</i>&nbsp; */
+<i>45</i>&nbsp;public class StainVector implements Externalizable {
+<i>46</i>&nbsp;	
+<i>47</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>48</i>&nbsp;	
+<b class="fc"><i>49</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(StainVector.class);</b>
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;	 * Enum representing default stains.
+<i>53</i>&nbsp;	 * &lt;p&gt;
+<i>54</i>&nbsp;	 * TODO: Replace with interface, add stain vectors directly
+<i>55</i>&nbsp;	 */
+<b class="fc"><i>56</i>&nbsp;	public enum DefaultStains {</b>
+<i>57</i>&nbsp;		/**
+<i>58</i>&nbsp;		 * Hematoxylin
+<i>59</i>&nbsp;		 */
+<b class="fc"><i>60</i>&nbsp;		HEMATOXYLIN(&quot;Hematoxylin&quot;),</b>
+<i>61</i>&nbsp;		/**
+<i>62</i>&nbsp;		 * Eosin
+<i>63</i>&nbsp;		 */
+<b class="fc"><i>64</i>&nbsp;		EOSIN(&quot;Eosin&quot;),</b>
+<i>65</i>&nbsp;		/**
+<i>66</i>&nbsp;		 * DAB
+<i>67</i>&nbsp;		 */
+<b class="fc"><i>68</i>&nbsp;		DAB(&quot;DAB&quot;);</b>
+<i>69</i>&nbsp;		
+<i>70</i>&nbsp;		private String name;
+<b class="fc"><i>71</i>&nbsp;		DefaultStains(String name) {</b>
+<b class="fc"><i>72</i>&nbsp;			this.name = name;</b>
+<b class="fc"><i>73</i>&nbsp;		};</b>
+<i>74</i>&nbsp;		@Override
+<i>75</i>&nbsp;		public String toString() {
+<b class="fc"><i>76</i>&nbsp;			return name;</b>
+<i>77</i>&nbsp;		}
+<i>78</i>&nbsp;	}
+<i>79</i>&nbsp;	
+<b class="fc"><i>80</i>&nbsp;	static int version = 1;</b>
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	private double r, g, b;
+<i>83</i>&nbsp;	private String name;
+<b class="fc"><i>84</i>&nbsp;	private boolean isResidual = false;</b>
+<i>85</i>&nbsp;
+<b class="fc"><i>86</i>&nbsp;	private static final double[] STAIN_HEMATOXYLIN_DEFAULT = new double[]{0.65, 0.70, 0.29}; 	// From Ruifrok &amp; Johnston&#39;s original paper</b>
+<b class="fc"><i>87</i>&nbsp;	private static final double[] STAIN_DAB_DEFAULT = new double[]{0.27, 0.57, 0.78};			// From Ruifrok &amp; Johnston&#39;s original paper</b>
+<b class="fc"><i>88</i>&nbsp;	private static final double[] STAIN_EOSIN_DEFAULT = new double[]{0.2159, 0.8012, 0.5581}; 	// From http://amida13.isi.uu.nl/?q=node/69</b>
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;//	private static final double[] STAIN_EOSIN_DEFAULT = new double[]{0.07, 0.99, 0.11}; 		// From Ruifrok &amp; Johnston&#39;s original paper
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;//	public static Pattern pattern = Pattern.compile( &quot;[-+]?\\d*\\.?\\d+([eE][-+]?\\d+)?&quot; );
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Get a default stain vector.
+<i>97</i>&nbsp;	 * @param stain
+<i>98</i>&nbsp;	 * @return
+<i>99</i>&nbsp;	 */
+<i>100</i>&nbsp;	public static StainVector makeDefaultStainVector(DefaultStains stain) {
+<b class="fc"><i>101</i>&nbsp;		switch(stain) {</b>
+<i>102</i>&nbsp;		case HEMATOXYLIN:
+<b class="fc"><i>103</i>&nbsp;			return createStainVector(stain.toString(), STAIN_HEMATOXYLIN_DEFAULT, false);</b>
+<i>104</i>&nbsp;		case EOSIN:
+<b class="fc"><i>105</i>&nbsp;			return createStainVector(stain.toString(), STAIN_EOSIN_DEFAULT, false);</b>
+<i>106</i>&nbsp;		case DAB:
+<b class="fc"><i>107</i>&nbsp;			return createStainVector(stain.toString(), STAIN_DAB_DEFAULT, false);</b>
+<i>108</i>&nbsp;		}
+<b class="nc"><i>109</i>&nbsp;		return null;</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	/**
+<i>113</i>&nbsp;	 * Default constructor, required for {@link Externalizable} interface.
+<i>114</i>&nbsp;	 */
+<b class="nc"><i>115</i>&nbsp;	public StainVector() {}</b>
+<i>116</i>&nbsp;	
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	static StainVector createStainVector(String name, double[] vector, boolean isResidual) {
+<b class="fc"><i>119</i>&nbsp;		return new StainVector(name, vector[0], vector[1], vector[2], isResidual);</b>
+<i>120</i>&nbsp;	}
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Create a stain vector.
+<i>124</i>&nbsp;	 * @param name the name of the stain
+<i>125</i>&nbsp;	 * @param r the stain vector red component
+<i>126</i>&nbsp;	 * @param g the stain vector green component
+<i>127</i>&nbsp;	 * @param b the stain vector blue component
+<i>128</i>&nbsp;	 * @return
+<i>129</i>&nbsp;	 */
+<i>130</i>&nbsp;	public static StainVector createStainVector(String name, double r, double g, double b) {
+<b class="nc"><i>131</i>&nbsp;		return new StainVector(name, r, g, b, false);</b>
+<i>132</i>&nbsp;	}
+<i>133</i>&nbsp;
+<b class="fc"><i>134</i>&nbsp;	StainVector(String name, double r, double g, double b, boolean isResidual) {</b>
+<b class="fc"><i>135</i>&nbsp;		setName(name);</b>
+<b class="fc"><i>136</i>&nbsp;		setStain(r, g, b);</b>
+<b class="fc"><i>137</i>&nbsp;		this.isResidual = isResidual;</b>
+<b class="fc"><i>138</i>&nbsp;	}</b>
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;//	public static StainVector createResidualStainVector(String name, double r, double g, double b) {
+<i>141</i>&nbsp;//		return new StainVector(name, r, g, b, true);
+<i>142</i>&nbsp;//	}
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;	/**
+<i>145</i>&nbsp;	 * Returns true if this vector represents the residual (orthogonal) stain, used whenever color deconvolution is required with two stains only.
+<i>146</i>&nbsp;	 * @return
+<i>147</i>&nbsp;	 */
+<i>148</i>&nbsp;	public boolean isResidual() {
+<b class="nc"><i>149</i>&nbsp;		return isResidual;</b>
+<i>150</i>&nbsp;	}
+<i>151</i>&nbsp;	
+<i>152</i>&nbsp;	/**
+<i>153</i>&nbsp;	 * Returns the name of the stain vector.
+<i>154</i>&nbsp;	 * @return
+<i>155</i>&nbsp;	 */
+<i>156</i>&nbsp;	public String getName() {
+<b class="nc"><i>157</i>&nbsp;		return name;</b>
+<i>158</i>&nbsp;	}
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	private static double getLength(double r, double g, double b) {
+<b class="fc"><i>161</i>&nbsp;		return Math.sqrt(r*r + g*g + b*b);</b>
+<i>162</i>&nbsp;	}
+<i>163</i>&nbsp;	
+<i>164</i>&nbsp;	/**
+<i>165</i>&nbsp;	 * Get the red component of the (normalized) stain vector.
+<i>166</i>&nbsp;	 * @return
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;	public double getRed() {
+<b class="fc"><i>169</i>&nbsp;		return this.r;</b>
+<i>170</i>&nbsp;	}
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;	/**
+<i>173</i>&nbsp;	 * Get the green component of the (normalized) stain vector.
+<i>174</i>&nbsp;	 * @return
+<i>175</i>&nbsp;	 */
+<i>176</i>&nbsp;	public double getGreen() {
+<b class="fc"><i>177</i>&nbsp;		return this.g;</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Get the blue component of the (normalized) stain vector.
+<i>182</i>&nbsp;	 * @return
+<i>183</i>&nbsp;	 */
+<i>184</i>&nbsp;	public double getBlue() {
+<b class="fc"><i>185</i>&nbsp;		return this.b;</b>
+<i>186</i>&nbsp;	}
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	private void setName(String name) {
+<b class="fc"><i>189</i>&nbsp;		this.name = name;</b>
+<b class="fc"><i>190</i>&nbsp;	}</b>
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;//	private void setStain(StainVector stain) {
+<i>193</i>&nbsp;//		setStain(stain.getRed(), stain.getGreen(), stain.getBlue());
+<i>194</i>&nbsp;//	}
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;	private void setStain(double r, double g, double b) {
+<b class="fc"><i>197</i>&nbsp;		double length = getLength(r, g, b);</b>
+<b class="fc"><i>198</i>&nbsp;		if (length &lt;= 0)</b>
+<b class="nc"><i>199</i>&nbsp;			throw new IllegalArgumentException(&quot;Stain vector is not valid - must have a length &gt; 0&quot;);</b>
+<i>200</i>&nbsp;
+<b class="fc"><i>201</i>&nbsp;		this.r = r / length;</b>
+<b class="fc"><i>202</i>&nbsp;		this.g = g / length;</b>
+<b class="fc"><i>203</i>&nbsp;		this.b = b / length;</b>
+<b class="fc"><i>204</i>&nbsp;	}</b>
+<i>205</i>&nbsp;	
+<i>206</i>&nbsp;	/**
+<i>207</i>&nbsp;	 * Get the stain vector as a 3 element array (red, green, blue).
+<i>208</i>&nbsp;	 * @return
+<i>209</i>&nbsp;	 */
+<i>210</i>&nbsp;	public double[] getArray() {
+<b class="fc"><i>211</i>&nbsp;		return new double[]{r, g, b};</b>
+<i>212</i>&nbsp;	}
+<i>213</i>&nbsp;	
+<i>214</i>&nbsp;	/**
+<i>215</i>&nbsp;	 * Get a Color that (roughly) corresponds to color represented by this stain vector.
+<i>216</i>&nbsp;	 * It may be used to create a color lookup table.
+<i>217</i>&nbsp;	 * 
+<i>218</i>&nbsp;	 * @return
+<i>219</i>&nbsp;	 */
+<i>220</i>&nbsp;	public int getColor() {
+<b class="nc"><i>221</i>&nbsp;		int r2 = ColorTools.clip255(255.0 - r * 255);</b>
+<b class="nc"><i>222</i>&nbsp;		int g2 = ColorTools.clip255(255.0 - g * 255);</b>
+<b class="nc"><i>223</i>&nbsp;		int b2 = ColorTools.clip255(255.0 - b * 255);</b>
+<b class="nc"><i>224</i>&nbsp;		return ColorTools.makeRGB(r2, g2, b2);</b>
+<i>225</i>&nbsp;	}
+<i>226</i>&nbsp;		
+<i>227</i>&nbsp;	
+<i>228</i>&nbsp;	String arrayAsString(final Locale locale, final int nDecimalPlaces) {
+<b class="nc"><i>229</i>&nbsp;		return GeneralTools.arrayToString(locale, new double[]{r, g, b}, nDecimalPlaces);</b>
+<i>230</i>&nbsp;//		return String.format( &quot;%.Nf %.Nf %.Nf&quot;.replace(&quot;N&quot;, Integer.toString(nDecimalPlaces)), r, g, b );
+<i>231</i>&nbsp;//		return String.format( &quot;%.Nf, %.Nf, %.Nf&quot;.replace(&quot;N&quot;, Integer.toString(nDecimalPlaces)), r, g, b );
+<i>232</i>&nbsp;//		return String.format( &quot;[%.Nf, %.Nf, %.Nf]&quot;.replace(&quot;N&quot;, Integer.toString(nDecimalPlaces)), r, g, b );
+<i>233</i>&nbsp;//		return &quot;[&quot; + IJ.d2s(r, nDecimalPlaces) + &quot;, &quot; + IJ.d2s(g, nDecimalPlaces) + &quot;, &quot; + IJ.d2s(b, nDecimalPlaces) + &quot;]&quot;;
+<i>234</i>&nbsp;	}
+<i>235</i>&nbsp;	
+<i>236</i>&nbsp;	/**
+<i>237</i>&nbsp;	 * Get a String representation of the stain vector array, formatting according to the specified Locale.
+<i>238</i>&nbsp;	 * @param locale
+<i>239</i>&nbsp;	 * @return
+<i>240</i>&nbsp;	 */
+<i>241</i>&nbsp;	public String arrayAsString(final Locale locale) {
+<b class="nc"><i>242</i>&nbsp;		return arrayAsString(locale, 3);</b>
+<i>243</i>&nbsp;	}
+<i>244</i>&nbsp;	
+<i>245</i>&nbsp;	@Override
+<i>246</i>&nbsp;	public String toString() {
+<b class="nc"><i>247</i>&nbsp;		return name + &quot;: &quot; + arrayAsString(Locale.getDefault(Category.FORMAT));</b>
+<i>248</i>&nbsp;	}
+<i>249</i>&nbsp;
+<i>250</i>&nbsp;//	private static StainVector parseStainVector(String s) {
+<i>251</i>&nbsp;//		return parseStainVector(null, s);
+<i>252</i>&nbsp;//	}
+<i>253</i>&nbsp;
+<i>254</i>&nbsp;	/**
+<i>255</i>&nbsp;	 * Calculate the angle between two stain vectors, in degrees.
+<i>256</i>&nbsp;	 * @param s1
+<i>257</i>&nbsp;	 * @param s2
+<i>258</i>&nbsp;	 * @return
+<i>259</i>&nbsp;	 */
+<i>260</i>&nbsp;	public static double computeAngle(StainVector s1, StainVector s2) {
+<b class="nc"><i>261</i>&nbsp;		double[] v1 = s1.getArray();</b>
+<b class="nc"><i>262</i>&nbsp;		double[] v2 = s2.getArray();</b>
+<b class="nc"><i>263</i>&nbsp;		if (v1 == null || v2 == null)</b>
+<b class="nc"><i>264</i>&nbsp;			return Double.NaN;</b>
+<b class="nc"><i>265</i>&nbsp;		double n1 = 0, n2 = 0, dot = 0;</b>
+<b class="nc"><i>266</i>&nbsp;		for (int i = 0; i &lt; v1.length; i++) {</b>
+<b class="nc"><i>267</i>&nbsp;			n1 += v1[i]*v1[i];</b>
+<b class="nc"><i>268</i>&nbsp;			n2 += v2[i]*v2[i];</b>
+<b class="nc"><i>269</i>&nbsp;			dot += v1[i]*v2[i];</b>
+<i>270</i>&nbsp;		}
+<b class="nc"><i>271</i>&nbsp;		if (Math.abs(1 - dot) &lt; 0.00001)</b>
+<b class="nc"><i>272</i>&nbsp;			return 0;</b>
+<b class="nc"><i>273</i>&nbsp;		if (Math.abs(1 - Math.sqrt(n1) * Math.sqrt(n2)) &lt; 0.001)</b>
+<b class="nc"><i>274</i>&nbsp;			return Math.acos(dot) / Math.PI * 180;</b>
+<b class="nc"><i>275</i>&nbsp;		return Math.acos(dot / (Math.sqrt(n1) * Math.sqrt(n2))) / Math.PI * 180;</b>
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;		
+<i>278</i>&nbsp;//		double val = Math.acos(dot / (Math.sqrt(n1) * Math.sqrt(n2))) / Math.PI * 180;
+<i>279</i>&nbsp;//		if (Double.isNaN(val)) {
+<i>280</i>&nbsp;//			System.out.println(dot / (Math.sqrt(n1) * Math.sqrt(n2)));
+<i>281</i>&nbsp;//			System.out.println(s1 + &quot;, &quot; + s2);
+<i>282</i>&nbsp;////			System.out.println(s2);
+<i>283</i>&nbsp;//		}
+<i>284</i>&nbsp;////		System.out.println(val);
+<i>285</i>&nbsp;//		return Math.acos(dot / (Math.sqrt(n1) * Math.sqrt(n2))) / Math.PI * 180;
+<i>286</i>&nbsp;	}
+<i>287</i>&nbsp;	
+<i>288</i>&nbsp;	
+<i>289</i>&nbsp;	
+<i>290</i>&nbsp;	/**
+<i>291</i>&nbsp;	 * Compute the cross product of two vectors.
+<i>292</i>&nbsp;	 * @param u
+<i>293</i>&nbsp;	 * @param v
+<i>294</i>&nbsp;	 * @return
+<i>295</i>&nbsp;	 */
+<i>296</i>&nbsp;	public static double[] cross3(double[] u, double[] v) {
+<b class="fc"><i>297</i>&nbsp;		double[] s = new double[3];</b>
+<b class="fc"><i>298</i>&nbsp;		s[0] = (u[1]*v[2] - u[2]*v[1]);</b>
+<b class="fc"><i>299</i>&nbsp;		s[1] = (u[2]*v[0] - u[0]*v[2]);</b>
+<b class="fc"><i>300</i>&nbsp;		s[2] = (u[0]*v[1] - u[1]*v[0]);</b>
+<b class="fc"><i>301</i>&nbsp;		return s;</b>
+<i>302</i>&nbsp;	}
+<i>303</i>&nbsp;	
+<i>304</i>&nbsp;	/**
+<i>305</i>&nbsp;	 * Make a &#39;residual&#39; stain vector, i.e. a third stain vector orthogonal to two specified vectors.
+<i>306</i>&nbsp;	 * 
+<i>307</i>&nbsp;	 * @param s1
+<i>308</i>&nbsp;	 * @param s2
+<i>309</i>&nbsp;	 * @return
+<i>310</i>&nbsp;	 */
+<i>311</i>&nbsp;	static StainVector makeResidualStainVector(StainVector s1, StainVector s2) {
+<b class="fc"><i>312</i>&nbsp;		return makeOrthogonalStainVector(&quot;Residual&quot;, s1, s2, true);</b>
+<i>313</i>&nbsp;	}
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;	
+<i>316</i>&nbsp;	static StainVector makeOrthogonalStainVector(String name, StainVector s1, StainVector s2, boolean isResidual) {
+<b class="fc"><i>317</i>&nbsp;		return createStainVector(name, cross3(s1.getArray(), s2.getArray()), isResidual);</b>
+<i>318</i>&nbsp;	}
+<i>319</i>&nbsp;	
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;	@Override
+<i>322</i>&nbsp;	public void writeExternal(ObjectOutput out) throws IOException {
+<b class="nc"><i>323</i>&nbsp;		out.writeInt(version);</b>
+<b class="nc"><i>324</i>&nbsp;		out.writeUTF(name);</b>
+<b class="nc"><i>325</i>&nbsp;		out.writeDouble(r);</b>
+<b class="nc"><i>326</i>&nbsp;		out.writeDouble(g);</b>
+<b class="nc"><i>327</i>&nbsp;		out.writeDouble(b);</b>
+<b class="nc"><i>328</i>&nbsp;		out.writeBoolean(isResidual);</b>
+<b class="nc"><i>329</i>&nbsp;	}</b>
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;	@Override
+<i>333</i>&nbsp;	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+<b class="nc"><i>334</i>&nbsp;		int version = in.readInt();</b>
+<b class="nc"><i>335</i>&nbsp;		if (version != 1)</b>
+<b class="nc"><i>336</i>&nbsp;			logger.error(getClass().getSimpleName() + &quot; unsupported version number &quot; + version);</b>
+<b class="nc"><i>337</i>&nbsp;		name = in.readUTF();</b>
+<b class="nc"><i>338</i>&nbsp;		r = in.readDouble();</b>
+<b class="nc"><i>339</i>&nbsp;		g = in.readDouble();</b>
+<b class="nc"><i>340</i>&nbsp;		b = in.readDouble();</b>
+<b class="nc"><i>341</i>&nbsp;		isResidual = in.readBoolean();</b>
+<b class="nc"><i>342</i>&nbsp;	}</b>
+<i>343</i>&nbsp;	
+<i>344</i>&nbsp;
+<i>345</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

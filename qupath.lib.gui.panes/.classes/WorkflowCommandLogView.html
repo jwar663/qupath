@@ -1,0 +1,666 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: WorkflowCommandLogView</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.panes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: WorkflowCommandLogView (qupath.lib.gui.panes)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WorkflowCommandLogView</td>
+<td class="coverageStat">
+  <span class="percent">
+    43.8%
+  </span>
+  <span class="absValue">
+    (7/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.5%
+  </span>
+  <span class="absValue">
+    (65/ 194)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WorkflowCommandLogView$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WorkflowCommandLogView$1$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64.3%
+  </span>
+  <span class="absValue">
+    (9/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WorkflowCommandLogView$KeyValue</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WorkflowCommandLogView$ParameterTableCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    42.3%
+  </span>
+  <span class="absValue">
+    (11/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33%
+  </span>
+  <span class="absValue">
+    (77/ 233)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.panes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;import java.util.Locale;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Map.Entry;
+<i>33</i>&nbsp;import java.util.Objects;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.application.Platform;
+<i>39</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>40</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>41</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>42</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>43</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>44</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>45</i>&nbsp;import javafx.collections.ObservableList;
+<i>46</i>&nbsp;import javafx.geometry.Orientation;
+<i>47</i>&nbsp;import javafx.scene.Scene;
+<i>48</i>&nbsp;import javafx.scene.control.Button;
+<i>49</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>50</i>&nbsp;import javafx.scene.control.ListCell;
+<i>51</i>&nbsp;import javafx.scene.control.ListView;
+<i>52</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>53</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>54</i>&nbsp;import javafx.scene.control.SeparatorMenuItem;
+<i>55</i>&nbsp;import javafx.scene.control.SplitPane;
+<i>56</i>&nbsp;import javafx.scene.control.TableCell;
+<i>57</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>58</i>&nbsp;import javafx.scene.control.TableView;
+<i>59</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>60</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>61</i>&nbsp;import javafx.scene.layout.Pane;
+<i>62</i>&nbsp;import javafx.stage.Stage;
+<i>63</i>&nbsp;import javafx.util.Callback;
+<i>64</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>65</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>66</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>67</i>&nbsp;import qupath.lib.gui.plugins.ParameterDialogWrapper;
+<i>68</i>&nbsp;import qupath.lib.gui.plugins.PluginRunnerFX;
+<i>69</i>&nbsp;import qupath.lib.gui.scripting.ScriptEditor;
+<i>70</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>71</i>&nbsp;import qupath.lib.images.ImageData;
+<i>72</i>&nbsp;import qupath.lib.plugins.PathInteractivePlugin;
+<i>73</i>&nbsp;import qupath.lib.plugins.PathPlugin;
+<i>74</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>75</i>&nbsp;import qupath.lib.plugins.workflow.ScriptableWorkflowStep;
+<i>76</i>&nbsp;import qupath.lib.plugins.workflow.SimplePluginWorkflowStep;
+<i>77</i>&nbsp;import qupath.lib.plugins.workflow.Workflow;
+<i>78</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowListener;
+<i>79</i>&nbsp;import qupath.lib.plugins.workflow.WorkflowStep;
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;/**
+<i>83</i>&nbsp; * Show logged commands, and optionally generate a script.
+<i>84</i>&nbsp; * 
+<i>85</i>&nbsp; * @author Pete Bankhead
+<i>86</i>&nbsp; *
+<i>87</i>&nbsp; */
+<i>88</i>&nbsp;public class WorkflowCommandLogView implements ChangeListener&lt;ImageData&lt;BufferedImage&gt;&gt;, WorkflowListener {
+<i>89</i>&nbsp;
+<b class="fc"><i>90</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(WorkflowCommandLogView.class);</b>
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	private QuPathGUI qupath;
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	private BorderPane pane;
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	private final boolean isStaticWorkflow;
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	private Workflow workflow;
+<b class="fc"><i>99</i>&nbsp;	private ListView&lt;WorkflowStep&gt; list = new ListView&lt;&gt;();</b>
+<i>100</i>&nbsp;	
+<b class="fc"><i>101</i>&nbsp;	private TableView&lt;KeyValue&lt;Object&gt;&gt; table = new TableView&lt;&gt;();</b>
+<i>102</i>&nbsp;	
+<i>103</i>&nbsp;	/**
+<i>104</i>&nbsp;	 * Construct a view to display the workflow for the currently-active ImageData within a running QuPath instance.
+<i>105</i>&nbsp;	 * 
+<i>106</i>&nbsp;	 * @param qupath
+<i>107</i>&nbsp;	 */
+<b class="fc"><i>108</i>&nbsp;	public WorkflowCommandLogView(final QuPathGUI qupath) {</b>
+<b class="fc"><i>109</i>&nbsp;		this.qupath = qupath;</b>
+<i>110</i>&nbsp;//		this.viewer = qupath.getViewer();
+<i>111</i>&nbsp;//		viewer.addViewerListener(this);
+<b class="fc"><i>112</i>&nbsp;		qupath.imageDataProperty().addListener(this);</b>
+<b class="fc"><i>113</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageData = qupath.getImageData();</b>
+<b class="fc"><i>114</i>&nbsp;		if (imageData != null) {</b>
+<b class="nc"><i>115</i>&nbsp;			workflow = imageData.getHistoryWorkflow();</b>
+<b class="nc"><i>116</i>&nbsp;			workflow.addWorkflowListener(this);</b>
+<i>117</i>&nbsp;		}
+<b class="fc"><i>118</i>&nbsp;		isStaticWorkflow = false;</b>
+<b class="fc"><i>119</i>&nbsp;	}</b>
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	/**
+<i>122</i>&nbsp;	 * Construct a view displaying a static workflow (i.e. not dependent on any particular ImageData).
+<i>123</i>&nbsp;	 * 
+<i>124</i>&nbsp;	 * @param qupath
+<i>125</i>&nbsp;	 * @param workflow
+<i>126</i>&nbsp;	 */
+<b class="nc"><i>127</i>&nbsp;	public WorkflowCommandLogView(final QuPathGUI qupath, final Workflow workflow) {</b>
+<b class="nc"><i>128</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>129</i>&nbsp;		this.workflow = workflow;</b>
+<b class="nc"><i>130</i>&nbsp;		this.workflow.addWorkflowListener(this);</b>
+<b class="nc"><i>131</i>&nbsp;		this.list.getItems().addAll(this.workflow.getSteps());</b>
+<b class="nc"><i>132</i>&nbsp;		this.isStaticWorkflow = true;</b>
+<b class="nc"><i>133</i>&nbsp;	}</b>
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	/**
+<i>137</i>&nbsp;	 * Get the pane to add to a scene.
+<i>138</i>&nbsp;	 * @return
+<i>139</i>&nbsp;	 */
+<i>140</i>&nbsp;	public Pane getPane() {
+<b class="fc"><i>141</i>&nbsp;		if (pane == null)</b>
+<b class="fc"><i>142</i>&nbsp;			pane = createPane();</b>
+<b class="fc"><i>143</i>&nbsp;		return pane;</b>
+<i>144</i>&nbsp;	}
+<i>145</i>&nbsp;	
+<i>146</i>&nbsp;	
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	protected BorderPane createPane() {
+<b class="fc"><i>149</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="fc"><i>150</i>&nbsp;		TableColumn&lt;KeyValue&lt;Object&gt;, String&gt; col1 = new TableColumn&lt;&gt;(&quot;Parameter&quot;);</b>
+<b class="fc"><i>151</i>&nbsp;		col1.setCellValueFactory(c -&gt; c.getValue().keyProperty());</b>
+<b class="fc"><i>152</i>&nbsp;		TableColumn&lt;KeyValue&lt;Object&gt;, Object&gt; col2 = new TableColumn&lt;&gt;(&quot;Value&quot;);</b>
+<b class="fc"><i>153</i>&nbsp;		col2.setCellValueFactory(c -&gt; c.getValue().valueProperty());</b>
+<b class="fc"><i>154</i>&nbsp;		col2.setCellFactory(t -&gt; new ParameterTableCell&lt;&gt;());</b>
+<b class="fc"><i>155</i>&nbsp;		table.getColumns().add(col1);</b>
+<b class="fc"><i>156</i>&nbsp;		table.getColumns().add(col2);</b>
+<b class="fc"><i>157</i>&nbsp;		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<i>158</i>&nbsp;				
+<b class="fc"><i>159</i>&nbsp;		SplitPane splitPane = new SplitPane();</b>
+<b class="fc"><i>160</i>&nbsp;		splitPane.setOrientation(Orientation.VERTICAL);</b>
+<b class="fc"><i>161</i>&nbsp;		splitPane.getItems().addAll(list, table);</b>
+<i>162</i>&nbsp;		
+<i>163</i>&nbsp;		// Allow multiple selections for static model
+<b class="fc"><i>164</i>&nbsp;		list.getSelectionModel().setSelectionMode(isStaticWorkflow ? SelectionMode.MULTIPLE : SelectionMode.SINGLE);</b>
+<i>165</i>&nbsp;		
+<b class="fc"><i>166</i>&nbsp;		list.getSelectionModel().selectedItemProperty().addListener((e, f, g) -&gt; {</b>
+<b class="nc"><i>167</i>&nbsp;			WorkflowStep step = list.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>168</i>&nbsp;			populateList(table.getItems(), step);</b>
+<b class="nc"><i>169</i>&nbsp;		});</b>
+<i>170</i>&nbsp;		
+<b class="fc"><i>171</i>&nbsp;		final ContextMenu contextMenu = new ContextMenu();</b>
+<b class="fc"><i>172</i>&nbsp;		if (isStaticWorkflow) {</b>
+<b class="nc"><i>173</i>&nbsp;			MenuItem miRemoveSelected = new MenuItem(&quot;Remove selected items&quot;);</b>
+<b class="nc"><i>174</i>&nbsp;			miRemoveSelected.setOnAction(e -&gt; {</b>
+<b class="nc"><i>175</i>&nbsp;				List&lt;Integer&gt; steps = list.getSelectionModel().getSelectedIndices();</b>
+<b class="nc"><i>176</i>&nbsp;				if (steps.isEmpty())</b>
+<b class="nc"><i>177</i>&nbsp;					return;</b>
+<b class="nc"><i>178</i>&nbsp;				String message = steps.size() == 1 ? &quot;Remove workflow step?&quot; : &quot;Remove &quot; + steps.size() + &quot; workflow steps?&quot;;</b>
+<b class="nc"><i>179</i>&nbsp;				if (!Dialogs.showYesNoDialog(&quot;Remove workflow steps&quot;, message))</b>
+<b class="nc"><i>180</i>&nbsp;					return;</b>
+<b class="nc"><i>181</i>&nbsp;				steps = new ArrayList&lt;&gt;(steps);</b>
+<b class="nc"><i>182</i>&nbsp;				Collections.sort(steps);</b>
+<b class="nc"><i>183</i>&nbsp;				for (int i = steps.size()-1; i &gt;= 0; i--)</b>
+<b class="nc"><i>184</i>&nbsp;					workflow.removeStep(steps.get(i));</b>
+<i>185</i>&nbsp;//				workflow.removeSteps(steps);
+<b class="nc"><i>186</i>&nbsp;			});</b>
+<b class="nc"><i>187</i>&nbsp;			MenuItem miMoveUp = new MenuItem(&quot;Move up&quot;);</b>
+<b class="nc"><i>188</i>&nbsp;			miMoveUp.setOnAction(e -&gt; {</b>
+<b class="nc"><i>189</i>&nbsp;				List&lt;Integer&gt; indices = list.getSelectionModel().getSelectedIndices();</b>
+<b class="nc"><i>190</i>&nbsp;				if (indices.isEmpty() || indices.get(0) &lt;= 0)</b>
+<b class="nc"><i>191</i>&nbsp;					return;</b>
+<b class="nc"><i>192</i>&nbsp;				indices = new ArrayList&lt;&gt;(indices);</b>
+<b class="nc"><i>193</i>&nbsp;				List&lt;WorkflowStep&gt; steps = new ArrayList&lt;&gt;(workflow.getSteps());</b>
+<b class="nc"><i>194</i>&nbsp;				WorkflowStep[] stepsRemoved = new WorkflowStep[indices.size()];</b>
+<b class="nc"><i>195</i>&nbsp;				workflow.removeSteps(steps);</b>
+<b class="nc"><i>196</i>&nbsp;				int[] newIndices = new int[indices.size()];</b>
+<b class="nc"><i>197</i>&nbsp;				for (int i = indices.size()-1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>198</i>&nbsp;					int ind = indices.get(i);</b>
+<b class="nc"><i>199</i>&nbsp;					int indNew = ind-1;</b>
+<b class="nc"><i>200</i>&nbsp;					newIndices[i] = indNew;</b>
+<b class="nc"><i>201</i>&nbsp;					stepsRemoved[i] = steps.remove(ind);</b>
+<i>202</i>&nbsp;				}
+<b class="nc"><i>203</i>&nbsp;				for (int i = 0; i &lt; indices.size(); i++) {</b>
+<b class="nc"><i>204</i>&nbsp;					steps.add(newIndices[i], stepsRemoved[i]);</b>
+<i>205</i>&nbsp;				}
+<b class="nc"><i>206</i>&nbsp;				workflow.addSteps(steps);</b>
+<b class="nc"><i>207</i>&nbsp;				list.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>208</i>&nbsp;				list.getSelectionModel().selectIndices(newIndices[0], newIndices);</b>
+<b class="nc"><i>209</i>&nbsp;			});</b>
+<b class="nc"><i>210</i>&nbsp;			MenuItem miMoveDown = new MenuItem(&quot;Move down&quot;);</b>
+<b class="nc"><i>211</i>&nbsp;			miMoveDown.setOnAction(e -&gt; {</b>
+<b class="nc"><i>212</i>&nbsp;				List&lt;Integer&gt; indices = list.getSelectionModel().getSelectedIndices();</b>
+<b class="nc"><i>213</i>&nbsp;				if (indices.isEmpty() || indices.get(indices.size()-1) &gt;= workflow.size()-1)</b>
+<b class="nc"><i>214</i>&nbsp;					return;</b>
+<b class="nc"><i>215</i>&nbsp;				indices = new ArrayList&lt;&gt;(indices);</b>
+<b class="nc"><i>216</i>&nbsp;				list.getSelectionModel().clearSelection();</b>
+<b class="nc"><i>217</i>&nbsp;				Collections.sort(indices);</b>
+<b class="nc"><i>218</i>&nbsp;				List&lt;WorkflowStep&gt; steps = new ArrayList&lt;&gt;(workflow.getSteps());</b>
+<b class="nc"><i>219</i>&nbsp;				WorkflowStep[] stepsRemoved = new WorkflowStep[indices.size()];</b>
+<b class="nc"><i>220</i>&nbsp;				workflow.removeSteps(steps);</b>
+<b class="nc"><i>221</i>&nbsp;				int[] newIndices = new int[indices.size()];</b>
+<b class="nc"><i>222</i>&nbsp;				for (int i = indices.size()-1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>223</i>&nbsp;					int ind = indices.get(i);</b>
+<b class="nc"><i>224</i>&nbsp;					int indNew = ind+1;</b>
+<b class="nc"><i>225</i>&nbsp;					newIndices[i] = indNew;</b>
+<b class="nc"><i>226</i>&nbsp;					stepsRemoved[i] = steps.remove(ind);</b>
+<i>227</i>&nbsp;				}
+<b class="nc"><i>228</i>&nbsp;				for (int i = 0; i &lt; indices.size(); i++) {</b>
+<b class="nc"><i>229</i>&nbsp;					steps.add(newIndices[i], stepsRemoved[i]);</b>
+<i>230</i>&nbsp;				}
+<b class="nc"><i>231</i>&nbsp;				workflow.addSteps(steps);</b>
+<b class="nc"><i>232</i>&nbsp;				list.getSelectionModel().select(newIndices[0]);</b>
+<b class="nc"><i>233</i>&nbsp;				list.getSelectionModel().selectIndices(newIndices[0], newIndices);</b>
+<i>234</i>&nbsp;				
+<i>235</i>&nbsp;//				int ind = list.getSelectionModel().getSelectedIndex();
+<i>236</i>&nbsp;//				if (ind &lt; 0 || ind &gt;= workflow.size()-1)
+<i>237</i>&nbsp;//					return;
+<i>238</i>&nbsp;//				List&lt;WorkflowStep&gt; steps = new ArrayList&lt;&gt;(workflow.getSteps());
+<i>239</i>&nbsp;//				WorkflowStep step = steps.remove(ind);
+<i>240</i>&nbsp;//				steps.add(ind+1, step);
+<i>241</i>&nbsp;//				workflow.removeSteps(steps);
+<i>242</i>&nbsp;//				workflow.addSteps(steps);
+<i>243</i>&nbsp;//				list.getSelectionModel().select(step);
+<b class="nc"><i>244</i>&nbsp;			});</b>
+<b class="nc"><i>245</i>&nbsp;			contextMenu.getItems().setAll(</b>
+<i>246</i>&nbsp;					miMoveUp,
+<i>247</i>&nbsp;					miMoveDown,
+<i>248</i>&nbsp;					new SeparatorMenuItem(),
+<i>249</i>&nbsp;					miRemoveSelected
+<i>250</i>&nbsp;					);
+<i>251</i>&nbsp;		}
+<i>252</i>&nbsp;		
+<b class="fc"><i>253</i>&nbsp;		list.setCellFactory(new Callback&lt;ListView&lt;WorkflowStep&gt;, ListCell&lt;WorkflowStep&gt;&gt;(){</b>
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;			@Override
+<i>256</i>&nbsp;			public ListCell&lt;WorkflowStep&gt; call(ListView&lt;WorkflowStep&gt; p) {
+<b class="fc"><i>257</i>&nbsp;				ListCell&lt;WorkflowStep&gt; cell = new ListCell&lt;WorkflowStep&gt;(){</b>
+<i>258</i>&nbsp;					@Override
+<i>259</i>&nbsp;					protected void updateItem(WorkflowStep value, boolean bln) {
+<b class="fc"><i>260</i>&nbsp;						super.updateItem(value, bln);</b>
+<b class="fc"><i>261</i>&nbsp;						if (value instanceof WorkflowStep)</b>
+<b class="fc"><i>262</i>&nbsp;							setText(((WorkflowStep)value).getName());</b>
+<b class="fc"><i>263</i>&nbsp;						else if (value == null)</b>
+<b class="fc"><i>264</i>&nbsp;							setText(null);</b>
+<i>265</i>&nbsp;						else
+<b class="nc"><i>266</i>&nbsp;							setText(value.toString());</b>
+<i>267</i>&nbsp;						
+<b class="fc"><i>268</i>&nbsp;						if (isStaticWorkflow)</b>
+<b class="nc"><i>269</i>&nbsp;							this.setContextMenu(contextMenu);</b>
+<i>270</i>&nbsp;
+<b class="fc"><i>271</i>&nbsp;						setOnMouseClicked(e -&gt; {</b>
+<i>272</i>&nbsp;							// Only handle double clicks
+<b class="nc"><i>273</i>&nbsp;							if (!e.isPopupTrigger() &amp;&amp; e.getClickCount() == 2)</b>
+<b class="nc"><i>274</i>&nbsp;								runWorkflowStepInteractively(qupath, value);</b>
+<b class="nc"><i>275</i>&nbsp;						});</b>
+<b class="fc"><i>276</i>&nbsp;					}</b>
+<i>277</i>&nbsp;				};
+<b class="fc"><i>278</i>&nbsp;				return cell;</b>
+<i>279</i>&nbsp;			}
+<i>280</i>&nbsp;		});
+<i>281</i>&nbsp;		
+<i>282</i>&nbsp;		
+<b class="fc"><i>283</i>&nbsp;		pane.setCenter(splitPane);</b>
+<i>284</i>&nbsp;		
+<b class="fc"><i>285</i>&nbsp;		Button btnCreateScript = new Button(&quot;Create script&quot;);</b>
+<b class="fc"><i>286</i>&nbsp;		btnCreateScript.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="fc"><i>287</i>&nbsp;		btnCreateScript.setOnAction(e -&gt; showScript());</b>
+<i>288</i>&nbsp;
+<b class="fc"><i>289</i>&nbsp;		Button btnCreateWorkflow = null;</b>
+<b class="fc"><i>290</i>&nbsp;		if (!isStaticWorkflow) {</b>
+<b class="fc"><i>291</i>&nbsp;			btnCreateWorkflow = new Button(&quot;Create workflow&quot;);</b>
+<b class="fc"><i>292</i>&nbsp;			btnCreateWorkflow.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="fc"><i>293</i>&nbsp;			btnCreateWorkflow.setOnAction(e -&gt; {</b>
+<b class="nc"><i>294</i>&nbsp;				Stage stage = new Stage();</b>
+<b class="nc"><i>295</i>&nbsp;				stage.initOwner(qupath.getStage());</b>
+<b class="nc"><i>296</i>&nbsp;				stage.setTitle(&quot;Workflow&quot;);</b>
+<b class="nc"><i>297</i>&nbsp;				Workflow workflowNew = new Workflow();</b>
+<b class="nc"><i>298</i>&nbsp;				workflowNew.addSteps(workflow.getSteps());</b>
+<b class="nc"><i>299</i>&nbsp;				stage.setScene(new Scene(new WorkflowCommandLogView(qupath, workflowNew).getPane(), 400, 600));</b>
+<b class="nc"><i>300</i>&nbsp;				stage.show();</b>
+<b class="nc"><i>301</i>&nbsp;			});</b>
+<b class="fc"><i>302</i>&nbsp;			pane.setBottom(PaneTools.createColumnGridControls(btnCreateWorkflow, btnCreateScript));</b>
+<i>303</i>&nbsp;		} else
+<b class="nc"><i>304</i>&nbsp;			pane.setBottom(btnCreateScript);</b>
+<i>305</i>&nbsp;		
+<i>306</i>&nbsp;//		Button btnGenerateScript = new Button(&quot;Generate script&quot;);
+<i>307</i>&nbsp;//		btnGenerateScript.setMaxWidth(Double.MAX_VALUE);
+<i>308</i>&nbsp;//		btnGenerateScript.setOnAction(e -&gt; showScript());
+<i>309</i>&nbsp;//		pane.setBottom(btnGenerateScript);
+<b class="fc"><i>310</i>&nbsp;		return pane;</b>
+<i>311</i>&nbsp;	}
+<i>312</i>&nbsp;	
+<i>313</i>&nbsp;	
+<i>314</i>&nbsp;	static class ParameterTableCell&lt;S, T&gt; extends TableCell&lt;S, T&gt; {
+<i>315</i>&nbsp;		
+<b class="nc"><i>316</i>&nbsp;		private Tooltip tooltip = new Tooltip();</b>
+<i>317</i>&nbsp;		
+<i>318</i>&nbsp;		ParameterTableCell() {
+<b class="nc"><i>319</i>&nbsp;			super();</b>
+<b class="nc"><i>320</i>&nbsp;			setWrapText(true);</b>
+<b class="nc"><i>321</i>&nbsp;			setMaxHeight(Double.MAX_VALUE);</b>
+<b class="nc"><i>322</i>&nbsp;		}</b>
+<i>323</i>&nbsp;		
+<i>324</i>&nbsp;		@Override
+<i>325</i>&nbsp;		public void updateItem(T item, boolean empty) {
+<b class="nc"><i>326</i>&nbsp;			super.updateItem(item, empty);</b>
+<b class="nc"><i>327</i>&nbsp;			if (item == null || empty) {</b>
+<b class="nc"><i>328</i>&nbsp;				setText(null);</b>
+<b class="nc"><i>329</i>&nbsp;				setTooltip(null);</b>
+<b class="nc"><i>330</i>&nbsp;				return;</b>
+<i>331</i>&nbsp;			}
+<i>332</i>&nbsp;//			String text;
+<i>333</i>&nbsp;//			if (item instanceof Number)
+<i>334</i>&nbsp;//				text = GeneralTools.formatNumber(((Number) item).doubleValue(), 5);
+<i>335</i>&nbsp;//			else
+<b class="nc"><i>336</i>&nbsp;			String text = Objects.toString(item);</b>
+<b class="nc"><i>337</i>&nbsp;			setText(text);</b>
+<b class="nc"><i>338</i>&nbsp;			tooltip.setText(text);</b>
+<b class="nc"><i>339</i>&nbsp;			setTooltip(tooltip);</b>
+<b class="nc"><i>340</i>&nbsp;		}</b>
+<i>341</i>&nbsp;		
+<i>342</i>&nbsp;	}
+<i>343</i>&nbsp;	
+<i>344</i>&nbsp;	
+<i>345</i>&nbsp;	/**
+<i>346</i>&nbsp;	 * Launch a plugin dialog for a specified WorkflowStep.
+<i>347</i>&nbsp;	 * 
+<i>348</i>&nbsp;	 * TODO: Run any scriptable step
+<i>349</i>&nbsp;	 * 
+<i>350</i>&nbsp;	 * @param qupath
+<i>351</i>&nbsp;	 * @param step
+<i>352</i>&nbsp;	 */
+<i>353</i>&nbsp;	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+<i>354</i>&nbsp;	private static void runWorkflowStepInteractively(final QuPathGUI qupath, final WorkflowStep step) {
+<b class="nc"><i>355</i>&nbsp;		ImageData&lt;BufferedImage&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>356</i>&nbsp;		if (imageData == null) {</b>
+<b class="nc"><i>357</i>&nbsp;			Dialogs.showNoImageError(&quot;Run workflow step&quot;);</b>
+<b class="nc"><i>358</i>&nbsp;			return;</b>
+<i>359</i>&nbsp;		}
+<b class="nc"><i>360</i>&nbsp;		if (step instanceof SimplePluginWorkflowStep) {</b>
+<b class="nc"><i>361</i>&nbsp;			if (step instanceof SimplePluginWorkflowStep) {</b>
+<b class="nc"><i>362</i>&nbsp;				SimplePluginWorkflowStep pluginStep = (SimplePluginWorkflowStep)step;</b>
+<b class="nc"><i>363</i>&nbsp;				String pluginClassName = pluginStep.getPluginClass();</b>
+<i>364</i>&nbsp;				try {
+<b class="nc"><i>365</i>&nbsp;					Class&lt;? extends PathPlugin&gt; cls = (Class&lt;? extends PathPlugin&gt;)Class.forName(pluginClassName);</b>
+<b class="nc"><i>366</i>&nbsp;					PathPlugin&lt;BufferedImage&gt; plugin = qupath.createPlugin(cls);</b>
+<i>367</i>&nbsp;					
+<b class="nc"><i>368</i>&nbsp;					Map&lt;String, ?&gt; parameterMap = pluginStep.getParameterMap();</b>
+<b class="nc"><i>369</i>&nbsp;					String arg = null;</b>
+<b class="nc"><i>370</i>&nbsp;					if (parameterMap != null &amp;&amp; !parameterMap.isEmpty()) {</b>
+<b class="nc"><i>371</i>&nbsp;						arg = ParameterList.getParameterListJSON(parameterMap, &quot; &quot;);</b>
+<i>372</i>&nbsp;					}
+<i>373</i>&nbsp;					
+<b class="nc"><i>374</i>&nbsp;					if (plugin instanceof PathInteractivePlugin) {</b>
+<b class="nc"><i>375</i>&nbsp;						PathInteractivePlugin&lt;BufferedImage&gt; pluginInteractive = (PathInteractivePlugin&lt;BufferedImage&gt;)plugin;</b>
+<b class="nc"><i>376</i>&nbsp;						ParameterList params = pluginInteractive.getDefaultParameterList(imageData);</b>
+<i>377</i>&nbsp;						// Update parameter list, if necessary
+<b class="nc"><i>378</i>&nbsp;						if (arg != null)</b>
+<b class="nc"><i>379</i>&nbsp;							ParameterList.updateParameterList(params, GeneralTools.parseArgStringValues(arg), Locale.US); // Assume decimal points always</b>
+<b class="nc"><i>380</i>&nbsp;						ParameterDialogWrapper&lt;BufferedImage&gt; dialog = new ParameterDialogWrapper&lt;&gt;(pluginInteractive, params, new PluginRunnerFX(qupath));</b>
+<b class="nc"><i>381</i>&nbsp;						dialog.showDialog();</b>
+<i>382</i>&nbsp;						
+<i>383</i>&nbsp;						// TODO: Update workflow steps for customization?
+<i>384</i>&nbsp;						
+<i>385</i>&nbsp;//						dialog.getLastWorkflowStep()
+<i>386</i>&nbsp;//						// Listen to workflow changes
+<i>387</i>&nbsp;//						imageData.getWorkflow().addWorkflowListener(listener);
+<i>388</i>&nbsp;//						dialog.getDialog().addEventHandler(WindowEvent.WINDOW_HIDDEN, e -&gt; {
+<i>389</i>&nbsp;//							imageData.getWorkflow().removeWorkflowListener(listener);
+<i>390</i>&nbsp;////							dialog.getDialog().removeEventHandler(WindowEvent.WINDOW_HIDDEN, this);
+<i>391</i>&nbsp;//						});
+<b class="nc"><i>392</i>&nbsp;					}</b>
+<i>393</i>&nbsp;					else
+<b class="nc"><i>394</i>&nbsp;						plugin.runPlugin(new PluginRunnerFX(qupath), arg);</b>
+<b class="nc"><i>395</i>&nbsp;				} catch (ClassNotFoundException e1) {</b>
+<b class="nc"><i>396</i>&nbsp;					Dialogs.showErrorNotification(&quot;Plugin class not found&quot;, &quot;No plugin class found with name &quot; + pluginClassName);</b>
+<b class="nc"><i>397</i>&nbsp;				}</b>
+<b class="nc"><i>398</i>&nbsp;			}</b>
+<b class="nc"><i>399</i>&nbsp;		} else if (step instanceof ScriptableWorkflowStep) {</b>
+<i>400</i>&nbsp;			// TODO: Run command script
+<i>401</i>&nbsp;		}
+<b class="nc"><i>402</i>&nbsp;	}</b>
+<i>403</i>&nbsp;	
+<i>404</i>&nbsp;	
+<i>405</i>&nbsp;	
+<i>406</i>&nbsp;	void showScript() {
+<b class="nc"><i>407</i>&nbsp;		showScript(qupath.getScriptEditor(), workflow);</b>
+<b class="nc"><i>408</i>&nbsp;	}</b>
+<i>409</i>&nbsp;	
+<i>410</i>&nbsp;	/**
+<i>411</i>&nbsp;	 * Show a script in the script editor based on the specified workflow.
+<i>412</i>&nbsp;	 * @param scriptEditor
+<i>413</i>&nbsp;	 * @param workflow
+<i>414</i>&nbsp;	 */
+<i>415</i>&nbsp;	public static void showScript(final ScriptEditor scriptEditor, final Workflow workflow) {
+<b class="nc"><i>416</i>&nbsp;		if (workflow == null)</b>
+<b class="nc"><i>417</i>&nbsp;			return;</b>
+<b class="nc"><i>418</i>&nbsp;		String script = workflow.createScript();</b>
+<b class="nc"><i>419</i>&nbsp;		logger.info(&quot;\n//---------------------------------\n&quot; + script + &quot;\n//---------------------------------&quot;);</b>
+<b class="nc"><i>420</i>&nbsp;		if (scriptEditor != null)</b>
+<b class="nc"><i>421</i>&nbsp;			scriptEditor.showScript(&quot;New script&quot;, script);</b>
+<b class="nc"><i>422</i>&nbsp;	}</b>
+<i>423</i>&nbsp;	
+<i>424</i>&nbsp;	
+<i>425</i>&nbsp;	static void populateList(final ObservableList&lt;KeyValue&lt;Object&gt;&gt; list, final WorkflowStep step) {
+<b class="fc"><i>426</i>&nbsp;		if (step == null) {</b>
+<b class="fc"><i>427</i>&nbsp;			list.clear();</b>
+<b class="fc"><i>428</i>&nbsp;			return;</b>
+<i>429</i>&nbsp;		}
+<b class="nc"><i>430</i>&nbsp;		ArrayList&lt;KeyValue&lt;Object&gt;&gt; listNew = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>431</i>&nbsp;		for (Entry&lt;String, ?&gt; entry : step.getParameterMap().entrySet()) {</b>
+<b class="nc"><i>432</i>&nbsp;			listNew.add(new KeyValue&lt;&gt;(entry.getKey(), entry.getValue()));</b>
+<b class="nc"><i>433</i>&nbsp;		}</b>
+<b class="nc"><i>434</i>&nbsp;		if (step instanceof ScriptableWorkflowStep) {</b>
+<b class="nc"><i>435</i>&nbsp;			var script = ((ScriptableWorkflowStep) step).getScript();</b>
+<b class="nc"><i>436</i>&nbsp;			listNew.add(new KeyValue&lt;&gt;(&quot;Script&quot;, script));</b>
+<i>437</i>&nbsp;		}
+<b class="nc"><i>438</i>&nbsp;		list.setAll(listNew);</b>
+<b class="nc"><i>439</i>&nbsp;	}</b>
+<i>440</i>&nbsp;	
+<i>441</i>&nbsp;	
+<i>442</i>&nbsp;	private static class KeyValue&lt;T&gt; {
+<i>443</i>&nbsp;		
+<b class="nc"><i>444</i>&nbsp;		private final StringProperty key = new SimpleStringProperty();</b>
+<b class="nc"><i>445</i>&nbsp;		private final ObjectProperty&lt;T&gt; value = new SimpleObjectProperty&lt;&gt;();</b>
+<i>446</i>&nbsp;		
+<b class="nc"><i>447</i>&nbsp;		KeyValue(final String key, final T value) {</b>
+<b class="nc"><i>448</i>&nbsp;			this.key.set(key);</b>
+<b class="nc"><i>449</i>&nbsp;			this.value.set(value);</b>
+<i>450</i>&nbsp;		}
+<i>451</i>&nbsp;		
+<i>452</i>&nbsp;		public StringProperty keyProperty() {
+<b class="nc"><i>453</i>&nbsp;			return key;</b>
+<i>454</i>&nbsp;		}
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;		public ObjectProperty&lt;T&gt; valueProperty() {
+<b class="nc"><i>457</i>&nbsp;			return value;</b>
+<i>458</i>&nbsp;		}
+<i>459</i>&nbsp;
+<i>460</i>&nbsp;	}
+<i>461</i>&nbsp;	
+<i>462</i>&nbsp;	
+<i>463</i>&nbsp;	@Override
+<i>464</i>&nbsp;	public void workflowUpdated(Workflow workflow) {
+<b class="fc"><i>465</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>466</i>&nbsp;			Platform.runLater(() -&gt; workflowUpdated(workflow));</b>
+<b class="nc"><i>467</i>&nbsp;			return;</b>
+<i>468</i>&nbsp;		}
+<b class="fc"><i>469</i>&nbsp;		if (workflow == null)</b>
+<b class="fc"><i>470</i>&nbsp;			list.getItems().clear();</b>
+<i>471</i>&nbsp;		else {
+<b class="fc"><i>472</i>&nbsp;			list.getItems().setAll(workflow.getSteps());</b>
+<b class="fc"><i>473</i>&nbsp;			populateList(table.getItems(), list.getSelectionModel().getSelectedItem());</b>
+<i>474</i>&nbsp;		}
+<b class="fc"><i>475</i>&nbsp;	}</b>
+<i>476</i>&nbsp;
+<i>477</i>&nbsp;	@Override
+<i>478</i>&nbsp;	public void changed(ObservableValue&lt;? extends ImageData&lt;BufferedImage&gt;&gt; source, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="fc"><i>479</i>&nbsp;		if (imageDataOld == imageDataNew)</b>
+<b class="nc"><i>480</i>&nbsp;			return;</b>
+<b class="fc"><i>481</i>&nbsp;		if (imageDataOld != null)</b>
+<b class="fc"><i>482</i>&nbsp;			imageDataOld.getHistoryWorkflow().removeWorkflowListener(this);</b>
+<i>483</i>&nbsp;		
+<b class="fc"><i>484</i>&nbsp;		if (imageDataNew != null) {</b>
+<b class="fc"><i>485</i>&nbsp;			imageDataNew.getHistoryWorkflow().addWorkflowListener(this);</b>
+<b class="fc"><i>486</i>&nbsp;			workflow = imageDataNew.getHistoryWorkflow();</b>
+<b class="fc"><i>487</i>&nbsp;			list.getSelectionModel().clearSelection();</b>
+<b class="fc"><i>488</i>&nbsp;			Workflow workflow = imageDataNew.getHistoryWorkflow();</b>
+<b class="fc"><i>489</i>&nbsp;			list.getItems().setAll(workflow.getSteps());</b>
+<b class="fc"><i>490</i>&nbsp;			workflowUpdated(workflow);</b>
+<b class="fc"><i>491</i>&nbsp;		} else {</b>
+<b class="fc"><i>492</i>&nbsp;			workflow = null;</b>
+<b class="fc"><i>493</i>&nbsp;			list.getItems().clear();</b>
+<b class="fc"><i>494</i>&nbsp;			workflowUpdated(null);</b>
+<i>495</i>&nbsp;		}
+<b class="fc"><i>496</i>&nbsp;	}</b>
+<i>497</i>&nbsp;	
+<i>498</i>&nbsp;	
+<i>499</i>&nbsp;	
+<i>500</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

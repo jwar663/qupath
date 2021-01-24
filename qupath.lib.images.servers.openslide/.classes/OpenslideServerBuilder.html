@@ -1,0 +1,247 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OpenslideServerBuilder</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers.openslide</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OpenslideServerBuilder (qupath.lib.images.servers.openslide)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OpenslideServerBuilder</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (5/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (20/ 50)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images.servers.openslide;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.File;
+<i>28</i>&nbsp;import java.net.URI;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import org.openslide.OpenSlide;
+<i>32</i>&nbsp;import org.slf4j.Logger;
+<i>33</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import qupath.lib.images.servers.FileFormatInfo;
+<i>36</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>37</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder;
+<i>38</i>&nbsp;import qupath.lib.images.servers.FileFormatInfo.ImageCheckType;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Builder for Openslide ImageServer.
+<i>42</i>&nbsp; * 
+<i>43</i>&nbsp; * @author Pete Bankhead
+<i>44</i>&nbsp; *
+<i>45</i>&nbsp; */
+<b class="fc"><i>46</i>&nbsp;public class OpenslideServerBuilder implements ImageServerBuilder&lt;BufferedImage&gt; {</b>
+<i>47</i>&nbsp;	
+<b class="fc"><i>48</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(OpenslideServerBuilder.class);</b>
+<b class="fc"><i>49</i>&nbsp;	private static boolean openslideUnavailable = false;</b>
+<i>50</i>&nbsp;	
+<b class="fc"><i>51</i>&nbsp;	private static List&lt;String&gt; WIN_LIBRARIES = Arrays.asList(</b>
+<i>52</i>&nbsp;			&quot;iconv&quot;,
+<i>53</i>&nbsp;			&quot;libjpeg-62&quot;,
+<i>54</i>&nbsp;			&quot;libsqlite3-0&quot;,
+<i>55</i>&nbsp;			&quot;libpixman-1-0&quot;,
+<i>56</i>&nbsp;			&quot;libffi-6&quot;,
+<i>57</i>&nbsp;			&quot;zlib1&quot;,
+<i>58</i>&nbsp;			&quot;libxml2-2&quot;,
+<i>59</i>&nbsp;			&quot;libopenjp2&quot;,
+<i>60</i>&nbsp;			&quot;libpng16-16&quot;,
+<i>61</i>&nbsp;			&quot;libtiff-5&quot;,
+<i>62</i>&nbsp;			&quot;libintl-8&quot;,
+<i>63</i>&nbsp;			&quot;libglib-2.0-0&quot;,
+<i>64</i>&nbsp;			&quot;libgobject-2.0-0&quot;,
+<i>65</i>&nbsp;			&quot;libcairo-2&quot;,
+<i>66</i>&nbsp;			&quot;libgmodule-2.0-0&quot;,
+<i>67</i>&nbsp;			&quot;libgio-2.0-0&quot;,
+<i>68</i>&nbsp;			&quot;libgthread-2.0-0&quot;,
+<i>69</i>&nbsp;			&quot;libgdk_pixbuf-2.0-0&quot;,
+<i>70</i>&nbsp;			&quot;libopenslide-0&quot;
+<i>71</i>&nbsp;			);
+<i>72</i>&nbsp;	
+<i>73</i>&nbsp;	static {
+<i>74</i>&nbsp;		try {
+<i>75</i>&nbsp;			// Try loading OpenSlide-JNI - hopefully there is a version of OpenSlide on the PATH we should use
+<b class="fc"><i>76</i>&nbsp;			System.loadLibrary(&quot;openslide-jni&quot;);</b>
+<b class="fc"><i>77</i>&nbsp;		} catch (UnsatisfiedLinkError e) {</b>
+<i>78</i>&nbsp;			try {
+<i>79</i>&nbsp;				// If we didn&#39;t succeed, try loading dependencies in reverse order
+<b class="fc"><i>80</i>&nbsp;				logger.debug(&quot;Couldn&#39;t load OpenSlide directly, attempting to load dependencies first...&quot;);</b>
+<b class="fc"><i>81</i>&nbsp;				for (var lib : WIN_LIBRARIES) {</b>
+<b class="fc"><i>82</i>&nbsp;					System.loadLibrary(lib);</b>
+<b class="nc"><i>83</i>&nbsp;				}</b>
+<b class="nc"><i>84</i>&nbsp;			} catch (UnsatisfiedLinkError e2) {}</b>
+<b class="nc"><i>85</i>&nbsp;		}</b>
+<i>86</i>&nbsp;		try {
+<i>87</i>&nbsp;			// Finally try to get the library version
+<b class="fc"><i>88</i>&nbsp;			logger.info(&quot;OpenSlide version {}&quot;, OpenSlide.getLibraryVersion());</b>
+<i>89</i>&nbsp;		}
+<b class="fc"><i>90</i>&nbsp;		catch (UnsatisfiedLinkError e) {</b>
+<b class="fc"><i>91</i>&nbsp;			logger.error(&quot;Could not load OpenSlide native libraries&quot;, e);</b>
+<b class="fc"><i>92</i>&nbsp;			logger.info(&quot;If you want to use OpenSlide, you&#39;ll need to get the native libraries (either building from source or with a packager manager)\n&quot; +</b>
+<i>93</i>&nbsp;			&quot;and add them to your system PATH, including openslide-jni.&quot;);
+<b class="fc"><i>94</i>&nbsp;			openslideUnavailable = true;</b>
+<b class="nc"><i>95</i>&nbsp;		}</b>
+<b class="fc"><i>96</i>&nbsp;	}</b>
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	@Override
+<i>99</i>&nbsp;	public ImageServer&lt;BufferedImage&gt; buildServer(URI uri, String...args) {
+<b class="nc"><i>100</i>&nbsp;		if (openslideUnavailable) {</b>
+<b class="nc"><i>101</i>&nbsp;			logger.debug(&quot;OpenSlide is unavailable - will be skipped&quot;);</b>
+<b class="nc"><i>102</i>&nbsp;			return null;</b>
+<i>103</i>&nbsp;		}
+<i>104</i>&nbsp;		try {
+<b class="nc"><i>105</i>&nbsp;			return new OpenslideImageServer(uri, args);</b>
+<b class="nc"><i>106</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>107</i>&nbsp;			logger.warn(&quot;Unable to open {} with OpenSlide: {}&quot;, uri, e.getLocalizedMessage());</b>
+<i>108</i>&nbsp;		}
+<b class="nc"><i>109</i>&nbsp;		return null;</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	@Override
+<i>113</i>&nbsp;	public UriImageSupport&lt;BufferedImage&gt; checkImageSupport(URI uri, String...args) {
+<b class="fc"><i>114</i>&nbsp;		float supportLevel = supportLevel(uri, args);</b>
+<b class="fc"><i>115</i>&nbsp;		return UriImageSupport.createInstance(this.getClass(), supportLevel, DefaultImageServerBuilder.createInstance(this.getClass(), uri, args));</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;	private static float supportLevel(URI uri, String...args) {
+<b class="fc"><i>119</i>&nbsp;		if (openslideUnavailable)</b>
+<b class="fc"><i>120</i>&nbsp;			return 0;</b>
+<i>121</i>&nbsp;		
+<i>122</i>&nbsp;		// Don&#39;t handle queries or fragments with OpenSlide
+<b class="nc"><i>123</i>&nbsp;		ImageCheckType type = FileFormatInfo.checkType(uri);</b>
+<b class="nc"><i>124</i>&nbsp;		if (type.isURL() || type.getFile() == null)</b>
+<b class="nc"><i>125</i>&nbsp;			return 0;</b>
+<i>126</i>&nbsp;		
+<i>127</i>&nbsp;		try {
+<b class="nc"><i>128</i>&nbsp;			File file = new File(uri);</b>
+<b class="nc"><i>129</i>&nbsp;			String vendor = OpenSlide.detectVendor(file);</b>
+<b class="nc"><i>130</i>&nbsp;			if (vendor == null)</b>
+<b class="nc"><i>131</i>&nbsp;				return 0;</b>
+<b class="nc"><i>132</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>133</i>&nbsp;			logger.debug(&quot;Unable to read with OpenSlide: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>134</i>&nbsp;		}</b>
+<i>135</i>&nbsp;		
+<i>136</i>&nbsp;		// We can only handle RGB images with OpenSlide... so if we don&#39;t think it&#39;s RGB, use only as a last resort
+<b class="nc"><i>137</i>&nbsp;		if (type.isNotRGB())</b>
+<b class="nc"><i>138</i>&nbsp;			return 1f;</b>
+<i>139</i>&nbsp;		
+<i>140</i>&nbsp;		// We&#39;re pretty good on 2D RGB, not great if we have more images
+<b class="nc"><i>141</i>&nbsp;		if (type.nImagesLargest() == 1)</b>
+<b class="nc"><i>142</i>&nbsp;			return 3.5f;</b>
+<b class="nc"><i>143</i>&nbsp;		else if (type.nImagesLargest() == -1)</b>
+<b class="nc"><i>144</i>&nbsp;			return 2.5f;</b>
+<i>145</i>&nbsp;		else
+<b class="nc"><i>146</i>&nbsp;			return 1f;</b>
+<i>147</i>&nbsp;	}
+<i>148</i>&nbsp;	
+<i>149</i>&nbsp;	@Override
+<i>150</i>&nbsp;	public String getName() {
+<b class="nc"><i>151</i>&nbsp;		return &quot;OpenSlide builder&quot;;</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;	@Override
+<i>155</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>156</i>&nbsp;		return &quot;Provides basic access to whole slide image formats supported by OpenSlide - see http://openslide.org&quot;;</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	@Override
+<i>160</i>&nbsp;	public Class&lt;BufferedImage&gt; getImageType() {
+<b class="fc"><i>161</i>&nbsp;		return BufferedImage.class;</b>
+<i>162</i>&nbsp;	}
+<i>163</i>&nbsp;	
+<i>164</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

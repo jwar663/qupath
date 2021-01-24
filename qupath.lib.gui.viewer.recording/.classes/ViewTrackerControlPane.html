@@ -1,0 +1,233 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ViewTrackerControlPane</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.recording</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ViewTrackerControlPane (qupath.lib.gui.viewer.recording)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ViewTrackerControlPane</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.recording;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import org.controlsfx.control.action.Action;
+<i>27</i>&nbsp;import org.controlsfx.control.action.ActionUtils;
+<i>28</i>&nbsp;import org.controlsfx.control.action.ActionUtils.ActionTextBehavior;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javafx.beans.binding.Bindings;
+<i>31</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>32</i>&nbsp;import javafx.scene.Node;
+<i>33</i>&nbsp;import javafx.scene.control.Separator;
+<i>34</i>&nbsp;import javafx.scene.control.ToolBar;
+<i>35</i>&nbsp;import qupath.lib.gui.ActionTools;
+<i>36</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>37</i>&nbsp;import qupath.lib.gui.tools.IconFactory;
+<i>38</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Panel for viewing ViewTracker controls.
+<i>42</i>&nbsp; * &lt;p&gt;
+<i>43</i>&nbsp; * This add buttons to start/stop recording and playback and view/export recorded data.
+<i>44</i>&nbsp; * 
+<i>45</i>&nbsp; * @author Pete Bankhead
+<i>46</i>&nbsp; */
+<i>47</i>&nbsp;public class ViewTrackerControlPane {
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;//	private final static Logger logger = LoggerFactory.getLogger(ViewTrackerPanel.class);
+<i>50</i>&nbsp;	
+<b class="nc"><i>51</i>&nbsp;	private static final Node iconRecord = IconFactory.createNode(QuPathGUI.TOOLBAR_ICON_SIZE, QuPathGUI.TOOLBAR_ICON_SIZE, IconFactory.PathIcons.PLAYBACK_RECORD);</b>
+<b class="nc"><i>52</i>&nbsp;	private static final Node iconRecordStop = IconFactory.createNode(QuPathGUI.TOOLBAR_ICON_SIZE, QuPathGUI.TOOLBAR_ICON_SIZE, IconFactory.PathIcons.PLAYBACK_RECORD_STOP);</b>
+<b class="nc"><i>53</i>&nbsp;	private static final Node iconPlay = IconFactory.createNode(QuPathGUI.TOOLBAR_ICON_SIZE, QuPathGUI.TOOLBAR_ICON_SIZE, IconFactory.PathIcons.PLAYBACK_PLAY);</b>
+<b class="nc"><i>54</i>&nbsp;	private static final Node iconPlayStop = IconFactory.createNode(QuPathGUI.TOOLBAR_ICON_SIZE, QuPathGUI.TOOLBAR_ICON_SIZE, IconFactory.PathIcons.PLAYBACK_PLAY_STOP);</b>
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	private ViewTracker tracker;
+<i>57</i>&nbsp;	
+<b class="nc"><i>58</i>&nbsp;	private ToolBar toolbar = new ToolBar();</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;	/**
+<i>61</i>&nbsp;	 * Constructor.
+<i>62</i>&nbsp;	 * @param viewer the viewer to track
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	public ViewTrackerControlPane(final QuPathViewer viewer) {
+<b class="nc"><i>65</i>&nbsp;		this(viewer, ViewTrackers.createViewTracker(viewer));</b>
+<i>66</i>&nbsp;	}
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;	/**
+<i>69</i>&nbsp;	 * Constructor.
+<i>70</i>&nbsp;	 * @param viewer the viewer to track
+<i>71</i>&nbsp;	 * @param viewTracker the tracker to use
+<i>72</i>&nbsp;	 */
+<b class="nc"><i>73</i>&nbsp;	ViewTrackerControlPane(final QuPathViewer viewer, final ViewTracker viewTracker) {</b>
+<b class="nc"><i>74</i>&nbsp;		this.tracker = viewTracker;</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;//		ToolBar toolbar = new ToolBar();
+<b class="nc"><i>77</i>&nbsp;		ViewTrackerPlayback playback = new ViewTrackerPlayback(tracker, viewer);</b>
+<i>78</i>&nbsp;		
+<b class="nc"><i>79</i>&nbsp;		Action actionRecord = ActionTools.createSelectableAction(tracker.recordingProperty(), &quot;Record&quot;, iconRecord, null);</b>
+<b class="nc"><i>80</i>&nbsp;		Action actionPlayback = ActionTools.createSelectableAction(playback.playingProperty(), &quot;Play&quot;, iconPlay, null);</b>
+<b class="nc"><i>81</i>&nbsp;		actionPlayback.setDisabled(tracker.isEmpty());</b>
+<i>82</i>&nbsp;		
+<i>83</i>&nbsp;		// Can&#39;t select one while the other is selected
+<b class="nc"><i>84</i>&nbsp;		actionRecord.disabledProperty().bind(actionPlayback.selectedProperty());</b>
+<i>85</i>&nbsp;//		actionPlayback.disabledProperty().bind(actionRecord.selectedProperty());
+<i>86</i>&nbsp;		
+<i>87</i>&nbsp;		// Ensure icons are correct
+<b class="nc"><i>88</i>&nbsp;		tracker.recordingProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>89</i>&nbsp;			if (n) {</b>
+<b class="nc"><i>90</i>&nbsp;				actionRecord.setGraphic(iconRecordStop);</b>
+<b class="nc"><i>91</i>&nbsp;				actionRecord.setText(&quot;Stop recording&quot;);</b>
+<b class="nc"><i>92</i>&nbsp;				actionPlayback.setDisabled(true);</b>
+<i>93</i>&nbsp;			} else {
+<b class="nc"><i>94</i>&nbsp;				actionRecord.setGraphic(iconRecord);</b>
+<b class="nc"><i>95</i>&nbsp;				actionRecord.setText(&quot;Start recording&quot;);				</b>
+<b class="nc"><i>96</i>&nbsp;				actionPlayback.setDisabled(tracker.isEmpty());</b>
+<i>97</i>&nbsp;			}
+<i>98</i>&nbsp;		});
+<i>99</i>&nbsp;		
+<b class="nc"><i>100</i>&nbsp;		BooleanProperty playing = playback.playingProperty();</b>
+<b class="nc"><i>101</i>&nbsp;		actionPlayback.graphicProperty().bind(Bindings.createObjectBinding(() -&gt; {</b>
+<b class="nc"><i>102</i>&nbsp;					return playing.get() ? iconPlayStop : iconPlay;</b>
+<i>103</i>&nbsp;				},
+<i>104</i>&nbsp;				playing
+<i>105</i>&nbsp;				));
+<b class="nc"><i>106</i>&nbsp;		actionPlayback.textProperty().bind(Bindings.createStringBinding(() -&gt; {</b>
+<b class="nc"><i>107</i>&nbsp;			return playing.get() ? &quot;Stop&quot; : &quot;Play&quot;;</b>
+<i>108</i>&nbsp;		},
+<i>109</i>&nbsp;		playing
+<i>110</i>&nbsp;		));
+<i>111</i>&nbsp;		
+<i>112</i>&nbsp;		// Add to pane
+<b class="nc"><i>113</i>&nbsp;		toolbar.getItems().addAll(</b>
+<b class="nc"><i>114</i>&nbsp;				ActionUtils.createToggleButton(actionRecord, ActionTextBehavior.HIDE),</b>
+<b class="nc"><i>115</i>&nbsp;				ActionUtils.createToggleButton(actionPlayback, ActionTextBehavior.HIDE),</b>
+<i>116</i>&nbsp;				new Separator(),
+<b class="nc"><i>117</i>&nbsp;				ActionUtils.createButton(ActionTools.createAction(new ViewTrackerExportCommand(viewer, tracker), &quot;More...&quot;))</b>
+<i>118</i>&nbsp;				);
+<i>119</i>&nbsp;		
+<i>120</i>&nbsp;//		pane.getChildren().addAll(toolbar);
+<i>121</i>&nbsp;	}
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;	/**
+<i>124</i>&nbsp;	 * Get the Node containing the controls.
+<i>125</i>&nbsp;	 * @return
+<i>126</i>&nbsp;	 */
+<i>127</i>&nbsp;	public Node getNode() {
+<b class="nc"><i>128</i>&nbsp;		return toolbar;</b>
+<i>129</i>&nbsp;	}
+<i>130</i>&nbsp;	
+<i>131</i>&nbsp;	/**
+<i>132</i>&nbsp;	 * Set the recording status for the tracker.
+<i>133</i>&nbsp;	 * @param record true if the tracker should start recording, false if the tracker should stop recording.
+<i>134</i>&nbsp;	 */
+<i>135</i>&nbsp;	public void setRecording(boolean record) {
+<b class="nc"><i>136</i>&nbsp;		if (tracker != null)</b>
+<b class="nc"><i>137</i>&nbsp;			tracker.setRecording(record);</b>
+<i>138</i>&nbsp;	}
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;//	/**
+<i>141</i>&nbsp;//	 * Get the current ViewTracker associated with these controls.
+<i>142</i>&nbsp;//	 * @return
+<i>143</i>&nbsp;//	 */
+<i>144</i>&nbsp;//	public ViewTracker getViewTracker() {
+<i>145</i>&nbsp;//		return tracker;
+<i>146</i>&nbsp;//	}
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

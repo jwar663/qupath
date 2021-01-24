@@ -1,0 +1,111 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathTool</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathTool (qupath.lib.gui.viewer.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PathTool</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import javafx.scene.Node;
+<i>27</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Interface defining how a toolbar tool interacts with a viewer.
+<i>31</i>&nbsp; * 
+<i>32</i>&nbsp; * @author Pete Bankhead
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; */
+<i>35</i>&nbsp;public interface PathTool {
+<i>36</i>&nbsp;	
+<i>37</i>&nbsp;	/**
+<i>38</i>&nbsp;	 * Register the tool on the viewer. This typically means adding a mouse listener.
+<i>39</i>&nbsp;	 * A tool should only be registered on one viewer at a time, and only one tool should 
+<i>40</i>&nbsp;	 * be registered per viewer.
+<i>41</i>&nbsp;	 * @param viewer the viewer for which this tool should be registered
+<i>42</i>&nbsp;	 */
+<i>43</i>&nbsp;	public void registerTool(QuPathViewer viewer);
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;	/**
+<i>46</i>&nbsp;	 * Deregister the tool from the viewer. It is essential that tools clean up properly 
+<i>47</i>&nbsp;	 * and do not impact other tools that may be registered for the viewer later.
+<i>48</i>&nbsp;	 * @param viewer the viewer from which this tool should be deregistered
+<i>49</i>&nbsp;	 */
+<i>50</i>&nbsp;	public void deregisterTool(QuPathViewer viewer);
+<i>51</i>&nbsp;	
+<i>52</i>&nbsp;	/**
+<i>53</i>&nbsp;	 * Get the name of the tool
+<i>54</i>&nbsp;	 * @return
+<i>55</i>&nbsp;	 */
+<i>56</i>&nbsp;	public String getName();
+<i>57</i>&nbsp;	
+<i>58</i>&nbsp;	/**
+<i>59</i>&nbsp;	 * Get the icon of the tool.
+<i>60</i>&nbsp;	 * @return
+<i>61</i>&nbsp;	 */
+<i>62</i>&nbsp;	public Node getIcon();
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,393 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ExtractRegionCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ExtractRegionCommand (qupath.imagej.gui)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ExtractRegionCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.5%
+  </span>
+  <span class="absValue">
+    (11/ 146)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.gui;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import ij.CompositeImage;
+<i>27</i>&nbsp;import ij.IJ;
+<i>28</i>&nbsp;import ij.ImageJ;
+<i>29</i>&nbsp;import ij.ImagePlus;
+<i>30</i>&nbsp;import ij.gui.Overlay;
+<i>31</i>&nbsp;import ij.gui.Roi;
+<i>32</i>&nbsp;import ij.macro.Interpreter;
+<i>33</i>&nbsp;import java.awt.Rectangle;
+<i>34</i>&nbsp;import java.awt.image.BufferedImage;
+<i>35</i>&nbsp;import java.io.IOException;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Collection;
+<i>38</i>&nbsp;import java.util.Collections;
+<i>39</i>&nbsp;import java.util.List;
+<i>40</i>&nbsp;import java.util.stream.Collectors;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import javax.swing.SwingUtilities;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.slf4j.Logger;
+<i>45</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>48</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>49</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>50</i>&nbsp;import qupath.lib.display.ChannelDisplayInfo;
+<i>51</i>&nbsp;import qupath.lib.display.SingleChannelDisplayInfo;
+<i>52</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>53</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>54</i>&nbsp;import qupath.lib.gui.images.servers.ChannelDisplayTransformServer;
+<i>55</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>56</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>57</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>58</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>59</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>60</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>61</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>62</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>63</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>64</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;/**
+<i>67</i>&nbsp; * Extract a region from QuPath, and display it within ImageJ.
+<i>68</i>&nbsp; * &lt;p&gt;
+<i>69</i>&nbsp; * This command also attempts to set properties appropriately so that it&#39;s possible to determine from 
+<i>70</i>&nbsp; * within ImageJ exactly where in the image was selected.  This is needed to be able to transfer back 
+<i>71</i>&nbsp; * Rois from ImageJ as QuPath objects.
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * @author Pete Bankhead
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; */
+<i>76</i>&nbsp;class ExtractRegionCommand implements Runnable {
+<i>77</i>&nbsp;	
+<b class="fc"><i>78</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(ExtractRegionCommand.class);</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	private QuPathGUI qupath;
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	private final static String PIXELS_UNIT = &quot;Pixels (downsample)&quot;;
+<i>83</i>&nbsp;	
+<b class="fc"><i>84</i>&nbsp;	private double resolution = 1;</b>
+<b class="fc"><i>85</i>&nbsp;	private String resolutionUnit = PIXELS_UNIT;</b>
+<b class="fc"><i>86</i>&nbsp;	private boolean includeROI = true;</b>
+<b class="fc"><i>87</i>&nbsp;	private boolean includeOverlay = true;</b>
+<b class="fc"><i>88</i>&nbsp;	private boolean doTransforms = false;</b>
+<b class="fc"><i>89</i>&nbsp;	private boolean doZ = false;</b>
+<b class="fc"><i>90</i>&nbsp;	private boolean doT = false;</b>
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	/**
+<i>93</i>&nbsp;	 * Constructor.
+<i>94</i>&nbsp;	 * @param qupath QuPath instance where the command should be installed.
+<i>95</i>&nbsp;	 */
+<b class="fc"><i>96</i>&nbsp;	public ExtractRegionCommand(QuPathGUI qupath) {</b>
+<i>97</i>&nbsp;//		super(&quot;Extract region (custom)&quot;, PathIconFactory.createIcon(QuPathGUI.iconSize, QuPathGUI.iconSize, PathIconFactory.PathIcons.EXTRACT_REGION));
+<b class="fc"><i>98</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>99</i>&nbsp;	}</b>
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Get the name of the command.
+<i>103</i>&nbsp;	 * @return
+<i>104</i>&nbsp;	 */
+<i>105</i>&nbsp;	public String getName() {
+<b class="nc"><i>106</i>&nbsp;		return &quot;Extract region (custom)&quot;;</b>
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;	@Override
+<i>111</i>&nbsp;	public void run() {
+<b class="nc"><i>112</i>&nbsp;		QuPathViewer viewer = qupath.getViewer();</b>
+<b class="nc"><i>113</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = null;</b>
+<b class="nc"><i>114</i>&nbsp;		if (viewer != null)</b>
+<b class="nc"><i>115</i>&nbsp;			server = viewer.getServer();</b>
+<b class="nc"><i>116</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>117</i>&nbsp;			return;</b>
+<i>118</i>&nbsp;		
+<b class="nc"><i>119</i>&nbsp;		List&lt;String&gt; unitOptions = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>120</i>&nbsp;		unitOptions.add(PIXELS_UNIT);</b>
+<b class="nc"><i>121</i>&nbsp;		String unit = server.getPixelCalibration().getPixelWidthUnit();</b>
+<b class="nc"><i>122</i>&nbsp;		if (unit.equals(server.getPixelCalibration().getPixelHeightUnit()) &amp;&amp; !unit.equals(PixelCalibration.PIXEL))</b>
+<b class="nc"><i>123</i>&nbsp;			unitOptions.add(unit);</b>
+<i>124</i>&nbsp;		
+<b class="nc"><i>125</i>&nbsp;		if (!unitOptions.contains(resolutionUnit))</b>
+<b class="nc"><i>126</i>&nbsp;			resolutionUnit = PIXELS_UNIT;</b>
+<i>127</i>&nbsp;		
+<b class="nc"><i>128</i>&nbsp;		ParameterList params = new ParameterList()</b>
+<b class="nc"><i>129</i>&nbsp;				.addDoubleParameter(&quot;resolution&quot;, &quot;Resolution&quot;, resolution, null, &quot;Resolution at which the image will be exported, defined as the &#39;pixel size&#39; in Resolution units&quot;)</b>
+<b class="nc"><i>130</i>&nbsp;				.addChoiceParameter(&quot;resolutionUnit&quot;, &quot;Resolution unit&quot;, resolutionUnit, unitOptions, &quot;Units defining the export resolution; if &#39;pixels&#39; then the resolution is the same as a downsample value&quot;)</b>
+<b class="nc"><i>131</i>&nbsp;				.addBooleanParameter(&quot;includeROI&quot;, &quot;Include ROI&quot;, includeROI, &quot;Include the primary object defining the exported region as an active ROI in ImageJ&quot;)</b>
+<b class="nc"><i>132</i>&nbsp;				.addBooleanParameter(&quot;includeOverlay&quot;, &quot;Include overlay&quot;, includeOverlay, &quot;Include any objects overlapping the exported region as ROIs on an ImageJ overlay&quot;)</b>
+<b class="nc"><i>133</i>&nbsp;				.addBooleanParameter(&quot;doTransforms&quot;, &quot;Apply color transforms&quot;, doTransforms, &quot;Optionally apply any color transforms when sending the pixels to ImageJ&quot;)</b>
+<b class="nc"><i>134</i>&nbsp;				.addBooleanParameter(&quot;doZ&quot;, &quot;All z-slices&quot;, doZ, &quot;Optionally include all slices of a z-stack&quot;)</b>
+<b class="nc"><i>135</i>&nbsp;				.addBooleanParameter(&quot;doT&quot;, &quot;All timepoints&quot;, doT, &quot;Optionally include all timepoints of a time series&quot;)</b>
+<i>136</i>&nbsp;				;
+<i>137</i>&nbsp;		
+<i>138</i>&nbsp;//		params.setHiddenParameters(unitOptions.size() &lt;= 1, &quot;resolutionUnit&quot;);
+<b class="nc"><i>139</i>&nbsp;		params.setHiddenParameters(server.nZSlices() == 1, &quot;doZ&quot;);</b>
+<b class="nc"><i>140</i>&nbsp;		params.setHiddenParameters(server.nTimepoints() == 1, &quot;doT&quot;);</b>
+<i>141</i>&nbsp;		
+<b class="nc"><i>142</i>&nbsp;		if (!Dialogs.showParameterDialog(&quot;Send region to ImageJ&quot;, params))</b>
+<b class="nc"><i>143</i>&nbsp;			return;</b>
+<i>144</i>&nbsp;		
+<i>145</i>&nbsp;		// Parse values
+<b class="nc"><i>146</i>&nbsp;		resolution = params.getDoubleParameterValue(&quot;resolution&quot;);</b>
+<b class="nc"><i>147</i>&nbsp;		resolutionUnit = (String)params.getChoiceParameterValue(&quot;resolutionUnit&quot;);</b>
+<b class="nc"><i>148</i>&nbsp;		includeROI = params.getBooleanParameterValue(&quot;includeROI&quot;);</b>
+<b class="nc"><i>149</i>&nbsp;		includeOverlay = params.getBooleanParameterValue(&quot;includeOverlay&quot;);</b>
+<b class="nc"><i>150</i>&nbsp;		doTransforms = params.getBooleanParameterValue(&quot;doTransforms&quot;);</b>
+<b class="nc"><i>151</i>&nbsp;		doZ = params.getBooleanParameterValue(&quot;doZ&quot;);</b>
+<b class="nc"><i>152</i>&nbsp;		doT = params.getBooleanParameterValue(&quot;doT&quot;);</b>
+<i>153</i>&nbsp;		
+<i>154</i>&nbsp;		// Calculate downsample
+<b class="nc"><i>155</i>&nbsp;		double downsample = resolution;</b>
+<b class="nc"><i>156</i>&nbsp;		if (!resolutionUnit.equals(PIXELS_UNIT))</b>
+<b class="nc"><i>157</i>&nbsp;			downsample = resolution / (server.getPixelCalibration().getPixelHeight().doubleValue()/2.0 + server.getPixelCalibration().getPixelWidth().doubleValue()/2.0);</b>
+<i>158</i>&nbsp;		
+<i>159</i>&nbsp;		// Color transforms are (currently) only applied for brightfield images - for fluorescence we always provide everything as unchanged as possible
+<b class="nc"><i>160</i>&nbsp;		List&lt;ChannelDisplayInfo&gt; selectedChannels = new ArrayList&lt;&gt;(viewer.getImageDisplay().selectedChannels());</b>
+<b class="nc"><i>161</i>&nbsp;		List&lt;ChannelDisplayInfo&gt; channels = doTransforms &amp;&amp; !selectedChannels.isEmpty() ? selectedChannels : null;</b>
+<b class="nc"><i>162</i>&nbsp;		if (channels != null)</b>
+<b class="nc"><i>163</i>&nbsp;			server = ChannelDisplayTransformServer.createColorTransformServer(server, channels);</b>
+<i>164</i>&nbsp;
+<i>165</i>&nbsp;		// Loop through all selected objects
+<b class="nc"><i>166</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = viewer.getHierarchy().getSelectionModel().getSelectedObjects();</b>
+<b class="nc"><i>167</i>&nbsp;		if (pathObjects.isEmpty())</b>
+<b class="nc"><i>168</i>&nbsp;			pathObjects = Collections.singletonList(viewer.getHierarchy().getRootObject());</b>
+<b class="nc"><i>169</i>&nbsp;		List&lt;ImagePlus&gt; imps = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>170</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<i>171</i>&nbsp;			
+<b class="nc"><i>172</i>&nbsp;			if (Thread.currentThread().isInterrupted() || IJ.escapePressed())</b>
+<b class="nc"><i>173</i>&nbsp;				return;</b>
+<i>174</i>&nbsp;			
+<i>175</i>&nbsp;			int width, height;
+<b class="nc"><i>176</i>&nbsp;			if (pathObject == null || !pathObject.hasROI()) {</b>
+<b class="nc"><i>177</i>&nbsp;				width = server.getWidth();</b>
+<b class="nc"><i>178</i>&nbsp;				height = server.getHeight();</b>
+<i>179</i>&nbsp;			} else {
+<b class="nc"><i>180</i>&nbsp;				Rectangle bounds = AwtTools.getBounds(pathObject.getROI());</b>
+<b class="nc"><i>181</i>&nbsp;				width = bounds.width;</b>
+<b class="nc"><i>182</i>&nbsp;				height = bounds.height;</b>
+<i>183</i>&nbsp;			}
+<i>184</i>&nbsp;			
+<i>185</i>&nbsp;			RegionRequest region;
+<b class="nc"><i>186</i>&nbsp;			ROI roi = pathObject == null ? null : pathObject.getROI();</b>
+<b class="nc"><i>187</i>&nbsp;			if (roi == null || PathObjectTools.hasPointROI(pathObject)) {</b>
+<b class="nc"><i>188</i>&nbsp;				region = RegionRequest.createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight(), viewer.getZPosition(), viewer.getTPosition());</b>
+<i>189</i>&nbsp;			} else
+<b class="nc"><i>190</i>&nbsp;				region = RegionRequest.createInstance(server.getPath(), downsample, roi);</b>
+<i>191</i>&nbsp;			//					region = RegionRequest.createInstance(server.getPath(), downsample, pathObject.getROI(), viewer.getZPosition(), viewer.getTPosition());
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;			// Minimum size has been removed (v0.2.0-m4); returned regions should be at least 1x1 pixels
+<i>194</i>&nbsp;//			if (region.getWidth() / downsample &lt; 8 || region.getHeight() / downsample &lt; 8) {
+<i>195</i>&nbsp;//				DisplayHelpers.showErrorMessage(&quot;Send region to ImageJ&quot;, &quot;The width &amp; height of the extracted image must both be &gt;= 8 pixels&quot;);
+<i>196</i>&nbsp;//				continue;
+<i>197</i>&nbsp;//			}
+<i>198</i>&nbsp;
+<i>199</i>&nbsp;			// Calculate required z-slices and time-points
+<b class="nc"><i>200</i>&nbsp;			int zStart = doZ ? 0 : region.getZ();</b>
+<b class="nc"><i>201</i>&nbsp;			int zEnd = doZ ? server.nZSlices() : region.getZ() + 1;</b>
+<b class="nc"><i>202</i>&nbsp;			int tStart = doT ? 0 : region.getT();</b>
+<b class="nc"><i>203</i>&nbsp;			int tEnd = doT ? server.nTimepoints() : region.getT() + 1;</b>
+<b class="nc"><i>204</i>&nbsp;			long nZ = zEnd - zStart;</b>
+<b class="nc"><i>205</i>&nbsp;			long nT = tEnd - tStart;</b>
+<i>206</i>&nbsp;			
+<b class="nc"><i>207</i>&nbsp;			int bytesPerPixel = server.isRGB() ? 4 : server.getPixelType().getBytesPerPixel() * server.nChannels();</b>
+<b class="nc"><i>208</i>&nbsp;			double memory = ((long)width * height * nZ * nT * bytesPerPixel) / (downsample * downsample);</b>
+<i>209</i>&nbsp;			
+<i>210</i>&nbsp;			// TODO: Perform calculation based on actual amount of available memory
+<b class="nc"><i>211</i>&nbsp;			long availableMemory = GeneralTools.estimateAvailableMemory();</b>
+<b class="nc"><i>212</i>&nbsp;			if (memory &gt;= availableMemory * 0.95) {</b>
+<b class="nc"><i>213</i>&nbsp;				logger.error(&quot;Cannot extract region {} - estimated size is too large (approx. {} MB)&quot;, pathObject, GeneralTools.formatNumber(memory / (1024.0 * 1024.0), 2));</b>
+<b class="nc"><i>214</i>&nbsp;				Dialogs.showErrorMessage(&quot;Send region to ImageJ error&quot;, &quot;Selected region is too large to extract - please selected a smaller region or use a higher downsample factor&quot;);</b>
+<b class="nc"><i>215</i>&nbsp;				continue;</b>
+<i>216</i>&nbsp;			}
+<b class="nc"><i>217</i>&nbsp;			if (memory / 1024 / 1024 &gt; 100) {</b>
+<b class="nc"><i>218</i>&nbsp;				if (pathObjects.size() == 1 &amp;&amp; !Dialogs.showYesNoDialog(&quot;Send region to ImageJ&quot;, String.format(&quot;Attempting to extract this region is likely to require &gt; %.2f MB - are you sure you want to continue?&quot;, memory/1024/1024)))</b>
+<b class="nc"><i>219</i>&nbsp;					return;</b>
+<i>220</i>&nbsp;			}
+<i>221</i>&nbsp;			
+<i>222</i>&nbsp;			// We should switch to the event dispatch thread when interacting with ImageJ
+<i>223</i>&nbsp;			try {
+<i>224</i>&nbsp;				ImagePlus imp;
+<b class="nc"><i>225</i>&nbsp;				PathObjectHierarchy hierarchy = viewer.getHierarchy();</b>
+<b class="nc"><i>226</i>&nbsp;				OverlayOptions options = viewer.getOverlayOptions();</b>
+<b class="nc"><i>227</i>&nbsp;				if (zEnd - zStart &gt; 1 || tEnd - tStart &gt; 1) {</b>
+<i>228</i>&nbsp;					// TODO: Handle overlays
+<b class="nc"><i>229</i>&nbsp;					imp = IJTools.extractHyperstack(server, region, zStart, zEnd, tStart, tEnd);</b>
+<b class="nc"><i>230</i>&nbsp;					if (includeROI &amp;&amp; roi != null) {</b>
+<b class="nc"><i>231</i>&nbsp;						Roi roiIJ = IJTools.convertToIJRoi(roi, imp.getCalibration(), region.getDownsample());</b>
+<b class="nc"><i>232</i>&nbsp;						imp.setRoi(roiIJ);</b>
+<i>233</i>&nbsp;					}
+<b class="nc"><i>234</i>&nbsp;					if (includeOverlay) {</b>
+<b class="nc"><i>235</i>&nbsp;						Overlay overlay = new Overlay();</b>
+<b class="nc"><i>236</i>&nbsp;						for (int t = tStart; t &lt; tEnd; t++) {</b>
+<b class="nc"><i>237</i>&nbsp;							for (int z = zStart; z &lt; zEnd; z++) {</b>
+<b class="nc"><i>238</i>&nbsp;								RegionRequest request2 = RegionRequest.createInstance(region.getPath(), region.getDownsample(), region.getX(), region.getY(), region.getWidth(), region.getHeight(), z, t);</b>
+<b class="nc"><i>239</i>&nbsp;								var regionPredicate = PathObjectTools.createImageRegionPredicate(request2);</b>
+<b class="nc"><i>240</i>&nbsp;								Overlay temp = IJExtension.extractOverlay(hierarchy, request2, options, p -&gt; p != pathObject &amp;&amp; regionPredicate.test(p));</b>
+<b class="nc"><i>241</i>&nbsp;								if (overlay == null)</b>
+<b class="nc"><i>242</i>&nbsp;									overlay = temp;</b>
+<b class="nc"><i>243</i>&nbsp;								for (int i = 0; i &lt; temp.size(); i++) {</b>
+<b class="nc"><i>244</i>&nbsp;									Roi roiIJ = temp.get(i);</b>
+<b class="nc"><i>245</i>&nbsp;									roiIJ.setPosition(-1, z+1, t+1);</b>
+<b class="nc"><i>246</i>&nbsp;									overlay.add(roiIJ);</b>
+<i>247</i>&nbsp;								}
+<i>248</i>&nbsp;							}							
+<i>249</i>&nbsp;						}
+<b class="nc"><i>250</i>&nbsp;						if (overlay != null &amp;&amp; overlay.size() &gt; 0)</b>
+<b class="nc"><i>251</i>&nbsp;							imp.setOverlay(overlay);</b>
+<b class="nc"><i>252</i>&nbsp;					}</b>
+<b class="nc"><i>253</i>&nbsp;				} else if (includeOverlay)</b>
+<b class="nc"><i>254</i>&nbsp;					imp = IJExtension.extractROIWithOverlay(server, pathObject, hierarchy, region, includeROI, options).getImage();			</b>
+<i>255</i>&nbsp;				else
+<b class="nc"><i>256</i>&nbsp;					imp = IJExtension.extractROIWithOverlay(server, pathObject, null, region, includeROI, options).getImage();			</b>
+<i>257</i>&nbsp;				
+<i>258</i>&nbsp;				// Set display ranges if we can
+<b class="nc"><i>259</i>&nbsp;				if (viewer != null &amp;&amp; imp instanceof CompositeImage) {</b>
+<b class="nc"><i>260</i>&nbsp;					var availableChannels = viewer.getImageDisplay().availableChannels().stream()</b>
+<b class="nc"><i>261</i>&nbsp;							.filter(c -&gt; c instanceof SingleChannelDisplayInfo)</b>
+<b class="nc"><i>262</i>&nbsp;							.map(c -&gt; (SingleChannelDisplayInfo)c)</b>
+<b class="nc"><i>263</i>&nbsp;							.collect(Collectors.toList());</b>
+<b class="nc"><i>264</i>&nbsp;					CompositeImage impComp = (CompositeImage)imp;</b>
+<b class="nc"><i>265</i>&nbsp;					if (availableChannels.size() == imp.getNChannels()) {</b>
+<b class="nc"><i>266</i>&nbsp;						for (int c = 0; c &lt; availableChannels.size(); c++) {</b>
+<b class="nc"><i>267</i>&nbsp;							var channel = availableChannels.get(c);</b>
+<b class="nc"><i>268</i>&nbsp;							imp.setPosition(c+1, 1, 1);</b>
+<b class="nc"><i>269</i>&nbsp;							impComp.setDisplayRange(channel.getMinDisplay(), channel.getMaxDisplay());</b>
+<i>270</i>&nbsp;						}
+<b class="nc"><i>271</i>&nbsp;						imp.setPosition(1);</b>
+<i>272</i>&nbsp;					}
+<b class="nc"><i>273</i>&nbsp;				} else if (selectedChannels.size() == 1 &amp;&amp; imp.getType() != ImagePlus.COLOR_RGB) {</b>
+<i>274</i>&nbsp;					// Setting the display range for non-RGB images can give unexpected results (changing pixel values)
+<b class="nc"><i>275</i>&nbsp;					var channel = selectedChannels.get(0);</b>
+<b class="nc"><i>276</i>&nbsp;					imp.setDisplayRange(channel.getMinDisplay(), channel.getMaxDisplay());</b>
+<i>277</i>&nbsp;				}
+<b class="nc"><i>278</i>&nbsp;				imps.add(imp);</b>
+<b class="nc"><i>279</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>280</i>&nbsp;				Dialogs.showErrorMessage(&quot;Send region to ImageJ&quot;, e);</b>
+<b class="nc"><i>281</i>&nbsp;				return;</b>
+<b class="nc"><i>282</i>&nbsp;			}</b>
+<b class="nc"><i>283</i>&nbsp;		}</b>
+<i>284</i>&nbsp;		
+<i>285</i>&nbsp;		// Show all the images we&#39;ve got
+<b class="nc"><i>286</i>&nbsp;		if (!imps.isEmpty()) {</b>
+<b class="nc"><i>287</i>&nbsp;			SwingUtilities.invokeLater(() -&gt; {</b>
+<b class="nc"><i>288</i>&nbsp;				boolean batchMode = Interpreter.batchMode;</b>
+<i>289</i>&nbsp;
+<i>290</i>&nbsp;				// Try to start an ImageJ instance, and return if this fails
+<i>291</i>&nbsp;				try {
+<b class="nc"><i>292</i>&nbsp;					ImageJ ij = IJExtension.getImageJInstance();</b>
+<b class="nc"><i>293</i>&nbsp;					if (ij == null)</b>
+<b class="nc"><i>294</i>&nbsp;						return;</b>
+<b class="nc"><i>295</i>&nbsp;					ij.setVisible(true);</b>
+<i>296</i>&nbsp;	
+<i>297</i>&nbsp;	
+<b class="nc"><i>298</i>&nbsp;					Interpreter.batchMode = false; // Make sure we aren&#39;t in batch mode, so that image will display</b>
+<b class="nc"><i>299</i>&nbsp;					for (ImagePlus imp : imps) {</b>
+<b class="nc"><i>300</i>&nbsp;						imp.show();</b>
+<b class="nc"><i>301</i>&nbsp;					}</b>
+<i>302</i>&nbsp;				} finally {
+<b class="nc"><i>303</i>&nbsp;					Interpreter.batchMode = batchMode;</b>
+<b class="nc"><i>304</i>&nbsp;				}</b>
+<b class="nc"><i>305</i>&nbsp;			});</b>
+<i>306</i>&nbsp;		}
+<b class="nc"><i>307</i>&nbsp;	}</b>
+<i>308</i>&nbsp;	
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

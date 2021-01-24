@@ -1,0 +1,520 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HierarchyOverlay</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.overlays</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HierarchyOverlay (qupath.lib.gui.viewer.overlays)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HierarchyOverlay</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46.9%
+  </span>
+  <span class="absValue">
+    (75/ 160)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">HierarchyOverlay$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">HierarchyOverlay$DetectionComparator</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    46.1%
+  </span>
+  <span class="absValue">
+    (77/ 167)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.overlays;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.AlphaComposite;
+<i>27</i>&nbsp;import java.awt.Color;
+<i>28</i>&nbsp;import java.awt.Composite;
+<i>29</i>&nbsp;import java.awt.Font;
+<i>30</i>&nbsp;import java.awt.Graphics2D;
+<i>31</i>&nbsp;import java.awt.Rectangle;
+<i>32</i>&nbsp;import java.awt.RenderingHints;
+<i>33</i>&nbsp;import java.awt.Shape;
+<i>34</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>35</i>&nbsp;import java.awt.geom.Rectangle2D;
+<i>36</i>&nbsp;import java.awt.image.BufferedImage;
+<i>37</i>&nbsp;import java.util.ArrayList;
+<i>38</i>&nbsp;import java.util.Collection;
+<i>39</i>&nbsp;import java.util.Collections;
+<i>40</i>&nbsp;import java.util.Comparator;
+<i>41</i>&nbsp;import java.util.List;
+<i>42</i>&nbsp;import java.util.Objects;
+<i>43</i>&nbsp;import java.util.Set;
+<i>44</i>&nbsp;import java.util.TreeSet;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import org.slf4j.Logger;
+<i>47</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>50</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>51</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>52</i>&nbsp;import qupath.lib.gui.images.servers.PathHierarchyImageServer;
+<i>53</i>&nbsp;import qupath.lib.gui.images.stores.DefaultImageRegionStore;
+<i>54</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>55</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>56</i>&nbsp;import qupath.lib.gui.viewer.PathHierarchyPaintingHelper;
+<i>57</i>&nbsp;import qupath.lib.images.ImageData;
+<i>58</i>&nbsp;import qupath.lib.objects.DefaultPathObjectComparator;
+<i>59</i>&nbsp;import qupath.lib.objects.DefaultPathObjectConnectionGroup;
+<i>60</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>61</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>62</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>63</i>&nbsp;import qupath.lib.objects.PathObjectConnections;
+<i>64</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>65</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>66</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;/**
+<i>70</i>&nbsp; * An overlay capable of painting a {@link PathObjectHierarchy}, &lt;i&gt;except&lt;/i&gt; for any 
+<i>71</i>&nbsp; * TMA grid (which is handled by {@link TMAGridOverlay}).
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * @author Pete Bankhead
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; */
+<i>76</i>&nbsp;public class HierarchyOverlay extends AbstractOverlay {
+<i>77</i>&nbsp;	
+<b class="fc"><i>78</i>&nbsp;	final static private Logger logger = LoggerFactory.getLogger(HierarchyOverlay.class);</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<b class="fc"><i>81</i>&nbsp;	private PathHierarchyImageServer overlayServer = null;</b>
+<i>82</i>&nbsp;
+<b class="fc"><i>83</i>&nbsp;	private DefaultImageRegionStore regionStore = null;</b>
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	private long overlayOptionsTimestamp;
+<i>86</i>&nbsp;	private ImageRegion lastRegion;
+<i>87</i>&nbsp;	private BufferedImage buffer;
+<i>88</i>&nbsp;	
+<b class="fc"><i>89</i>&nbsp;	private int lastPointRadius = PathPrefs.pointRadiusProperty().get();</b>
+<i>90</i>&nbsp;	
+<b class="fc"><i>91</i>&nbsp;	private Font font = new Font(&quot;SansSerif&quot;, Font.BOLD, 10);</b>
+<i>92</i>&nbsp;	
+<b class="fc"><i>93</i>&nbsp;	transient private DetectionComparator comparator = new DetectionComparator();</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Constructor. Note that a {@link HierarchyOverlay} cannot adapt very efficient to changes in {@link ImageData}, and therefore 
+<i>97</i>&nbsp;	 * should not be reused across viewers.
+<i>98</i>&nbsp;	 * @param regionStore region store to cache image tiles
+<i>99</i>&nbsp;	 * @param overlayOptions overlay options to control display
+<i>100</i>&nbsp;	 * @param imageData current image data
+<i>101</i>&nbsp;	 */
+<i>102</i>&nbsp;	public HierarchyOverlay(final DefaultImageRegionStore regionStore, final OverlayOptions overlayOptions, final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="fc"><i>103</i>&nbsp;		super(overlayOptions);</b>
+<b class="fc"><i>104</i>&nbsp;		this.regionStore = regionStore;</b>
+<b class="fc"><i>105</i>&nbsp;		this.imageData = imageData;</b>
+<b class="fc"><i>106</i>&nbsp;		updateOverlayServer();</b>
+<b class="fc"><i>107</i>&nbsp;	}</b>
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;	private void updateOverlayServer() {
+<b class="fc"><i>111</i>&nbsp;		clearCachedOverlay();</b>
+<b class="fc"><i>112</i>&nbsp;		if (imageData == null)</b>
+<b class="fc"><i>113</i>&nbsp;			overlayServer = null;</b>
+<i>114</i>&nbsp;		else {
+<i>115</i>&nbsp;			// If the image is small, don&#39;t really need a server at all...
+<b class="fc"><i>116</i>&nbsp;			overlayServer = new PathHierarchyImageServer(imageData, getOverlayOptions());</b>
+<i>117</i>&nbsp;		}
+<b class="fc"><i>118</i>&nbsp;	}</b>
+<i>119</i>&nbsp;	
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;	@Override
+<i>122</i>&nbsp;	public void paintOverlay(final Graphics2D g2d, final ImageRegion imageRegion, final double downsampleFactor, final ImageData&lt;BufferedImage&gt; imageData, final boolean paintCompletely) {
+<i>123</i>&nbsp;		
+<b class="fc"><i>124</i>&nbsp;		if (this.imageData != imageData) {</b>
+<b class="fc"><i>125</i>&nbsp;			this.imageData = imageData;</b>
+<b class="fc"><i>126</i>&nbsp;			updateOverlayServer();</b>
+<i>127</i>&nbsp;		}
+<i>128</i>&nbsp;		
+<i>129</i>&nbsp;		// Get the selection model, which can influence colours (TODO: this might not be the best way to do it!)
+<b class="fc"><i>130</i>&nbsp;		PathObjectHierarchy hierarchy = imageData == null ? null : imageData.getHierarchy();</b>
+<b class="fc"><i>131</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>132</i>&nbsp;			return;</b>
+<i>133</i>&nbsp;		
+<b class="fc"><i>134</i>&nbsp;		if (!isVisible() &amp;&amp; hierarchy.getSelectionModel().noSelection())</b>
+<b class="nc"><i>135</i>&nbsp;			return;</b>
+<i>136</i>&nbsp;		
+<b class="fc"><i>137</i>&nbsp;		OverlayOptions overlayOptions = getOverlayOptions();</b>
+<b class="fc"><i>138</i>&nbsp;		long timestamp = overlayOptions.lastChangeTimestamp().get();</b>
+<b class="fc"><i>139</i>&nbsp;		int pointRadius = PathPrefs.pointRadiusProperty().get();</b>
+<b class="fc"><i>140</i>&nbsp;		BufferedImage bufferLocal = buffer;</b>
+<b class="fc"><i>141</i>&nbsp;		if (overlayOptionsTimestamp != timestamp || pointRadius != lastPointRadius) {</b>
+<b class="fc"><i>142</i>&nbsp;			lastPointRadius = pointRadius;</b>
+<b class="fc"><i>143</i>&nbsp;			overlayOptionsTimestamp = timestamp;</b>
+<i>144</i>&nbsp;		}
+<i>145</i>&nbsp;		
+<b class="fc"><i>146</i>&nbsp;		int t = imageRegion.getT();</b>
+<b class="fc"><i>147</i>&nbsp;		int z = imageRegion.getZ();</b>
+<i>148</i>&nbsp;		
+<b class="fc"><i>149</i>&nbsp;		Rectangle serverBounds = AwtTools.getBounds(imageRegion);</b>
+<i>150</i>&nbsp;		
+<i>151</i>&nbsp;		// Ensure antialias is on...?
+<b class="fc"><i>152</i>&nbsp;		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);</b>
+<i>153</i>&nbsp;//		g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+<i>154</i>&nbsp;		
+<i>155</i>&nbsp;		// Get the displayed clip bounds for fast checking if ROIs need to be drawn
+<b class="fc"><i>156</i>&nbsp;		Shape shapeRegion = g2d.getClip();</b>
+<b class="fc"><i>157</i>&nbsp;		if (shapeRegion == null)</b>
+<b class="nc"><i>158</i>&nbsp;			shapeRegion = AwtTools.getBounds(imageRegion);</b>
+<b class="fc"><i>159</i>&nbsp;		var boundsDisplayed = shapeRegion.getBounds();</b>
+<i>160</i>&nbsp;		
+<i>161</i>&nbsp;		// Ensure the bounds do not extend beyond what the server actually contains
+<b class="fc"><i>162</i>&nbsp;		boundsDisplayed = boundsDisplayed.intersection(serverBounds);</b>
+<b class="fc"><i>163</i>&nbsp;		if (boundsDisplayed.width &lt;= 0 || boundsDisplayed.height &lt;= 0)</b>
+<b class="nc"><i>164</i>&nbsp;			return;</b>
+<i>165</i>&nbsp;
+<i>166</i>&nbsp;		// Get the annotations &amp; selected objects (which must be painted directly)
+<b class="fc"><i>167</i>&nbsp;		Collection&lt;PathObject&gt; selectedObjects = new ArrayList&lt;&gt;(hierarchy.getSelectionModel().getSelectedObjects());</b>
+<b class="fc"><i>168</i>&nbsp;		selectedObjects.removeIf(p -&gt; !p.hasROI() || (p.getROI().getZ() != z || p.getROI().getT() != t));</b>
+<i>169</i>&nbsp;
+<b class="fc"><i>170</i>&nbsp;		ImageRegion region = AwtTools.getImageRegion(boundsDisplayed, z, t);</b>
+<i>171</i>&nbsp;		
+<b class="fc"><i>172</i>&nbsp;		ImageRegion clipRegion = AwtTools.getImageRegion(g2d.getClipBounds(), z, t);</b>
+<i>173</i>&nbsp;		
+<i>174</i>&nbsp;		
+<i>175</i>&nbsp;		// Paint detection objects	
+<b class="fc"><i>176</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<b class="fc"><i>177</i>&nbsp;		if (overlayOptions.getShowDetections() &amp;&amp; !hierarchy.isEmpty()) {</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;			// If we aren&#39;t downsampling by much, or we&#39;re upsampling, paint directly - making sure to paint the right number of times, and in the right order
+<b class="nc"><i>180</i>&nbsp;			if (overlayServer == null || regionStore == null || downsampleFactor &lt; 1.0) {</b>
+<i>181</i>&nbsp;//			if (smallImage || overlayServer == null || regionStore == null || downsampleFactor &lt; 1.0) {
+<b class="nc"><i>182</i>&nbsp;				Set&lt;PathObject&gt; pathObjectsToPaint = new TreeSet&lt;&gt;(comparator);</b>
+<b class="nc"><i>183</i>&nbsp;				Collection&lt;PathObject&gt; pathObjects = hierarchy.getObjectsForRegion(PathDetectionObject.class, region, pathObjectsToPaint);</b>
+<b class="nc"><i>184</i>&nbsp;				g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);</b>
+<b class="nc"><i>185</i>&nbsp;				PathHierarchyPaintingHelper.paintSpecifiedObjects(g2d, boundsDisplayed, pathObjects, overlayOptions, hierarchy.getSelectionModel(), downsampleFactor);</b>
+<i>186</i>&nbsp;				
+<b class="nc"><i>187</i>&nbsp;				if (overlayOptions.getShowConnections()) {</b>
+<b class="nc"><i>188</i>&nbsp;					Object connections = imageData.getProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS);</b>
+<b class="nc"><i>189</i>&nbsp;					if (connections instanceof PathObjectConnections)</b>
+<b class="nc"><i>190</i>&nbsp;							PathHierarchyPaintingHelper.paintConnections((PathObjectConnections)connections, hierarchy, g2d, imageData.isFluorescence() ? ColorToolsAwt.TRANSLUCENT_WHITE : ColorToolsAwt.TRANSLUCENT_BLACK, downsampleFactor);</b>
+<i>191</i>&nbsp;				}
+<i>192</i>&nbsp;				
+<b class="nc"><i>193</i>&nbsp;			} else {					</b>
+<i>194</i>&nbsp;				// If the image hasn&#39;t been updated, then we are viewing the stationary image - we want to wait for a full repaint then to avoid flickering;
+<i>195</i>&nbsp;				// On the other hand, if a large image has been updated then we may be browsing quickly - better to repaint quickly while tiles may still be loading
+<b class="nc"><i>196</i>&nbsp;				if (paintCompletely) {</b>
+<i>197</i>&nbsp;////											System.out.println(&quot;Painting completely&quot;);
+<b class="nc"><i>198</i>&nbsp;					regionStore.paintRegionCompletely(overlayServer, g2d, shapeRegion, z, t, downsampleFactor, null, null, 5000);</b>
+<i>199</i>&nbsp;				}
+<i>200</i>&nbsp;				else {
+<i>201</i>&nbsp;////											System.out.println(&quot;Painting PROGRESSIVELY&quot;);
+<b class="nc"><i>202</i>&nbsp;					regionStore.paintRegion(overlayServer, g2d, shapeRegion, z, t, downsampleFactor, null, null, null);</b>
+<i>203</i>&nbsp;				}
+<i>204</i>&nbsp;			}
+<i>205</i>&nbsp;		}
+<i>206</i>&nbsp;
+<b class="fc"><i>207</i>&nbsp;		long endTime = System.currentTimeMillis();</b>
+<b class="fc"><i>208</i>&nbsp;		if (endTime - startTime &gt; 500)</b>
+<b class="nc"><i>209</i>&nbsp;			logger.debug(String.format(&quot;Painting time: %.4f seconds&quot;, (endTime-startTime)/1000.));</b>
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;		// The setting below stops some weird &#39;jiggling&#39; effects during zooming in/out, or poor rendering of shape ROIs
+<b class="fc"><i>212</i>&nbsp;		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);</b>
+<b class="fc"><i>213</i>&nbsp;		g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;		// Prepare to handle labels, if we need to
+<b class="fc"><i>216</i>&nbsp;		Collection&lt;PathObject&gt; objectsWithNames = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>217</i>&nbsp;		Collection&lt;PathObject&gt; annotations = hierarchy.getObjectsForRegion(PathAnnotationObject.class, region, null);</b>
+<b class="fc"><i>218</i>&nbsp;		for (var iterator = annotations.iterator(); iterator.hasNext(); ) {</b>
+<b class="nc"><i>219</i>&nbsp;			var next = iterator.next();</b>
+<b class="nc"><i>220</i>&nbsp;			if ((next.getName() != null &amp;&amp; !next.getName().isBlank()))</b>
+<b class="nc"><i>221</i>&nbsp;				objectsWithNames.add(next);</b>
+<b class="nc"><i>222</i>&nbsp;			if (selectedObjects.contains(next))</b>
+<b class="nc"><i>223</i>&nbsp;				iterator.remove();</b>
+<b class="nc"><i>224</i>&nbsp;		}</b>
+<i>225</i>&nbsp;		
+<i>226</i>&nbsp;		// If our region has changed, paint directly the first time
+<i>227</i>&nbsp;		// The purpose of this is to revert to avoid creating a BufferedImage on every repaint because the overlay is actually
+<i>228</i>&nbsp;		// being displayed on different images (e.g. a miniviewer) - therefore we only buffer when we have repeated requests
+<b class="fc"><i>229</i>&nbsp;		if (!Objects.equals(clipRegion, lastRegion)) {</b>
+<i>230</i>&nbsp;			// Paint the annotations
+<b class="fc"><i>231</i>&nbsp;			resetBuffer();</b>
+<b class="fc"><i>232</i>&nbsp;			List&lt;PathObject&gt; pathObjectList = new ArrayList&lt;&gt;(annotations);</b>
+<b class="fc"><i>233</i>&nbsp;			Collections.sort(pathObjectList, Comparator.comparingInt(PathObject::getLevel).reversed()</b>
+<b class="fc"><i>234</i>&nbsp;					.thenComparing(Comparator.comparingDouble((PathObject p) -&gt; -p.getROI().getArea())));</b>
+<b class="fc"><i>235</i>&nbsp;			PathHierarchyPaintingHelper.paintSpecifiedObjects(g2d, boundsDisplayed, pathObjectList, overlayOptions, null, downsampleFactor);	</b>
+<b class="fc"><i>236</i>&nbsp;		} else {</b>
+<i>237</i>&nbsp;			// Get the clip without any transform
+<b class="fc"><i>238</i>&nbsp;			var gNoTransform = (Graphics2D)g2d.create();</b>
+<b class="fc"><i>239</i>&nbsp;			gNoTransform.setTransform(new AffineTransform());</b>
+<b class="fc"><i>240</i>&nbsp;			var rawClip = gNoTransform.getClipBounds();</b>
+<i>241</i>&nbsp;			// Create a buffer if we need to
+<b class="fc"><i>242</i>&nbsp;			if (bufferLocal == null) {</b>
+<i>243</i>&nbsp;				// Paint the annotations
+<i>244</i>&nbsp;				Graphics2D g;
+<b class="fc"><i>245</i>&nbsp;				if (!annotations.isEmpty()) {</b>
+<b class="nc"><i>246</i>&nbsp;					if (bufferLocal == null || bufferLocal.getWidth() != rawClip.getWidth() || bufferLocal.getHeight() != rawClip.getHeight()) {</b>
+<b class="nc"><i>247</i>&nbsp;						bufferLocal = new BufferedImage(rawClip.width, rawClip.height, BufferedImage.TYPE_INT_ARGB);</b>
+<b class="nc"><i>248</i>&nbsp;						g = bufferLocal.createGraphics();</b>
+<i>249</i>&nbsp;					} else {
+<b class="nc"><i>250</i>&nbsp;						g = bufferLocal.createGraphics();</b>
+<b class="nc"><i>251</i>&nbsp;						g.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR));</b>
+<b class="nc"><i>252</i>&nbsp;						g.fillRect(0, 0, bufferLocal.getWidth(), bufferLocal.getHeight());</b>
+<b class="nc"><i>253</i>&nbsp;						g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));</b>
+<i>254</i>&nbsp;					}
+<b class="nc"><i>255</i>&nbsp;					g.setClip(0, 0, bufferLocal.getWidth(), bufferLocal.getHeight());</b>
+<b class="nc"><i>256</i>&nbsp;					g.setTransform(g2d.getTransform());</b>
+<b class="nc"><i>257</i>&nbsp;					g.setRenderingHints(g2d.getRenderingHints());</b>
+<b class="nc"><i>258</i>&nbsp;					List&lt;PathObject&gt; pathObjectList = new ArrayList&lt;&gt;(annotations);</b>
+<b class="nc"><i>259</i>&nbsp;					Collections.sort(pathObjectList, Comparator.comparingInt(PathObject::getLevel).reversed()</b>
+<b class="nc"><i>260</i>&nbsp;							.thenComparing(Comparator.comparingDouble((PathObject p) -&gt; -p.getROI().getArea())));</b>
+<b class="nc"><i>261</i>&nbsp;					PathHierarchyPaintingHelper.paintSpecifiedObjects(g, boundsDisplayed, pathObjectList, overlayOptions, null, downsampleFactor);		</b>
+<i>262</i>&nbsp;				}
+<i>263</i>&nbsp;			}
+<b class="fc"><i>264</i>&nbsp;			if (bufferLocal != null) {</b>
+<i>265</i>&nbsp;				// We need to draw without the transform since otherwise the scaling can be off
+<b class="nc"><i>266</i>&nbsp;				gNoTransform.drawImage(bufferLocal, rawClip.x, rawClip.y, null);</b>
+<i>267</i>&nbsp;//				g2d.drawImage(buffer, clipRegion.getX(), clipRegion.getY(), clipRegion.getWidth(), clipRegion.getHeight(), null);
+<i>268</i>&nbsp;			}
+<b class="fc"><i>269</i>&nbsp;			gNoTransform.dispose();</b>
+<i>270</i>&nbsp;		}
+<b class="fc"><i>271</i>&nbsp;		lastRegion = clipRegion;</b>
+<i>272</i>&nbsp;		
+<i>273</i>&nbsp;		// Ensure that selected objects are painted last, to make sure they aren&#39;t obscured
+<b class="fc"><i>274</i>&nbsp;		if (!selectedObjects.isEmpty()) {</b>
+<b class="nc"><i>275</i>&nbsp;			Composite previousComposite = g2d.getComposite();</b>
+<b class="nc"><i>276</i>&nbsp;			float opacity = overlayOptions.getOpacity();</b>
+<b class="nc"><i>277</i>&nbsp;			if (opacity &lt; 1) {</b>
+<b class="nc"><i>278</i>&nbsp;				g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));</b>
+<b class="nc"><i>279</i>&nbsp;				PathHierarchyPaintingHelper.paintSpecifiedObjects(g2d, boundsDisplayed, selectedObjects, overlayOptions, hierarchy.getSelectionModel(), downsampleFactor);</b>
+<b class="nc"><i>280</i>&nbsp;				g2d.setComposite(previousComposite);</b>
+<i>281</i>&nbsp;			} else {
+<b class="nc"><i>282</i>&nbsp;				PathHierarchyPaintingHelper.paintSpecifiedObjects(g2d, boundsDisplayed, selectedObjects, overlayOptions, hierarchy.getSelectionModel(), downsampleFactor);				</b>
+<i>283</i>&nbsp;			}
+<i>284</i>&nbsp;		}
+<i>285</i>&nbsp;		
+<i>286</i>&nbsp;		// Paint labels
+<b class="fc"><i>287</i>&nbsp;		if (overlayOptions.getShowNames() &amp;&amp; !objectsWithNames.isEmpty()) {</b>
+<i>288</i>&nbsp;			
+<i>289</i>&nbsp;			double requestedFontSize;
+<b class="nc"><i>290</i>&nbsp;			switch (PathPrefs.viewerFontSizeProperty().get()) {</b>
+<i>291</i>&nbsp;			case HUGE:
+<b class="nc"><i>292</i>&nbsp;				requestedFontSize = 24;</b>
+<b class="nc"><i>293</i>&nbsp;				break;</b>
+<i>294</i>&nbsp;			case LARGE:
+<b class="nc"><i>295</i>&nbsp;				requestedFontSize = 18;</b>
+<b class="nc"><i>296</i>&nbsp;				break;</b>
+<i>297</i>&nbsp;			case SMALL:
+<b class="nc"><i>298</i>&nbsp;				requestedFontSize = 10;</b>
+<b class="nc"><i>299</i>&nbsp;				break;</b>
+<i>300</i>&nbsp;			case TINY:
+<b class="nc"><i>301</i>&nbsp;				requestedFontSize = 8;</b>
+<b class="nc"><i>302</i>&nbsp;				break;</b>
+<i>303</i>&nbsp;			case MEDIUM:
+<i>304</i>&nbsp;			default:
+<b class="nc"><i>305</i>&nbsp;				requestedFontSize = 14;</b>
+<i>306</i>&nbsp;				break;
+<i>307</i>&nbsp;			}
+<b class="nc"><i>308</i>&nbsp;			float fontSize = (float)(requestedFontSize * downsampleFactor);</b>
+<b class="nc"><i>309</i>&nbsp;			if (!GeneralTools.almostTheSame(font.getSize2D(), fontSize, 0.001))</b>
+<b class="nc"><i>310</i>&nbsp;				font = font.deriveFont(fontSize);</b>
+<i>311</i>&nbsp;			
+<b class="nc"><i>312</i>&nbsp;			g2d.setFont(font);</b>
+<b class="nc"><i>313</i>&nbsp;			var metrics = g2d.getFontMetrics(font);</b>
+<b class="nc"><i>314</i>&nbsp;			var rect = new Rectangle2D.Double();</b>
+<b class="nc"><i>315</i>&nbsp;			g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);</b>
+<b class="nc"><i>316</i>&nbsp;			g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;			for (var annotation : objectsWithNames) {</b>
+<b class="nc"><i>319</i>&nbsp;				var name = annotation.getName();</b>
+<i>320</i>&nbsp;				
+<b class="nc"><i>321</i>&nbsp;				var roi = annotation.getROI();</b>
+<i>322</i>&nbsp;				
+<b class="nc"><i>323</i>&nbsp;				if (name != null &amp;&amp; !name.isBlank() &amp;&amp; roi != null &amp;&amp; !overlayOptions.isPathClassHidden(annotation.getPathClass())) {</b>
+<b class="nc"><i>324</i>&nbsp;					g2d.setColor(ColorToolsAwt.TRANSLUCENT_BLACK);</b>
+<i>325</i>&nbsp;	
+<b class="nc"><i>326</i>&nbsp;					var bounds = metrics.getStringBounds(name, g2d);</b>
+<i>327</i>&nbsp;					
+<b class="nc"><i>328</i>&nbsp;					double pad = 5.0 * downsampleFactor;</b>
+<b class="nc"><i>329</i>&nbsp;					double x = roi.getCentroidX() - bounds.getWidth() / 2.0;</b>
+<b class="nc"><i>330</i>&nbsp;					double y = roi.getCentroidY() + bounds.getY() + metrics.getAscent() + pad;</b>
+<i>331</i>&nbsp;	
+<b class="nc"><i>332</i>&nbsp;					rect.setFrame(x+bounds.getX()-pad, y+bounds.getY()-pad, bounds.getWidth()+pad*2, bounds.getHeight()+pad*2);</b>
+<b class="nc"><i>333</i>&nbsp;					g2d.fill(rect);</b>
+<b class="nc"><i>334</i>&nbsp;					g2d.setColor(Color.WHITE);</b>
+<i>335</i>&nbsp;	
+<b class="nc"><i>336</i>&nbsp;					g2d.drawString(name, (float)x, (float)y);</b>
+<i>337</i>&nbsp;				}
+<b class="nc"><i>338</i>&nbsp;			}</b>
+<i>339</i>&nbsp;		}
+<i>340</i>&nbsp;		
+<b class="fc"><i>341</i>&nbsp;	}</b>
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;	/**
+<i>344</i>&nbsp;	 * Reset the buffer, indicating that a full repaint will be required.
+<i>345</i>&nbsp;	 */
+<i>346</i>&nbsp;	public void resetBuffer() {
+<b class="fc"><i>347</i>&nbsp;		lastRegion = null;</b>
+<b class="fc"><i>348</i>&nbsp;		buffer = null;		</b>
+<b class="fc"><i>349</i>&nbsp;	}</b>
+<i>350</i>&nbsp;	
+<i>351</i>&nbsp;	/**
+<i>352</i>&nbsp;	 * Clear previously-cached tiles for this overlay.
+<i>353</i>&nbsp;	 */
+<i>354</i>&nbsp;	public void clearCachedOverlay() {
+<b class="fc"><i>355</i>&nbsp;		if (regionStore != null &amp;&amp; overlayServer != null)</b>
+<b class="nc"><i>356</i>&nbsp;			regionStore.clearCacheForServer(overlayServer);</b>
+<b class="fc"><i>357</i>&nbsp;		resetBuffer();</b>
+<b class="fc"><i>358</i>&nbsp;	}</b>
+<i>359</i>&nbsp;	
+<i>360</i>&nbsp;	/**
+<i>361</i>&nbsp;	 * Clear previously-cached tiles for a specified region of this overlay.
+<i>362</i>&nbsp;	 * @param region the region for which tiles should be removed
+<i>363</i>&nbsp;	 */
+<i>364</i>&nbsp;	public void clearCachedOverlayForRegion(ImageRegion region) {
+<b class="nc"><i>365</i>&nbsp;		lastRegion = null;</b>
+<b class="nc"><i>366</i>&nbsp;		buffer = null;</b>
+<b class="nc"><i>367</i>&nbsp;		if (regionStore != null &amp;&amp; overlayServer != null)</b>
+<b class="nc"><i>368</i>&nbsp;			regionStore.clearCacheForRequestOverlap(RegionRequest.createInstance(overlayServer.getPath(), 1, region));</b>
+<b class="nc"><i>369</i>&nbsp;		resetBuffer();</b>
+<b class="nc"><i>370</i>&nbsp;	}</b>
+<i>371</i>&nbsp;
+<i>372</i>&nbsp;	
+<i>373</i>&nbsp;	/**
+<i>374</i>&nbsp;	 * Comparator that makes use of levels, not only location.
+<i>375</i>&nbsp;	 *
+<i>376</i>&nbsp;	 */
+<b class="fc"><i>377</i>&nbsp;	public static class DetectionComparator implements Comparator&lt;PathObject&gt; {</b>
+<i>378</i>&nbsp;		
+<b class="fc"><i>379</i>&nbsp;		private Comparator&lt;PathObject&gt; baseComparator = DefaultPathObjectComparator.getInstance();</b>
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;		@Override
+<i>382</i>&nbsp;		public int compare(PathObject o1, PathObject o2) {
+<b class="nc"><i>383</i>&nbsp;			int level = Integer.compare(o1.getLevel(), o2.getLevel());</b>
+<b class="nc"><i>384</i>&nbsp;			if (level == 0)</b>
+<b class="nc"><i>385</i>&nbsp;				return baseComparator.compare(o1, o2);</b>
+<b class="nc"><i>386</i>&nbsp;			return level;</b>
+<i>387</i>&nbsp;		}
+<i>388</i>&nbsp;		
+<i>389</i>&nbsp;	}
+<i>390</i>&nbsp;	
+<i>391</i>&nbsp;	
+<i>392</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,357 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractPluginRunner</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractPluginRunner (qupath.lib.plugins)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractPluginRunner</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (2/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    6%
+  </span>
+  <span class="absValue">
+    (5/ 83)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.HashMap;
+<i>29</i>&nbsp;import java.util.Map;
+<i>30</i>&nbsp;import java.util.concurrent.ExecutionException;
+<i>31</i>&nbsp;import java.util.concurrent.ExecutorCompletionService;
+<i>32</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>33</i>&nbsp;import java.util.concurrent.Executors;
+<i>34</i>&nbsp;import java.util.concurrent.Future;
+<i>35</i>&nbsp;import java.util.stream.Collectors;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>41</i>&nbsp;import qupath.lib.images.ImageData;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * Abstract PluginRunner to help with the creation of plugin runners for specific circumstances,
+<i>46</i>&nbsp; * e.g. running through a GUI, or from a command line only.
+<i>47</i>&nbsp; * &lt;p&gt;
+<i>48</i>&nbsp; * Note!  This makes use of a static threadpool, which will be reused by all inheriting classes.
+<i>49</i>&nbsp; * 
+<i>50</i>&nbsp; * @author Pete Bankhead
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; * @param &lt;T&gt;
+<i>53</i>&nbsp; */
+<b class="nc"><i>54</i>&nbsp;public abstract class AbstractPluginRunner&lt;T&gt; implements PluginRunner&lt;T&gt; {</b>
+<i>55</i>&nbsp;	
+<b class="fc"><i>56</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(AbstractPluginRunner.class);</b>
+<i>57</i>&nbsp;
+<b class="fc"><i>58</i>&nbsp;	private static int numThreadsRequested = Runtime.getRuntime().availableProcessors();</b>
+<b class="fc"><i>59</i>&nbsp;	private static int counter = 0;</b>
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;	private static ExecutorService pool;
+<i>62</i>&nbsp;	private ExecutorCompletionService&lt;Runnable&gt; service;
+<i>63</i>&nbsp;
+<b class="nc"><i>64</i>&nbsp;	private Map&lt;Future&lt;Runnable&gt;, Runnable&gt; pendingTasks = Collections.synchronizedMap(new HashMap&lt;&gt;());</b>
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	private SimpleProgressMonitor monitor;
+<i>67</i>&nbsp;	
+<b class="nc"><i>68</i>&nbsp;	private boolean tasksCancelled = false;</b>
+<i>69</i>&nbsp;	
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Set the number of threads requested to be used for the next threadpool created.
+<i>72</i>&nbsp;	 * &lt;p&gt;
+<i>73</i>&nbsp;	 * The request is stored as-is, but may be adjusted if it is outside a valid range, i.e. &amp;gt; 0 and &amp;lt;= available processors.
+<i>74</i>&nbsp;	 * 
+<i>75</i>&nbsp;	 * @see #getNumThreadsRequested
+<i>76</i>&nbsp;	 * @see #getNumThreads
+<i>77</i>&nbsp;	 * 
+<i>78</i>&nbsp;	 * @param n
+<i>79</i>&nbsp;	 */
+<i>80</i>&nbsp;	public synchronized static void setNumThreadsRequested(int n) {
+<b class="fc"><i>81</i>&nbsp;		if (numThreadsRequested == n)</b>
+<b class="fc"><i>82</i>&nbsp;			return;</b>
+<b class="nc"><i>83</i>&nbsp;		numThreadsRequested = n;</b>
+<i>84</i>&nbsp;		// Need to shutdown the pool for this to take effect
+<b class="nc"><i>85</i>&nbsp;		if (pool != null)</b>
+<b class="nc"><i>86</i>&nbsp;			pool.shutdown();</b>
+<b class="nc"><i>87</i>&nbsp;	}</b>
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Get the number of threads requested.  This isn&#39;t necessarily the number that will be used for the next threadpool,
+<i>91</i>&nbsp;	 * since it may be &amp;lt;= 0 or &amp;gt; the available processors.
+<i>92</i>&nbsp;	 * 
+<i>93</i>&nbsp;	 * @see #setNumThreadsRequested
+<i>94</i>&nbsp;	 * @see #getNumThreads
+<i>95</i>&nbsp;	 * 
+<i>96</i>&nbsp;	 * @return
+<i>97</i>&nbsp;	 */
+<i>98</i>&nbsp;	public synchronized static int getNumThreadsRequested() {
+<b class="nc"><i>99</i>&nbsp;		return numThreadsRequested;</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	/**
+<i>103</i>&nbsp;	 * Get the number of threads that will actually be used the next time a threadpool is constructed.
+<i>104</i>&nbsp;	 * &lt;p&gt;
+<i>105</i>&nbsp;	 * If getNumProcessorsRequested() returns a value between 1 and Runtime.getRuntime().availableProcessors() then this 
+<i>106</i>&nbsp;	 * is used.  Otherwise, Runtime.getRuntime().availableProcessors() is used.
+<i>107</i>&nbsp;	 * &lt;p&gt;
+<i>108</i>&nbsp;	 * This implementation may change (most likely to increase the upper limit, if it turns out to be too strict.)
+<i>109</i>&nbsp;	 * 
+<i>110</i>&nbsp;	 * @see #setNumThreadsRequested
+<i>111</i>&nbsp;	 * @see #getNumThreadsRequested
+<i>112</i>&nbsp;	 * 
+<i>113</i>&nbsp;	 * @return
+<i>114</i>&nbsp;	 */
+<i>115</i>&nbsp;	public synchronized static int getNumThreads() {
+<b class="nc"><i>116</i>&nbsp;		int max = Runtime.getRuntime().availableProcessors();</b>
+<b class="nc"><i>117</i>&nbsp;		return numThreadsRequested &lt;= 0 || numThreadsRequested &gt; max ? max : numThreadsRequested;</b>
+<i>118</i>&nbsp;	}
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;	protected abstract SimpleProgressMonitor makeProgressMonitor();
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	/* (non-Javadoc)
+<i>123</i>&nbsp;	 * @see qupath.lib.plugins.PluginRunner#getImageData()
+<i>124</i>&nbsp;	 */
+<i>125</i>&nbsp;	@Override
+<i>126</i>&nbsp;	public abstract ImageData&lt;T&gt; getImageData();
+<i>127</i>&nbsp;	
+<i>128</i>&nbsp;	/* (non-Javadoc)
+<i>129</i>&nbsp;	 * @see qupath.lib.plugins.PluginRunner#runTasks(java.util.Collection)
+<i>130</i>&nbsp;	 */
+<i>131</i>&nbsp;	@Override
+<i>132</i>&nbsp;	public synchronized void runTasks(Collection&lt;Runnable&gt; tasks, boolean updateHierarchy) {
+<i>133</i>&nbsp;		
+<b class="nc"><i>134</i>&nbsp;		if (tasks.isEmpty())</b>
+<b class="nc"><i>135</i>&nbsp;			return;</b>
+<i>136</i>&nbsp;		
+<i>137</i>&nbsp;		// Reset cancelled status
+<b class="nc"><i>138</i>&nbsp;		tasksCancelled = false;</b>
+<i>139</i>&nbsp;		
+<i>140</i>&nbsp;		// Ensure we have a pool
+<b class="nc"><i>141</i>&nbsp;		if (pool == null || pool.isShutdown()) {</b>
+<b class="nc"><i>142</i>&nbsp;			int n = getNumThreads();</b>
+<b class="nc"><i>143</i>&nbsp;			pool = Executors.newFixedThreadPool(n, ThreadTools.createThreadFactory(&quot;plugin-runner-&quot;+(+counter)+&quot;-&quot;, false));</b>
+<b class="nc"><i>144</i>&nbsp;			logger.debug(&quot;New threadpool created with {} threads&quot;, n);</b>
+<b class="nc"><i>145</i>&nbsp;			service = new ExecutorCompletionService&lt;&gt;(pool);</b>
+<b class="nc"><i>146</i>&nbsp;		} else if (service == null)</b>
+<b class="nc"><i>147</i>&nbsp;			service = new ExecutorCompletionService&lt;&gt;(pool);</b>
+<i>148</i>&nbsp;		
+<b class="nc"><i>149</i>&nbsp;		monitor = makeProgressMonitor();</b>
+<b class="nc"><i>150</i>&nbsp;		monitor.startMonitoring(null, tasks.size(), true);</b>
+<b class="nc"><i>151</i>&nbsp;		for (Runnable task : tasks) {</b>
+<b class="nc"><i>152</i>&nbsp;			Future&lt;Runnable&gt; future = service.submit(task, task);</b>
+<b class="nc"><i>153</i>&nbsp;			pendingTasks.put(future, task);</b>
+<b class="nc"><i>154</i>&nbsp;		}</b>
+<i>155</i>&nbsp;		// TODO: See if this needs to be shutdown here, or there&#39;s a better way..?
+<i>156</i>&nbsp;		// In any case, it was inhibiting application shutdown just letting it be...
+<b class="nc"><i>157</i>&nbsp;		pool.shutdown();</b>
+<b class="nc"><i>158</i>&nbsp;		awaitCompletion();</b>
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		// Post-process any PathTasks
+<b class="nc"><i>161</i>&nbsp;		postProcess(tasks.stream().filter(t -&gt; t instanceof PathTask).map(t -&gt; (PathTask)t).collect(Collectors.toList()));</b>
+<i>162</i>&nbsp;		
+<b class="nc"><i>163</i>&nbsp;		getImageData().getHierarchy().fireHierarchyChangedEvent(this);</b>
+<b class="nc"><i>164</i>&nbsp;	}</b>
+<i>165</i>&nbsp;	
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;//	/* (non-Javadoc)
+<i>168</i>&nbsp;//	 * @see qupath.lib.plugins.PluginRunner#isRunning()
+<i>169</i>&nbsp;//	 */
+<i>170</i>&nbsp;//	@Override
+<i>171</i>&nbsp;//	public boolean isRunning() {
+<i>172</i>&nbsp;//		return !pendingTasks.isEmpty();
+<i>173</i>&nbsp;//	}
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;	
+<i>176</i>&nbsp;	/**
+<i>177</i>&nbsp;	 * Await the completion of currently-running tasks, notifying any listener if necessary.
+<i>178</i>&nbsp;	 */
+<i>179</i>&nbsp;	protected void awaitCompletion() {
+<i>180</i>&nbsp;		try {
+<b class="nc"><i>181</i>&nbsp;			while (!pendingTasks.isEmpty()) {</b>
+<b class="nc"><i>182</i>&nbsp;				Future&lt;Runnable&gt; future = null;</b>
+<i>183</i>&nbsp;				// Check if the monitor has been cancelled; if so, do any post processing if a task is available and otherwise cancel remaining ones
+<b class="nc"><i>184</i>&nbsp;				if (!tasksCancelled &amp;&amp; monitor != null &amp;&amp; monitor.cancelled() &amp;&amp; (future = service.poll()) == null) {</b>
+<i>185</i>&nbsp;					// Cancel all enqueued tasks
+<b class="nc"><i>186</i>&nbsp;					for (Future&lt;?&gt; entry : pendingTasks.keySet().toArray(new Future&lt;?&gt;[0])) {</b>
+<b class="nc"><i>187</i>&nbsp;						if (entry.cancel(true)) {</b>
+<b class="nc"><i>188</i>&nbsp;							pendingTasks.remove(entry);</b>
+<b class="nc"><i>189</i>&nbsp;							monitor.updateProgress(1, &quot;&quot;, null);</b>
+<i>190</i>&nbsp;						} else
+<b class="nc"><i>191</i>&nbsp;							logger.debug(&quot;Cancel returned false for {}&quot;, entry);</b>
+<i>192</i>&nbsp;					}
+<b class="nc"><i>193</i>&nbsp;					tasksCancelled = true;</b>
+<i>194</i>&nbsp;				}
+<b class="nc"><i>195</i>&nbsp;				future = future == null ? service.take() : future;</b>
+<i>196</i>&nbsp;//				logger.warn(&quot;Future: {}&quot;, future);
+<i>197</i>&nbsp;				// If the task finished without being cancelled, run post-processing if required &amp; update the progress monitor
+<b class="nc"><i>198</i>&nbsp;				if (!future.isCancelled()) {</b>
+<b class="nc"><i>199</i>&nbsp;					Runnable runnable = future.get();</b>
+<b class="nc"><i>200</i>&nbsp;					PathTask task = runnable instanceof PathTask ? (PathTask)runnable : null;</b>
+<b class="nc"><i>201</i>&nbsp;					updateMonitor(task);</b>
+<i>202</i>&nbsp;				}
+<b class="nc"><i>203</i>&nbsp;				pendingTasks.remove(future);</b>
+<b class="nc"><i>204</i>&nbsp;			}</b>
+<b class="nc"><i>205</i>&nbsp;			if (monitor != null)</b>
+<b class="nc"><i>206</i>&nbsp;				monitor.pluginCompleted(&quot;Tasks completed!&quot;);</b>
+<b class="nc"><i>207</i>&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc"><i>208</i>&nbsp;			logger.error(&quot;Plugin interrupted: {}&quot;, e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>209</i>&nbsp;			monitor.pluginCompleted(&quot;Completed with error &quot; + e.getLocalizedMessage());</b>
+<b class="nc"><i>210</i>&nbsp;		} catch (ExecutionException e) {</b>
+<b class="nc"><i>211</i>&nbsp;			logger.error(&quot;Error running plugin: {}&quot;, e.getLocalizedMessage(), e);</b>
+<i>212</i>&nbsp;//			Throwable e2 = e;
+<i>213</i>&nbsp;//			while ((e2 = e2.getCause()) != null) {
+<i>214</i>&nbsp;//				e2 = e2.fillInStackTrace();
+<i>215</i>&nbsp;//				logger.error(&quot;CAUSING Error running plugin: {}&quot;, e2.getLocalizedMessage(), e2);
+<i>216</i>&nbsp;//			}
+<i>217</i>&nbsp;//			e.printStackTrace();
+<b class="nc"><i>218</i>&nbsp;			if (pool != null)</b>
+<b class="nc"><i>219</i>&nbsp;				pool.shutdownNow();</b>
+<b class="nc"><i>220</i>&nbsp;			monitor.pluginCompleted(&quot;Completed with error &quot; + e.getLocalizedMessage());</b>
+<b class="nc"><i>221</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>222</i>&nbsp;			logger.error(&quot;Error running plugin: {}&quot;, e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>223</i>&nbsp;			if (pool != null)</b>
+<b class="nc"><i>224</i>&nbsp;				pool.shutdownNow();</b>
+<b class="nc"><i>225</i>&nbsp;			monitor.pluginCompleted(&quot;Completed with error &quot; + e.getLocalizedMessage());</b>
+<i>226</i>&nbsp;		} finally {
+<b class="nc"><i>227</i>&nbsp;			pendingTasks.clear();</b>
+<b class="nc"><i>228</i>&nbsp;		}</b>
+<b class="nc"><i>229</i>&nbsp;	}</b>
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	/**
+<i>233</i>&nbsp;	 * Perform post-processing after a task has complete.
+<i>234</i>&nbsp;	 * 
+<i>235</i>&nbsp;	 * This is necessary to call the taskComplete method (if the Runnable is an instance of PathTask),
+<i>236</i>&nbsp;	 * and also to update any progress monitor.
+<i>237</i>&nbsp;	 * 
+<i>238</i>&nbsp;	 * Note: Subclasses may choose to override this method so that it is called on a particular thread
+<i>239</i>&nbsp;	 * (e.g. with Platform.runLater() or SwingUtilities.invokeLater).
+<i>240</i>&nbsp;	 * 
+<i>241</i>&nbsp;	 * @param tasks
+<i>242</i>&nbsp;	 */
+<i>243</i>&nbsp;	protected void postProcess(final Collection&lt;PathTask&gt; tasks) {
+<b class="nc"><i>244</i>&nbsp;		boolean wasCancelled = tasksCancelled || monitor.cancelled();</b>
+<b class="nc"><i>245</i>&nbsp;		for (var task : tasks)</b>
+<b class="nc"><i>246</i>&nbsp;			task.taskComplete(wasCancelled);</b>
+<i>247</i>&nbsp;		
+<b class="nc"><i>248</i>&nbsp;		var imageData = getImageData();</b>
+<b class="nc"><i>249</i>&nbsp;		if (imageData != null)</b>
+<b class="nc"><i>250</i>&nbsp;			imageData.getHierarchy().fireHierarchyChangedEvent(this);</b>
+<i>251</i>&nbsp;		
+<i>252</i>&nbsp;//		PathTask task = runnable instanceof PathTask ? (PathTask)runnable : null;
+<i>253</i>&nbsp;//		if (task != null) {
+<i>254</i>&nbsp;//			task.taskComplete();
+<i>255</i>&nbsp;//		}
+<i>256</i>&nbsp;//		runnable.getClass().getSimpleName()
+<i>257</i>&nbsp;//		System.err.println(&quot;Updating monitor from post processing&quot;);
+<i>258</i>&nbsp;//		updateMonitor(task);
+<b class="nc"><i>259</i>&nbsp;	}</b>
+<i>260</i>&nbsp;	
+<i>261</i>&nbsp;	private void updateMonitor(final PathTask task) {
+<b class="nc"><i>262</i>&nbsp;		if (monitor == null)</b>
+<b class="nc"><i>263</i>&nbsp;			return;</b>
+<b class="nc"><i>264</i>&nbsp;		String text = task == null ? &quot;Completed&quot; : task.getLastResultsDescription();</b>
+<b class="nc"><i>265</i>&nbsp;		monitor.updateProgress(1, text, null);</b>
+<b class="nc"><i>266</i>&nbsp;	}</b>
+<i>267</i>&nbsp;	
+<i>268</i>&nbsp;	@Override
+<i>269</i>&nbsp;	public boolean isCancelled() {
+<b class="nc"><i>270</i>&nbsp;		return tasksCancelled;</b>
+<i>271</i>&nbsp;	}
+<i>272</i>&nbsp;	
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

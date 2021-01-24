@@ -1,0 +1,355 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShowInstalledExtensionsCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShowInstalledExtensionsCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShowInstalledExtensionsCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 68)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShowInstalledExtensionsCommand$QuPathExtensionEntry</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 93)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.net.URL;
+<i>29</i>&nbsp;import java.util.jar.Attributes;
+<i>30</i>&nbsp;import java.util.jar.JarInputStream;
+<i>31</i>&nbsp;import java.util.jar.Manifest;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javafx.geometry.Insets;
+<i>37</i>&nbsp;import javafx.scene.Node;
+<i>38</i>&nbsp;import javafx.scene.Scene;
+<i>39</i>&nbsp;import javafx.scene.control.Label;
+<i>40</i>&nbsp;import javafx.scene.control.ScrollPane;
+<i>41</i>&nbsp;import javafx.scene.control.TextArea;
+<i>42</i>&nbsp;import javafx.scene.control.TitledPane;
+<i>43</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>44</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>45</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>46</i>&nbsp;import javafx.scene.layout.Priority;
+<i>47</i>&nbsp;import javafx.scene.layout.Region;
+<i>48</i>&nbsp;import javafx.scene.layout.VBox;
+<i>49</i>&nbsp;import javafx.stage.Modality;
+<i>50</i>&nbsp;import javafx.stage.Stage;
+<i>51</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>52</i>&nbsp;import qupath.lib.gui.extensions.QuPathExtension;
+<i>53</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>54</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder;
+<i>55</i>&nbsp;import qupath.lib.images.servers.ImageServerProvider;
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;/**
+<i>58</i>&nbsp; * Command to list the names &amp;amp; details of all installed extensions
+<i>59</i>&nbsp; * 
+<i>60</i>&nbsp; * @author Pete Bankhead
+<i>61</i>&nbsp; *
+<i>62</i>&nbsp; */
+<b class="nc"><i>63</i>&nbsp;class ShowInstalledExtensionsCommand {</b>
+<i>64</i>&nbsp;	
+<b class="nc"><i>65</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ShowInstalledExtensionsCommand.class);</b>
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	public static void showInstalledExtensions(final QuPathGUI qupath) {
+<b class="nc"><i>69</i>&nbsp;		Stage dialog = new Stage();</b>
+<b class="nc"><i>70</i>&nbsp;		dialog.initOwner(qupath.getStage());</b>
+<b class="nc"><i>71</i>&nbsp;		dialog.initModality(Modality.APPLICATION_MODAL);</b>
+<b class="nc"><i>72</i>&nbsp;		dialog.setTitle(&quot;Installed extensions&quot;);</b>
+<i>73</i>&nbsp;		
+<i>74</i>&nbsp;		
+<b class="nc"><i>75</i>&nbsp;		GridPane paneExtensions = new GridPane();</b>
+<b class="nc"><i>76</i>&nbsp;		paneExtensions.setPadding(new Insets(10, 10, 10, 10));</b>
+<b class="nc"><i>77</i>&nbsp;		paneExtensions.setHgap(5);</b>
+<b class="nc"><i>78</i>&nbsp;		paneExtensions.setVgap(10);</b>
+<i>79</i>&nbsp;		
+<b class="nc"><i>80</i>&nbsp;		int row = 0;</b>
+<b class="nc"><i>81</i>&nbsp;		int inc = 1;</b>
+<b class="nc"><i>82</i>&nbsp;		for (QuPathExtension extension : qupath.getLoadedExtensions()) {</b>
+<b class="nc"><i>83</i>&nbsp;			addEntry(paneExtensions, new QuPathExtensionEntry(extension), row);</b>
+<b class="nc"><i>84</i>&nbsp;			row += inc;</b>
+<b class="nc"><i>85</i>&nbsp;		}</b>
+<i>86</i>&nbsp;		
+<b class="nc"><i>87</i>&nbsp;		GridPane paneServers = new GridPane();</b>
+<b class="nc"><i>88</i>&nbsp;		paneServers.setPadding(new Insets(10, 10, 10, 10));</b>
+<b class="nc"><i>89</i>&nbsp;		paneServers.setHgap(5);</b>
+<b class="nc"><i>90</i>&nbsp;		paneServers.setVgap(10);</b>
+<b class="nc"><i>91</i>&nbsp;		row = 0;</b>
+<b class="nc"><i>92</i>&nbsp;		for (ImageServerBuilder&lt;?&gt; builder : ImageServerProvider.getInstalledImageServerBuilders()) {</b>
+<b class="nc"><i>93</i>&nbsp;			addEntry(paneServers, new QuPathExtensionEntry(builder), row);</b>
+<b class="nc"><i>94</i>&nbsp;			row += inc;</b>
+<b class="nc"><i>95</i>&nbsp;		}</b>
+<i>96</i>&nbsp;		
+<b class="nc"><i>97</i>&nbsp;		String titledPlainCSS = ShowInstalledExtensionsCommand.class.getClassLoader().getResource(&quot;css/titled_plain.css&quot;).toExternalForm();</b>
+<i>98</i>&nbsp;		
+<b class="nc"><i>99</i>&nbsp;		TitledPane titledExtensions = new TitledPane(&quot;Extensions&quot;, paneExtensions);</b>
+<b class="nc"><i>100</i>&nbsp;		titledExtensions.getStylesheets().add(titledPlainCSS);</b>
+<b class="nc"><i>101</i>&nbsp;		TitledPane titledServers = new TitledPane(&quot;Image Servers&quot;, paneServers);</b>
+<b class="nc"><i>102</i>&nbsp;		titledServers.getStylesheets().add(titledPlainCSS);</b>
+<i>103</i>&nbsp;		
+<b class="nc"><i>104</i>&nbsp;		VBox vbox = new VBox(</b>
+<i>105</i>&nbsp;				titledExtensions,
+<i>106</i>&nbsp;				titledServers
+<i>107</i>&nbsp;		);
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;		vbox.setMaxWidth(Double.POSITIVE_INFINITY);</b>
+<b class="nc"><i>110</i>&nbsp;		dialog.setScene(new Scene(new ScrollPane(vbox)));</b>
+<b class="nc"><i>111</i>&nbsp;		dialog.show();</b>
+<i>112</i>&nbsp;	}
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;	
+<i>115</i>&nbsp;	private static void addEntry(final GridPane pane, final QuPathExtensionEntry entry, final int row) {
+<i>116</i>&nbsp;		
+<b class="nc"><i>117</i>&nbsp;		TextArea textArea = new TextArea(entry.getDescription());</b>
+<b class="nc"><i>118</i>&nbsp;		textArea.setPrefRowCount(3);</b>
+<b class="nc"><i>119</i>&nbsp;		textArea.setWrapText(true);</b>
+<b class="nc"><i>120</i>&nbsp;		textArea.setEditable(false);</b>
+<b class="nc"><i>121</i>&nbsp;		textArea.setMinWidth(100);</b>
+<b class="nc"><i>122</i>&nbsp;		textArea.setBorder(null);</b>
+<i>123</i>&nbsp;//		textArea.getStylesheets().add(ShowInstalledExtensionsCommand.class.getClassLoader().getResource(&quot;css/text_area_transparent.css&quot;).toExternalForm());
+<i>124</i>&nbsp;		
+<b class="nc"><i>125</i>&nbsp;		for (Node node : textArea.getChildrenUnmodifiable()) {</b>
+<b class="nc"><i>126</i>&nbsp;			if (node instanceof Region)</b>
+<b class="nc"><i>127</i>&nbsp;				((Region)node).setBorder(null);</b>
+<b class="nc"><i>128</i>&nbsp;		}</b>
+<i>129</i>&nbsp;////		textArea.setStyle(&quot;-fx-focus-color: transparent; -fx-text-box-border: transparent;&quot;);
+<i>130</i>&nbsp;		
+<i>131</i>&nbsp;//		TextFlow textArea = new TextFlow(new Text(entry.getDescription()));
+<i>132</i>&nbsp;//		textArea.setBorder(null);
+<i>133</i>&nbsp;		
+<b class="nc"><i>134</i>&nbsp;		BorderPane paneEntryMain = new BorderPane(textArea);</b>
+<b class="nc"><i>135</i>&nbsp;		Label labelPath = new Label(&quot;Path: &quot; + entry.getPathToJar());</b>
+<b class="nc"><i>136</i>&nbsp;		labelPath.setPadding(new Insets(0, 0, 2, 0));</b>
+<b class="nc"><i>137</i>&nbsp;		File file = new File(entry.getPathToJar());</b>
+<b class="nc"><i>138</i>&nbsp;		if (file.exists()) {</b>
+<i>139</i>&nbsp;			// Locate file with a double-click, if possible
+<b class="nc"><i>140</i>&nbsp;			File dir = file.isDirectory() ? file : file.getParentFile();</b>
+<b class="nc"><i>141</i>&nbsp;				labelPath.setOnMouseClicked(e -&gt; {</b>
+<b class="nc"><i>142</i>&nbsp;					if (e.getClickCount() == 2) {</b>
+<b class="nc"><i>143</i>&nbsp;						GuiTools.openFile(dir);</b>
+<i>144</i>&nbsp;					}
+<i>145</i>&nbsp;				});
+<i>146</i>&nbsp;		}
+<b class="nc"><i>147</i>&nbsp;		paneEntryMain.setBottom(labelPath);</b>
+<i>148</i>&nbsp;		
+<b class="nc"><i>149</i>&nbsp;		String name = entry.getName();</b>
+<b class="nc"><i>150</i>&nbsp;		String version = entry.getVersion();</b>
+<b class="nc"><i>151</i>&nbsp;		if (version != null)</b>
+<b class="nc"><i>152</i>&nbsp;			name = name + &quot; (&quot; + version + &quot;)&quot;;</b>
+<i>153</i>&nbsp;		
+<b class="nc"><i>154</i>&nbsp;		TitledPane paneEntry = new TitledPane(name, paneEntryMain);</b>
+<b class="nc"><i>155</i>&nbsp;		paneEntry.setExpanded(false);</b>
+<b class="nc"><i>156</i>&nbsp;		paneEntry.setBorder(null);</b>
+<i>157</i>&nbsp;		// Remove borders
+<b class="nc"><i>158</i>&nbsp;		paneEntry.getStylesheets().add(ShowInstalledExtensionsCommand.class.getClassLoader().getResource(&quot;css/titled_plain.css&quot;).toExternalForm());</b>
+<i>159</i>&nbsp;
+<i>160</i>&nbsp;		
+<i>161</i>&nbsp;//		Tooltip tooltip = new Tooltip(entry.getPathToJar());
+<b class="nc"><i>162</i>&nbsp;		paneEntry.setTooltip(new Tooltip(entry.getDescription()));</b>
+<i>163</i>&nbsp;//		textArea.setTooltip(tooltip);
+<b class="nc"><i>164</i>&nbsp;		textArea.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>165</i>&nbsp;		paneEntry.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>166</i>&nbsp;		GridPane.setHgrow(paneEntry, Priority.ALWAYS);</b>
+<b class="nc"><i>167</i>&nbsp;		GridPane.setFillWidth(paneEntry, Boolean.TRUE);</b>
+<i>168</i>&nbsp;		
+<b class="nc"><i>169</i>&nbsp;		pane.add(paneEntry, 1, row);</b>
+<i>170</i>&nbsp;	}
+<i>171</i>&nbsp;	
+<i>172</i>&nbsp;	
+<i>173</i>&nbsp;	
+<i>174</i>&nbsp;	private static class QuPathExtensionEntry {
+<i>175</i>&nbsp;		
+<i>176</i>&nbsp;		private Object extension;
+<i>177</i>&nbsp;		
+<b class="nc"><i>178</i>&nbsp;		QuPathExtensionEntry(final Object extension) {</b>
+<b class="nc"><i>179</i>&nbsp;			this.extension = extension;</b>
+<i>180</i>&nbsp;		}
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;		/**
+<i>183</i>&nbsp;		 * Request the extension name.
+<i>184</i>&nbsp;		 * 
+<i>185</i>&nbsp;		 * @return
+<i>186</i>&nbsp;		 */
+<i>187</i>&nbsp;		public String getName() {
+<b class="nc"><i>188</i>&nbsp;			if (extension instanceof QuPathExtension)</b>
+<b class="nc"><i>189</i>&nbsp;				return ((QuPathExtension) extension).getName();</b>
+<b class="nc"><i>190</i>&nbsp;			else if (extension instanceof ImageServerBuilder&lt;?&gt;)</b>
+<b class="nc"><i>191</i>&nbsp;				return ((ImageServerBuilder&lt;?&gt;) extension).getName();</b>
+<b class="nc"><i>192</i>&nbsp;			return null;</b>
+<i>193</i>&nbsp;		}
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;		/**
+<i>196</i>&nbsp;		 * Request the extension description.
+<i>197</i>&nbsp;		 * 
+<i>198</i>&nbsp;		 * @return
+<i>199</i>&nbsp;		 */
+<i>200</i>&nbsp;		public String getDescription() {
+<b class="nc"><i>201</i>&nbsp;			if (extension instanceof QuPathExtension)</b>
+<b class="nc"><i>202</i>&nbsp;				return ((QuPathExtension) extension).getDescription();</b>
+<b class="nc"><i>203</i>&nbsp;			else if (extension instanceof ImageServerBuilder&lt;?&gt;)</b>
+<b class="nc"><i>204</i>&nbsp;				return ((ImageServerBuilder&lt;?&gt;) extension).getDescription();</b>
+<b class="nc"><i>205</i>&nbsp;			return null;</b>
+<i>206</i>&nbsp;		}
+<i>207</i>&nbsp;		
+<i>208</i>&nbsp;		URL getURL() {
+<b class="nc"><i>209</i>&nbsp;			return extension.getClass().getProtectionDomain().getCodeSource().getLocation();</b>
+<i>210</i>&nbsp;		}
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;		String getPathToJar() {
+<b class="nc"><i>213</i>&nbsp;			return getURL().getPath();</b>
+<i>214</i>&nbsp;		}
+<i>215</i>&nbsp;		
+<i>216</i>&nbsp;		/**
+<i>217</i>&nbsp;		 * Request the Implementation-Version for the jar containing the extension.
+<i>218</i>&nbsp;		 * &lt;p&gt;
+<i>219</i>&nbsp;		 * This tries in the first instance to locate it from a jar file directly.
+<i>220</i>&nbsp;		 * &lt;p&gt;
+<i>221</i>&nbsp;		 * If this fails, it falls back to requesting the value from the class package. 
+<i>222</i>&nbsp;		 * This was previously the only behavior (&amp;lt; 0.1.2), but it resulted in 
+<i>223</i>&nbsp;		 * returning the wrong version number if the package was the same as one within
+<i>224</i>&nbsp;		 * another jar.
+<i>225</i>&nbsp;		 * 
+<i>226</i>&nbsp;		 * @return the String for the Implementation-Version, or null if no version could be found.
+<i>227</i>&nbsp;		 */
+<i>228</i>&nbsp;		public String getVersion() {
+<b class="nc"><i>229</i>&nbsp;			URL url =  getURL();</b>
+<b class="nc"><i>230</i>&nbsp;			if (url.toString().endsWith(&quot;.jar&quot;)) {</b>
+<b class="nc"><i>231</i>&nbsp;				try (JarInputStream stream = new JarInputStream(url.openStream())) {</b>
+<b class="nc"><i>232</i>&nbsp;					if (stream != null) {</b>
+<b class="nc"><i>233</i>&nbsp;						  Manifest manifest = stream.getManifest();</b>
+<b class="nc"><i>234</i>&nbsp;						  Attributes mainAttributes = manifest.getMainAttributes();</b>
+<b class="nc"><i>235</i>&nbsp;						  return mainAttributes.getValue(&quot;Implementation-Version&quot;);						</b>
+<i>236</i>&nbsp;					}
+<b class="nc"><i>237</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>238</i>&nbsp;					logger.debug(&quot;Exception attempting to open manifest for {}: {}&quot;, extension, e.getLocalizedMessage());</b>
+<b class="nc"><i>239</i>&nbsp;				}					</b>
+<i>240</i>&nbsp;			}
+<b class="nc"><i>241</i>&nbsp;			return extension.getClass().getPackage() == null ? null : extension.getClass().getPackage().getImplementationVersion();</b>
+<i>242</i>&nbsp;		}
+<i>243</i>&nbsp;		
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

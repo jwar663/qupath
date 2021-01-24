@@ -1,0 +1,215 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObjectConnections</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObjectConnections (qupath.lib.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObjectConnections</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Externalizable;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.ObjectInput;
+<i>29</i>&nbsp;import java.io.ObjectOutput;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Collections;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * Data structure for storing multiple PathObjectConnectionGroups.
+<i>39</i>&nbsp; * 
+<i>40</i>&nbsp; * @author Pete Bankhead
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; */
+<i>43</i>&nbsp;public class PathObjectConnections implements Externalizable {
+<i>44</i>&nbsp;	
+<i>45</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>46</i>&nbsp;	
+<b class="nc"><i>47</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(PathObjectConnections.class);</b>
+<i>48</i>&nbsp;	
+<b class="nc"><i>49</i>&nbsp;	private List&lt;PathObjectConnectionGroup&gt; connections = new ArrayList&lt;&gt;();</b>
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;	 * Default constructor.
+<i>53</i>&nbsp;	 */
+<i>54</i>&nbsp;	public PathObjectConnections() {}
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	/**
+<i>57</i>&nbsp;	 * Get all the connections to a specified PathObject.
+<i>58</i>&nbsp;	 * &lt;p&gt;
+<i>59</i>&nbsp;	 * This will iterate through all the groups and return the connections from the first group 
+<i>60</i>&nbsp;	 * containing this object.
+<i>61</i>&nbsp;	 * &lt;p&gt;
+<i>62</i>&nbsp;	 * If the object may be contained in multiple groups, then the groups will need to be requested 
+<i>63</i>&nbsp;	 * instead with getConnectionGroups(), and searched elsewhere.
+<i>64</i>&nbsp;	 * 
+<i>65</i>&nbsp;	 * @param pathObject
+<i>66</i>&nbsp;	 * @return
+<i>67</i>&nbsp;	 */
+<i>68</i>&nbsp;	public List&lt;PathObject&gt; getConnections(final PathObject pathObject) {
+<b class="nc"><i>69</i>&nbsp;		for (PathObjectConnectionGroup group : connections) {</b>
+<b class="nc"><i>70</i>&nbsp;			if (group.containsObject(pathObject))</b>
+<b class="nc"><i>71</i>&nbsp;				return group.getConnectedObjects(pathObject);</b>
+<b class="nc"><i>72</i>&nbsp;		}</b>
+<b class="nc"><i>73</i>&nbsp;		return Collections.emptyList();</b>
+<i>74</i>&nbsp;	}
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Get an unmodifiable list containing all connections groups.
+<i>78</i>&nbsp;	 * @return
+<i>79</i>&nbsp;	 */
+<i>80</i>&nbsp;	public List&lt;PathObjectConnectionGroup&gt; getConnectionGroups() {
+<b class="nc"><i>81</i>&nbsp;		return Collections.unmodifiableList(connections);</b>
+<i>82</i>&nbsp;	}
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	/**
+<i>85</i>&nbsp;	 * Add a new connections group.
+<i>86</i>&nbsp;	 * @param group
+<i>87</i>&nbsp;	 */
+<i>88</i>&nbsp;	public void addGroup(final PathObjectConnectionGroup group) {
+<b class="nc"><i>89</i>&nbsp;		connections.add(group);</b>
+<i>90</i>&nbsp;	}
+<i>91</i>&nbsp;
+<i>92</i>&nbsp;	/**
+<i>93</i>&nbsp;	 * Remove a connections group.
+<i>94</i>&nbsp;	 * @param group
+<i>95</i>&nbsp;	 * @return
+<i>96</i>&nbsp;	 */
+<i>97</i>&nbsp;	public boolean removeGroup(final PathObjectConnectionGroup group) {
+<b class="nc"><i>98</i>&nbsp;		return connections.remove(group);</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Returns true if the group is empty.
+<i>103</i>&nbsp;	 * @return
+<i>104</i>&nbsp;	 */
+<i>105</i>&nbsp;	public boolean isEmpty() {
+<b class="nc"><i>106</i>&nbsp;		return connections.isEmpty();</b>
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	/**
+<i>110</i>&nbsp;	 * Clear all existing connections.
+<i>111</i>&nbsp;	 */
+<i>112</i>&nbsp;	public void clear() {
+<b class="nc"><i>113</i>&nbsp;		connections.clear();</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;	@Override
+<i>117</i>&nbsp;	public void writeExternal(ObjectOutput out) throws IOException {
+<b class="nc"><i>118</i>&nbsp;		out.writeLong(1);</b>
+<b class="nc"><i>119</i>&nbsp;		out.writeObject(connections);</b>
+<i>120</i>&nbsp;	}
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;	@Override
+<i>123</i>&nbsp;	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+<b class="nc"><i>124</i>&nbsp;		long version = in.readLong();</b>
+<b class="nc"><i>125</i>&nbsp;		if (version != 1) {</b>
+<b class="nc"><i>126</i>&nbsp;			logger.warn(&quot;Unexpected {} version number {}&quot;, PathObjectConnections.class, version);</b>
+<i>127</i>&nbsp;		}
+<b class="nc"><i>128</i>&nbsp;		List&lt;PathObjectConnectionGroup&gt; list = (List&lt;PathObjectConnectionGroup&gt;)in.readObject();</b>
+<b class="nc"><i>129</i>&nbsp;		connections.addAll(list);</b>
+<i>130</i>&nbsp;	}
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

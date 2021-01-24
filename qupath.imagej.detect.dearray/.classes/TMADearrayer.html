@@ -1,0 +1,770 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TMADearrayer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.dearray</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TMADearrayer (qupath.imagej.detect.dearray)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TMADearrayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 249)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TMADearrayer$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TMADearrayer$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">TMADearrayer$TMAGridShape</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 21)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 257)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.dearray;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Polygon;
+<i>27</i>&nbsp;import java.awt.Point;
+<i>28</i>&nbsp;import java.awt.Rectangle;
+<i>29</i>&nbsp;import java.util.ArrayList;
+<i>30</i>&nbsp;import java.util.Arrays;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.Comparator;
+<i>34</i>&nbsp;import java.util.Iterator;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import ij.IJ;
+<i>38</i>&nbsp;import ij.ImagePlus;
+<i>39</i>&nbsp;import ij.gui.OvalRoi;
+<i>40</i>&nbsp;import ij.gui.PolygonRoi;
+<i>41</i>&nbsp;import ij.gui.ProfilePlot;
+<i>42</i>&nbsp;import ij.gui.Roi;
+<i>43</i>&nbsp;import ij.gui.Wand;
+<i>44</i>&nbsp;import ij.measure.Measurements;
+<i>45</i>&nbsp;import ij.measure.ResultsTable;
+<i>46</i>&nbsp;import ij.plugin.RoiScaler;
+<i>47</i>&nbsp;import ij.plugin.filter.EDM;
+<i>48</i>&nbsp;import ij.plugin.filter.MaximumFinder;
+<i>49</i>&nbsp;import ij.plugin.filter.ParticleAnalyzer;
+<i>50</i>&nbsp;import ij.plugin.filter.RankFilters;
+<i>51</i>&nbsp;import ij.process.AutoThresholder;
+<i>52</i>&nbsp;import ij.process.Blitter;
+<i>53</i>&nbsp;import ij.process.ByteProcessor;
+<i>54</i>&nbsp;import ij.process.ColorProcessor;
+<i>55</i>&nbsp;import ij.process.FloatProcessor;
+<i>56</i>&nbsp;import ij.process.ImageProcessor;
+<i>57</i>&nbsp;import qupath.imagej.processing.RoiLabeling;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;/**
+<i>61</i>&nbsp; * Static methods used by the TMA dearrayer plugin.
+<i>62</i>&nbsp; * 
+<i>63</i>&nbsp; * @author Pete Bankhead
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; */
+<b class="nc"><i>66</i>&nbsp;public class TMADearrayer {</b>
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	static double[] computeDensities(ByteProcessor bp, Polygon polyGrid, double coreDiameterPx) {
+<b class="nc"><i>70</i>&nbsp;		RankFilters rf = new RankFilters();</b>
+<b class="nc"><i>71</i>&nbsp;		FloatProcessor fp = bp.convertToFloatProcessor();</b>
+<b class="nc"><i>72</i>&nbsp;		fp.max(1.0);</b>
+<b class="nc"><i>73</i>&nbsp;		rf.rank(fp, coreDiameterPx*0.5, RankFilters.MEAN);</b>
+<b class="nc"><i>74</i>&nbsp;		double[] densities = new double[polyGrid.npoints];</b>
+<b class="nc"><i>75</i>&nbsp;		for (int i = 0; i &lt; densities.length; i++) {</b>
+<b class="nc"><i>76</i>&nbsp;			int x = polyGrid.xpoints[i];</b>
+<b class="nc"><i>77</i>&nbsp;			int y = polyGrid.ypoints[i];</b>
+<b class="nc"><i>78</i>&nbsp;			if (x &gt;= 0 &amp;&amp; y &gt;= 0 &amp;&amp; x &lt; bp.getWidth() &amp;&amp; y &lt; bp.getHeight())</b>
+<b class="nc"><i>79</i>&nbsp;				densities[i] = fp.getf(x, y);</b>
+<i>80</i>&nbsp;		}
+<b class="nc"><i>81</i>&nbsp;		return densities;</b>
+<i>82</i>&nbsp;	}
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	/**
+<i>86</i>&nbsp;	 * Detect TMA cores from a (low-resolution) whole slide image that has been thresholded to give a binary image.
+<i>87</i>&nbsp;	 * Cores should be circular and arranged in a grid pattern, although this may be (slightly) rotated
+<i>88</i>&nbsp;	 * and some cores may be missing (but at least a few should be present in all rows / columns of the grid).
+<i>89</i>&nbsp;	 * 
+<i>90</i>&nbsp;	 * @param bp - the TMA slide image, after thresholding.
+<i>91</i>&nbsp;	 * @param coreDiameterPx - approximate diameter of a single TMA core, in pixels
+<i>92</i>&nbsp;	 * @param nHorizontal - number of cores per row of the full grid
+<i>93</i>&nbsp;	 * @param nVertical - number of cores per column of the full grid
+<i>94</i>&nbsp;	 * @param roi - optional region of interest determining where cores should be found (may be useful if edge artifacts are problematic)
+<i>95</i>&nbsp;	 * @return Polygon in which points are arranged in order, row-by-row, starting from the top-left corner of the grid.
+<i>96</i>&nbsp;	 */
+<i>97</i>&nbsp;	public static TMAGridShape detectTMACoresFromBinary(ByteProcessor bp, double coreDiameterPx, int nHorizontal, int nVertical, Roi roi) {
+<b class="nc"><i>98</i>&nbsp;		return detectTMACoresFromBinary(null, bp, coreDiameterPx, nHorizontal, nVertical, roi);</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	private static TMAGridShape detectTMACoresFromBinary(FloatProcessor fpOrig, ByteProcessor bp, double coreDiameterPx, int nHorizontal, int nVertical, Roi roi) {
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;		// Identify regions with areas close to the specified core area &amp; high circularity
+<i>105</i>&nbsp;		// (Making sure we have a ByteProcessor.... we probably do, in which case there should be no duplication)
+<b class="nc"><i>106</i>&nbsp;		Polygon polyDetected = new Polygon();</b>
+<b class="nc"><i>107</i>&nbsp;		ImageProcessor ipGood = identifyGoodCores(bp, coreDiameterPx, false, polyDetected);</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;		// Identify potential adjacent pairs, either to the right or below.
+<i>110</i>&nbsp;		// Use median of angles to estimate overall slide rotation (correcting for right/below differences)
+<b class="nc"><i>111</i>&nbsp;		double angle = estimateRotation(polyDetected, coreDiameterPx);</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;		// Rotate the binary image &amp; use profiles to identify the most likely grid layout.
+<i>114</i>&nbsp;		// Use Gaussian filter + sum trick, normalizing so the max sum should be == number of rows
+<b class="nc"><i>115</i>&nbsp;		bp = (ByteProcessor)bp.duplicate();</b>
+<b class="nc"><i>116</i>&nbsp;		if (!Double.isNaN(angle)) {</b>
+<i>117</i>&nbsp;			// Just in case we used labels, make sure we have clipped pixels to the same max intensity
+<b class="nc"><i>118</i>&nbsp;			ipGood.setBackgroundValue(0);</b>
+<b class="nc"><i>119</i>&nbsp;			ipGood.max(1);</b>
+<b class="nc"><i>120</i>&nbsp;			ipGood.rotate(-angle);</b>
+<b class="nc"><i>121</i>&nbsp;			bp.setBackgroundValue(0);</b>
+<b class="nc"><i>122</i>&nbsp;			bp.rotate(-angle);</b>
+<i>123</i>&nbsp;//			new ImagePlus(&quot;Good&quot;, ipGood.duplicate()).show();
+<i>124</i>&nbsp;		}
+<i>125</i>&nbsp;
+<i>126</i>&nbsp;		// Identify the top peaks in rows and columns to get grid pattern
+<b class="nc"><i>127</i>&nbsp;		ByteProcessor bpGood = (ByteProcessor)ipGood.convertToByte(false);</b>
+<b class="nc"><i>128</i>&nbsp;		int[] xLocs = new int[nHorizontal];</b>
+<b class="nc"><i>129</i>&nbsp;		int[] yLocs = new int[nVertical];</b>
+<b class="nc"><i>130</i>&nbsp;		int nHorizontalDetected = estimateGrid(bpGood, xLocs, (int)coreDiameterPx, false);</b>
+<b class="nc"><i>131</i>&nbsp;		if (nHorizontalDetected &lt;= 0)</b>
+<b class="nc"><i>132</i>&nbsp;			return null;</b>
+<b class="nc"><i>133</i>&nbsp;		int nVerticalDetected = estimateGrid(bpGood, yLocs, (int)coreDiameterPx, true); </b>
+<b class="nc"><i>134</i>&nbsp;		if (nVerticalDetected &lt;= 0)</b>
+<b class="nc"><i>135</i>&nbsp;			return null;</b>
+<b class="nc"><i>136</i>&nbsp;		if (nHorizontalDetected &lt; nHorizontal || nVerticalDetected &lt; nVertical) {</b>
+<b class="nc"><i>137</i>&nbsp;			IJ.log(&quot;Ensure the grid labels are correct - I can detect at most &quot; + nVerticalDetected + &quot; rows and &quot; + nHorizontalDetected + &quot; columns with the current settings (&quot; + nVertical + &quot; and &quot; + nHorizontal + &quot; requested).&quot;);</b>
+<i>138</i>&nbsp;//			return null;
+<i>139</i>&nbsp;		}
+<b class="nc"><i>140</i>&nbsp;		Polygon polyGrid = new Polygon();</b>
+<b class="nc"><i>141</i>&nbsp;		for (int j = 0; j &lt; nVerticalDetected; j++) {</b>
+<b class="nc"><i>142</i>&nbsp;			int y = yLocs[j];</b>
+<b class="nc"><i>143</i>&nbsp;			for (int i = 0; i &lt; nHorizontalDetected; i++) {</b>
+<b class="nc"><i>144</i>&nbsp;				int x = xLocs[i];</b>
+<b class="nc"><i>145</i>&nbsp;				polyGrid.addPoint(x, y);</b>
+<i>146</i>&nbsp;//				IJ.log(new Point(x, y).toString());
+<i>147</i>&nbsp;			}
+<i>148</i>&nbsp;		}
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		// Improve grid coordinates
+<i>151</i>&nbsp;//		refineGridCoordinates(bp, polyGrid, coreDiameterPx);
+<i>152</i>&nbsp;//		IJHelpers.quickShowImage(&quot;Binary&quot;, bp);
+<b class="nc"><i>153</i>&nbsp;		refineGridCoordinatesByShifting(bp, polyGrid, nHorizontalDetected, coreDiameterPx);</b>
+<i>154</i>&nbsp;		
+<b class="nc"><i>155</i>&nbsp;		if (!Double.isNaN(angle) &amp;&amp; angle != 0) {</b>
+<i>156</i>&nbsp;			// Rotate according to the angle computed previously
+<i>157</i>&nbsp;			// (Note this code is largely based on ImageJ&#39;s standard RoiRotator plugin)
+<b class="nc"><i>158</i>&nbsp;			double xcenter = bpGood.getWidth() / 2;</b>
+<b class="nc"><i>159</i>&nbsp;			double ycenter = bpGood.getHeight() / 2;</b>
+<b class="nc"><i>160</i>&nbsp;			double theta = -angle*Math.PI/180.0;</b>
+<b class="nc"><i>161</i>&nbsp;			for (int i = 0; i &lt; polyGrid.npoints; i++) {</b>
+<b class="nc"><i>162</i>&nbsp;				double dx = polyGrid.xpoints[i]-xcenter;</b>
+<b class="nc"><i>163</i>&nbsp;				double dy = ycenter-polyGrid.ypoints[i];</b>
+<b class="nc"><i>164</i>&nbsp;				double radius = Math.sqrt(dx*dx+dy*dy);</b>
+<b class="nc"><i>165</i>&nbsp;				double a = Math.atan2(dy, dx);</b>
+<b class="nc"><i>166</i>&nbsp;				double xNew = (xcenter + radius*Math.cos(a+theta));</b>
+<b class="nc"><i>167</i>&nbsp;				double yNew = (ycenter - radius*Math.sin(a+theta));</b>
+<b class="nc"><i>168</i>&nbsp;				polyGrid.xpoints[i] = (int)(xNew + 0.5);</b>
+<b class="nc"><i>169</i>&nbsp;				polyGrid.ypoints[i] = (int)(yNew + 0.5);</b>
+<i>170</i>&nbsp;			}
+<i>171</i>&nbsp;		}
+<i>172</i>&nbsp;		
+<b class="nc"><i>173</i>&nbsp;		return new TMAGridShape(polyGrid, nVerticalDetected, nHorizontalDetected);</b>
+<i>174</i>&nbsp;	}
+<i>175</i>&nbsp;	
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;	
+<i>178</i>&nbsp;	
+<i>179</i>&nbsp;	static class TMAGridShape {
+<i>180</i>&nbsp;		
+<i>181</i>&nbsp;		final public int nVertical;
+<i>182</i>&nbsp;		final public int nHorizontal;
+<i>183</i>&nbsp;		final public Polygon polyGrid;
+<i>184</i>&nbsp;		
+<b class="nc"><i>185</i>&nbsp;		private TMAGridShape(final Polygon polyGrid, final int nVertical, final int nHorizontal) {</b>
+<b class="nc"><i>186</i>&nbsp;			this.polyGrid = polyGrid;</b>
+<b class="nc"><i>187</i>&nbsp;			this.nVertical = nVertical;</b>
+<b class="nc"><i>188</i>&nbsp;			this.nHorizontal = nHorizontal;</b>
+<i>189</i>&nbsp;		}
+<i>190</i>&nbsp;		
+<i>191</i>&nbsp;	}
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;	
+<i>197</i>&nbsp;	/**
+<i>198</i>&nbsp;	 * Identify regions in a binary image likely to correspond to complete TMA cores,
+<i>199</i>&nbsp;	 * based both on size and circularity.
+<i>200</i>&nbsp;	 * @param bp - The binary image to process; 0 should be background, 255 foreground
+<i>201</i>&nbsp;	 * @param coreDiameterPx - Typical core diameter, in pixels
+<i>202</i>&nbsp;	 * @param labelCores - TRUE if the output should be a labelled image (unique integer value per core), otherwise a binary image will be returned
+<i>203</i>&nbsp;	 * @param polyCentroids - A Polygon to which the centroids of the detected regions will be added (if not null).
+<i>204</i>&nbsp;	 * @return Binary or labelled image showing containing only the regions of bp with shapes &amp; sizes corresponding to likely complete TMA cores.
+<i>205</i>&nbsp;	 */
+<i>206</i>&nbsp;	private static ImageProcessor identifyGoodCores(ByteProcessor bp, double coreDiameterPx, boolean labelCores, Polygon polyCentroids) {
+<b class="nc"><i>207</i>&nbsp;		double estimatedArea = Math.PI * (coreDiameterPx * coreDiameterPx) * 0.25;</b>
+<b class="nc"><i>208</i>&nbsp;		double minArea = estimatedArea * 0.5;</b>
+<b class="nc"><i>209</i>&nbsp;		double maxArea = estimatedArea * 2.0;</b>
+<b class="nc"><i>210</i>&nbsp;		return identifyGoodCores(bp, minArea, maxArea, 0.8, labelCores, polyCentroids);</b>
+<i>211</i>&nbsp;	}
+<i>212</i>&nbsp;	
+<i>213</i>&nbsp;	
+<i>214</i>&nbsp;	/**
+<i>215</i>&nbsp;	 * Identify regions in a binary image likely to correspond to complete TMA cores,
+<i>216</i>&nbsp;	 * based both on size and circularity.
+<i>217</i>&nbsp;	 * @param bp - The binary image to process; 0 should be background, 255 foreground
+<i>218</i>&nbsp;	 * @param minArea - Minimum area of a region to keep (in pixels)
+<i>219</i>&nbsp;	 * @param maxArea - Maximum area of a region to keep (in pixels)
+<i>220</i>&nbsp;	 * @param minCircularity - Minimum circularity of a region to keep.
+<i>221</i>&nbsp;	 * @param labelCores - TRUE if the output should be a labelled image (unique integer value per core), otherwise a binary image will be returned
+<i>222</i>&nbsp;	 * @param polyCentroids - A Polygon to which the centroids of the detected regions will be added (if not null).
+<i>223</i>&nbsp;	 * @return Binary or labelled image showing containing only the regions of bp with shapes &amp; sizes corresponding to likely complete TMA cores.
+<i>224</i>&nbsp;	 */	
+<i>225</i>&nbsp;	private static ImageProcessor identifyGoodCores(ByteProcessor bp, double minArea, double maxArea, double minCircularity, boolean labelCores, Polygon polyCentroids) {
+<i>226</i>&nbsp;		// Create a binary image of only the roundest structures of approximately the correct area
+<b class="nc"><i>227</i>&nbsp;		bp.setThreshold(127, 512, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>228</i>&nbsp;		int options = labelCores ? ParticleAnalyzer.SHOW_ROI_MASKS : ParticleAnalyzer.SHOW_MASKS;</b>
+<b class="nc"><i>229</i>&nbsp;		int measurements = Measurements.CENTROID;</b>
+<b class="nc"><i>230</i>&nbsp;		ResultsTable rt = new ResultsTable();</b>
+<b class="nc"><i>231</i>&nbsp;		ParticleAnalyzer pa = new ParticleAnalyzer(options, measurements, rt, minArea, maxArea, minCircularity, 1.0);</b>
+<b class="nc"><i>232</i>&nbsp;		pa.setHideOutputImage(true);</b>
+<b class="nc"><i>233</i>&nbsp;		pa.analyze(new ImagePlus(&quot;Temp&quot;, bp), bp);</b>
+<b class="nc"><i>234</i>&nbsp;		if (polyCentroids != null) {</b>
+<b class="nc"><i>235</i>&nbsp;			for (int i = 0; i &lt; rt.getCounter(); i++) {</b>
+<b class="nc"><i>236</i>&nbsp;				int x = (int)(rt.getValueAsDouble(ResultsTable.X_CENTROID, i) + .5);</b>
+<b class="nc"><i>237</i>&nbsp;				int y = (int)(rt.getValueAsDouble(ResultsTable.Y_CENTROID, i) + .5);</b>
+<b class="nc"><i>238</i>&nbsp;				polyCentroids.addPoint(x, y);</b>
+<i>239</i>&nbsp;			}
+<i>240</i>&nbsp;		}
+<b class="nc"><i>241</i>&nbsp;		return pa.getOutputImage().getProcessor();</b>
+<i>242</i>&nbsp;	}
+<i>243</i>&nbsp;	
+<i>244</i>&nbsp;	/**
+<i>245</i>&nbsp;	 * Make a binary image depicting (hopefully) the TMA cores.
+<i>246</i>&nbsp;	 * The diameter of each core, in pixels, is used to determine filter sizes:
+<i>247</i>&nbsp;	 * 	- for background estimation (morphological opening)
+<i>248</i>&nbsp;	 * 	- for morphological cleaning of the thresholded image
+<i>249</i>&nbsp;	 * The threshold itself is computed using the triangle method.
+<i>250</i>&nbsp;	 * @param ip - the TMA slide image - this should show cores as dark-on-light (or in colour).
+<i>251</i>&nbsp;	 * 				Fluorescence images may be inverted beforehand.
+<i>252</i>&nbsp;	 * @param coreDiameterPx - typical diameter of a TMA core, given in pixels
+<i>253</i>&nbsp;	 * @param roi - optionally null; everything outside the ROI will be set to zero.
+<i>254</i>&nbsp;	 * @param isFluorescence - true if this is a fluorescence image, false if it is brightfield.
+<i>255</i>&nbsp;	 * @return ByteProcessor with detected regions having values 255, background having the value 0
+<i>256</i>&nbsp;	 */
+<i>257</i>&nbsp;	public static ByteProcessor makeBinaryImage(ImageProcessor ip, double coreDiameterPx, Roi roi, boolean isFluorescence) {
+<i>258</i>&nbsp;		// Ensure we have a grayscale duplicate of the image
+<b class="nc"><i>259</i>&nbsp;		if (ip instanceof ColorProcessor)</b>
+<b class="nc"><i>260</i>&nbsp;			ip = ip.convertToByte(false);</b>
+<i>261</i>&nbsp;		else
+<b class="nc"><i>262</i>&nbsp;			ip = ip.duplicate();</b>
+<b class="nc"><i>263</i>&nbsp;		ip.resetRoi();</b>
+<i>264</i>&nbsp;		
+<i>265</i>&nbsp;		// Apply small median filter (helps remove JPEG artifacts)
+<b class="nc"><i>266</i>&nbsp;		RankFilters rf = new RankFilters();</b>
+<b class="nc"><i>267</i>&nbsp;		rf.rank(ip, 1.0, RankFilters.MEDIAN);</b>
+<i>268</i>&nbsp;		
+<i>269</i>&nbsp;		// If this is a brightfield image, invert it
+<b class="nc"><i>270</i>&nbsp;		if (!isFluorescence)</b>
+<b class="nc"><i>271</i>&nbsp;			ip.invert();</b>
+<i>272</i>&nbsp;
+<i>273</i>&nbsp;//		// Subtract from a morphological-opened image, with the filter size slightly bigger than the core size
+<i>274</i>&nbsp;//		double filterRadius = coreDiameterPx * 0.6;
+<i>275</i>&nbsp;//		ImageProcessor ip2 = ip.duplicate();
+<i>276</i>&nbsp;//		System.err.println(&quot;Starting&quot;);
+<i>277</i>&nbsp;//		long start = System.currentTimeMillis();
+<i>278</i>&nbsp;//		rf.rank(ip2, filterRadius, RankFilters.MIN);
+<i>279</i>&nbsp;//		rf.rank(ip2, filterRadius, RankFilters.MAX);
+<i>280</i>&nbsp;//		long end = System.currentTimeMillis();
+<i>281</i>&nbsp;//		System.err.println(&quot;Duration: &quot; + (end - start));
+<i>282</i>&nbsp;//		ip.copyBits(ip2, 0, 0, Blitter.SUBTRACT);
+<i>283</i>&nbsp;		
+<i>284</i>&nbsp;		// Subtract from a morphological-opened image, with the filter size slightly bigger than the core size
+<i>285</i>&nbsp;		// Update 15/10/2016 - Because the filter size is likely to be very large (maybe radius 40-50 pixels?), downsample first for performance
+<b class="nc"><i>286</i>&nbsp;		double filterRadius = coreDiameterPx * 0.6;</b>
+<b class="nc"><i>287</i>&nbsp;		ImageProcessor ip2 = ip.duplicate();</b>
+<b class="nc"><i>288</i>&nbsp;		double downsample = Math.round(filterRadius / 10);</b>
+<b class="nc"><i>289</i>&nbsp;		if (downsample &gt; 1) {</b>
+<b class="nc"><i>290</i>&nbsp;			ip2 = ip.resize((int)(ip.getWidth() / downsample + 0.5), (int)(ip.getHeight() / downsample + 0.5), true);</b>
+<i>291</i>&nbsp;//			long start = System.currentTimeMillis();
+<b class="nc"><i>292</i>&nbsp;			rf.rank(ip2, filterRadius/downsample, RankFilters.MIN);</b>
+<b class="nc"><i>293</i>&nbsp;			rf.rank(ip2, filterRadius/downsample, RankFilters.MAX);</b>
+<b class="nc"><i>294</i>&nbsp;			ip2 = ip2.resize(ip.getWidth(), ip.getHeight());</b>
+<i>295</i>&nbsp;//			long end = System.currentTimeMillis();
+<i>296</i>&nbsp;//			System.err.println(&quot;Duration: &quot; + (end - start));
+<i>297</i>&nbsp;		}
+<b class="nc"><i>298</i>&nbsp;		ip.copyBits(ip2, 0, 0, Blitter.SUBTRACT);</b>
+<i>299</i>&nbsp;		
+<i>300</i>&nbsp;		// Smooth slightly
+<b class="nc"><i>301</i>&nbsp;		ip.smooth();</b>
+<i>302</i>&nbsp;		
+<i>303</i>&nbsp;		// Estimate a threshold using the triangle method
+<b class="nc"><i>304</i>&nbsp;		ip.setAutoThreshold(AutoThresholder.Method.Triangle, true);</b>
+<i>305</i>&nbsp;		
+<i>306</i>&nbsp;		// Apply the threshold
+<b class="nc"><i>307</i>&nbsp;		ByteProcessor bp = new ByteProcessor(ip.getWidth(), ip.getHeight());</b>
+<b class="nc"><i>308</i>&nbsp;		byte[] bpPixels = (byte[])bp.getPixels();</b>
+<b class="nc"><i>309</i>&nbsp;		double threshold = ip.getMinThreshold();</b>
+<b class="nc"><i>310</i>&nbsp;		for (int i = 0; i &lt; bpPixels.length; i++)</b>
+<b class="nc"><i>311</i>&nbsp;			bpPixels[i] = (ip.getf(i) &gt; threshold) ? (byte)255 : 0;</b>
+<i>312</i>&nbsp;		
+<i>313</i>&nbsp;		// Apply (gentle) morphological cleaning
+<b class="nc"><i>314</i>&nbsp;		filterRadius = Math.max(1.0, coreDiameterPx * 0.02);</b>
+<b class="nc"><i>315</i>&nbsp;		rf.rank(bp, filterRadius, RankFilters.MAX);</b>
+<b class="nc"><i>316</i>&nbsp;		rf.rank(bp, filterRadius, RankFilters.MIN);</b>
+<b class="nc"><i>317</i>&nbsp;		rf.rank(bp, filterRadius, RankFilters.MIN);</b>
+<b class="nc"><i>318</i>&nbsp;		rf.rank(bp, filterRadius, RankFilters.MAX);</b>
+<i>319</i>&nbsp;		
+<i>320</i>&nbsp;		// Fill holes
+<b class="nc"><i>321</i>&nbsp;		RoiLabeling.fillHoles(bp);</b>
+<i>322</i>&nbsp;		
+<i>323</i>&nbsp;		// Remove everything outside the ROI
+<b class="nc"><i>324</i>&nbsp;		if (roi != null &amp;&amp; roi.isArea()) {</b>
+<b class="nc"><i>325</i>&nbsp;			ip.setValue(0);</b>
+<b class="nc"><i>326</i>&nbsp;			ip.fillOutside(roi);</b>
+<i>327</i>&nbsp;		}
+<i>328</i>&nbsp;		
+<b class="nc"><i>329</i>&nbsp;		return bp;</b>
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;	
+<i>332</i>&nbsp;	
+<i>333</i>&nbsp;	
+<i>334</i>&nbsp;	private static boolean pointTooCloseX(Collection&lt;Point&gt; points, Point newPoint, double minDistance) {
+<b class="nc"><i>335</i>&nbsp;		for (Point p : points)</b>
+<b class="nc"><i>336</i>&nbsp;			if (Math.abs(p.x - newPoint.x) &lt; minDistance)</b>
+<b class="nc"><i>337</i>&nbsp;				return true;</b>
+<b class="nc"><i>338</i>&nbsp;		return false;</b>
+<i>339</i>&nbsp;	}
+<i>340</i>&nbsp;	
+<i>341</i>&nbsp;	private static List&lt;Point&gt; processTopRowOfPoints(List&lt;Point&gt; sortedPoints, double coreDiameterPx, int nPointsPerRow) {
+<i>342</i>&nbsp;		// Take the first point and add it to the row being processed
+<b class="nc"><i>343</i>&nbsp;		ArrayList&lt;Point&gt; pointRow = new ArrayList&lt;&gt;(nPointsPerRow);</b>
+<b class="nc"><i>344</i>&nbsp;		pointRow.add(sortedPoints.remove(0));</b>
+<i>345</i>&nbsp;		// Continue adding points until we have enough, making sure adequate spacing or at least one core diameter between them
+<b class="nc"><i>346</i>&nbsp;		Iterator&lt;Point&gt; iter = sortedPoints.iterator();</b>
+<b class="nc"><i>347</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>348</i>&nbsp;			Point p = iter.next();</b>
+<i>349</i>&nbsp;			// Any point with an x-coordinate within 1 core diameter is too close - must be from a lower row
+<b class="nc"><i>350</i>&nbsp;			if (!pointTooCloseX(pointRow, p, coreDiameterPx)) {</b>
+<b class="nc"><i>351</i>&nbsp;				iter.remove();</b>
+<b class="nc"><i>352</i>&nbsp;				pointRow.add(p);</b>
+<i>353</i>&nbsp;				// We might have enough points now
+<b class="nc"><i>354</i>&nbsp;				if (pointRow.size() == nPointsPerRow) {</b>
+<b class="nc"><i>355</i>&nbsp;					break;</b>
+<i>356</i>&nbsp;				}
+<i>357</i>&nbsp;			}
+<b class="nc"><i>358</i>&nbsp;		}</b>
+<i>359</i>&nbsp;		// Sort the points by x coordinate
+<b class="nc"><i>360</i>&nbsp;		Collections.sort(pointRow, new Comparator&lt;Point&gt;() {</b>
+<i>361</i>&nbsp;			@Override
+<i>362</i>&nbsp;			public int compare(Point p1, Point p2) {
+<b class="nc"><i>363</i>&nbsp;				return Integer.valueOf(p1.x).compareTo(p2.x);</b>
+<i>364</i>&nbsp;			}
+<i>365</i>&nbsp;		});
+<i>366</i>&nbsp;			
+<b class="nc"><i>367</i>&nbsp;		return pointRow;</b>
+<i>368</i>&nbsp;	}
+<i>369</i>&nbsp;	
+<i>370</i>&nbsp;	
+<i>371</i>&nbsp;	/**
+<i>372</i>&nbsp;	 * Given a polygon representing TMA core centroids in any order, fit this to a coordinate grid.
+<i>373</i>&nbsp;	 * Essentially this amounts to sorting the points starting from the top left,
+<i>374</i>&nbsp;	 * continuing along each row.
+<i>375</i>&nbsp;	 * In practice the process is more complicated (and less certain to be correct...)
+<i>376</i>&nbsp;	 * because coordinates in the same TMA row cannot be trusted to occur with the same image y coordinate,
+<i>377</i>&nbsp;	 * similarly coordinates in the same TMA column can have different x coordinates.
+<i>378</i>&nbsp;	 * @param poly - The original centroid coordinates; this should have exactly nHorizontal * nVertical points.
+<i>379</i>&nbsp;	 * @param coreDiameterPx - Approximate diameter of one TMA core (used to determine potential variability between core centroids)
+<i>380</i>&nbsp;	 * @param nHorizontal - The number of cores in each row
+<i>381</i>&nbsp;	 * @param nVertical - The number of cores in each column
+<i>382</i>&nbsp;	 * @return A polygon of TMA cores, with the order going from top-left, one row at a time.
+<i>383</i>&nbsp;	 * If the input polygon has the wrong number of points, null is returned.
+<i>384</i>&nbsp;	 */
+<i>385</i>&nbsp;	public static Polygon fitCorePolygonToGrid(Polygon poly, double coreDiameterPx, int nHorizontal, int nVertical) {
+<i>386</i>&nbsp;		// Extract the points &amp; check we have the right number
+<b class="nc"><i>387</i>&nbsp;		if (poly.npoints != (nHorizontal * nVertical)) {</b>
+<b class="nc"><i>388</i>&nbsp;			return null;</b>
+<i>389</i>&nbsp;		}
+<i>390</i>&nbsp;		
+<i>391</i>&nbsp;		// Sort the points, top to bottom
+<b class="nc"><i>392</i>&nbsp;		ArrayList&lt;Point&gt; points = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>393</i>&nbsp;		for (int i = 0; i &lt; poly.npoints; i++)</b>
+<b class="nc"><i>394</i>&nbsp;			points.add(new Point(poly.xpoints[i], poly.ypoints[i]));</b>
+<b class="nc"><i>395</i>&nbsp;		Collections.sort(points, new Comparator&lt;Point&gt;() {</b>
+<i>396</i>&nbsp;			@Override
+<i>397</i>&nbsp;			public int compare(Point p1, Point p2) {
+<b class="nc"><i>398</i>&nbsp;				return Integer.valueOf(p1.y).compareTo(p2.y);</b>
+<i>399</i>&nbsp;			}
+<i>400</i>&nbsp;		});
+<i>401</i>&nbsp;		
+<i>402</i>&nbsp;		// Loop through the rows, constructing a polygon with the coords in order
+<b class="nc"><i>403</i>&nbsp;		Polygon poly2 = new Polygon();</b>
+<b class="nc"><i>404</i>&nbsp;		for (int j = 0; j &lt; nVertical; j++) {</b>
+<b class="nc"><i>405</i>&nbsp;			List&lt;Point&gt; pointRow = processTopRowOfPoints(points, coreDiameterPx, nHorizontal);</b>
+<b class="nc"><i>406</i>&nbsp;			for (int i = 0; i &lt; pointRow.size(); i++) {</b>
+<b class="nc"><i>407</i>&nbsp;				Point p = pointRow.get(i);</b>
+<b class="nc"><i>408</i>&nbsp;				poly2.addPoint(p.x, p.y);</b>
+<i>409</i>&nbsp;			}
+<i>410</i>&nbsp;		}
+<b class="nc"><i>411</i>&nbsp;		return poly2;</b>
+<i>412</i>&nbsp;	}
+<i>413</i>&nbsp;	
+<i>414</i>&nbsp;	
+<i>415</i>&nbsp;	
+<i>416</i>&nbsp;	private static double estimateRotation(Polygon poly, double coreDiameterPx) {
+<b class="nc"><i>417</i>&nbsp;		ArrayList&lt;Double&gt; angles = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>418</i>&nbsp;		for (int i = 0; i &lt; poly.npoints; i++) {</b>
+<b class="nc"><i>419</i>&nbsp;			int x = poly.xpoints[i];</b>
+<b class="nc"><i>420</i>&nbsp;			int y = poly.ypoints[i];</b>
+<b class="nc"><i>421</i>&nbsp;			for (int j = 0; j &lt; poly.npoints; j++) {</b>
+<b class="nc"><i>422</i>&nbsp;				int x2 = poly.xpoints[j];</b>
+<b class="nc"><i>423</i>&nbsp;				int y2 = poly.ypoints[j];</b>
+<b class="nc"><i>424</i>&nbsp;				if ((x2 &gt; x) &amp;&amp; (x2 - x) &lt; coreDiameterPx*2 &amp;&amp; Math.abs(y - y2) &lt; coreDiameterPx) {</b>
+<b class="nc"><i>425</i>&nbsp;					double angle = (180.0/Math.PI) * Math.atan2(y2 - y, x2 - x);</b>
+<b class="nc"><i>426</i>&nbsp;					angles.add(angle);</b>
+<i>427</i>&nbsp;				}
+<i>428</i>&nbsp;			}
+<i>429</i>&nbsp;		}
+<i>430</i>&nbsp;		
+<i>431</i>&nbsp;		// If we have no angles, we don&#39;t know the rotation...
+<b class="nc"><i>432</i>&nbsp;		if (angles.isEmpty())</b>
+<b class="nc"><i>433</i>&nbsp;			return Double.NaN;</b>
+<i>434</i>&nbsp;		
+<i>435</i>&nbsp;		// Return the median angle
+<b class="nc"><i>436</i>&nbsp;		Collections.sort(angles);</b>
+<b class="nc"><i>437</i>&nbsp;		if (angles.size() % 2 == 0)</b>
+<b class="nc"><i>438</i>&nbsp;			return 0.5 * (angles.get(angles.size()/2) + angles.get(angles.size()/2-1));</b>
+<i>439</i>&nbsp;		else
+<b class="nc"><i>440</i>&nbsp;			return angles.get(angles.size()/2);			</b>
+<i>441</i>&nbsp;	}
+<i>442</i>&nbsp;	
+<i>443</i>&nbsp;	
+<i>444</i>&nbsp;	
+<i>445</i>&nbsp;	private static boolean checkNewIndSeparated(int inds[], int newInd, int nInds, int minSeparation) {
+<b class="nc"><i>446</i>&nbsp;		for (int i = 0; i &lt; nInds; i++) {</b>
+<b class="nc"><i>447</i>&nbsp;			if (Math.abs(newInd - inds[i]) &lt; minSeparation)</b>
+<b class="nc"><i>448</i>&nbsp;				return false;</b>
+<i>449</i>&nbsp;		}
+<b class="nc"><i>450</i>&nbsp;		return true;</b>
+<i>451</i>&nbsp;	}
+<i>452</i>&nbsp;	
+<i>453</i>&nbsp;	private static int estimateGrid(ByteProcessor bp, int[] locs, int minSeparation, boolean doHorizontal) {
+<b class="nc"><i>454</i>&nbsp;		int nMaxima = locs.length;</b>
+<b class="nc"><i>455</i>&nbsp;		int[] maxima = new int[nMaxima];</b>
+<b class="nc"><i>456</i>&nbsp;		Arrays.fill(maxima, -1);</b>
+<i>457</i>&nbsp;		
+<b class="nc"><i>458</i>&nbsp;		ImagePlus impTemp = new ImagePlus(&quot;Temp&quot;, bp);</b>
+<b class="nc"><i>459</i>&nbsp;		impTemp.setRoi(new Roi(0, 0, bp.getWidth(), bp.getHeight()));</b>
+<b class="nc"><i>460</i>&nbsp;		double[] prof = new ProfilePlot(impTemp, doHorizontal).getProfile();</b>
+<i>461</i>&nbsp;		// Find the top nMaxima peaks with sufficient separation
+<b class="nc"><i>462</i>&nbsp;		double tolerance = 0.0;</b>
+<b class="nc"><i>463</i>&nbsp;		int[] peakLocs = MaximumFinder.findMaxima(prof, tolerance, false);</b>
+<i>464</i>&nbsp;		//int[] peakLocs = new int[nMaxima];
+<i>465</i>&nbsp;//		if (peakLocs.length &lt; nMaxima) {
+<i>466</i>&nbsp;//			Arrays.sort(peakLocs);
+<i>467</i>&nbsp;//			for (int i = 0; i &lt; peakLocs.length; i++)
+<i>468</i>&nbsp;//				locs[i] = peakLocs[i];
+<i>469</i>&nbsp;//			return peakLocs.length;
+<i>470</i>&nbsp;//		}
+<b class="nc"><i>471</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>472</i>&nbsp;		for (int p : peakLocs) {</b>
+<b class="nc"><i>473</i>&nbsp;			if (checkNewIndSeparated(maxima, p, n, minSeparation)) {</b>
+<b class="nc"><i>474</i>&nbsp;				maxima[n] = p;</b>
+<b class="nc"><i>475</i>&nbsp;				n++;</b>
+<b class="nc"><i>476</i>&nbsp;				if (n == nMaxima)</b>
+<b class="nc"><i>477</i>&nbsp;					break;</b>
+<i>478</i>&nbsp;			}
+<i>479</i>&nbsp;		}	
+<i>480</i>&nbsp;		// Sort the maxima in ascending order now
+<b class="nc"><i>481</i>&nbsp;		Arrays.sort(maxima);</b>
+<i>482</i>&nbsp;		// Put in as many maxima as we have
+<b class="nc"><i>483</i>&nbsp;		int counter = 0;</b>
+<b class="nc"><i>484</i>&nbsp;		for (int m : maxima) {</b>
+<b class="nc"><i>485</i>&nbsp;			if (counter == nMaxima)</b>
+<b class="nc"><i>486</i>&nbsp;				break;</b>
+<b class="nc"><i>487</i>&nbsp;			if (m &lt; 0)</b>
+<b class="nc"><i>488</i>&nbsp;				continue;</b>
+<b class="nc"><i>489</i>&nbsp;			locs[counter] = m;</b>
+<b class="nc"><i>490</i>&nbsp;			counter++;</b>
+<i>491</i>&nbsp;		}
+<b class="nc"><i>492</i>&nbsp;		return counter;</b>
+<i>493</i>&nbsp;	}
+<i>494</i>&nbsp;	
+<i>495</i>&nbsp;	
+<i>496</i>&nbsp;
+<i>497</i>&nbsp;	private static Roi roiFromWand(Wand wand) {
+<b class="nc"><i>498</i>&nbsp;		return new PolygonRoi(wand.xpoints, wand.ypoints, wand.npoints, Roi.POLYGON);</b>
+<i>499</i>&nbsp;	}
+<i>500</i>&nbsp;	
+<i>501</i>&nbsp;	
+<i>502</i>&nbsp;	// Find the location of the maximum within a ROI; resolve ties by selecting the maximum closest to a specified point
+<i>503</i>&nbsp;	private static Point findClosestMaximumInROI(ImageProcessor ip, Roi roi, Point p) {
+<b class="nc"><i>504</i>&nbsp;		Rectangle bounds = roi.getBounds();</b>
+<b class="nc"><i>505</i>&nbsp;		Float maxVal = Float.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>506</i>&nbsp;		Double minDist = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>507</i>&nbsp;		Point maxPoint = null;</b>
+<b class="nc"><i>508</i>&nbsp;		int y1 = Math.max(0, bounds.y);</b>
+<b class="nc"><i>509</i>&nbsp;		int y2 = Math.min(ip.getHeight(), bounds.y+bounds.height);</b>
+<b class="nc"><i>510</i>&nbsp;		int x1 = Math.max(0, bounds.x);</b>
+<b class="nc"><i>511</i>&nbsp;		int x2 = Math.min(ip.getWidth(), bounds.x+bounds.width);</b>
+<b class="nc"><i>512</i>&nbsp;		for (int y = y1; y &lt; y2; y++) {</b>
+<b class="nc"><i>513</i>&nbsp;			for (int x = x1; x &lt; x2; x++) {</b>
+<b class="nc"><i>514</i>&nbsp;				if (roi.contains(x, y)) {</b>
+<b class="nc"><i>515</i>&nbsp;					float val = ip.getf(x, y);</b>
+<b class="nc"><i>516</i>&nbsp;					if (val &gt; maxVal || (val == maxVal &amp;&amp; p.distance(x, y) &lt; minDist)) {</b>
+<b class="nc"><i>517</i>&nbsp;						maxVal = val;</b>
+<b class="nc"><i>518</i>&nbsp;						maxPoint = new Point(x, y);</b>
+<b class="nc"><i>519</i>&nbsp;						minDist = p.distance(x, y);</b>
+<i>520</i>&nbsp;					}
+<i>521</i>&nbsp;				}
+<i>522</i>&nbsp;			}			
+<i>523</i>&nbsp;		}
+<b class="nc"><i>524</i>&nbsp;		return maxPoint;</b>
+<i>525</i>&nbsp;	}
+<i>526</i>&nbsp;	
+<i>527</i>&nbsp;	
+<i>528</i>&nbsp;	private static void refineGridCoordinatesByShifting(ByteProcessor bp, Polygon polyGrid, int nHorizontal, double coreDiameterPx) {
+<i>529</i>&nbsp;		// Create a binary image containing regions to consider - exclude very small &amp; very large regions
+<i>530</i>&nbsp;		// Use watershed segmentation to split up round structures
+<b class="nc"><i>531</i>&nbsp;		new EDM().toWatershed(bp);</b>
+<b class="nc"><i>532</i>&nbsp;		double estimatedArea = Math.PI * coreDiameterPx * coreDiameterPx * 0.25;</b>
+<b class="nc"><i>533</i>&nbsp;		FloatProcessor fpDensity = identifyGoodCores(bp, estimatedArea * 0.1, estimatedArea * 2.0, 0, false, null).convertToFloatProcessor();</b>
+<b class="nc"><i>534</i>&nbsp;		fpDensity.max(1);</b>
+<i>535</i>&nbsp;		
+<i>536</i>&nbsp;//		new ImagePlus(&quot;Density-Orig&quot;, fpDensity.duplicate()).show();
+<i>537</i>&nbsp;		
+<i>538</i>&nbsp;		// Loop through the grid &amp; see examples where the estimated point already falls within a likely core
+<b class="nc"><i>539</i>&nbsp;		double minDiameter = coreDiameterPx * 0.7;</b>
+<b class="nc"><i>540</i>&nbsp;		Wand wand = new Wand(bp);</b>
+<b class="nc"><i>541</i>&nbsp;		boolean[] confirmed = new boolean[polyGrid.npoints];</b>
+<b class="nc"><i>542</i>&nbsp;		for (int i = 0; i &lt; polyGrid.npoints; i++) {</b>
+<b class="nc"><i>543</i>&nbsp;			int x = polyGrid.xpoints[i];</b>
+<b class="nc"><i>544</i>&nbsp;			int y = polyGrid.ypoints[i];</b>
+<i>545</i>&nbsp;			// If grid location already falls within a convincingly large ROI, use its bounding box centre
+<i>546</i>&nbsp;//			IJ.log(new Point(x, y).toString());
+<b class="nc"><i>547</i>&nbsp;			boolean inside = fpDensity.getf(x, y) &gt; 0;</b>
+<b class="nc"><i>548</i>&nbsp;			if (inside) {</b>
+<b class="nc"><i>549</i>&nbsp;				wand.autoOutline(x, y, 0.0, Wand.FOUR_CONNECTED);</b>
+<b class="nc"><i>550</i>&nbsp;				Roi roi = roiFromWand(wand);</b>
+<b class="nc"><i>551</i>&nbsp;				Rectangle bounds = roi.getBounds();</b>
+<b class="nc"><i>552</i>&nbsp;				if (bounds.width &gt;= minDiameter &amp;&amp; bounds.height &gt;= minDiameter) {</b>
+<b class="nc"><i>553</i>&nbsp;					polyGrid.xpoints[i] = bounds.x + bounds.width/2;</b>
+<b class="nc"><i>554</i>&nbsp;					polyGrid.ypoints[i] = bounds.y + bounds.height/2;					</b>
+<i>555</i>&nbsp;					// Introduce a large density penalty to prevent missing cores from encroaching on this area
+<i>556</i>&nbsp;					// (Scale the ROI slightly first to make this more effective)
+<b class="nc"><i>557</i>&nbsp;					roi = RoiScaler.scale(roi, 1, 1, true);</b>
+<b class="nc"><i>558</i>&nbsp;					fpDensity.setValue(-10000);</b>
+<b class="nc"><i>559</i>&nbsp;					fpDensity.fill(roi);</b>
+<i>560</i>&nbsp;					// Mark ROI as confirmed
+<b class="nc"><i>561</i>&nbsp;					confirmed[i] = true;</b>
+<i>562</i>&nbsp;				}
+<i>563</i>&nbsp;			}
+<i>564</i>&nbsp;		}
+<i>565</i>&nbsp;		
+<i>566</i>&nbsp;		// Create (effectively) a Voronoi image based on the current centroid estimate
+<b class="nc"><i>567</i>&nbsp;		ByteProcessor bpTest = new ByteProcessor(bp.getWidth(), bp.getHeight());</b>
+<b class="nc"><i>568</i>&nbsp;		for (int i = 0; i &lt; polyGrid.npoints; i++) {</b>
+<b class="nc"><i>569</i>&nbsp;			if (!confirmed[i]) {</b>
+<b class="nc"><i>570</i>&nbsp;				int x = polyGrid.xpoints[i];</b>
+<b class="nc"><i>571</i>&nbsp;				int y = polyGrid.ypoints[i];</b>
+<b class="nc"><i>572</i>&nbsp;				bpTest.setf(x, y, 255);</b>
+<i>573</i>&nbsp;			}
+<i>574</i>&nbsp;		}
+<i>575</i>&nbsp;		// Need to try/catch this, as might return null if thread is interrupted
+<i>576</i>&nbsp;		try {
+<b class="nc"><i>577</i>&nbsp;			FloatProcessor fpEDM = new EDM().makeFloatEDM(bpTest, (byte)255, false);</b>
+<i>578</i>&nbsp;			// I never quite understood why, but this causes a fatal (compilation) error with Java 1.6 on the Mac - so instead avoid FloatBlitter
+<i>579</i>&nbsp;//			fpEDM.multiply(-1);
+<i>580</i>&nbsp;//			fpEDM.copyBits(bpTest, 0, 0, Blitter.ADD);
+<b class="nc"><i>581</i>&nbsp;			for (int i = 0; i &lt; fpEDM.getWidth() * fpEDM.getHeight(); i++) {</b>
+<b class="nc"><i>582</i>&nbsp;				fpEDM.setf(i, bpTest.getf(i) - fpEDM.getf(i));</b>
+<i>583</i>&nbsp;			}
+<i>584</i>&nbsp;			
+<b class="nc"><i>585</i>&nbsp;			ByteProcessor bpRegions = new MaximumFinder().findMaxima(fpEDM, 255, ImageProcessor.NO_THRESHOLD, MaximumFinder.SEGMENTED, false, false);</b>
+<i>586</i>&nbsp;			// Penalise boundaries - when refining uncertain cores, we don&#39;t want to move into the territory of another core
+<b class="nc"><i>587</i>&nbsp;			byte[] pxRegions = (byte[])bpRegions.getPixels();</b>
+<b class="nc"><i>588</i>&nbsp;			float[] pxDensity = (float[])fpDensity.getPixels();</b>
+<b class="nc"><i>589</i>&nbsp;			for (int i = 0; i &lt; pxRegions.length; i++) {</b>
+<b class="nc"><i>590</i>&nbsp;				if (pxRegions[i] == 0)</b>
+<b class="nc"><i>591</i>&nbsp;					pxDensity[i] = -10000;</b>
+<i>592</i>&nbsp;			}
+<b class="nc"><i>593</i>&nbsp;		} catch (Exception e) {</b>
+<i>594</i>&nbsp;			return;
+<b class="nc"><i>595</i>&nbsp;		}</b>
+<i>596</i>&nbsp;				
+<i>597</i>&nbsp;		// Apply a mean filter to determine local unassigned densities
+<i>598</i>&nbsp;//		new ImagePlus(&quot;Density_before&quot;, fpDensity.duplicate()).show();
+<i>599</i>&nbsp;//		long start = System.currentTimeMillis();
+<i>600</i>&nbsp;		// Note: this is another bottleneck... filter size can be large
+<b class="nc"><i>601</i>&nbsp;		new RankFilters().rank(fpDensity, coreDiameterPx * 0.5, RankFilters.MEAN);</b>
+<i>602</i>&nbsp;//		System.err.println(&quot;Time: &quot; + (System.currentTimeMillis() - start));
+<i>603</i>&nbsp;//		fpDensity.min(-1);
+<i>604</i>&nbsp;//		new ImagePlus(&quot;Density&quot;, fpDensity.duplicate()).show();
+<i>605</i>&nbsp;		
+<i>606</i>&nbsp;		// Find local maxima within each unassigned core region, with a preference towards the maximum closest to the original estimate
+<b class="nc"><i>607</i>&nbsp;		for (int i = 0; i &lt; polyGrid.npoints; i++) {</b>
+<b class="nc"><i>608</i>&nbsp;			if (!confirmed[i]) {</b>
+<b class="nc"><i>609</i>&nbsp;				int x = polyGrid.xpoints[i];</b>
+<b class="nc"><i>610</i>&nbsp;				int y = polyGrid.ypoints[i];</b>
+<b class="nc"><i>611</i>&nbsp;				OvalRoi roiRegion = new OvalRoi(x-coreDiameterPx*0.5, y-coreDiameterPx*0.5, coreDiameterPx, coreDiameterPx);</b>
+<b class="nc"><i>612</i>&nbsp;				Point maxPoint = findClosestMaximumInROI(fpDensity, roiRegion, new Point(x, y));</b>
+<b class="nc"><i>613</i>&nbsp;				if (maxPoint != null) {</b>
+<b class="nc"><i>614</i>&nbsp;					polyGrid.xpoints[i] = maxPoint.x;</b>
+<b class="nc"><i>615</i>&nbsp;					polyGrid.ypoints[i] = maxPoint.y;</b>
+<b class="nc"><i>616</i>&nbsp;					confirmed[i] = true;</b>
+<i>617</i>&nbsp;				}
+<i>618</i>&nbsp;			}
+<i>619</i>&nbsp;		}
+<i>620</i>&nbsp;		
+<i>621</i>&nbsp;	}
+<i>622</i>&nbsp;
+<i>623</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,707 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ParameterList</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins.parameters</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ParameterList (qupath.lib.plugins.parameters)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ParameterList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 39)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 140)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins.parameters;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Serializable;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.Iterator;
+<i>29</i>&nbsp;import java.util.LinkedHashMap;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Locale;
+<i>32</i>&nbsp;import java.util.Map;
+<i>33</i>&nbsp;import java.util.Map.Entry;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * A collection of Parameters, which can be used for analysis &amp;amp; queried to construct appropriate GUIs.
+<i>41</i>&nbsp; * &lt;p&gt;
+<i>42</i>&nbsp; * Each Parameter requires a key to be associated with it.
+<i>43</i>&nbsp; * &lt;p&gt;
+<i>44</i>&nbsp; * The order or parameters is maintained.
+<i>45</i>&nbsp; * 
+<i>46</i>&nbsp; * @author Pete Bankhead
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; */
+<b class="nc"><i>49</i>&nbsp;public class ParameterList implements Serializable {</b>
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>52</i>&nbsp;	
+<b class="nc"><i>53</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ParameterList.class);</b>
+<i>54</i>&nbsp;	
+<b class="nc"><i>55</i>&nbsp;	private Map&lt;String, Parameter&lt;?&gt;&gt; params = new LinkedHashMap&lt;&gt;();</b>
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;//	public ParameterList() {};
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	private static ParameterList copyParameters(ParameterList params) {
+<b class="nc"><i>60</i>&nbsp;		ParameterList paramsCopy = new ParameterList();</b>
+<b class="nc"><i>61</i>&nbsp;		for (Entry&lt;String, Parameter&lt;?&gt;&gt; entry : params.params.entrySet()) {</b>
+<b class="nc"><i>62</i>&nbsp;			paramsCopy.params.put(entry.getKey(), entry.getValue().duplicate());</b>
+<b class="nc"><i>63</i>&nbsp;		}</b>
+<b class="nc"><i>64</i>&nbsp;		return paramsCopy;</b>
+<i>65</i>&nbsp;	}
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;//	/**
+<i>69</i>&nbsp;//	 * Add all the parameters from a second ParameterList to this one.
+<i>70</i>&nbsp;//	 * &lt;p&gt;
+<i>71</i>&nbsp;//	 * Note that the parameters are added directly (not copied), therefore changes
+<i>72</i>&nbsp;//	 * in one list will be reflected in the other.  If this is not desired, then
+<i>73</i>&nbsp;//	 * a copy should be made first.
+<i>74</i>&nbsp;//	 * @param params2
+<i>75</i>&nbsp;//	 */
+<i>76</i>&nbsp;//	public void addParameters(ParameterList params2) {
+<i>77</i>&nbsp;//		params.putAll(params2.params);
+<i>78</i>&nbsp;//	}
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	/**
+<i>82</i>&nbsp;	 * Set the &#39;hidden&#39; flag for parameters with the specified keys.
+<i>83</i>&nbsp;	 * This can be used to notify any consumer that certain parameters are not required, 
+<i>84</i>&nbsp;	 * or otherwise should not be presented to the user.
+<i>85</i>&nbsp;	 * @param hidden
+<i>86</i>&nbsp;	 * @param keys
+<i>87</i>&nbsp;	 */
+<i>88</i>&nbsp;	public void setHiddenParameters(final boolean hidden, String...keys) {
+<b class="nc"><i>89</i>&nbsp;		for (String key : keys)</b>
+<b class="nc"><i>90</i>&nbsp;			params.get(key).setHidden(hidden);</b>
+<i>91</i>&nbsp;	}
+<i>92</i>&nbsp;	
+<i>93</i>&nbsp;	/**
+<i>94</i>&nbsp;	 * Create a deep copy of this parameter list.
+<i>95</i>&nbsp;	 * @return
+<i>96</i>&nbsp;	 */
+<i>97</i>&nbsp;	public ParameterList duplicate() {
+<b class="nc"><i>98</i>&nbsp;		return copyParameters(this);</b>
+<i>99</i>&nbsp;	}
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	/**
+<i>103</i>&nbsp;	 * Add a double parameter to this list.
+<i>104</i>&nbsp;	 * @param key
+<i>105</i>&nbsp;	 * @param prompt
+<i>106</i>&nbsp;	 * @param defaultValue
+<i>107</i>&nbsp;	 * @return
+<i>108</i>&nbsp;	 */
+<i>109</i>&nbsp;	public ParameterList addDoubleParameter(String key, String prompt, double defaultValue) {
+<b class="nc"><i>110</i>&nbsp;		return addDoubleParameter(key, prompt, defaultValue, null, null);</b>
+<i>111</i>&nbsp;	}
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;	/**
+<i>114</i>&nbsp;	 * Add a double parameter to this list, optionally including a unit and help text.
+<i>115</i>&nbsp;	 * @param key
+<i>116</i>&nbsp;	 * @param prompt
+<i>117</i>&nbsp;	 * @param defaultValue
+<i>118</i>&nbsp;	 * @param unit
+<i>119</i>&nbsp;	 * @param helpText
+<i>120</i>&nbsp;	 * @return
+<i>121</i>&nbsp;	 */
+<i>122</i>&nbsp;	public ParameterList addDoubleParameter(String key, String prompt, double defaultValue, String unit, String helpText) {
+<b class="nc"><i>123</i>&nbsp;		params.put(key, new DoubleParameter(prompt, defaultValue, unit, helpText));</b>
+<b class="nc"><i>124</i>&nbsp;		return this;</b>
+<i>125</i>&nbsp;	}
+<i>126</i>&nbsp;	
+<i>127</i>&nbsp;	/**
+<i>128</i>&nbsp;	 * Add a bounded double parameter to this list.
+<i>129</i>&nbsp;	 * @param key
+<i>130</i>&nbsp;	 * @param prompt
+<i>131</i>&nbsp;	 * @param defaultValue
+<i>132</i>&nbsp;	 * @param unit
+<i>133</i>&nbsp;	 * @param lowerBound
+<i>134</i>&nbsp;	 * @param upperBound
+<i>135</i>&nbsp;	 * @param helpText 
+<i>136</i>&nbsp;	 * @return
+<i>137</i>&nbsp;	 */
+<i>138</i>&nbsp;	public ParameterList addDoubleParameter(String key, String prompt, double defaultValue, String unit, double lowerBound, double upperBound, String helpText) {
+<b class="nc"><i>139</i>&nbsp;		params.put(key, new DoubleParameter(prompt, defaultValue, unit, lowerBound, upperBound, helpText));</b>
+<b class="nc"><i>140</i>&nbsp;		return this;</b>
+<i>141</i>&nbsp;	}
+<i>142</i>&nbsp;	
+<i>143</i>&nbsp;	
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	/**
+<i>146</i>&nbsp;	 * Add an int parameter.
+<i>147</i>&nbsp;	 * @param key
+<i>148</i>&nbsp;	 * @param prompt
+<i>149</i>&nbsp;	 * @param defaultValue
+<i>150</i>&nbsp;	 * @return
+<i>151</i>&nbsp;	 */
+<i>152</i>&nbsp;	public ParameterList addIntParameter(String key, String prompt, int defaultValue) {
+<b class="nc"><i>153</i>&nbsp;		return addIntParameter(key, prompt, defaultValue, null, null);</b>
+<i>154</i>&nbsp;	}
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;	/**
+<i>158</i>&nbsp;	 * Add an int parameter, with optional unit and help text.
+<i>159</i>&nbsp;	 * @param key
+<i>160</i>&nbsp;	 * @param prompt
+<i>161</i>&nbsp;	 * @param defaultValue
+<i>162</i>&nbsp;	 * @param unit
+<i>163</i>&nbsp;	 * @param helpText
+<i>164</i>&nbsp;	 * @return
+<i>165</i>&nbsp;	 */
+<i>166</i>&nbsp;	public ParameterList addIntParameter(String key, String prompt, int defaultValue, String unit, String helpText) {
+<b class="nc"><i>167</i>&nbsp;		params.put(key, new IntParameter(prompt, defaultValue, unit, helpText));</b>
+<b class="nc"><i>168</i>&nbsp;		return this;</b>
+<i>169</i>&nbsp;	}
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;	 * Add a bounded int parameter, with optional unit and help text.
+<i>173</i>&nbsp;	 * @param key
+<i>174</i>&nbsp;	 * @param prompt
+<i>175</i>&nbsp;	 * @param defaultValue
+<i>176</i>&nbsp;	 * @param unit
+<i>177</i>&nbsp;	 * @param lowerBound
+<i>178</i>&nbsp;	 * @param upperBound
+<i>179</i>&nbsp;	 * @param helpText
+<i>180</i>&nbsp;	 * @return
+<i>181</i>&nbsp;	 */
+<i>182</i>&nbsp;	public ParameterList addIntParameter(String key, String prompt, int defaultValue, String unit, double lowerBound, double upperBound, String helpText) {
+<b class="nc"><i>183</i>&nbsp;		params.put(key, new IntParameter(prompt, defaultValue, unit, lowerBound, upperBound, helpText));</b>
+<b class="nc"><i>184</i>&nbsp;		return this;</b>
+<i>185</i>&nbsp;	}
+<i>186</i>&nbsp;	
+<b class="nc"><i>187</i>&nbsp;	private int titleCount = 1;</b>
+<b class="nc"><i>188</i>&nbsp;	private int emptyCount = 1;</b>
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;	/**
+<i>191</i>&nbsp;	 * Add an &#39;empty&#39; parameter, that is one that does not take any values. 
+<i>192</i>&nbsp;	 * The purpose of this is to give a mechanism to add a free text prompt whenever parameter lists are being displayed.
+<i>193</i>&nbsp;	 * &lt;p&gt;
+<i>194</i>&nbsp;	 * These will be called empty1, empty2 etc. (so similar names must not be used for other parameters).
+<i>195</i>&nbsp;	 * @param prompt
+<i>196</i>&nbsp;	 * @return
+<i>197</i>&nbsp;	 * 
+<i>198</i>&nbsp;	 * @see #addTitleParameter(String)
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	public ParameterList addEmptyParameter(String prompt) {
+<b class="nc"><i>201</i>&nbsp;		params.put(&quot;empty&quot; + emptyCount, new EmptyParameter(prompt));</b>
+<b class="nc"><i>202</i>&nbsp;		emptyCount++;</b>
+<b class="nc"><i>203</i>&nbsp;		return this;</b>
+<i>204</i>&nbsp;	}
+<i>205</i>&nbsp;	
+<i>206</i>&nbsp;	ParameterList addEmptyParameter(String key, String prompt, boolean isTitle) {
+<b class="nc"><i>207</i>&nbsp;		params.put(key, new EmptyParameter(prompt, isTitle));</b>
+<b class="nc"><i>208</i>&nbsp;		return this;</b>
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;		
+<i>211</i>&nbsp;	/**
+<i>212</i>&nbsp;	 * Add a title parameter. These will be called title1, title2 etc. (so similar names must not be used for other parameters).
+<i>213</i>&nbsp;	 * 
+<i>214</i>&nbsp;	 * @param prompt
+<i>215</i>&nbsp;	 * @return
+<i>216</i>&nbsp;	 * 
+<i>217</i>&nbsp;	 * @see #addEmptyParameter(String)
+<i>218</i>&nbsp;	 */
+<i>219</i>&nbsp;	public ParameterList addTitleParameter(String prompt) {
+<b class="nc"><i>220</i>&nbsp;		addEmptyParameter(&quot;title&quot; + titleCount, prompt, true);</b>
+<b class="nc"><i>221</i>&nbsp;		titleCount++;</b>
+<b class="nc"><i>222</i>&nbsp;		return this;</b>
+<i>223</i>&nbsp;	}
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;	 * Add a boolean parameter.
+<i>227</i>&nbsp;	 * @param key
+<i>228</i>&nbsp;	 * @param prompt
+<i>229</i>&nbsp;	 * @param defaultValue
+<i>230</i>&nbsp;	 * @return
+<i>231</i>&nbsp;	 */
+<i>232</i>&nbsp;	public ParameterList addBooleanParameter(String key, String prompt, boolean defaultValue) {
+<b class="nc"><i>233</i>&nbsp;		return addBooleanParameter(key, prompt, defaultValue, null);</b>
+<i>234</i>&nbsp;	}
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;	/**
+<i>237</i>&nbsp;	 * Add a boolean parameter, with help text.
+<i>238</i>&nbsp;	 * @param key
+<i>239</i>&nbsp;	 * @param prompt
+<i>240</i>&nbsp;	 * @param defaultValue
+<i>241</i>&nbsp;	 * @param helpText
+<i>242</i>&nbsp;	 * @return
+<i>243</i>&nbsp;	 */
+<i>244</i>&nbsp;	public ParameterList addBooleanParameter(String key, String prompt, boolean defaultValue, String helpText) {
+<b class="nc"><i>245</i>&nbsp;		params.put(key, new BooleanParameter(prompt, defaultValue, helpText));</b>
+<b class="nc"><i>246</i>&nbsp;		return this;</b>
+<i>247</i>&nbsp;	}
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;	/**
+<i>250</i>&nbsp;	 * Add a String parameter.
+<i>251</i>&nbsp;	 * @param key
+<i>252</i>&nbsp;	 * @param prompt
+<i>253</i>&nbsp;	 * @param defaultValue
+<i>254</i>&nbsp;	 * @return
+<i>255</i>&nbsp;	 */
+<i>256</i>&nbsp;	public ParameterList addStringParameter(String key, String prompt, String defaultValue) {
+<b class="nc"><i>257</i>&nbsp;		return addStringParameter(key, prompt, defaultValue, null);</b>
+<i>258</i>&nbsp;	}
+<i>259</i>&nbsp;	
+<i>260</i>&nbsp;	/**
+<i>261</i>&nbsp;	 * Add a String parameter, with help text.
+<i>262</i>&nbsp;	 * @param key
+<i>263</i>&nbsp;	 * @param prompt
+<i>264</i>&nbsp;	 * @param defaultValue
+<i>265</i>&nbsp;	 * @param helpText
+<i>266</i>&nbsp;	 * @return
+<i>267</i>&nbsp;	 */
+<i>268</i>&nbsp;	public ParameterList addStringParameter(String key, String prompt, String defaultValue, String helpText) {
+<b class="nc"><i>269</i>&nbsp;		params.put(key, new StringParameter(prompt, defaultValue, helpText));</b>
+<b class="nc"><i>270</i>&nbsp;		return this;</b>
+<i>271</i>&nbsp;	}
+<i>272</i>&nbsp;	
+<i>273</i>&nbsp;	/**
+<i>274</i>&nbsp;	 * Add a choice parameter, with an list of choices.
+<i>275</i>&nbsp;	 * @param &lt;S&gt;
+<i>276</i>&nbsp;	 * @param key
+<i>277</i>&nbsp;	 * @param prompt
+<i>278</i>&nbsp;	 * @param defaultValue
+<i>279</i>&nbsp;	 * @param choices
+<i>280</i>&nbsp;	 * @return
+<i>281</i>&nbsp;	 */
+<i>282</i>&nbsp;	public &lt;S&gt; ParameterList addChoiceParameter(String key, String prompt, S defaultValue, List&lt;S&gt; choices) {
+<b class="nc"><i>283</i>&nbsp;		return addChoiceParameter(key, prompt, defaultValue, choices, null);</b>
+<i>284</i>&nbsp;	}
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;	/**
+<i>287</i>&nbsp;	 * Add a choice parameter, with an list of choices and help text.
+<i>288</i>&nbsp;	 * @param &lt;S&gt;
+<i>289</i>&nbsp;	 * @param key
+<i>290</i>&nbsp;	 * @param prompt
+<i>291</i>&nbsp;	 * @param defaultValue
+<i>292</i>&nbsp;	 * @param choices
+<i>293</i>&nbsp;	 * @param helpText
+<i>294</i>&nbsp;	 * @return
+<i>295</i>&nbsp;	 */
+<i>296</i>&nbsp;	public &lt;S&gt; ParameterList addChoiceParameter(String key, String prompt, S defaultValue, List&lt;S&gt; choices, String helpText) {
+<b class="nc"><i>297</i>&nbsp;		params.put(key, new ChoiceParameter&lt;S&gt;(prompt, defaultValue, choices, helpText));</b>
+<b class="nc"><i>298</i>&nbsp;		return this;</b>
+<i>299</i>&nbsp;	}
+<i>300</i>&nbsp;	
+<i>301</i>&nbsp;	/**
+<i>302</i>&nbsp;	 * Returns a map of keys and their corresponding parameters
+<i>303</i>&nbsp;	 * @return
+<i>304</i>&nbsp;	 */
+<i>305</i>&nbsp;	public Map&lt;String, Parameter&lt;?&gt;&gt; getParameters() {
+<b class="nc"><i>306</i>&nbsp;		return Collections.unmodifiableMap(params);</b>
+<i>307</i>&nbsp;	}
+<i>308</i>&nbsp;	
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;	/**
+<i>311</i>&nbsp;	 * Returns a map of keys and their corresponding parameter values
+<i>312</i>&nbsp;	 * @param includeHidden 
+<i>313</i>&nbsp;	 * @return
+<i>314</i>&nbsp;	 */
+<i>315</i>&nbsp;	public Map&lt;String, Object&gt; getKeyValueParameters(final boolean includeHidden) {
+<b class="nc"><i>316</i>&nbsp;		Map&lt;String, Object&gt; map = new LinkedHashMap&lt;String, Object&gt;();</b>
+<b class="nc"><i>317</i>&nbsp;		for (Entry&lt;String, Parameter&lt;?&gt;&gt; entry : getParameters().entrySet()) {</b>
+<b class="nc"><i>318</i>&nbsp;			Parameter&lt;?&gt; p = entry.getValue();</b>
+<b class="nc"><i>319</i>&nbsp;			if (p instanceof EmptyParameter || (!includeHidden &amp;&amp; p.isHidden()))</b>
+<b class="nc"><i>320</i>&nbsp;					continue;</b>
+<b class="nc"><i>321</i>&nbsp;			map.put(entry.getKey(), p.getValueOrDefault());</b>
+<b class="nc"><i>322</i>&nbsp;		}</b>
+<b class="nc"><i>323</i>&nbsp;		return map;</b>
+<i>324</i>&nbsp;	}
+<i>325</i>&nbsp;	
+<i>326</i>&nbsp;	/**
+<i>327</i>&nbsp;	 * Returns true if a parameter exists in this list with a specified key.
+<i>328</i>&nbsp;	 * @param key
+<i>329</i>&nbsp;	 * @return
+<i>330</i>&nbsp;	 */
+<i>331</i>&nbsp;	public boolean containsKey(final Object key) {
+<b class="nc"><i>332</i>&nbsp;		return params.containsKey(key);</b>
+<i>333</i>&nbsp;	}
+<i>334</i>&nbsp;	
+<i>335</i>&nbsp;	
+<i>336</i>&nbsp;	
+<i>337</i>&nbsp;//	public Parameter&lt;?&gt; getParameter(String key) {
+<i>338</i>&nbsp;//		return params.get(key);
+<i>339</i>&nbsp;//	}
+<i>340</i>&nbsp;//	
+<i>341</i>&nbsp;//	public BooleanParameter getBooleanParameter(String key) {
+<i>342</i>&nbsp;//		Parameter&lt;?&gt; p = params.get(key);
+<i>343</i>&nbsp;//		if (p instanceof BooleanParameter)
+<i>344</i>&nbsp;//			return (BooleanParameter)p;
+<i>345</i>&nbsp;//		return null;
+<i>346</i>&nbsp;//	}
+<i>347</i>&nbsp;//	
+<i>348</i>&nbsp;//	public DoubleParameter getDoubleParameter(String key) {
+<i>349</i>&nbsp;//		Parameter&lt;?&gt; p = params.get(key);
+<i>350</i>&nbsp;//		if (p instanceof DoubleParameter)
+<i>351</i>&nbsp;//			return (DoubleParameter)p;
+<i>352</i>&nbsp;//		return null;
+<i>353</i>&nbsp;//	}
+<i>354</i>&nbsp;//	
+<i>355</i>&nbsp;//	public IntParameter getIntParameter(String key) {
+<i>356</i>&nbsp;//		Parameter&lt;?&gt; p = params.get(key);
+<i>357</i>&nbsp;//		if (p instanceof IntParameter)
+<i>358</i>&nbsp;//			return (IntParameter)p;
+<i>359</i>&nbsp;//		return null;
+<i>360</i>&nbsp;//	}
+<i>361</i>&nbsp;//	
+<i>362</i>&nbsp;//	public StringParameter getStringParameter(String key) {
+<i>363</i>&nbsp;//		Parameter&lt;?&gt; p = params.get(key);
+<i>364</i>&nbsp;//		if (p instanceof StringParameter)
+<i>365</i>&nbsp;//			return (StringParameter)p;
+<i>366</i>&nbsp;//		return null;
+<i>367</i>&nbsp;//	}
+<i>368</i>&nbsp;//	
+<i>369</i>&nbsp;//	public ChoiceParameter&lt;?&gt; getChoiceParameter(String key) {
+<i>370</i>&nbsp;//		Parameter&lt;?&gt; p = params.get(key);
+<i>371</i>&nbsp;//		if (p instanceof ChoiceParameter&lt;?&gt;)
+<i>372</i>&nbsp;//			return (ChoiceParameter&lt;?&gt;)p;
+<i>373</i>&nbsp;//		return null;
+<i>374</i>&nbsp;//	}
+<i>375</i>&nbsp;	
+<i>376</i>&nbsp;	
+<i>377</i>&nbsp;	Boolean getBooleanParameterValue(String key, Boolean defaultValue) {
+<b class="nc"><i>378</i>&nbsp;		Parameter&lt;?&gt; p = params.get(key);</b>
+<b class="nc"><i>379</i>&nbsp;		if (p instanceof BooleanParameter)</b>
+<b class="nc"><i>380</i>&nbsp;			return ((BooleanParameter)p).getValueOrDefault();</b>
+<b class="nc"><i>381</i>&nbsp;		throw new IllegalArgumentException(&quot;No boolean parameter with key &#39;&quot; + key + &quot;&#39;&quot;);</b>
+<i>382</i>&nbsp;	}
+<i>383</i>&nbsp;	
+<i>384</i>&nbsp;	Double getDoubleParameterValue(String key, Double defaultValue) {
+<b class="nc"><i>385</i>&nbsp;		Parameter&lt;?&gt; p = params.get(key);</b>
+<b class="nc"><i>386</i>&nbsp;		if (p instanceof DoubleParameter)</b>
+<b class="nc"><i>387</i>&nbsp;			return ((DoubleParameter)p).getValueOrDefault();</b>
+<b class="nc"><i>388</i>&nbsp;		throw new IllegalArgumentException(&quot;No double parameter with key &#39;&quot; + key + &quot;&#39;&quot;);</b>
+<i>389</i>&nbsp;	}
+<i>390</i>&nbsp;	
+<i>391</i>&nbsp;	Integer getIntParameterValue(String key, Integer defaultValue) {
+<b class="nc"><i>392</i>&nbsp;		Parameter&lt;?&gt; p = params.get(key);</b>
+<b class="nc"><i>393</i>&nbsp;		if (p instanceof IntParameter)</b>
+<b class="nc"><i>394</i>&nbsp;			return ((IntParameter)p).getValueOrDefault();</b>
+<b class="nc"><i>395</i>&nbsp;		throw new IllegalArgumentException(&quot;No integer parameter with key &#39;&quot; + key + &quot;&#39;&quot;);</b>
+<i>396</i>&nbsp;	}
+<i>397</i>&nbsp;	
+<i>398</i>&nbsp;	String getStringParameterValue(String key, String defaultValue) {
+<b class="nc"><i>399</i>&nbsp;		Parameter&lt;?&gt; p = params.get(key);</b>
+<b class="nc"><i>400</i>&nbsp;		if (p instanceof StringParameter)</b>
+<b class="nc"><i>401</i>&nbsp;			return ((StringParameter)p).getValueOrDefault();</b>
+<b class="nc"><i>402</i>&nbsp;		throw new IllegalArgumentException(&quot;No String parameter with key &#39;&quot; + key + &quot;&#39;&quot;);</b>
+<i>403</i>&nbsp;	}
+<i>404</i>&nbsp;	
+<i>405</i>&nbsp;	Object getChoiceParameterValue(String key, Object defaultValue) {
+<b class="nc"><i>406</i>&nbsp;		Parameter&lt;?&gt; p = params.get(key);</b>
+<b class="nc"><i>407</i>&nbsp;		if (p instanceof ChoiceParameter&lt;?&gt;)</b>
+<b class="nc"><i>408</i>&nbsp;			return ((ChoiceParameter&lt;?&gt;)p).getValueOrDefault();</b>
+<b class="nc"><i>409</i>&nbsp;		throw new IllegalArgumentException(&quot;No choice parameter with key &#39;&quot; + key + &quot;&#39;&quot;);</b>
+<i>410</i>&nbsp;	}
+<i>411</i>&nbsp;	
+<i>412</i>&nbsp;	/**
+<i>413</i>&nbsp;	 * Get a boolean parameter value (or its default) for the specified key.
+<i>414</i>&nbsp;	 * @param key
+<i>415</i>&nbsp;	 * @return
+<i>416</i>&nbsp;	 * @throws IllegalArgumentException if no boolean parameter exists for the specified key
+<i>417</i>&nbsp;	 */
+<i>418</i>&nbsp;	public Boolean getBooleanParameterValue(String key) {
+<b class="nc"><i>419</i>&nbsp;		return getBooleanParameterValue(key, null);</b>
+<i>420</i>&nbsp;	}
+<i>421</i>&nbsp;	
+<i>422</i>&nbsp;	/**
+<i>423</i>&nbsp;	 * Get a double parameter value (or its default) for the specified key.
+<i>424</i>&nbsp;	 * @param key
+<i>425</i>&nbsp;	 * @return
+<i>426</i>&nbsp;	 * @throws IllegalArgumentException if no double parameter exists for the specified key
+<i>427</i>&nbsp;	 */
+<i>428</i>&nbsp;	public Double getDoubleParameterValue(String key) {
+<b class="nc"><i>429</i>&nbsp;		return getDoubleParameterValue(key, Double.NaN);</b>
+<i>430</i>&nbsp;	}
+<i>431</i>&nbsp;	
+<i>432</i>&nbsp;	/**
+<i>433</i>&nbsp;	 * Get a integer parameter value (or its default) for the specified key.
+<i>434</i>&nbsp;	 * @param key
+<i>435</i>&nbsp;	 * @return
+<i>436</i>&nbsp;	 * @throws IllegalArgumentException if no integer parameter exists for the specified key
+<i>437</i>&nbsp;	 */
+<i>438</i>&nbsp;	public Integer getIntParameterValue(String key) {
+<b class="nc"><i>439</i>&nbsp;		return getIntParameterValue(key, null);</b>
+<i>440</i>&nbsp;	}
+<i>441</i>&nbsp;	
+<i>442</i>&nbsp;	/**
+<i>443</i>&nbsp;	 * Get a String parameter value (or its default) for the specified key.
+<i>444</i>&nbsp;	 * @param key
+<i>445</i>&nbsp;	 * @return
+<i>446</i>&nbsp;	 * @throws IllegalArgumentException if no String parameter exists for the specified key
+<i>447</i>&nbsp;	 */
+<i>448</i>&nbsp;	public String getStringParameterValue(String key) {
+<b class="nc"><i>449</i>&nbsp;		return getStringParameterValue(key, null);</b>
+<i>450</i>&nbsp;	}
+<i>451</i>&nbsp;	
+<i>452</i>&nbsp;	/**
+<i>453</i>&nbsp;	 * Get a choice parameter value (or its default) for the specified key.
+<i>454</i>&nbsp;	 * @param key
+<i>455</i>&nbsp;	 * @return
+<i>456</i>&nbsp;	 * @throws IllegalArgumentException if no choice parameter exists for the specified key
+<i>457</i>&nbsp;	 */
+<i>458</i>&nbsp;	public Object getChoiceParameterValue(String key) {
+<b class="nc"><i>459</i>&nbsp;		return getChoiceParameterValue(key, null);</b>
+<i>460</i>&nbsp;	}
+<i>461</i>&nbsp;	
+<i>462</i>&nbsp;	/**
+<i>463</i>&nbsp;	 * Remove a parameter from this list.
+<i>464</i>&nbsp;	 * @param key
+<i>465</i>&nbsp;	 * @return
+<i>466</i>&nbsp;	 */
+<i>467</i>&nbsp;	public Parameter&lt;? extends Object&gt; removeParameter(String key) {
+<b class="nc"><i>468</i>&nbsp;		return params.remove(key);</b>
+<i>469</i>&nbsp;	}
+<i>470</i>&nbsp;	
+<i>471</i>&nbsp;	/**
+<i>472</i>&nbsp;	 * Remove all empty parameters from this list.
+<i>473</i>&nbsp;	 * @return
+<i>474</i>&nbsp;	 */
+<i>475</i>&nbsp;	public boolean removeEmptyParameters() {
+<b class="nc"><i>476</i>&nbsp;		Iterator&lt;Entry&lt;String, Parameter&lt;?&gt;&gt;&gt; iter = params.entrySet().iterator();</b>
+<b class="nc"><i>477</i>&nbsp;		boolean changes = false;</b>
+<b class="nc"><i>478</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>479</i>&nbsp;			if (iter.next().getValue() instanceof EmptyParameter) {</b>
+<b class="nc"><i>480</i>&nbsp;				iter.remove();</b>
+<b class="nc"><i>481</i>&nbsp;				changes = true;</b>
+<i>482</i>&nbsp;			}
+<i>483</i>&nbsp;		}
+<b class="nc"><i>484</i>&nbsp;		return changes;</b>
+<i>485</i>&nbsp;	}
+<i>486</i>&nbsp;	
+<i>487</i>&nbsp;	
+<i>488</i>&nbsp;	
+<i>489</i>&nbsp;/**
+<i>490</i>&nbsp;	 * Update a ParameterList with the values specified in a map.
+<i>491</i>&nbsp;	 * 
+<i>492</i>&nbsp;	 * @param params
+<i>493</i>&nbsp;	 * @param mapNew
+<i>494</i>&nbsp;	 * @param locale The Locale to use for any parsing required.
+<i>495</i>&nbsp;	 */
+<i>496</i>&nbsp;	public static void updateParameterList(ParameterList params, Map&lt;String, String&gt; mapNew, Locale locale) {
+<b class="nc"><i>497</i>&nbsp;		Map&lt;String, Parameter&lt;?&gt;&gt; mapParams = params.getParameters();</b>
+<b class="nc"><i>498</i>&nbsp;		for (Entry&lt;String, String&gt; entry : mapNew.entrySet()) {</b>
+<b class="nc"><i>499</i>&nbsp;			String key = entry.getKey();</b>
+<b class="nc"><i>500</i>&nbsp;			Parameter&lt;?&gt; parameter = mapParams.get(key);</b>
+<b class="nc"><i>501</i>&nbsp;			if (parameter == null || !parameter.setStringLastValue(locale, entry.getValue())) {</b>
+<i>502</i>&nbsp;//				if (parameter != null &amp;&amp; parameter.isHidden())
+<i>503</i>&nbsp;//					logger.info(&quot;Skipping hidden parameter &quot; + key + &quot; with value &quot; + entry.getValue());
+<i>504</i>&nbsp;//				else
+<i>505</i>&nbsp;				
+<i>506</i>&nbsp;//				if (key.equals(InteractivePluginTools.KEY_REGIONS))
+<i>507</i>&nbsp;//					params.addChoiceParameter(InteractivePluginTools.KEY_REGIONS, &quot;Regions&quot;, entry.getValue(), new String[]{entry.getValue()});
+<i>508</i>&nbsp;//				else if (key.equals(InteractivePluginTools.KEY_SKIP_NON_EMPTY))
+<i>509</i>&nbsp;//					params.addBooleanParameter(InteractivePluginTools.KEY_SKIP_NON_EMPTY, &quot;Skip non-empty&quot;, Boolean.parseBoolean(entry.getValue()));
+<i>510</i>&nbsp;//				else
+<b class="nc"><i>511</i>&nbsp;					logger.warn(&quot;Unable to set parameter {} with value {}&quot;, key, entry.getValue());</b>
+<i>512</i>&nbsp;			} else
+<b class="nc"><i>513</i>&nbsp;				parameter.setStringLastValue(locale, entry.getValue());</b>
+<b class="nc"><i>514</i>&nbsp;		}</b>
+<i>515</i>&nbsp;	}
+<i>516</i>&nbsp;
+<i>517</i>&nbsp;
+<i>518</i>&nbsp;	/**
+<i>519</i>&nbsp;	 * Check whether two parameter lists contain the same parameters with the same values (or defaults, if no values are set).
+<i>520</i>&nbsp;	 * 
+<i>521</i>&nbsp;	 * Note: &#39;hidden&#39; status is ignored for parameters.
+<i>522</i>&nbsp;	 * 
+<i>523</i>&nbsp;	 * @param params1
+<i>524</i>&nbsp;	 * @param params2
+<i>525</i>&nbsp;	 * @return true if the two lists contain the same parameters, and return the same results for getValueOrDefault() for all matching parameters.
+<i>526</i>&nbsp;	 */
+<i>527</i>&nbsp;	public static boolean equalParameters(final ParameterList params1, final ParameterList params2) {
+<i>528</i>&nbsp;		// Check whether the previous &amp; current parameters are the same
+<b class="nc"><i>529</i>&nbsp;		if (params1 == null) {</b>
+<b class="nc"><i>530</i>&nbsp;			if (params2 == null)</b>
+<b class="nc"><i>531</i>&nbsp;				return false;</b>
+<i>532</i>&nbsp;			else
+<b class="nc"><i>533</i>&nbsp;				return true;</b>
+<i>534</i>&nbsp;		}
+<b class="nc"><i>535</i>&nbsp;		Map&lt;String, Parameter&lt;?&gt;&gt; map1 = params1.getParameters();</b>
+<b class="nc"><i>536</i>&nbsp;		Map&lt;String, Parameter&lt;?&gt;&gt; map2 = params2.getParameters();</b>
+<b class="nc"><i>537</i>&nbsp;		if (!map2.keySet().equals(map1.keySet()))</b>
+<b class="nc"><i>538</i>&nbsp;			return false;</b>
+<b class="nc"><i>539</i>&nbsp;		for (Entry&lt;String, Parameter&lt;?&gt;&gt; entry1 : map1.entrySet()) {</b>
+<b class="nc"><i>540</i>&nbsp;			Parameter&lt;?&gt; param1 = entry1.getValue();</b>
+<b class="nc"><i>541</i>&nbsp;			Parameter&lt;?&gt; param2 = map2.get(entry1.getKey());</b>
+<b class="nc"><i>542</i>&nbsp;			if (param1 == param2)</b>
+<b class="nc"><i>543</i>&nbsp;				continue;</b>
+<b class="nc"><i>544</i>&nbsp;			if (param1.getClass() != param2.getClass())</b>
+<b class="nc"><i>545</i>&nbsp;				return true;</b>
+<b class="nc"><i>546</i>&nbsp;			Object value1 = param1.getValueOrDefault();</b>
+<b class="nc"><i>547</i>&nbsp;			Object value2 = param2.getValueOrDefault();</b>
+<b class="nc"><i>548</i>&nbsp;			if (value1 == null) {</b>
+<b class="nc"><i>549</i>&nbsp;				if (value2 == null)</b>
+<b class="nc"><i>550</i>&nbsp;					continue;</b>
+<i>551</i>&nbsp;				else
+<b class="nc"><i>552</i>&nbsp;					return true;</b>
+<i>553</i>&nbsp;			}
+<b class="nc"><i>554</i>&nbsp;			if (!value1.equals(value2))</b>
+<b class="nc"><i>555</i>&nbsp;				return true;</b>
+<b class="nc"><i>556</i>&nbsp;		}</b>
+<b class="nc"><i>557</i>&nbsp;		return false;</b>
+<i>558</i>&nbsp;	}
+<i>559</i>&nbsp;	
+<i>560</i>&nbsp;	
+<i>561</i>&nbsp;	
+<i>562</i>&nbsp;	/**
+<i>563</i>&nbsp;	 * Get a JSON representation of a ParameterList&#39;s contents.
+<i>564</i>&nbsp;	 * 
+<i>565</i>&nbsp;	 * Note that the current Locale will not be applied to format numbers, and a decimal point will always be used.
+<i>566</i>&nbsp;	 * 
+<i>567</i>&nbsp;	 * @param params
+<i>568</i>&nbsp;	 * @param delimiter
+<i>569</i>&nbsp;	 * @return
+<i>570</i>&nbsp;	 */
+<i>571</i>&nbsp;	public static String getParameterListJSON(final ParameterList params, final String delimiter) {
+<b class="nc"><i>572</i>&nbsp;		Map&lt;String, Object&gt; map = params.getKeyValueParameters(false);</b>
+<b class="nc"><i>573</i>&nbsp;		return getParameterListJSON(map, delimiter);</b>
+<i>574</i>&nbsp;	}
+<i>575</i>&nbsp;	
+<i>576</i>&nbsp;	/**
+<i>577</i>&nbsp;	 * Get a JSON representation of a specified map (expected to contain parameters).
+<i>578</i>&nbsp;	 * 
+<i>579</i>&nbsp;	 * Note that the current Locale will not be applied to format numbers, and a decimal point will always be used.
+<i>580</i>&nbsp;	 * 
+<i>581</i>&nbsp;	 * @param map
+<i>582</i>&nbsp;	 * @param delimiter
+<i>583</i>&nbsp;	 * @return
+<i>584</i>&nbsp;	 */
+<i>585</i>&nbsp;	public static String getParameterListJSON(final Map&lt;String, ?&gt; map, final String delimiter) {
+<b class="nc"><i>586</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>587</i>&nbsp;		int counter = 0;</b>
+<b class="nc"><i>588</i>&nbsp;		sb.append(&quot;{&quot;);</b>
+<b class="nc"><i>589</i>&nbsp;		for (Entry&lt;String, ?&gt; entry : map.entrySet()) {</b>
+<b class="nc"><i>590</i>&nbsp;			if (counter &gt; 0)</b>
+<b class="nc"><i>591</i>&nbsp;				sb.append(delimiter);</b>
+<b class="nc"><i>592</i>&nbsp;			counter++;</b>
+<b class="nc"><i>593</i>&nbsp;			sb.append(&quot;\&quot;&quot;).append(entry.getKey()).append(&quot;\&quot;&quot;);</b>
+<b class="nc"><i>594</i>&nbsp;			sb.append(&quot;: &quot;);</b>
+<b class="nc"><i>595</i>&nbsp;			Object value = entry.getValue();</b>
+<b class="nc"><i>596</i>&nbsp;			if (value == null)</b>
+<b class="nc"><i>597</i>&nbsp;				sb.append(&quot;null&quot;);</b>
+<b class="nc"><i>598</i>&nbsp;			else if (value instanceof Boolean)</b>
+<b class="nc"><i>599</i>&nbsp;				sb.append(value.toString());</b>
+<b class="nc"><i>600</i>&nbsp;			else if (value instanceof Number) {</b>
+<i>601</i>&nbsp;//				sb.append(NumberFormat.getInstance().format(value));
+<b class="nc"><i>602</i>&nbsp;				sb.append(value.toString());</b>
+<i>603</i>&nbsp;			} else
+<b class="nc"><i>604</i>&nbsp;				sb.append(&quot;\&quot;&quot;).append(value).append(&quot;\&quot;&quot;);</b>
+<b class="nc"><i>605</i>&nbsp;			if (counter &lt; map.size())</b>
+<b class="nc"><i>606</i>&nbsp;				sb.append(&quot;,&quot;);</b>
+<b class="nc"><i>607</i>&nbsp;		}</b>
+<b class="nc"><i>608</i>&nbsp;		sb.append(&quot;}&quot;);</b>
+<b class="nc"><i>609</i>&nbsp;		return sb.toString();</b>
+<i>610</i>&nbsp;	}
+<i>611</i>&nbsp;	
+<i>612</i>&nbsp;//	/**
+<i>613</i>&nbsp;//	 * Put a parameter into the list, possibly replacing a previous parameter.
+<i>614</i>&nbsp;//	 * 
+<i>615</i>&nbsp;//	 * @param key
+<i>616</i>&nbsp;//	 * @param parameter
+<i>617</i>&nbsp;//	 * @return
+<i>618</i>&nbsp;//	 */
+<i>619</i>&nbsp;//	public Parameter&lt;? extends Object&gt; putParameter(String key, Parameter&lt;?&gt; parameter) {
+<i>620</i>&nbsp;//		return params.put(key, parameter);
+<i>621</i>&nbsp;//	}
+<i>622</i>&nbsp;	
+<i>623</i>&nbsp;
+<i>624</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

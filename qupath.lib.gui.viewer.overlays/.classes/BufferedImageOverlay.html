@@ -1,0 +1,279 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BufferedImageOverlay</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.overlays</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BufferedImageOverlay (qupath.lib.gui.viewer.overlays)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BufferedImageOverlay</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BufferedImageOverlay$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.overlays;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Graphics2D;
+<i>27</i>&nbsp;import java.awt.RenderingHints;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.LinkedHashMap;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import org.slf4j.Logger;
+<i>34</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import javafx.beans.property.ObjectProperty;
+<i>37</i>&nbsp;import javafx.beans.property.SimpleObjectProperty;
+<i>38</i>&nbsp;import qupath.lib.gui.viewer.ImageInterpolation;
+<i>39</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>40</i>&nbsp;import qupath.lib.images.ImageData;
+<i>41</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;/**
+<i>44</i>&nbsp; * An overlay used to display one or more {@code BufferedImage} objects on top of a primary image shown in a viewer.
+<i>45</i>&nbsp; * &lt;p&gt;
+<i>46</i>&nbsp; * The scaling for the {@code BufferedImage} is determined by an associated {@code ImageRegion}.
+<i>47</i>&nbsp; * 
+<i>48</i>&nbsp; * @author Pete Bankhead
+<i>49</i>&nbsp; */
+<i>50</i>&nbsp;public class BufferedImageOverlay extends AbstractOverlay {
+<i>51</i>&nbsp;	
+<b class="nc"><i>52</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(BufferedImageOverlay.class);</b>
+<i>53</i>&nbsp;    
+<b class="nc"><i>54</i>&nbsp;    private Map&lt;ImageRegion, BufferedImage&gt; regions = new LinkedHashMap&lt;&gt;();</b>
+<i>55</i>&nbsp;    
+<b class="nc"><i>56</i>&nbsp;    private ObjectProperty&lt;ImageInterpolation&gt; interpolation = new SimpleObjectProperty&lt;&gt;(ImageInterpolation.NEAREST);</b>
+<i>57</i>&nbsp;    
+<i>58</i>&nbsp;    /**
+<i>59</i>&nbsp;     * Create an overlay to show an image rescaled to overlay the entire current image in the specified viewer.
+<i>60</i>&nbsp;     * 
+<i>61</i>&nbsp;     * @param viewer
+<i>62</i>&nbsp;     * @param img
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    public BufferedImageOverlay(final QuPathViewer viewer, BufferedImage img) {
+<b class="nc"><i>65</i>&nbsp;        this(viewer,</b>
+<b class="nc"><i>66</i>&nbsp;        		ImageRegion.createInstance(0, 0, viewer.getServerWidth(), viewer.getServerHeight(), viewer.getZPosition(), viewer.getTPosition()),</b>
+<i>67</i>&nbsp;            img);
+<i>68</i>&nbsp;    }
+<i>69</i>&nbsp;    
+<i>70</i>&nbsp;    /**
+<i>71</i>&nbsp;     * Create an empty overlay without any images to display.
+<i>72</i>&nbsp;     * 
+<i>73</i>&nbsp;     * @param viewer
+<i>74</i>&nbsp;     */
+<i>75</i>&nbsp;    public BufferedImageOverlay(final QuPathViewer viewer) {
+<b class="nc"><i>76</i>&nbsp;        this(viewer, Collections.emptyMap());</b>
+<i>77</i>&nbsp;    }
+<i>78</i>&nbsp;    
+<i>79</i>&nbsp;        /**
+<i>80</i>&nbsp;     * Create an overlay to display one specified image region.
+<i>81</i>&nbsp;     * 
+<i>82</i>&nbsp;     * @param viewer
+<i>83</i>&nbsp;     * @param region
+<i>84</i>&nbsp;     * @param img
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    public BufferedImageOverlay(final QuPathViewer viewer, ImageRegion region, BufferedImage img) {
+<b class="nc"><i>87</i>&nbsp;        this(viewer, Collections.singletonMap(region, img));</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /**
+<i>91</i>&nbsp;     * Create an overlay to display multiple image regions.
+<i>92</i>&nbsp;     * 
+<i>93</i>&nbsp;     * @param viewer
+<i>94</i>&nbsp;     * @param regions
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    public BufferedImageOverlay(final QuPathViewer viewer, Map&lt;ImageRegion, BufferedImage&gt; regions) {
+<b class="nc"><i>97</i>&nbsp;        super(viewer.getOverlayOptions());</b>
+<b class="nc"><i>98</i>&nbsp;        if (regions != null)</b>
+<b class="nc"><i>99</i>&nbsp;        	this.regions.putAll(regions);</b>
+<i>100</i>&nbsp;    }
+<i>101</i>&nbsp;    
+<i>102</i>&nbsp;    
+<i>103</i>&nbsp;    /**
+<i>104</i>&nbsp;     * Set the preferred method of interpolation to use for display.
+<i>105</i>&nbsp;     * 
+<i>106</i>&nbsp;     * @param interpolation
+<i>107</i>&nbsp;     */
+<i>108</i>&nbsp;    public void setInterpolation(ImageInterpolation interpolation) {
+<b class="nc"><i>109</i>&nbsp;    		this.interpolation.set(interpolation);</b>
+<i>110</i>&nbsp;    }
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;    /**
+<i>113</i>&nbsp;     * Get the preferred method of interpolation to use for display.
+<i>114</i>&nbsp;     * @return 
+<i>115</i>&nbsp;     */
+<i>116</i>&nbsp;    public ImageInterpolation getInterpolation() {
+<b class="nc"><i>117</i>&nbsp;		return interpolation.get();</b>
+<i>118</i>&nbsp;    }
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;    /**
+<i>121</i>&nbsp;     * The preferred method of interpolation to use for display.
+<i>122</i>&nbsp;     * @return 
+<i>123</i>&nbsp;     */
+<i>124</i>&nbsp;    public ObjectProperty&lt;ImageInterpolation&gt; interpolationProperty() {
+<b class="nc"><i>125</i>&nbsp;    	return interpolation;</b>
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;    
+<i>128</i>&nbsp;    
+<i>129</i>&nbsp;    /**
+<i>130</i>&nbsp;     * Get the {@code Map} containing image regions to paint on this overlay.
+<i>131</i>&nbsp;     * 
+<i>132</i>&nbsp;     * This map can be modified, but the modifications will not be visible unless any viewer is repainted.
+<i>133</i>&nbsp;     * 
+<i>134</i>&nbsp;     * @return
+<i>135</i>&nbsp;     */
+<i>136</i>&nbsp;    public Map&lt;ImageRegion, BufferedImage&gt; getRegionMap() {
+<b class="nc"><i>137</i>&nbsp;    	return regions;</b>
+<i>138</i>&nbsp;    }
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;    @Override
+<i>141</i>&nbsp;    public void paintOverlay(Graphics2D g2d, ImageRegion imageRegion, double downsampleFactor, ImageData&lt;BufferedImage&gt; imageData, boolean paintCompletely) {
+<i>142</i>&nbsp;        // Don&#39;t show if objects aren&#39;t being shown
+<b class="nc"><i>143</i>&nbsp;        if (!getOverlayOptions().getShowDetections())</b>
+<i>144</i>&nbsp;            return;
+<i>145</i>&nbsp;
+<i>146</i>&nbsp;        // Paint the regions we have
+<b class="nc"><i>147</i>&nbsp;        ImageInterpolation interp = getInterpolation();</b>
+<b class="nc"><i>148</i>&nbsp;        switch (interp) {</b>
+<i>149</i>&nbsp;			case BILINEAR:
+<b class="nc"><i>150</i>&nbsp;	            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);</b>
+<b class="nc"><i>151</i>&nbsp;				break;</b>
+<i>152</i>&nbsp;			case NEAREST:
+<b class="nc"><i>153</i>&nbsp;	            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);</b>
+<b class="nc"><i>154</i>&nbsp;				break;</b>
+<i>155</i>&nbsp;			default:
+<b class="nc"><i>156</i>&nbsp;				logger.debug(&quot;Unknown interpolation value {}&quot;, interp);</b>
+<i>157</i>&nbsp;	    }
+<i>158</i>&nbsp;        
+<b class="nc"><i>159</i>&nbsp;        for (Map.Entry&lt;ImageRegion, BufferedImage&gt; entry : regions.entrySet()) {</b>
+<b class="nc"><i>160</i>&nbsp;            ImageRegion region = entry.getKey();</b>
+<i>161</i>&nbsp;            // Check if the region intersects or not
+<b class="nc"><i>162</i>&nbsp;            if (!imageRegion.intersects(region))</b>
+<b class="nc"><i>163</i>&nbsp;                continue;</b>
+<i>164</i>&nbsp;            // Draw the region
+<b class="nc"><i>165</i>&nbsp;            BufferedImage img = entry.getValue();</b>
+<b class="nc"><i>166</i>&nbsp;            g2d.drawImage(img, region.getX(), region.getY(), region.getWidth(), region.getHeight(), null);</b>
+<b class="nc"><i>167</i>&nbsp;        }</b>
+<i>168</i>&nbsp;    }
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

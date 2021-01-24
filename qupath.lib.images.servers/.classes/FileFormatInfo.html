@@ -1,0 +1,474 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FileFormatInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FileFormatInfo (qupath.lib.images.servers)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FileFormatInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (3/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    38.1%
+  </span>
+  <span class="absValue">
+    (8/ 21)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">FileFormatInfo$DefaultFormatInfo</td>
+<td class="coverageStat">
+  <span class="percent">
+    61.5%
+  </span>
+  <span class="absValue">
+    (8/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    34.1%
+  </span>
+  <span class="absValue">
+    (31/ 91)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">FileFormatInfo$ImageCheckType</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    57.9%
+  </span>
+  <span class="absValue">
+    (11/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    34.8%
+  </span>
+  <span class="absValue">
+    (39/ 112)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images.servers;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.RandomAccessFile;
+<i>29</i>&nbsp;import java.net.URI;
+<i>30</i>&nbsp;import java.nio.file.Files;
+<i>31</i>&nbsp;import java.nio.file.Path;
+<i>32</i>&nbsp;import java.util.HashMap;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import javax.imageio.ImageIO;
+<i>36</i>&nbsp;import javax.imageio.ImageReader;
+<i>37</i>&nbsp;import javax.imageio.ImageTypeSpecifier;
+<i>38</i>&nbsp;import javax.imageio.plugins.tiff.BaselineTIFFTagSet;
+<i>39</i>&nbsp;import javax.imageio.plugins.tiff.TIFFDirectory;
+<i>40</i>&nbsp;import javax.imageio.plugins.tiff.TIFFField;
+<i>41</i>&nbsp;import javax.imageio.stream.ImageInputStream;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import org.slf4j.Logger;
+<i>44</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Helper class that, given a path, determines some basic file format information without enlisting
+<i>51</i>&nbsp; * the help of an external library or performing extensive parsing of the data.
+<i>52</i>&nbsp; * &lt;p&gt;
+<i>53</i>&nbsp; * In particular, it attempts to extract some usable information from TIFF images using ImageIO to help 
+<i>54</i>&nbsp; * a reader determine whether or not it should attempt to read the image.
+<i>55</i>&nbsp; * 
+<i>56</i>&nbsp; * @author Pete Bankhead
+<i>57</i>&nbsp; *
+<i>58</i>&nbsp; */
+<b class="nc"><i>59</i>&nbsp;public class FileFormatInfo {</b>
+<i>60</i>&nbsp;	
+<b class="fc"><i>61</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(FileFormatInfo.class);</b>
+<i>62</i>&nbsp;	
+<b class="fc"><i>63</i>&nbsp;	private static Map&lt;URI, ImageCheckType&gt; cache = new HashMap&lt;&gt;();</b>
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;	 * Check the type of an image for a specified URI.
+<i>67</i>&nbsp;	 * &lt;p&gt;
+<i>68</i>&nbsp;	 * This will return a cached value if possible, to avoid applying (potentially costly) checks too often.
+<i>69</i>&nbsp;	 * @param uri
+<i>70</i>&nbsp;	 * @return
+<i>71</i>&nbsp;	 */
+<i>72</i>&nbsp;	public static synchronized ImageCheckType checkType(URI uri) {
+<b class="fc"><i>73</i>&nbsp;		ImageCheckType check = cache.get(uri);</b>
+<b class="fc"><i>74</i>&nbsp;		if (check == null) {</b>
+<b class="fc"><i>75</i>&nbsp;			check = checkImageType(uri);</b>
+<b class="fc"><i>76</i>&nbsp;			cache.put(uri, check);</b>
+<i>77</i>&nbsp;		}
+<b class="fc"><i>78</i>&nbsp;		return check;</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	/**
+<i>84</i>&nbsp;	 * Interface defining some basic image metadata that may be extracted from an image file 
+<i>85</i>&nbsp;	 * to help ascertain whether an {@link ImageServerBuilder} can handle it.
+<i>86</i>&nbsp;	 */
+<i>87</i>&nbsp;	public static interface ImageCheckType {
+<i>88</i>&nbsp;		
+<i>89</i>&nbsp;		/**
+<i>90</i>&nbsp;		 * Return true if URI has a scheme beginning with http.
+<i>91</i>&nbsp;		 * @return
+<i>92</i>&nbsp;		 */
+<i>93</i>&nbsp;		public boolean isURL();
+<i>94</i>&nbsp;		
+<i>95</i>&nbsp;		/**
+<i>96</i>&nbsp;		 * Returns true if URI is for a local file known/expected to be a TIFF image.
+<i>97</i>&nbsp;		 * @return
+<i>98</i>&nbsp;		 */
+<i>99</i>&nbsp;		public boolean isTiff();
+<i>100</i>&nbsp;		
+<i>101</i>&nbsp;		/**
+<i>102</i>&nbsp;		 * Returns true if URI is for a local file known/expected to be a BigTIFF image.
+<i>103</i>&nbsp;		 * @return
+<i>104</i>&nbsp;		 */
+<i>105</i>&nbsp;		public boolean isBigTiff();
+<i>106</i>&nbsp;		
+<i>107</i>&nbsp;		/**
+<i>108</i>&nbsp;		 * Get the image description, as stored in a TIFF, or null if no description is available.
+<i>109</i>&nbsp;		 * @return
+<i>110</i>&nbsp;		 */
+<i>111</i>&nbsp;		public String getDescription();
+<i>112</i>&nbsp;		
+<i>113</i>&nbsp;		/**
+<i>114</i>&nbsp;		 * Get a File object representing the local image file - or null if no file could be found.
+<i>115</i>&nbsp;		 * @return
+<i>116</i>&nbsp;		 */
+<i>117</i>&nbsp;		public File getFile();
+<i>118</i>&nbsp;		
+<i>119</i>&nbsp;		/**
+<i>120</i>&nbsp;		 * Return an estimate of the number of images if known, or -1 if unknown.
+<i>121</i>&nbsp;		 * &lt;p&gt;
+<i>122</i>&nbsp;		 * Note that the maximum value returned may be less than the total number of images, if scanning the full 
+<i>123</i>&nbsp;		 * file risks being prohibitively expensive (this has been found to be the case with some non-standard TIFF 
+<i>124</i>&nbsp;		 * images).
+<i>125</i>&nbsp;		 * @return
+<i>126</i>&nbsp;		 */
+<i>127</i>&nbsp;		public int nImages();
+<i>128</i>&nbsp;				
+<i>129</i>&nbsp;		/**
+<i>130</i>&nbsp;		 * Return the number of images with the largest image size, if known, or -1 if unknown.
+<i>131</i>&nbsp;		 * &lt;p&gt;
+<i>132</i>&nbsp;		 * This can be used to help distinguish images that contain multiple images where each image is really 
+<i>133</i>&nbsp;		 * another z-slice, channel or time point - rather than a macro or label, for example.
+<i>134</i>&nbsp;		 * @return
+<i>135</i>&nbsp;		 */
+<i>136</i>&nbsp;		public int nImagesLargest();
+<i>137</i>&nbsp;		
+<i>138</i>&nbsp;		/**
+<i>139</i>&nbsp;		 * Returns true if we can say with reasonable confidence that the image is not RGB.
+<i>140</i>&nbsp;		 * &lt;p&gt;
+<i>141</i>&nbsp;		 * This information can be used to prevent readers that only support RGB images from trying to read this one.
+<i>142</i>&nbsp;		 * However, note that it is permissible to return false in cases where the RGB status of the image is unclear.
+<i>143</i>&nbsp;		 * @return
+<i>144</i>&nbsp;		 */
+<i>145</i>&nbsp;		public boolean isNotRGB();
+<i>146</i>&nbsp;		
+<i>147</i>&nbsp;		/**
+<i>148</i>&nbsp;		 * Get the width of the largest image, if known.
+<i>149</i>&nbsp;		 * @return the width of the largest image, or -1 if this is not known
+<i>150</i>&nbsp;		 */
+<i>151</i>&nbsp;		public long getLargestImageWidth();
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;		/**
+<i>154</i>&nbsp;		 * Get the height of the largest image, if known.
+<i>155</i>&nbsp;		 * @return the height of the largest image, or -1 if this is not known
+<i>156</i>&nbsp;		 */
+<i>157</i>&nbsp;		public long getLargestImageHeight();
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;	}
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;	static class DefaultFormatInfo implements ImageCheckType {
+<i>162</i>&nbsp;		
+<b class="fc"><i>163</i>&nbsp;		private static int MAX_IMAGES = 100;</b>
+<i>164</i>&nbsp;		
+<b class="fc"><i>165</i>&nbsp;		private boolean isURL = false;</b>
+<b class="fc"><i>166</i>&nbsp;		private File file = null;</b>
+<i>167</i>&nbsp;		
+<b class="fc"><i>168</i>&nbsp;		private boolean isTiff = false;</b>
+<b class="fc"><i>169</i>&nbsp;		private boolean isBigTiff = false;</b>
+<i>170</i>&nbsp;		
+<b class="fc"><i>171</i>&nbsp;		private boolean notRGB = false;</b>
+<i>172</i>&nbsp;		
+<b class="fc"><i>173</i>&nbsp;		private int nImages = -1;</b>
+<b class="fc"><i>174</i>&nbsp;		private int nImagesLargest = -1;</b>
+<i>175</i>&nbsp;		private String description;
+<i>176</i>&nbsp;		
+<b class="fc"><i>177</i>&nbsp;		private long largestImageWidth = -1;</b>
+<b class="fc"><i>178</i>&nbsp;		private long largestImageHeight = -1;</b>
+<i>179</i>&nbsp;		
+<b class="fc"><i>180</i>&nbsp;		DefaultFormatInfo(URI uri) {</b>
+<b class="fc"><i>181</i>&nbsp;			String scheme = uri.getScheme();</b>
+<b class="fc"><i>182</i>&nbsp;			if (scheme != null &amp;&amp; scheme.startsWith(&quot;http&quot;)) {</b>
+<b class="nc"><i>183</i>&nbsp;				isURL = true;</b>
+<b class="nc"><i>184</i>&nbsp;				return;</b>
+<i>185</i>&nbsp;			}
+<b class="fc"><i>186</i>&nbsp;			Path path = GeneralTools.toPath(uri);</b>
+<b class="fc"><i>187</i>&nbsp;			if (!Files.exists(path)) {</b>
+<b class="nc"><i>188</i>&nbsp;				return;</b>
+<i>189</i>&nbsp;			}
+<b class="fc"><i>190</i>&nbsp;			File file = path.toFile();</b>
+<b class="fc"><i>191</i>&nbsp;			if (!file.isFile()) {</b>
+<b class="nc"><i>192</i>&nbsp;				return;</b>
+<i>193</i>&nbsp;			}
+<b class="fc"><i>194</i>&nbsp;			this.file = file;</b>
+<i>195</i>&nbsp;			
+<i>196</i>&nbsp;			// Check if we have a TIFF
+<i>197</i>&nbsp;			try {
+<i>198</i>&nbsp;				// TODO: Support checking zip-inside-TIFF (as frequently used with ImageJ)
+<b class="fc"><i>199</i>&nbsp;				try (RandomAccessFile in = new RandomAccessFile(file, &quot;r&quot;)) {				</b>
+<i>200</i>&nbsp;					boolean littleEndian;
+<b class="fc"><i>201</i>&nbsp;					int byteOrder = in.readShort();</b>
+<b class="fc"><i>202</i>&nbsp;					if (byteOrder == 0x4949) // &quot;II&quot;</b>
+<b class="nc"><i>203</i>&nbsp;						littleEndian = true;</b>
+<b class="fc"><i>204</i>&nbsp;					else if (byteOrder == 0x4d4d) // &quot;MM&quot;</b>
+<b class="nc"><i>205</i>&nbsp;						littleEndian = false;</b>
+<i>206</i>&nbsp;					else {
+<b class="fc"><i>207</i>&nbsp;						in.close();</b>
+<b class="fc"><i>208</i>&nbsp;						return;</b>
+<i>209</i>&nbsp;					}
+<i>210</i>&nbsp;					
+<i>211</i>&nbsp;					// Check if standard (key: 42) or BigTiff (key: 43)
+<b class="nc"><i>212</i>&nbsp;					int special = readShort(in, littleEndian);</b>
+<b class="nc"><i>213</i>&nbsp;					if (special == 42)</b>
+<b class="nc"><i>214</i>&nbsp;						isTiff = true;</b>
+<b class="nc"><i>215</i>&nbsp;					else if (special == 43) {</b>
+<b class="nc"><i>216</i>&nbsp;						isTiff = true;</b>
+<b class="nc"><i>217</i>&nbsp;						isBigTiff = true;</b>
+<i>218</i>&nbsp;					} else
+<b class="nc"><i>219</i>&nbsp;						return;</b>
+<b class="fc"><i>220</i>&nbsp;				}</b>
+<i>221</i>&nbsp;				
+<i>222</i>&nbsp;
+<i>223</i>&nbsp;				// If we do have a TIFF, try to get more from the metadata
+<i>224</i>&nbsp;				
+<b class="nc"><i>225</i>&nbsp;				try (ImageInputStream stream = ImageIO.createImageInputStream(file)) {</b>
+<b class="nc"><i>226</i>&nbsp;					ImageReader reader = ImageIO.getImageReaders(stream).next();</b>
+<b class="nc"><i>227</i>&nbsp;					reader.setInput(stream);</b>
+<i>228</i>&nbsp;
+<b class="nc"><i>229</i>&nbsp;					TIFFDirectory tiffDir = TIFFDirectory.createFromMetadata(reader.getImageMetadata(0));</b>
+<b class="nc"><i>230</i>&nbsp;					TIFFField tempDescription = tiffDir.getTIFFField(BaselineTIFFTagSet.TAG_IMAGE_DESCRIPTION);</b>
+<b class="nc"><i>231</i>&nbsp;					description = tempDescription == null ? null : tempDescription.getAsString(0);</b>
+<i>232</i>&nbsp;
+<b class="nc"><i>233</i>&nbsp;					nImages = reader.getNumImages(false);</b>
+<b class="nc"><i>234</i>&nbsp;					int nTestImages = nImages &gt;= 0 ? nImages : MAX_IMAGES;</b>
+<i>235</i>&nbsp;
+<b class="nc"><i>236</i>&nbsp;					if (nTestImages &gt; 0) {</b>
+<b class="nc"><i>237</i>&nbsp;						int i = 0;</b>
+<i>238</i>&nbsp;						try {
+<b class="nc"><i>239</i>&nbsp;							int largestCount = 0;</b>
+<b class="nc"><i>240</i>&nbsp;							long maxNumPixels = 0L;</b>
+<b class="nc"><i>241</i>&nbsp;							boolean largestMaybeRGB = false;</b>
+<b class="nc"><i>242</i>&nbsp;							while (i &lt; nTestImages) {</b>
+<b class="nc"><i>243</i>&nbsp;								long width = reader.getWidth(i);</b>
+<b class="nc"><i>244</i>&nbsp;								long height = reader.getHeight(i);</b>
+<b class="nc"><i>245</i>&nbsp;								long nPixels = width * height;</b>
+<b class="nc"><i>246</i>&nbsp;								ImageTypeSpecifier specifier = reader.getRawImageType(i);</b>
+<b class="nc"><i>247</i>&nbsp;								if (nPixels &gt; maxNumPixels) {</b>
+<b class="nc"><i>248</i>&nbsp;									maxNumPixels = nPixels;</b>
+<b class="nc"><i>249</i>&nbsp;									largestCount = 1;</b>
+<b class="nc"><i>250</i>&nbsp;									largestMaybeRGB = maybeRGB(specifier);</b>
+<b class="nc"><i>251</i>&nbsp;									largestImageWidth = width;</b>
+<b class="nc"><i>252</i>&nbsp;									largestImageHeight = height;</b>
+<b class="nc"><i>253</i>&nbsp;								} else if (width == largestImageWidth &amp;&amp; height == largestImageHeight) {</b>
+<b class="nc"><i>254</i>&nbsp;									largestCount++;</b>
+<b class="nc"><i>255</i>&nbsp;									largestMaybeRGB = largestMaybeRGB &amp;&amp; maybeRGB(specifier);</b>
+<i>256</i>&nbsp;								}
+<b class="nc"><i>257</i>&nbsp;								i++;</b>
+<b class="nc"><i>258</i>&nbsp;								nImagesLargest = largestCount;</b>
+<b class="nc"><i>259</i>&nbsp;								notRGB = !largestMaybeRGB;</b>
+<b class="nc"><i>260</i>&nbsp;							}</b>
+<b class="nc"><i>261</i>&nbsp;						} catch (IndexOutOfBoundsException e) {</b>
+<b class="nc"><i>262</i>&nbsp;							nImages = i - 1;</b>
+<b class="nc"><i>263</i>&nbsp;							logger.debug(&quot;Checked first {} images only of {}&quot;, i-1, uri);</b>
+<b class="nc"><i>264</i>&nbsp;						}</b>
+<i>265</i>&nbsp;					}
+<b class="nc"><i>266</i>&nbsp;				}</b>
+<i>267</i>&nbsp;				
+<b class="nc"><i>268</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>269</i>&nbsp;				logger.warn(&quot;Unable to obtain full image format info for {} ({})&quot;, uri, e.getLocalizedMessage() == null ? e.getClass() : e.getLocalizedMessage());</b>
+<b class="nc"><i>270</i>&nbsp;				logger.debug(&quot;Format info error&quot;, e);</b>
+<b class="nc"><i>271</i>&nbsp;			}</b>
+<b class="nc"><i>272</i>&nbsp;		}</b>
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;		@Override
+<i>275</i>&nbsp;		public boolean isURL() {
+<b class="fc"><i>276</i>&nbsp;			return isURL;</b>
+<i>277</i>&nbsp;		}
+<i>278</i>&nbsp;		
+<i>279</i>&nbsp;		@Override
+<i>280</i>&nbsp;		public String getDescription() {
+<b class="fc"><i>281</i>&nbsp;			return description;</b>
+<i>282</i>&nbsp;		}
+<i>283</i>&nbsp;
+<i>284</i>&nbsp;		@Override
+<i>285</i>&nbsp;		public boolean isTiff() {
+<b class="fc"><i>286</i>&nbsp;			return isTiff;</b>
+<i>287</i>&nbsp;		}
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;		@Override
+<i>290</i>&nbsp;		public boolean isBigTiff() {
+<b class="nc"><i>291</i>&nbsp;			return isBigTiff;</b>
+<i>292</i>&nbsp;		}
+<i>293</i>&nbsp;
+<i>294</i>&nbsp;		@Override
+<i>295</i>&nbsp;		public File getFile() {
+<b class="fc"><i>296</i>&nbsp;			return file;</b>
+<i>297</i>&nbsp;		}
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;		@Override
+<i>300</i>&nbsp;		public int nImages() {
+<b class="nc"><i>301</i>&nbsp;			return nImages;</b>
+<i>302</i>&nbsp;		}
+<i>303</i>&nbsp;		
+<i>304</i>&nbsp;		@Override
+<i>305</i>&nbsp;		public int nImagesLargest() {
+<b class="nc"><i>306</i>&nbsp;			return nImagesLargest;</b>
+<i>307</i>&nbsp;		}
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;		@Override
+<i>310</i>&nbsp;		public boolean isNotRGB() {
+<b class="nc"><i>311</i>&nbsp;			return notRGB;</b>
+<i>312</i>&nbsp;		}
+<i>313</i>&nbsp;		
+<i>314</i>&nbsp;		@Override
+<i>315</i>&nbsp;		public long getLargestImageWidth() {
+<b class="fc"><i>316</i>&nbsp;			return largestImageWidth;</b>
+<i>317</i>&nbsp;		}
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;		@Override
+<i>320</i>&nbsp;		public long getLargestImageHeight() {
+<b class="fc"><i>321</i>&nbsp;			return largestImageHeight;</b>
+<i>322</i>&nbsp;		}
+<i>323</i>&nbsp;
+<i>324</i>&nbsp;		@Override
+<i>325</i>&nbsp;		public String toString() {
+<b class="nc"><i>326</i>&nbsp;			return &quot;DefaultFormatInfo [isURL=&quot; + isURL + &quot;, file=&quot; + file + &quot;, isTiff=&quot; + isTiff + &quot;, isBigTiff=&quot;</b>
+<i>327</i>&nbsp;					+ isBigTiff + &quot;, notRGB=&quot; + notRGB + &quot;, nImages=&quot; + nImages + &quot;, nImagesLargest=&quot; + nImagesLargest
+<b class="nc"><i>328</i>&nbsp;					+ &quot;, description=&quot; + Boolean.toString(description != null) + &quot;]&quot;;</b>
+<i>329</i>&nbsp;		}
+<i>330</i>&nbsp;		
+<i>331</i>&nbsp;	}
+<i>332</i>&nbsp;	
+<i>333</i>&nbsp;	/**
+<i>334</i>&nbsp;	 * Try to determine from a specifier whether it might refer to an RGB image or not.
+<i>335</i>&nbsp;	 * @param specifier
+<i>336</i>&nbsp;	 * @return
+<i>337</i>&nbsp;	 */
+<i>338</i>&nbsp;	static boolean maybeRGB(ImageTypeSpecifier specifier) {
+<b class="nc"><i>339</i>&nbsp;		int nBands = specifier.getNumBands();</b>
+<b class="nc"><i>340</i>&nbsp;		if (nBands &lt; 3 || nBands &gt; 4)</b>
+<b class="nc"><i>341</i>&nbsp;			return false;</b>
+<b class="nc"><i>342</i>&nbsp;		for (int i = 0; i &lt; nBands; i++) {</b>
+<b class="nc"><i>343</i>&nbsp;			if (specifier.getBitsPerBand(i) != 8)</b>
+<b class="nc"><i>344</i>&nbsp;				return false;</b>
+<i>345</i>&nbsp;		}
+<b class="nc"><i>346</i>&nbsp;		return true;</b>
+<i>347</i>&nbsp;	}
+<i>348</i>&nbsp;	
+<i>349</i>&nbsp;	static ImageCheckType checkImageType(final URI uri) {
+<b class="fc"><i>350</i>&nbsp;		return new DefaultFormatInfo(uri);</b>
+<i>351</i>&nbsp;	}
+<i>352</i>&nbsp;	
+<i>353</i>&nbsp;	static int readShort(final RandomAccessFile in, final boolean littleEndian) throws IOException {
+<b class="nc"><i>354</i>&nbsp;		int b1 = in.read();</b>
+<b class="nc"><i>355</i>&nbsp;		int b2 = in.read();</b>
+<b class="nc"><i>356</i>&nbsp;		if (littleEndian)</b>
+<b class="nc"><i>357</i>&nbsp;			return ((b2&lt;&lt;8) + b1);</b>
+<i>358</i>&nbsp;		else
+<b class="nc"><i>359</i>&nbsp;			return ((b1&lt;&lt;8) + b2);</b>
+<i>360</i>&nbsp;	}
+<i>361</i>&nbsp;	
+<i>362</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

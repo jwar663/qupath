@@ -1,0 +1,119 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: QuPathViewerListener</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: QuPathViewerListener (qupath.lib.gui.viewer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">QuPathViewerListener</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.EventListener;
+<i>27</i>&nbsp;import java.awt.Shape;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import qupath.lib.images.ImageData;
+<i>31</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;/**
+<i>34</i>&nbsp; * Interface for defining a listener that needs to know whenever the data 
+<i>35</i>&nbsp; * related to a QuPathViewer has changed in some way - such as by changing 
+<i>36</i>&nbsp; * the underlying ImageData, or by moving the field of view.
+<i>37</i>&nbsp; * 
+<i>38</i>&nbsp; * @author Pete Bankhead
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; */
+<i>41</i>&nbsp;public interface QuPathViewerListener extends EventListener {
+<i>42</i>&nbsp;	
+<i>43</i>&nbsp;	/**
+<i>44</i>&nbsp;	 * Called with the image data within a viewer has changed.
+<i>45</i>&nbsp;	 * @param viewer the viewer whose image has changed
+<i>46</i>&nbsp;	 * @param imageDataOld the image previously open in the viewer
+<i>47</i>&nbsp;	 * @param imageDataNew the image now open in the viewer
+<i>48</i>&nbsp;	 */
+<i>49</i>&nbsp;	public void imageDataChanged(QuPathViewer viewer, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew);	
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;	 * Called when the visible region has changed in a viewer.
+<i>53</i>&nbsp;	 * @param viewer the viewer whose visible region hs changed.
+<i>54</i>&nbsp;	 * @param shape shape representing the new visible region (in image pixel coordinates).
+<i>55</i>&nbsp;	 *              This is rectangular, but may also be rotated.
+<i>56</i>&nbsp;	 */
+<i>57</i>&nbsp;	public void visibleRegionChanged(QuPathViewer viewer, Shape shape);	
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;	/**
+<i>60</i>&nbsp;	 * Called when the primary selected object has changed in a viewer.
+<i>61</i>&nbsp;	 * @param viewer the viewer
+<i>62</i>&nbsp;	 * @param pathObjectSelected
+<i>63</i>&nbsp;	 */
+<i>64</i>&nbsp;	public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected);
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * Called when a viewer is closed.
+<i>68</i>&nbsp;	 * @param viewer the viewer that has been closed.
+<i>69</i>&nbsp;	 */
+<i>70</i>&nbsp;	public void viewerClosed(QuPathViewer viewer);
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

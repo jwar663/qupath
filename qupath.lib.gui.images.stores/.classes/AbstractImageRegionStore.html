@@ -1,0 +1,988 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractImageRegionStore</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.images.stores</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractImageRegionStore (qupath.lib.gui.images.stores)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractImageRegionStore</td>
+<td class="coverageStat">
+  <span class="percent">
+    48.3%
+  </span>
+  <span class="absValue">
+    (14/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44.5%
+  </span>
+  <span class="absValue">
+    (85/ 191)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">AbstractImageRegionStore$DefaultTileWorker</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AbstractImageRegionStore$DefaultTileWorker$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (5/ 8)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AbstractImageRegionStore$TileRequestCollection</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AbstractImageRegionStore$TileRequestComparator</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (1/ 5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">AbstractImageRegionStore$TileRequestManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.3%
+  </span>
+  <span class="absValue">
+    (9/ 59)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    47.9%
+  </span>
+  <span class="absValue">
+    (23/ 48)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    34.5%
+  </span>
+  <span class="absValue">
+    (109/ 316)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.images.stores;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Shape;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Collections;
+<i>31</i>&nbsp;import java.util.Comparator;
+<i>32</i>&nbsp;import java.util.HashMap;
+<i>33</i>&nbsp;import java.util.Iterator;
+<i>34</i>&nbsp;import java.util.List;
+<i>35</i>&nbsp;import java.util.Map;
+<i>36</i>&nbsp;import java.util.Map.Entry;
+<i>37</i>&nbsp;import java.util.concurrent.Callable;
+<i>38</i>&nbsp;import java.util.concurrent.ExecutionException;
+<i>39</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>40</i>&nbsp;import java.util.concurrent.Executors;
+<i>41</i>&nbsp;import java.util.concurrent.FutureTask;
+<i>42</i>&nbsp;import java.util.stream.Collectors;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.slf4j.Logger;
+<i>45</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import com.google.common.cache.Cache;
+<i>48</i>&nbsp;import com.google.common.cache.CacheBuilder;
+<i>49</i>&nbsp;import com.google.common.cache.RemovalCause;
+<i>50</i>&nbsp;import com.google.common.cache.Weigher;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>53</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>54</i>&nbsp;import qupath.lib.gui.images.stores.TileWorker;
+<i>55</i>&nbsp;import qupath.lib.images.servers.GeneratingImageServer;
+<i>56</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>57</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;/**
+<i>61</i>&nbsp; * A generic ImageRegionStore.
+<i>62</i>&nbsp; * 
+<i>63</i>&nbsp; * 
+<i>64</i>&nbsp; * @author Pete Bankhead
+<i>65</i>&nbsp; * @param &lt;T&gt; 
+<i>66</i>&nbsp; *
+<i>67</i>&nbsp; */
+<i>68</i>&nbsp;abstract class AbstractImageRegionStore&lt;T&gt; implements ImageRegionStore&lt;T&gt; {
+<i>69</i>&nbsp;	
+<i>70</i>&nbsp;	private static final int DEFAULT_THUMBNAIL_WIDTH = 1000;
+<i>71</i>&nbsp;	
+<b class="fc"><i>72</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(AbstractImageRegionStore.class);</b>
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	// Collection of SwingWorkers used to request image tiles
+<b class="fc"><i>75</i>&nbsp;	private List&lt;TileWorker&lt;T&gt;&gt; workers = Collections.synchronizedList(new ArrayList&lt;&gt;());</b>
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	// Set of regions for which a tile has been requested, but not yet fully loaded
+<b class="fc"><i>78</i>&nbsp;	private Map&lt;RegionRequest, TileWorker&lt;T&gt;&gt; waitingMap = Collections.synchronizedMap(new HashMap&lt;&gt;());</b>
+<i>79</i>&nbsp;
+<b class="fc"><i>80</i>&nbsp;	private boolean clearingCache = false; // Flag that cache is currently being cleared</b>
+<i>81</i>&nbsp;	
+<b class="fc"><i>82</i>&nbsp;	protected static boolean paintTileBorders = false; // For debugging only, not necessarily used</b>
+<i>83</i>&nbsp;
+<b class="fc"><i>84</i>&nbsp;	protected List&lt;TileListener&lt;T&gt;&gt; tileListeners = Collections.synchronizedList(new ArrayList&lt;&gt;());</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;	// Cache of image tiles for specified regions
+<i>87</i>&nbsp;	protected Map&lt;RegionRequest, T&gt; cache;
+<i>88</i>&nbsp;	// Cache image thumbnails
+<i>89</i>&nbsp;	protected Map&lt;RegionRequest, T&gt; thumbnailCache;
+<i>90</i>&nbsp;	
+<i>91</i>&nbsp;	/**
+<i>92</i>&nbsp;	 * Maximum size of thumbnail, in any dimension.
+<i>93</i>&nbsp;	 */
+<i>94</i>&nbsp;	private int maxThumbnailSize;
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Minimum size of thumbnail, in any dimension.
+<i>98</i>&nbsp;	 */
+<b class="fc"><i>99</i>&nbsp;	private int minThumbnailSize = 16;</b>
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Maximum tile cache size, in bytes
+<i>103</i>&nbsp;	 */
+<i>104</i>&nbsp;	private long tileCacheSizeBytes;
+<i>105</i>&nbsp;	
+<b class="fc"><i>106</i>&nbsp;	private TileRequestManager manager = new TileRequestManager(10);</b>
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;	// Create two threadpools: a larger one for images that need to be fetched (e.g. from disk, cloud storage), and a smaller one
+<i>109</i>&nbsp;	// for painting image tiles... the reason being that the high latency of distantly-stored images otherwise risks lowering
+<i>110</i>&nbsp;	// repainting performance
+<b class="fc"><i>111</i>&nbsp;	private ExecutorService pool = Executors.newFixedThreadPool(Math.max(8, Math.min(Runtime.getRuntime().availableProcessors() * 4, 32)), ThreadTools.createThreadFactory(&quot;region-store-&quot;, false));</b>
+<b class="fc"><i>112</i>&nbsp;	private ExecutorService poolLocal = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors(), ThreadTools.createThreadFactory(&quot;region-store-local-&quot;, false));</b>
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;	
+<i>115</i>&nbsp;
+<b class="fc"><i>116</i>&nbsp;	protected AbstractImageRegionStore(final SizeEstimator&lt;T&gt; sizeEstimator, final int thumbnailSize, final long tileCacheSizeBytes) {</b>
+<b class="fc"><i>117</i>&nbsp;		this.maxThumbnailSize = thumbnailSize;</b>
+<b class="fc"><i>118</i>&nbsp;		this.tileCacheSizeBytes = tileCacheSizeBytes;</b>
+<i>119</i>&nbsp;		
+<i>120</i>&nbsp;		// Because Guava uses integer weights, and we sometimes have *very* large images, we convert our size estimates KB
+<b class="fc"><i>121</i>&nbsp;		Weigher&lt;RegionRequest, T&gt; weigher = (var r, var t) -&gt; (int)Long.min(Integer.MAX_VALUE, sizeEstimator.getApproxImageSize(t)/1024);</b>
+<b class="fc"><i>122</i>&nbsp;		long maxWeight = Long.max(1, tileCacheSizeBytes / 1024);</b>
+<i>123</i>&nbsp;		// If concurrency &gt; 1, the maximum size for an individual tile becomes maxWeight/concurrencyLevel
+<i>124</i>&nbsp;		// This makes it more difficult to tune the cache size when working with large, non-pyramidal images
+<b class="fc"><i>125</i>&nbsp;		int concurrencyLevel = 1;</b>
+<b class="fc"><i>126</i>&nbsp;		Cache&lt;RegionRequest, T&gt; originalCache = CacheBuilder.newBuilder()</b>
+<b class="fc"><i>127</i>&nbsp;				.weigher(weigher)</b>
+<b class="fc"><i>128</i>&nbsp;				.maximumWeight(maxWeight)</b>
+<b class="fc"><i>129</i>&nbsp;				.softValues()</b>
+<b class="fc"><i>130</i>&nbsp;				.concurrencyLevel(concurrencyLevel)</b>
+<i>131</i>&nbsp;//				.recordStats()
+<b class="fc"><i>132</i>&nbsp;				.removalListener(n -&gt; {</b>
+<i>133</i>&nbsp;//					System.err.println(n.getKey() + &quot; (&quot; + cache.size() + &quot;)&quot;);
+<b class="fc"><i>134</i>&nbsp;					if (n.getCause() == RemovalCause.COLLECTED)</b>
+<b class="nc"><i>135</i>&nbsp;						logger.debug(&quot;Cached tile collected&quot; + n.getKey() + &quot; (cache size=&quot; + cache.size()+&quot;)&quot;);</b>
+<b class="fc"><i>136</i>&nbsp;					})</b>
+<b class="fc"><i>137</i>&nbsp;				.build();</b>
+<b class="fc"><i>138</i>&nbsp;		cache = originalCache.asMap();</b>
+<i>139</i>&nbsp;
+<b class="fc"><i>140</i>&nbsp;		Cache&lt;RegionRequest, T&gt; originalThumbnailCache = CacheBuilder.newBuilder()</b>
+<b class="fc"><i>141</i>&nbsp;				.weigher(weigher)</b>
+<b class="fc"><i>142</i>&nbsp;				.concurrencyLevel(1)</b>
+<b class="fc"><i>143</i>&nbsp;				.maximumWeight(maxWeight)</b>
+<b class="fc"><i>144</i>&nbsp;				.softValues()</b>
+<b class="fc"><i>145</i>&nbsp;				.build();</b>
+<i>146</i>&nbsp;		
+<b class="fc"><i>147</i>&nbsp;		thumbnailCache = originalThumbnailCache.asMap();</b>
+<i>148</i>&nbsp;		
+<i>149</i>&nbsp;//		cache = new DefaultRegionCache&lt;&gt;(sizeEstimator, tileCacheSizeBytes);
+<i>150</i>&nbsp;//		thumbnailCache = new DefaultRegionCache&lt;&gt;(sizeEstimator, tileCacheSizeBytes/4);
+<b class="fc"><i>151</i>&nbsp;	}</b>
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;	
+<i>154</i>&nbsp;	protected AbstractImageRegionStore(final SizeEstimator&lt;T&gt; sizeEstimator, final long tileCacheSizeBytes) {
+<b class="nc"><i>155</i>&nbsp;		this(sizeEstimator, DEFAULT_THUMBNAIL_WIDTH, tileCacheSizeBytes);</b>
+<b class="nc"><i>156</i>&nbsp;	}</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * Get the tile cache size, in bytes.
+<i>160</i>&nbsp;	 * Image tiles larger than this cannot be cached.
+<i>161</i>&nbsp;	 * @return
+<i>162</i>&nbsp;	 */
+<i>163</i>&nbsp;	public long getTileCacheSize() {
+<b class="nc"><i>164</i>&nbsp;		return tileCacheSizeBytes;</b>
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * 
+<i>169</i>&nbsp;	 * @param width
+<i>170</i>&nbsp;	 * @param height
+<i>171</i>&nbsp;	 * @return
+<i>172</i>&nbsp;	 */
+<i>173</i>&nbsp;	double calculateThumbnailDownsample(int width, int height) {
+<i>174</i>&nbsp;		// We&#39;ll have trouble if we try to downsample until we have very few pixels in any dimension
+<b class="nc"><i>175</i>&nbsp;		double maxDim = Math.max(width, height);</b>
+<b class="nc"><i>176</i>&nbsp;		double minDim = Math.min(width, height);</b>
+<b class="nc"><i>177</i>&nbsp;		if (minDim &gt; minThumbnailSize) {</b>
+<b class="nc"><i>178</i>&nbsp;			double maxDownsample = minDim / minThumbnailSize;</b>
+<b class="nc"><i>179</i>&nbsp;			return Math.max(1, Math.min((double)maxDim / maxThumbnailSize, maxDownsample));				</b>
+<i>180</i>&nbsp;		}
+<b class="nc"><i>181</i>&nbsp;		return 1.0;</b>
+<i>182</i>&nbsp;	}
+<i>183</i>&nbsp;	
+<i>184</i>&nbsp;
+<i>185</i>&nbsp;	RegionRequest getThumbnailRequest(final ImageServer&lt;T&gt; server, final int zPosition, final int tPosition) {
+<i>186</i>&nbsp;		// Determine thumbnail size
+<b class="fc"><i>187</i>&nbsp;		double downsample = 1;</b>
+<b class="fc"><i>188</i>&nbsp;		if (isTiledImageServer(server)) {</b>
+<b class="nc"><i>189</i>&nbsp;			downsample = calculateThumbnailDownsample(server.getWidth(), server.getHeight());</b>
+<i>190</i>&nbsp;		}
+<i>191</i>&nbsp;		// Ensure we aren&#39;t accidentally upsampling (shouldn&#39;t actually happen)
+<b class="fc"><i>192</i>&nbsp;		downsample = Math.max(downsample, 1);</b>
+<b class="fc"><i>193</i>&nbsp;		return RegionRequest.createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight(), zPosition, tPosition);</b>
+<i>194</i>&nbsp;	}
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;	
+<i>197</i>&nbsp;	/* (non-Javadoc)
+<i>198</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#getCachedThumbnail(qupath.lib.images.servers.ImageServer, int, int)
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	@Override
+<i>201</i>&nbsp;	public T getCachedThumbnail(ImageServer&lt;T&gt; server, int zPosition, int tPosition) {
+<b class="nc"><i>202</i>&nbsp;		RegionRequest request = getThumbnailRequest(server, zPosition, tPosition);</b>
+<b class="nc"><i>203</i>&nbsp;		return thumbnailCache.get(request);</b>
+<i>204</i>&nbsp;	}
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;	/**
+<i>208</i>&nbsp;	 * Register a request so that the tile request queue will be populated, including potentially for nearby tiles (i.e. preemptively).
+<i>209</i>&nbsp;	 * @param tileListener
+<i>210</i>&nbsp;	 * @param server
+<i>211</i>&nbsp;	 * @param clipShape
+<i>212</i>&nbsp;	 * @param downsampleFactor
+<i>213</i>&nbsp;	 * @param zPosition
+<i>214</i>&nbsp;	 * @param tPosition
+<i>215</i>&nbsp;	 */
+<i>216</i>&nbsp;	protected void registerRequest(final TileListener&lt;T&gt; tileListener, final ImageServer&lt;T&gt; server, final Shape clipShape, final double downsampleFactor, final int zPosition, final int tPosition) {
+<b class="nc"><i>217</i>&nbsp;		manager.registerRequest(tileListener, server, clipShape, downsampleFactor, zPosition, tPosition);</b>
+<b class="nc"><i>218</i>&nbsp;	}</b>
+<i>219</i>&nbsp;	
+<i>220</i>&nbsp;	protected void registerRequest(final TileListener&lt;T&gt; tileListener, final ImageServer&lt;T&gt; server, final RegionRequest region, final double downsampleFactor, final int zPosition, final int tPosition) {
+<b class="nc"><i>221</i>&nbsp;		registerRequest(tileListener, server, AwtTools.getBounds(region), downsampleFactor, zPosition, tPosition);</b>
+<b class="nc"><i>222</i>&nbsp;	}</b>
+<i>223</i>&nbsp;	
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;	/* (non-Javadoc)
+<i>226</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#addTileListener(qupath.lib.images.stores.TileListener)
+<i>227</i>&nbsp;	 */
+<i>228</i>&nbsp;	@Override
+<i>229</i>&nbsp;	public void addTileListener(TileListener&lt;T&gt; listener) {
+<b class="fc"><i>230</i>&nbsp;		tileListeners.add(listener);</b>
+<b class="fc"><i>231</i>&nbsp;	}</b>
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;	
+<i>234</i>&nbsp;	
+<i>235</i>&nbsp;	public Map&lt;RegionRequest, T&gt; getCache() {
+<b class="fc"><i>236</i>&nbsp;		return cache;</b>
+<i>237</i>&nbsp;	}
+<i>238</i>&nbsp;	
+<i>239</i>&nbsp;	
+<i>240</i>&nbsp;	/* (non-Javadoc)
+<i>241</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#removeTileListener(qupath.lib.images.stores.TileListener)
+<i>242</i>&nbsp;	 */
+<i>243</i>&nbsp;	@Override
+<i>244</i>&nbsp;	public void removeTileListener(TileListener&lt;T&gt; listener) {
+<b class="nc"><i>245</i>&nbsp;		tileListeners.remove(listener);</b>
+<b class="nc"><i>246</i>&nbsp;	}</b>
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;	
+<i>250</i>&nbsp;	/* (non-Javadoc)
+<i>251</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#getCachedTile(qupath.lib.images.servers.ImageServer, qupath.lib.regions.RegionRequest)
+<i>252</i>&nbsp;	 */
+<i>253</i>&nbsp;	@Override
+<i>254</i>&nbsp;	public T getCachedTile(ImageServer&lt;T&gt; server, RegionRequest request) {
+<b class="fc"><i>255</i>&nbsp;		return cache.get(request);</b>
+<i>256</i>&nbsp;	}	
+<i>257</i>&nbsp;	
+<i>258</i>&nbsp;	/**
+<i>259</i>&nbsp;	 * Get a map of all cached tiles pertaining to a specific ImageServer.
+<i>260</i>&nbsp;	 * @param server
+<i>261</i>&nbsp;	 * @return
+<i>262</i>&nbsp;	 */
+<i>263</i>&nbsp;	public synchronized Map&lt;RegionRequest, T&gt; getCachedTilesForServer(ImageServer&lt;T&gt; server) {
+<b class="nc"><i>264</i>&nbsp;		Map&lt;RegionRequest, T&gt; tiles = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>265</i>&nbsp;		var serverPath = server.getPath();</b>
+<b class="nc"><i>266</i>&nbsp;		for (var entry : cache.entrySet()) {</b>
+<b class="nc"><i>267</i>&nbsp;			if (entry.getValue() != null &amp;&amp; entry.getKey().getPath().equals(serverPath))</b>
+<b class="nc"><i>268</i>&nbsp;				tiles.put(entry.getKey(), entry.getValue());</b>
+<b class="nc"><i>269</i>&nbsp;		}</b>
+<b class="nc"><i>270</i>&nbsp;		return tiles;</b>
+<i>271</i>&nbsp;	}	
+<i>272</i>&nbsp;	
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;	static boolean isTiledImageServer(ImageServer&lt;?&gt; server) {
+<b class="fc"><i>275</i>&nbsp;		return server.getPreferredDownsamples().length &gt; 1;</b>
+<i>276</i>&nbsp;//		return server.getWidth() &gt; PathPrefs.maxNonWholeTiledImageLength() || server.getHeight() &gt; PathPrefs.maxNonWholeTiledImageLength();
+<i>277</i>&nbsp;	}
+<i>278</i>&nbsp;	
+<i>279</i>&nbsp;	
+<i>280</i>&nbsp;	/**
+<i>281</i>&nbsp;	 * Every TileWorker should call this when the task is done!
+<i>282</i>&nbsp;	 * 
+<i>283</i>&nbsp;	 * @param worker
+<i>284</i>&nbsp;	 */
+<i>285</i>&nbsp;	protected void workerComplete(final TileWorker&lt;T&gt; worker) {
+<b class="fc"><i>286</i>&nbsp;		workers.remove(worker);</b>
+<b class="fc"><i>287</i>&nbsp;		manager.taskCompleted(worker);</b>
+<b class="fc"><i>288</i>&nbsp;   		if (worker.isCancelled() || !stopWaiting(worker.getRequest())) {</b>
+<b class="nc"><i>289</i>&nbsp;   			return;</b>
+<i>290</i>&nbsp;   		}
+<i>291</i>&nbsp;		try {
+<b class="fc"><i>292</i>&nbsp;			T imgNew = worker.get();</b>
+<b class="fc"><i>293</i>&nbsp;	   		if (imgNew == null)</b>
+<b class="nc"><i>294</i>&nbsp;	   			return;</b>
+<b class="fc"><i>295</i>&nbsp;	   		RegionRequest request = worker.getRequest();</b>
+<b class="fc"><i>296</i>&nbsp;	   		worker.getRequestedCache().put(request, imgNew);</b>
+<i>297</i>&nbsp;	   		// Notify listeners that we have a new tile, if desired
+<b class="fc"><i>298</i>&nbsp;	    	List&lt;TileListener&lt;T&gt;&gt; myTileListeners = new ArrayList&lt;&gt;(tileListeners);</b>
+<b class="fc"><i>299</i>&nbsp;	   		for (TileListener&lt;T&gt; listener : myTileListeners)</b>
+<b class="fc"><i>300</i>&nbsp;	   			listener.tileAvailable(request.getPath(), request, imgNew);</b>
+<b class="nc"><i>301</i>&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc"><i>302</i>&nbsp;			logger.warn(&quot;Tile request interrupted&quot;, e);</b>
+<b class="nc"><i>303</i>&nbsp;		} catch (ExecutionException e) {</b>
+<b class="nc"><i>304</i>&nbsp;			logger.warn(&quot;Tile request exception&quot;, e);</b>
+<b class="fc"><i>305</i>&nbsp;		}</b>
+<b class="fc"><i>306</i>&nbsp;	}</b>
+<i>307</i>&nbsp;	
+<i>308</i>&nbsp;	
+<i>309</i>&nbsp;	protected T getCachedRegion(final ImageServer&lt;T&gt; server, final RegionRequest request) {
+<b class="nc"><i>310</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>311</i>&nbsp;			return null;</b>
+<i>312</i>&nbsp;		// Only need to use server path &amp; region as the hash key, because we are relying on the tile size never changing...
+<i>313</i>&nbsp;		// so different requests should never end up wanting the same region
+<i>314</i>&nbsp;		// If this gives trouble, the downsample could be added
+<b class="nc"><i>315</i>&nbsp;		Object result = requestImageTile(server, request, cache, false);</b>
+<b class="nc"><i>316</i>&nbsp;		if (!(result == null || result instanceof TileWorker&lt;?&gt;)) {</b>
+<i>317</i>&nbsp;			@SuppressWarnings(&quot;unchecked&quot;)
+<b class="nc"><i>318</i>&nbsp;			T img = (T)result;</b>
+<b class="nc"><i>319</i>&nbsp;			return img;</b>
+<i>320</i>&nbsp;		}
+<b class="nc"><i>321</i>&nbsp;		return null;</b>
+<i>322</i>&nbsp;	}
+<i>323</i>&nbsp;	
+<i>324</i>&nbsp;	
+<i>325</i>&nbsp;	protected synchronized boolean stopWaiting(final RegionRequest request) {
+<b class="fc"><i>326</i>&nbsp;		if (clearingCache) {</b>
+<i>327</i>&nbsp;//			synchronized(this) {
+<b class="nc"><i>328</i>&nbsp;				logger.warn(&quot;Stop waiting called while clearing cache&quot;);</b>
+<b class="nc"><i>329</i>&nbsp;				return waitingMap.remove(request) != null;</b>
+<i>330</i>&nbsp;//			}
+<i>331</i>&nbsp;		} else
+<b class="fc"><i>332</i>&nbsp;			return waitingMap.remove(request) != null;</b>
+<i>333</i>&nbsp;	}
+<i>334</i>&nbsp;	
+<i>335</i>&nbsp;	
+<i>336</i>&nbsp;	/**
+<i>337</i>&nbsp;	 * Request an image tile.
+<i>338</i>&nbsp;	 * There are 3 possible return values:
+<i>339</i>&nbsp;	 * 	- a T for the tile
+<i>340</i>&nbsp;	 * 	- the {@code TileWorker&lt;T&gt;} object currently charged with fetching the tile
+<i>341</i>&nbsp;	 * 	- null, if this is the value stored in the TiledImageCache (i.e. the tile has previously been fetched, and there is no image corresponding to the request)
+<i>342</i>&nbsp;	 * @param server
+<i>343</i>&nbsp;	 * @param request
+<i>344</i>&nbsp;	 * @param cache 
+<i>345</i>&nbsp;	 * @param ensureTileReturned 
+<i>346</i>&nbsp;	 * @return
+<i>347</i>&nbsp;	 */
+<i>348</i>&nbsp;	protected synchronized Object requestImageTile(final ImageServer&lt;T&gt; server, final RegionRequest request, final Map&lt;RegionRequest, T&gt; cache, final boolean ensureTileReturned) {
+<b class="fc"><i>349</i>&nbsp;		T img = cache.get(request);</b>
+<b class="fc"><i>350</i>&nbsp;		if (img != null)</b>
+<b class="fc"><i>351</i>&nbsp;			return img;</b>
+<i>352</i>&nbsp;//		System.err.println(request);
+<i>353</i>&nbsp;		// If the cache contains the key, but simply returns null because nothing should be painted, also return null here
+<b class="fc"><i>354</i>&nbsp;		if (cache.containsKey(request))</b>
+<b class="nc"><i>355</i>&nbsp;			return null;</b>
+<i>356</i>&nbsp;		// If the region request can be known to return null quickly, avoid making a full request
+<i>357</i>&nbsp;		// (at the time of writing, this only makes a difference with PathHierarchyImageServers)
+<b class="fc"><i>358</i>&nbsp;		if (server.isEmptyRegion(request)) {</b>
+<i>359</i>&nbsp;//			cache.put(request, null); // Guava cache does not support null
+<b class="nc"><i>360</i>&nbsp;			return null;</b>
+<i>361</i>&nbsp;		}
+<i>362</i>&nbsp;		// Start a worker &amp; add to the list
+<b class="fc"><i>363</i>&nbsp;		TileWorker&lt;T&gt; worker = null;</b>
+<b class="fc"><i>364</i>&nbsp;		worker = (TileWorker&lt;T&gt;)waitingMap.get(request); // TODO: Consider if this is a bad idea...</b>
+<b class="fc"><i>365</i>&nbsp;		if (worker == null) {</b>
+<b class="fc"><i>366</i>&nbsp;			worker = createTileWorker(server, request, cache, ensureTileReturned);</b>
+<b class="fc"><i>367</i>&nbsp;			workers.add(worker);</b>
+<b class="fc"><i>368</i>&nbsp;			if (server instanceof GeneratingImageServer) {</b>
+<b class="nc"><i>369</i>&nbsp;				if (poolLocal.isShutdown())</b>
+<b class="nc"><i>370</i>&nbsp;					return null;</b>
+<b class="nc"><i>371</i>&nbsp;				poolLocal.execute(worker);</b>
+<i>372</i>&nbsp;			}
+<i>373</i>&nbsp;			else {
+<b class="fc"><i>374</i>&nbsp;				if (pool.isShutdown())</b>
+<b class="nc"><i>375</i>&nbsp;					return null;</b>
+<b class="fc"><i>376</i>&nbsp;				pool.execute(worker);</b>
+<i>377</i>&nbsp;			}
+<i>378</i>&nbsp;//			worker.execute();
+<i>379</i>&nbsp;//				System.out.println(&quot;Event dispatch putting: &quot; + SwingUtilities.isEventDispatchThread());
+<b class="fc"><i>380</i>&nbsp;			waitingMap.put(request, worker);</b>
+<i>381</i>&nbsp;		}
+<i>382</i>&nbsp;//		workersToWait.add(worker);
+<b class="fc"><i>383</i>&nbsp;		return worker;</b>
+<i>384</i>&nbsp;	}
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;	
+<i>387</i>&nbsp;	
+<i>388</i>&nbsp;//	protected abstract TileWorker&lt;T&gt; createTileWorker(final BaseImageServer&lt;T&gt; server, final RegionRequest request, final RegionCache&lt;T&gt; cache, final boolean ensureTileReturned);
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;	protected TileWorker&lt;T&gt; createTileWorker(final ImageServer&lt;T&gt; server, final RegionRequest request, final Map&lt;RegionRequest, T&gt; cache, final boolean ensureTileReturned) {
+<b class="fc"><i>391</i>&nbsp;		return new DefaultTileWorker(server, request, cache, ensureTileReturned);</b>
+<i>392</i>&nbsp;	}
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;	
+<i>395</i>&nbsp;	
+<i>396</i>&nbsp;	/* (non-Javadoc)
+<i>397</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#getThumbnail(qupath.lib.images.servers.ImageServer, int, int, boolean)
+<i>398</i>&nbsp;	 */
+<i>399</i>&nbsp;	@Override
+<i>400</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>401</i>&nbsp;	public synchronized T getThumbnail(ImageServer&lt;T&gt; server, int zPosition, int tPosition, boolean addToCache) {
+<b class="fc"><i>402</i>&nbsp;		RegionRequest request = getThumbnailRequest(server, zPosition, tPosition);</b>
+<b class="fc"><i>403</i>&nbsp;		Object result = requestImageTile(server, request, thumbnailCache, true);</b>
+<b class="fc"><i>404</i>&nbsp;		if (!(result instanceof TileWorker&lt;?&gt;))</b>
+<b class="fc"><i>405</i>&nbsp;			return (T)result;</b>
+<i>406</i>&nbsp;		
+<b class="fc"><i>407</i>&nbsp;		logger.debug(&quot;Thumbnail request for {}, ({}, {})&quot;, server, zPosition, tPosition);</b>
+<b class="fc"><i>408</i>&nbsp;		TileWorker&lt;T&gt; worker = (TileWorker&lt;T&gt;)result;</b>
+<i>409</i>&nbsp;		try {
+<b class="fc"><i>410</i>&nbsp;			return worker.get();</b>
+<b class="nc"><i>411</i>&nbsp;		} catch (InterruptedException e) {</b>
+<b class="nc"><i>412</i>&nbsp;			logger.error(e.getLocalizedMessage());</b>
+<b class="nc"><i>413</i>&nbsp;		} catch (ExecutionException e) {</b>
+<b class="nc"><i>414</i>&nbsp;			logger.error(e.getLocalizedMessage());</b>
+<b class="nc"><i>415</i>&nbsp;		}</b>
+<i>416</i>&nbsp;		try {
+<i>417</i>&nbsp;			// Last resort... shouldn&#39;t happen
+<b class="nc"><i>418</i>&nbsp;			logger.warn(&quot;Fallback to requesting thumbnail directly...&quot;);</b>
+<b class="nc"><i>419</i>&nbsp;			return server.readBufferedImage(request);</b>
+<b class="nc"><i>420</i>&nbsp;		} catch (IOException e) {</b>
+<b class="nc"><i>421</i>&nbsp;			logger.error(&quot;Unable to obtain thumbnail for &quot; + request, e);</b>
+<b class="nc"><i>422</i>&nbsp;			return null;</b>
+<i>423</i>&nbsp;		}
+<i>424</i>&nbsp;	}
+<i>425</i>&nbsp;	
+<i>426</i>&nbsp;	
+<i>427</i>&nbsp;	/**
+<i>428</i>&nbsp;	 * Clear the cache, including thumbnails, and cancel any pending requests.
+<i>429</i>&nbsp;	 */
+<i>430</i>&nbsp;	public synchronized void clearCache() {
+<b class="nc"><i>431</i>&nbsp;		clearCache(true, true);</b>
+<b class="nc"><i>432</i>&nbsp;	}</b>
+<i>433</i>&nbsp;	
+<i>434</i>&nbsp;	
+<i>435</i>&nbsp;	/**
+<i>436</i>&nbsp;	 * Clear the cache, optionally including thumbnails and stopping any pending requests.
+<i>437</i>&nbsp;	 * 
+<i>438</i>&nbsp;	 * @param stopWaiting
+<i>439</i>&nbsp;	 * @param clearThumbnails
+<i>440</i>&nbsp;	 */
+<i>441</i>&nbsp;	public synchronized void clearCache(final boolean clearThumbnails, final boolean stopWaiting) {
+<b class="nc"><i>442</i>&nbsp;		clearingCache = true;</b>
+<i>443</i>&nbsp;		// Try to cancel anything we&#39;re waiting for
+<b class="nc"><i>444</i>&nbsp;		if (stopWaiting) {</b>
+<b class="nc"><i>445</i>&nbsp;			for (TileWorker&lt;T&gt; worker : waitingMap.values().toArray(TileWorker[]::new)) {</b>
+<b class="nc"><i>446</i>&nbsp;				worker.cancel(true);</b>
+<i>447</i>&nbsp;			}
+<b class="nc"><i>448</i>&nbsp;			waitingMap.clear();</b>
+<b class="nc"><i>449</i>&nbsp;			workers.clear();</b>
+<i>450</i>&nbsp;		}
+<b class="nc"><i>451</i>&nbsp;		if (clearThumbnails)</b>
+<b class="nc"><i>452</i>&nbsp;			thumbnailCache.clear();</b>
+<b class="nc"><i>453</i>&nbsp;		cache.clear();</b>
+<b class="nc"><i>454</i>&nbsp;		clearingCache = false;</b>
+<b class="nc"><i>455</i>&nbsp;	}</b>
+<i>456</i>&nbsp;	
+<i>457</i>&nbsp;	
+<i>458</i>&nbsp;	/* (non-Javadoc)
+<i>459</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#clearCacheForServer(qupath.lib.images.servers.ImageServer)
+<i>460</i>&nbsp;	 */
+<i>461</i>&nbsp;	@Override
+<i>462</i>&nbsp;	public synchronized void clearCacheForServer(final ImageServer&lt;T&gt; server) {
+<b class="nc"><i>463</i>&nbsp;		clearingCache = true;</b>
+<i>464</i>&nbsp;		// Ensure any current requests are discarded
+<b class="nc"><i>465</i>&nbsp;		if (!waitingMap.isEmpty()) {</b>
+<b class="nc"><i>466</i>&nbsp;			String serverPath = server.getPath();</b>
+<b class="nc"><i>467</i>&nbsp;			Iterator&lt;Entry&lt;RegionRequest, TileWorker&lt;T&gt;&gt;&gt; iter = waitingMap.entrySet().iterator();</b>
+<b class="nc"><i>468</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>469</i>&nbsp;				Entry&lt;RegionRequest, TileWorker&lt;T&gt;&gt; entry = iter.next();</b>
+<b class="nc"><i>470</i>&nbsp;				if (serverPath.equals(entry.getKey().getPath())) {</b>
+<i>471</i>&nbsp;//					System.out.println(&quot;REMOVING! &quot; + waitingMap.size());
+<b class="nc"><i>472</i>&nbsp;					iter.remove();</b>
+<b class="nc"><i>473</i>&nbsp;					entry.getValue().cancel(true);</b>
+<b class="nc"><i>474</i>&nbsp;					workers.remove(entry.getValue());</b>
+<i>475</i>&nbsp;				}
+<b class="nc"><i>476</i>&nbsp;			}</b>
+<i>477</i>&nbsp;		}
+<b class="nc"><i>478</i>&nbsp;		clearCacheForServer(thumbnailCache, server);</b>
+<b class="nc"><i>479</i>&nbsp;		clearCacheForServer(cache, server);</b>
+<b class="nc"><i>480</i>&nbsp;		clearingCache = false;</b>
+<b class="nc"><i>481</i>&nbsp;	}</b>
+<i>482</i>&nbsp;	
+<i>483</i>&nbsp;	/* (non-Javadoc)
+<i>484</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#clearCacheForRequestOverlap(qupath.lib.regions.RegionRequest)
+<i>485</i>&nbsp;	 */
+<i>486</i>&nbsp;	@Override
+<i>487</i>&nbsp;	public synchronized void clearCacheForRequestOverlap(final RegionRequest request) {
+<i>488</i>&nbsp;		// Ensure any current requests are discarded
+<b class="nc"><i>489</i>&nbsp;		if (!waitingMap.isEmpty()) {</b>
+<b class="nc"><i>490</i>&nbsp;			Iterator&lt;Entry&lt;RegionRequest, TileWorker&lt;T&gt;&gt;&gt; iter = waitingMap.entrySet().iterator();</b>
+<b class="nc"><i>491</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>492</i>&nbsp;				Entry&lt;RegionRequest, TileWorker&lt;T&gt;&gt; entry = iter.next();</b>
+<b class="nc"><i>493</i>&nbsp;				if (request.overlapsRequest(entry.getKey())) {</b>
+<b class="nc"><i>494</i>&nbsp;					iter.remove();</b>
+<b class="nc"><i>495</i>&nbsp;					entry.getValue().cancel(true);</b>
+<b class="nc"><i>496</i>&nbsp;					workers.remove(entry.getValue());</b>
+<i>497</i>&nbsp;				}
+<b class="nc"><i>498</i>&nbsp;			}</b>
+<i>499</i>&nbsp;		}
+<b class="nc"><i>500</i>&nbsp;		clearCacheForRequestOverlap(cache, request);</b>
+<b class="nc"><i>501</i>&nbsp;	}</b>
+<i>502</i>&nbsp;	
+<i>503</i>&nbsp;	
+<i>504</i>&nbsp;	
+<i>505</i>&nbsp;	private synchronized void clearCacheForServer(Map&lt;RegionRequest, T&gt; map, ImageServer&lt;?&gt; server) {
+<b class="nc"><i>506</i>&nbsp;		String serverPath = server.getPath();</b>
+<b class="nc"><i>507</i>&nbsp;		List&lt;RegionRequest&gt; keys = map.keySet().stream().filter(k -&gt; k.getPath().equals(serverPath)).collect(Collectors.toList());</b>
+<b class="nc"><i>508</i>&nbsp;		for (var key : keys)</b>
+<b class="nc"><i>509</i>&nbsp;			map.remove(key);</b>
+<b class="nc"><i>510</i>&nbsp;	}</b>
+<i>511</i>&nbsp;	
+<i>512</i>&nbsp;	private synchronized void clearCacheForRequestOverlap(Map&lt;RegionRequest, T&gt; map, RegionRequest request) {
+<b class="nc"><i>513</i>&nbsp;		List&lt;RegionRequest&gt; keys = map.keySet().stream().filter(k -&gt; request.overlapsRequest(k)).collect(Collectors.toList());</b>
+<b class="nc"><i>514</i>&nbsp;		for (var key : keys)</b>
+<b class="nc"><i>515</i>&nbsp;			map.remove(key);</b>
+<b class="nc"><i>516</i>&nbsp;	}</b>
+<i>517</i>&nbsp;	
+<i>518</i>&nbsp;	
+<i>519</i>&nbsp;	/* (non-Javadoc)
+<i>520</i>&nbsp;	 * @see qupath.lib.images.stores.ImageRegionStore#close()
+<i>521</i>&nbsp;	 */
+<i>522</i>&nbsp;	@Override
+<i>523</i>&nbsp;	public void close() {
+<i>524</i>&nbsp;		// Try to cancel all workers
+<b class="fc"><i>525</i>&nbsp;		for (TileWorker&lt;T&gt; worker : new ArrayList&lt;&gt;(workers))</b>
+<b class="nc"><i>526</i>&nbsp;			worker.cancel(true);</b>
+<b class="fc"><i>527</i>&nbsp;		pool.shutdownNow();</b>
+<b class="fc"><i>528</i>&nbsp;		poolLocal.shutdownNow();</b>
+<b class="fc"><i>529</i>&nbsp;		cache.clear();</b>
+<b class="fc"><i>530</i>&nbsp;	}</b>
+<i>531</i>&nbsp;	
+<i>532</i>&nbsp;	
+<i>533</i>&nbsp;	
+<i>534</i>&nbsp;	
+<i>535</i>&nbsp;	
+<i>536</i>&nbsp;	class TileRequestManager {
+<i>537</i>&nbsp;		
+<i>538</i>&nbsp;		final static int MAX_Z_SEPARATION = 10;
+<b class="fc"><i>539</i>&nbsp;		private List&lt;TileRequestCollection&lt;T&gt;&gt; list = new ArrayList&lt;&gt;();</b>
+<i>540</i>&nbsp;		
+<b class="fc"><i>541</i>&nbsp;		private TileRequestComparator&lt;T&gt; comparator = new TileRequestComparator&lt;&gt;();</b>
+<i>542</i>&nbsp;		private int nThreads;
+<b class="fc"><i>543</i>&nbsp;		private int busyThreads = 0;</b>
+<i>544</i>&nbsp;		
+<b class="fc"><i>545</i>&nbsp;		private List&lt;TileWorker&lt;T&gt;&gt; requestedWorkers = new ArrayList&lt;&gt;();</b>
+<i>546</i>&nbsp;				
+<b class="fc"><i>547</i>&nbsp;		TileRequestManager(final int nThreads) {</b>
+<b class="fc"><i>548</i>&nbsp;			this.nThreads = nThreads;</b>
+<b class="fc"><i>549</i>&nbsp;		}</b>
+<i>550</i>&nbsp;		
+<i>551</i>&nbsp;		
+<i>552</i>&nbsp;		public synchronized void registerRequest(final TileListener&lt;T&gt; tileListener, final ImageServer&lt;T&gt; server, final Shape clipShape, final double downsampleFactor, final int zPosition, final int tPosition) {
+<i>553</i>&nbsp;			
+<i>554</i>&nbsp;			// Check if the listener has already put in a request - if so, check if it is the same &amp; discard it if not
+<b class="nc"><i>555</i>&nbsp;			Iterator&lt;TileRequestCollection&lt;T&gt;&gt; iter = list.iterator();</b>
+<b class="nc"><i>556</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>557</i>&nbsp;				TileRequestCollection&lt;T&gt; temp = iter.next();</b>
+<b class="nc"><i>558</i>&nbsp;				if (temp.tileListener == tileListener) {</b>
+<b class="nc"><i>559</i>&nbsp;					if (temp.clipShape.equals(clipShape) &amp;&amp; temp.zPosition == zPosition &amp;&amp; temp.tPosition == tPosition)</b>
+<b class="nc"><i>560</i>&nbsp;						return;</b>
+<b class="nc"><i>561</i>&nbsp;					iter.remove();</b>
+<b class="nc"><i>562</i>&nbsp;					break;</b>
+<i>563</i>&nbsp;				}
+<b class="nc"><i>564</i>&nbsp;			}</b>
+<i>565</i>&nbsp;			
+<i>566</i>&nbsp;			// Create a new request
+<i>567</i>&nbsp;//			if (clipShape instanceof Rectangle2D.Double)
+<i>568</i>&nbsp;//				System.out.println(clipShape);
+<i>569</i>&nbsp;//			else
+<i>570</i>&nbsp;//				System.out.println(clipShape);
+<b class="nc"><i>571</i>&nbsp;			TileRequestCollection&lt;T&gt; requestCollection = new TileRequestCollection&lt;&gt;(tileListener, server, clipShape, downsampleFactor, zPosition, tPosition, 10);</b>
+<b class="nc"><i>572</i>&nbsp;			list.add(requestCollection);</b>
+<i>573</i>&nbsp;//			list.sort(comparator);
+<b class="nc"><i>574</i>&nbsp;			Collections.sort(list, comparator);</b>
+<b class="nc"><i>575</i>&nbsp;			assignTasks();</b>
+<i>576</i>&nbsp;			
+<b class="nc"><i>577</i>&nbsp;		}</b>
+<i>578</i>&nbsp;		
+<i>579</i>&nbsp;		public synchronized void deregisterRequest(final TileListener&lt;T&gt; tileListener) {
+<b class="nc"><i>580</i>&nbsp;			Iterator&lt;TileRequestCollection&lt;T&gt;&gt; iter = list.iterator();</b>
+<b class="nc"><i>581</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>582</i>&nbsp;				TileRequestCollection&lt;T&gt; temp = iter.next();</b>
+<b class="nc"><i>583</i>&nbsp;				if (temp.tileListener == tileListener) {</b>
+<b class="nc"><i>584</i>&nbsp;					iter.remove();</b>
+<i>585</i>&nbsp;				}
+<b class="nc"><i>586</i>&nbsp;			}</b>
+<b class="nc"><i>587</i>&nbsp;		}</b>
+<i>588</i>&nbsp;		
+<i>589</i>&nbsp;		
+<i>590</i>&nbsp;		synchronized void assignTasks() {
+<b class="nc"><i>591</i>&nbsp;			if (list.isEmpty())</b>
+<b class="nc"><i>592</i>&nbsp;				return;</b>
+<b class="nc"><i>593</i>&nbsp;			int ind = 0;</b>
+<b class="nc"><i>594</i>&nbsp;			TileRequestCollection&lt;T&gt; temp = list.get(ind);</b>
+<b class="nc"><i>595</i>&nbsp;			while (busyThreads &lt; nThreads &amp;&amp; !list.isEmpty()) {</b>
+<b class="nc"><i>596</i>&nbsp;				if (!temp.hasMoreTiles()) {</b>
+<b class="nc"><i>597</i>&nbsp;					ind++;</b>
+<b class="nc"><i>598</i>&nbsp;					if (ind &lt; list.size())</b>
+<b class="nc"><i>599</i>&nbsp;						temp = list.get(ind);</b>
+<i>600</i>&nbsp;					else
+<i>601</i>&nbsp;						break;
+<i>602</i>&nbsp;//					list.remove(temp);
+<i>603</i>&nbsp;					continue;
+<i>604</i>&nbsp;				}
+<b class="nc"><i>605</i>&nbsp;				RegionRequest request = temp.nextTileRequest();</b>
+<b class="nc"><i>606</i>&nbsp;				if (cache.containsKey(request) || waitingMap.containsKey(request))</b>
+<b class="nc"><i>607</i>&nbsp;					continue;</b>
+<i>608</i>&nbsp;				
+<b class="nc"><i>609</i>&nbsp;				TileWorker&lt;T&gt; worker = createTileWorker(temp.server, request, cache, false);</b>
+<b class="nc"><i>610</i>&nbsp;				waitingMap.put(request, worker);</b>
+<b class="nc"><i>611</i>&nbsp;				if (temp.server instanceof GeneratingImageServer) {</b>
+<b class="nc"><i>612</i>&nbsp;					if (!poolLocal.isShutdown())</b>
+<b class="nc"><i>613</i>&nbsp;						poolLocal.execute(worker);</b>
+<i>614</i>&nbsp;				} else {
+<b class="nc"><i>615</i>&nbsp;					if (!pool.isShutdown())</b>
+<b class="nc"><i>616</i>&nbsp;						pool.execute(worker);</b>
+<i>617</i>&nbsp;				}
+<i>618</i>&nbsp;//				worker.execute();
+<b class="nc"><i>619</i>&nbsp;				requestedWorkers.add(worker);</b>
+<b class="nc"><i>620</i>&nbsp;				busyThreads++;</b>
+<b class="nc"><i>621</i>&nbsp;			}</b>
+<i>622</i>&nbsp;//			list.sort(comparator);
+<b class="nc"><i>623</i>&nbsp;			Collections.sort(list, comparator);</b>
+<b class="nc"><i>624</i>&nbsp;		}</b>
+<i>625</i>&nbsp;		
+<i>626</i>&nbsp;		
+<i>627</i>&nbsp;		synchronized void taskCompleted(final TileWorker&lt;T&gt; worker) {
+<b class="fc"><i>628</i>&nbsp;			if (!requestedWorkers.remove(worker))</b>
+<b class="fc"><i>629</i>&nbsp;				return;</b>
+<b class="nc"><i>630</i>&nbsp;			busyThreads--;</b>
+<b class="nc"><i>631</i>&nbsp;			logger.trace(&quot;Number of busy threads: &quot; + busyThreads);</b>
+<i>632</i>&nbsp;//			list.sort(comparator);
+<b class="nc"><i>633</i>&nbsp;			Collections.sort(list, comparator);</b>
+<b class="nc"><i>634</i>&nbsp;			assignTasks();</b>
+<b class="nc"><i>635</i>&nbsp;		}</b>
+<i>636</i>&nbsp;		
+<i>637</i>&nbsp;		
+<i>638</i>&nbsp;	}
+<i>639</i>&nbsp;	
+<i>640</i>&nbsp;	
+<i>641</i>&nbsp;	
+<b class="nc"><i>642</i>&nbsp;	static class TileRequestCollection&lt;T&gt; {</b>
+<i>643</i>&nbsp;		
+<i>644</i>&nbsp;		private long timestamp;
+<b class="nc"><i>645</i>&nbsp;		private List&lt;RegionRequest&gt; tileRequests = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>646</i>&nbsp;		private int zSeparation = 0;</b>
+<b class="nc"><i>647</i>&nbsp;		private int maxZSeparation = 0;</b>
+<i>648</i>&nbsp;		
+<i>649</i>&nbsp;		private TileListener&lt;T&gt; tileListener;
+<i>650</i>&nbsp;		private ImageServer&lt;T&gt; server;
+<i>651</i>&nbsp;		private Shape clipShape;
+<i>652</i>&nbsp;		private double downsampleFactor;
+<i>653</i>&nbsp;		private int zPosition;
+<i>654</i>&nbsp;		private int tPosition;
+<i>655</i>&nbsp;				
+<i>656</i>&nbsp;		
+<b class="nc"><i>657</i>&nbsp;		TileRequestCollection(final TileListener&lt;T&gt; tileListener, final ImageServer&lt;T&gt; server, final Shape clipShape, final double downsampleFactor, final int zPosition, final int tPosition, final int maxZSeparation) {</b>
+<b class="nc"><i>658</i>&nbsp;			timestamp = System.currentTimeMillis();</b>
+<b class="nc"><i>659</i>&nbsp;			this.tileListener = tileListener;</b>
+<b class="nc"><i>660</i>&nbsp;			this.server = server;</b>
+<b class="nc"><i>661</i>&nbsp;			this.clipShape = clipShape;</b>
+<b class="nc"><i>662</i>&nbsp;			this.downsampleFactor = downsampleFactor;</b>
+<b class="nc"><i>663</i>&nbsp;			this.zPosition = zPosition;</b>
+<b class="nc"><i>664</i>&nbsp;			this.tPosition = tPosition;</b>
+<b class="nc"><i>665</i>&nbsp;			this.zSeparation = 0;</b>
+<b class="nc"><i>666</i>&nbsp;			this.maxZSeparation = server == null ? 0 : Math.min(server.nZSlices()-1, maxZSeparation); // Used for requests that go along z dimension</b>
+<b class="nc"><i>667</i>&nbsp;			updateRequests();</b>
+<i>668</i>&nbsp;		}
+<i>669</i>&nbsp;		
+<i>670</i>&nbsp;		void updateRequests() {
+<b class="nc"><i>671</i>&nbsp;			if (zSeparation == 0)</b>
+<b class="nc"><i>672</i>&nbsp;				updateRequestsForZ(zPosition, downsampleFactor, false);</b>
+<i>673</i>&nbsp;			else {
+<b class="nc"><i>674</i>&nbsp;				if (zPosition - zSeparation &gt;= 0)</b>
+<b class="nc"><i>675</i>&nbsp;					updateRequestsForZ(zPosition - zSeparation, downsampleFactor * Math.max(5, zSeparation*2), true);</b>
+<b class="nc"><i>676</i>&nbsp;				if (zPosition + zSeparation &lt; server.nZSlices())</b>
+<b class="nc"><i>677</i>&nbsp;					updateRequestsForZ(zPosition + zSeparation, downsampleFactor * Math.max(5, zSeparation*2), true);</b>
+<i>678</i>&nbsp;			}
+<i>679</i>&nbsp;		}
+<i>680</i>&nbsp;		
+<i>681</i>&nbsp;		void updateRequestsForZ(final int z, final double downsample, final boolean stopBeforeDownsample) {
+<i>682</i>&nbsp;//			System.out.println(&quot;REQUESTING: &quot; + z + &quot;, &quot; + clipShape);
+<i>683</i>&nbsp;			// Add tile requests in ascending order of resolutions, to support (faster) progressive image display
+<b class="nc"><i>684</i>&nbsp;			if (server == null)</b>
+<i>685</i>&nbsp;				return;
+<b class="nc"><i>686</i>&nbsp;			boolean firstLoop = true;</b>
+<b class="nc"><i>687</i>&nbsp;			double[] downsamples = server.getPreferredDownsamples();</b>
+<b class="nc"><i>688</i>&nbsp;			Arrays.sort(downsamples);</b>
+<b class="nc"><i>689</i>&nbsp;			for (int i = downsamples.length-1; i &gt;= 0; i--) {</b>
+<b class="nc"><i>690</i>&nbsp;				double d = downsamples[i];</b>
+<b class="nc"><i>691</i>&nbsp;				if (Double.isNaN(d))</b>
+<b class="nc"><i>692</i>&nbsp;					continue;</b>
+<b class="nc"><i>693</i>&nbsp;				if (firstLoop || !stopBeforeDownsample || d &gt; downsampleFactor) {</b>
+<b class="nc"><i>694</i>&nbsp;					int sizeBefore = tileRequests.size();</b>
+<b class="nc"><i>695</i>&nbsp;					tileRequests = ImageRegionStoreHelpers.getTilesToRequest(server, clipShape, downsample, z, tPosition, tileRequests);</b>
+<b class="nc"><i>696</i>&nbsp;					int sizeAfter = tileRequests.size();</b>
+<b class="nc"><i>697</i>&nbsp;					logger.trace(&quot;Requests added: {} - z separation = {}, downsample = {}&quot;, (sizeAfter - sizeBefore), zSeparation, downsample);</b>
+<i>698</i>&nbsp;				}
+<b class="nc"><i>699</i>&nbsp;				firstLoop = false;</b>
+<b class="nc"><i>700</i>&nbsp;				if (d &lt;= downsampleFactor)</b>
+<i>701</i>&nbsp;					return;
+<i>702</i>&nbsp;			}
+<i>703</i>&nbsp;			
+<i>704</i>&nbsp;		}
+<i>705</i>&nbsp;		
+<i>706</i>&nbsp;		
+<i>707</i>&nbsp;		public boolean hasMoreTiles() {
+<b class="nc"><i>708</i>&nbsp;			return !tileRequests.isEmpty();</b>
+<i>709</i>&nbsp;		}
+<i>710</i>&nbsp;		
+<i>711</i>&nbsp;		public RegionRequest nextTileRequest() {
+<b class="nc"><i>712</i>&nbsp;			int ind = tileRequests.size() - 1;</b>
+<b class="nc"><i>713</i>&nbsp;			assert ind &gt;= 0; // TODO: Throw RunTimeException?</b>
+<b class="nc"><i>714</i>&nbsp;			RegionRequest request = tileRequests.remove(ind);</b>
+<b class="nc"><i>715</i>&nbsp;			if (ind == 0 &amp;&amp; zSeparation &lt; maxZSeparation) {</b>
+<b class="nc"><i>716</i>&nbsp;				zSeparation++;</b>
+<b class="nc"><i>717</i>&nbsp;				updateRequests();</b>
+<i>718</i>&nbsp;			}
+<b class="nc"><i>719</i>&nbsp;			return request;</b>
+<i>720</i>&nbsp;		}
+<i>721</i>&nbsp;		
+<i>722</i>&nbsp;	}
+<i>723</i>&nbsp;	
+<i>724</i>&nbsp;	
+<b class="fc"><i>725</i>&nbsp;	static class TileRequestComparator&lt;T&gt; implements Comparator&lt;TileRequestCollection&lt;T&gt;&gt; {</b>
+<i>726</i>&nbsp;
+<i>727</i>&nbsp;		
+<i>728</i>&nbsp;		@Override
+<i>729</i>&nbsp;		public int compare(TileRequestCollection&lt;T&gt; r1, TileRequestCollection&lt;T&gt; r2) {
+<b class="nc"><i>730</i>&nbsp;			int zDiff = r1.zSeparation - r2.zSeparation;</b>
+<b class="nc"><i>731</i>&nbsp;			if (zDiff == 0)</b>
+<b class="nc"><i>732</i>&nbsp;				return (int)(r1.timestamp - r2.timestamp);</b>
+<i>733</i>&nbsp;			else
+<b class="nc"><i>734</i>&nbsp;				return zDiff;</b>
+<i>735</i>&nbsp;		}
+<i>736</i>&nbsp;		
+<i>737</i>&nbsp;	}
+<i>738</i>&nbsp;	
+<i>739</i>&nbsp;	
+<i>740</i>&nbsp;	
+<i>741</i>&nbsp;	
+<i>742</i>&nbsp;	
+<i>743</i>&nbsp;	
+<i>744</i>&nbsp;	
+<i>745</i>&nbsp;	/**
+<i>746</i>&nbsp;	 * Worker for fetching image tiles asynchronously &amp; adding to the tile cache.
+<i>747</i>&nbsp;	 * 
+<i>748</i>&nbsp;	 * @author Pete Bankhead
+<i>749</i>&nbsp;	 *
+<i>750</i>&nbsp;	 */
+<i>751</i>&nbsp;	class DefaultTileWorker extends FutureTask&lt;T&gt; implements TileWorker&lt;T&gt; {
+<i>752</i>&nbsp;		
+<i>753</i>&nbsp;		private final Map&lt;RegionRequest, T&gt; cache;
+<i>754</i>&nbsp;		private final RegionRequest request;
+<i>755</i>&nbsp;		
+<b class="fc"><i>756</i>&nbsp;		DefaultTileWorker(final ImageServer&lt;T&gt; server, final RegionRequest request, final Map&lt;RegionRequest, T&gt; cache, final boolean ensureTileReturned) {</b>
+<b class="fc"><i>757</i>&nbsp;			super(new Callable&lt;T&gt;() {</b>
+<i>758</i>&nbsp;
+<i>759</i>&nbsp;				@Override
+<i>760</i>&nbsp;				public T call() throws Exception {
+<i>761</i>&nbsp;					// Check if the cache now contains the region
+<i>762</i>&nbsp;			    	// (e.g. it came from a different viewer... probably shouldn&#39;t occur now)
+<b class="fc"><i>763</i>&nbsp;			    	T imgTile = cache.get(request);</b>
+<b class="fc"><i>764</i>&nbsp;			    	if (imgTile != null)</b>
+<b class="nc"><i>765</i>&nbsp;			    		return imgTile;</b>
+<i>766</i>&nbsp;			    	// TODO: Investigate the (current) purpose of ensureTileReturned... doesn&#39;t seem to do anything here
+<b class="fc"><i>767</i>&nbsp;			    	if (ensureTileReturned)</b>
+<b class="fc"><i>768</i>&nbsp;			    		return server.readBufferedImage(request);	</b>
+<i>769</i>&nbsp;			    	// Check if we still need the tile... if not, and we go searching, there can be a backlog
+<i>770</i>&nbsp;			    	// making any requests slower to fulfill
+<i>771</i>&nbsp;			    	// (Also, grab a snapshot of the listener list to avoid concurrent modifications)
+<i>772</i>&nbsp;//			    	long t1 = System.currentTimeMillis();
+<b class="nc"><i>773</i>&nbsp;			    	T img = server.readBufferedImage(request);</b>
+<i>774</i>&nbsp;//			    	long t2 = System.currentTimeMillis();
+<i>775</i>&nbsp;//			    	System.out.println(&quot;Tile request time: &quot; + (t2 - t1));
+<b class="nc"><i>776</i>&nbsp;			    	return img;</b>
+<i>777</i>&nbsp;				}
+<i>778</i>&nbsp;				
+<i>779</i>&nbsp;			});
+<b class="fc"><i>780</i>&nbsp;			this.request = request;</b>
+<b class="fc"><i>781</i>&nbsp;			this.cache = cache;</b>
+<b class="fc"><i>782</i>&nbsp;		}</b>
+<i>783</i>&nbsp;		
+<i>784</i>&nbsp;	    
+<i>785</i>&nbsp;	    @Override
+<i>786</i>&nbsp;		public RegionRequest getRequest() {
+<b class="fc"><i>787</i>&nbsp;	    	return request;</b>
+<i>788</i>&nbsp;	    }
+<i>789</i>&nbsp;	    
+<i>790</i>&nbsp;	    @Override
+<i>791</i>&nbsp;		public Map&lt;RegionRequest, T&gt; getRequestedCache() {
+<b class="fc"><i>792</i>&nbsp;	    	return cache;</b>
+<i>793</i>&nbsp;	    }
+<i>794</i>&nbsp;
+<i>795</i>&nbsp;	    
+<i>796</i>&nbsp;	    @Override
+<i>797</i>&nbsp;		public void done() {
+<b class="fc"><i>798</i>&nbsp;	    	workerComplete(this);</b>
+<b class="fc"><i>799</i>&nbsp;	    }</b>
+<i>800</i>&nbsp;	    
+<i>801</i>&nbsp;	}
+<i>802</i>&nbsp;	
+<i>803</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

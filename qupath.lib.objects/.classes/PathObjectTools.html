@@ -1,0 +1,1293 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObjectTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObjectTools (qupath.lib.objects)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObjectTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    11.6%
+  </span>
+  <span class="absValue">
+    (5/ 43)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3.9%
+  </span>
+  <span class="absValue">
+    (17/ 434)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PathObjectTools$ImageRegionPredicate</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    11.1%
+  </span>
+  <span class="absValue">
+    (5/ 45)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3.9%
+  </span>
+  <span class="absValue">
+    (17/ 440)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>27</i>&nbsp;import java.awt.geom.Line2D;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Collection;
+<i>30</i>&nbsp;import java.util.Collections;
+<i>31</i>&nbsp;import java.util.Comparator;
+<i>32</i>&nbsp;import java.util.HashMap;
+<i>33</i>&nbsp;import java.util.HashSet;
+<i>34</i>&nbsp;import java.util.Iterator;
+<i>35</i>&nbsp;import java.util.LinkedHashSet;
+<i>36</i>&nbsp;import java.util.List;
+<i>37</i>&nbsp;import java.util.Map;
+<i>38</i>&nbsp;import java.util.Objects;
+<i>39</i>&nbsp;import java.util.Set;
+<i>40</i>&nbsp;import java.util.Map.Entry;
+<i>41</i>&nbsp;import java.util.function.Predicate;
+<i>42</i>&nbsp;import java.util.stream.Collectors;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>45</i>&nbsp;import org.locationtech.jts.geom.prep.PreparedGeometry;
+<i>46</i>&nbsp;import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+<i>47</i>&nbsp;import org.locationtech.jts.index.strtree.STRtree;
+<i>48</i>&nbsp;import org.slf4j.Logger;
+<i>49</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;import qupath.lib.geom.Point2;
+<i>52</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>53</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>54</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>55</i>&nbsp;import qupath.lib.objects.classes.PathClassTools;
+<i>56</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>57</i>&nbsp;import qupath.lib.objects.hierarchy.TMAGrid;
+<i>58</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>59</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>60</i>&nbsp;import qupath.lib.roi.LineROI;
+<i>61</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>62</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>63</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>64</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;/**
+<i>67</i>&nbsp; * A collection of static methods to help work with PathObjects.
+<i>68</i>&nbsp; * 
+<i>69</i>&nbsp; * @author Pete Bankhead
+<i>70</i>&nbsp; *
+<i>71</i>&nbsp; */
+<b class="nc"><i>72</i>&nbsp;public class PathObjectTools {</b>
+<i>73</i>&nbsp;	
+<b class="fc"><i>74</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathObjectTools.class);</b>
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Remove objects with PointsROI from a collection.
+<i>78</i>&nbsp;	 * @param pathObjects
+<i>79</i>&nbsp;	 */
+<i>80</i>&nbsp;	private static void removePoints(Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>81</i>&nbsp;		logger.trace(&quot;Remove points&quot;);</b>
+<b class="nc"><i>82</i>&nbsp;		Iterator&lt;PathObject&gt; iter = pathObjects.iterator();</b>
+<b class="nc"><i>83</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>84</i>&nbsp;			if (hasPointROI(iter.next()))</b>
+<b class="nc"><i>85</i>&nbsp;				iter.remove();</b>
+<i>86</i>&nbsp;		}
+<b class="nc"><i>87</i>&nbsp;	}</b>
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Returns true if a PathObject has a Point ROI.
+<i>91</i>&nbsp;	 * @param pathObject
+<i>92</i>&nbsp;	 * @return
+<i>93</i>&nbsp;	 */
+<i>94</i>&nbsp;	public static boolean hasPointROI(PathObject pathObject) {
+<b class="nc"><i>95</i>&nbsp;		return pathObject.hasROI() &amp;&amp; pathObject.getROI().isPoint();</b>
+<i>96</i>&nbsp;	}
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	/**
+<i>99</i>&nbsp;	 * Count the number of PathObjects in a collection with a specified class or base class.
+<i>100</i>&nbsp;	 * 
+<i>101</i>&nbsp;	 * @param pathObjects
+<i>102</i>&nbsp;	 * @param pathClass
+<i>103</i>&nbsp;	 * @param useBaseClass
+<i>104</i>&nbsp;	 * @return
+<i>105</i>&nbsp;	 */
+<i>106</i>&nbsp;	public static int countObjectsWithClass(final Collection&lt;? extends PathObject&gt; pathObjects, final PathClass pathClass, final boolean useBaseClass) {
+<b class="nc"><i>107</i>&nbsp;		int count = 0;</b>
+<b class="nc"><i>108</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>109</i>&nbsp;			PathClass currentClass = pathObject.getPathClass();</b>
+<b class="nc"><i>110</i>&nbsp;			if (useBaseClass)</b>
+<b class="nc"><i>111</i>&nbsp;				currentClass = currentClass == null ? null : currentClass.getBaseClass();</b>
+<b class="nc"><i>112</i>&nbsp;			if (Objects.equals(pathClass, currentClass))</b>
+<b class="nc"><i>113</i>&nbsp;				count++;</b>
+<b class="nc"><i>114</i>&nbsp;		}</b>
+<b class="nc"><i>115</i>&nbsp;		return count;</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Get the PathObjects in a collection that are instances of a specified class.
+<i>121</i>&nbsp;	 * 
+<i>122</i>&nbsp;	 * @param pathObjects
+<i>123</i>&nbsp;	 * @param cls
+<i>124</i>&nbsp;	 * @return
+<i>125</i>&nbsp;	 */
+<i>126</i>&nbsp;	public static List&lt;PathObject&gt; getObjectsOfClass(final Collection&lt;PathObject&gt; pathObjects, final Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>127</i>&nbsp;		logger.trace(&quot;Get objects of class {}&quot;, cls);</b>
+<b class="nc"><i>128</i>&nbsp;		List&lt;PathObject&gt; pathObjectsFiltered = new ArrayList&lt;&gt;(pathObjects.size());</b>
+<b class="nc"><i>129</i>&nbsp;		for (PathObject temp : pathObjects) {</b>
+<b class="nc"><i>130</i>&nbsp;			if (cls == null || cls.isInstance(temp)) {</b>
+<b class="nc"><i>131</i>&nbsp;				pathObjectsFiltered.add(temp);</b>
+<i>132</i>&nbsp;			}
+<b class="nc"><i>133</i>&nbsp;		}</b>
+<b class="nc"><i>134</i>&nbsp;		return pathObjectsFiltered;</b>
+<i>135</i>&nbsp;	}
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	/**
+<i>139</i>&nbsp;	 * Create a predicate that only accepts PathObjects if they have ROIs that fall within a specified ImageRegion.
+<i>140</i>&nbsp;	 * @param region
+<i>141</i>&nbsp;	 * @return
+<i>142</i>&nbsp;	 */
+<i>143</i>&nbsp;	public static Predicate&lt;PathObject&gt; createImageRegionPredicate(ImageRegion region) {
+<b class="nc"><i>144</i>&nbsp;		return new ImageRegionPredicate(region);</b>
+<i>145</i>&nbsp;	}
+<i>146</i>&nbsp;	
+<i>147</i>&nbsp;	private static class ImageRegionPredicate implements Predicate&lt;PathObject&gt; {
+<i>148</i>&nbsp;		
+<i>149</i>&nbsp;		private ImageRegion region;
+<i>150</i>&nbsp;		private PreparedGeometry geometry;
+<i>151</i>&nbsp;		
+<b class="nc"><i>152</i>&nbsp;		ImageRegionPredicate(ImageRegion region) {</b>
+<b class="nc"><i>153</i>&nbsp;			this.region = region;</b>
+<b class="nc"><i>154</i>&nbsp;			this.geometry = PreparedGeometryFactory.prepare(ROIs.createRectangleROI(region).getGeometry());</b>
+<i>155</i>&nbsp;//			this.envelope = new Envelope(region.getMinX(), region.getMaxX(), region.getMinY(), region.getMaxY());
+<i>156</i>&nbsp;		}
+<i>157</i>&nbsp;		
+<i>158</i>&nbsp;		@Override
+<i>159</i>&nbsp;		public boolean test(PathObject p) {
+<b class="nc"><i>160</i>&nbsp;			return p.hasROI() &amp;&amp;</b>
+<b class="nc"><i>161</i>&nbsp;					region.intersects(ImageRegion.createInstance(p.getROI())) &amp;&amp;</b>
+<b class="nc"><i>162</i>&nbsp;					geometry.intersects(p.getROI().getGeometry());</b>
+<i>163</i>&nbsp;		}
+<i>164</i>&nbsp;		
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;	/**
+<i>169</i>&nbsp;	 * Get all descendant objects as a flattened list.
+<i>170</i>&nbsp;	 * 
+<i>171</i>&nbsp;	 * @param parentObject the parent objects whose children and descendants should be added to the list
+<i>172</i>&nbsp;	 * @param list output list, optional
+<i>173</i>&nbsp;	 * @param includeParent if true, parentObject will be included in the output list
+<i>174</i>&nbsp;	 * @return either list, or a new list created if necessary
+<i>175</i>&nbsp;	 */
+<i>176</i>&nbsp;	public static List&lt;PathObject&gt; getFlattenedObjectList(PathObject parentObject, List&lt;PathObject&gt; list, boolean includeParent) {
+<b class="nc"><i>177</i>&nbsp;		if (list == null)</b>
+<b class="nc"><i>178</i>&nbsp;			list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>179</i>&nbsp;		if (includeParent)</b>
+<b class="nc"><i>180</i>&nbsp;			list.add(parentObject);</b>
+<b class="nc"><i>181</i>&nbsp;		for (PathObject child : parentObject.getChildObjectsAsArray())</b>
+<b class="nc"><i>182</i>&nbsp;			getFlattenedObjectList(child, list, true);</b>
+<b class="nc"><i>183</i>&nbsp;		return list;</b>
+<i>184</i>&nbsp;	}
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;	/**
+<i>187</i>&nbsp;	 * Count the descendants of a PathObject recursively.
+<i>188</i>&nbsp;	 * 
+<i>189</i>&nbsp;	 * @param pathObject
+<i>190</i>&nbsp;	 * @return
+<i>191</i>&nbsp;	 */
+<i>192</i>&nbsp;	public static int countDescendants(final PathObject pathObject) {
+<i>193</i>&nbsp;//		int count = pathObject.nChildObjects();
+<i>194</i>&nbsp;//		for (PathObject childObject : pathObject.getChildObjectsAsArray())
+<i>195</i>&nbsp;//			count += countDescendants(childObject);
+<i>196</i>&nbsp;//		if (count &gt; 0)
+<i>197</i>&nbsp;//			System.err.println(count);
+<i>198</i>&nbsp;//		return count;
+<b class="fc"><i>199</i>&nbsp;		return pathObject.nDescendants();</b>
+<i>200</i>&nbsp;	}
+<i>201</i>&nbsp;
+<i>202</i>&nbsp;	
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;	/**
+<i>205</i>&nbsp;	 * Test whether one ROI is can completely contain a second ROI.
+<i>206</i>&nbsp;	 * Returns false if either ROI is null.
+<i>207</i>&nbsp;	 * &lt;p&gt;
+<i>208</i>&nbsp;	 * Note: This is not a perfect test, since it really only checks if the vertices of the child ROI fall within the parent - it is possible
+<i>209</i>&nbsp;	 * that connecting lines stray outside the parent, yet it still returns true.  This behavior may change in later versions.
+<i>210</i>&nbsp;	 * &lt;p&gt;
+<i>211</i>&nbsp;	 * TODO: Consider improving &#39;containsROI&#39; method accuracy.
+<i>212</i>&nbsp;	 * 
+<i>213</i>&nbsp;	 * @param parentROI
+<i>214</i>&nbsp;	 * @param childROI
+<i>215</i>&nbsp;	 * @return
+<i>216</i>&nbsp;	 */
+<i>217</i>&nbsp;	@Deprecated
+<i>218</i>&nbsp;	public static boolean containsROI(final ROI parentROI, final ROI childROI) {
+<i>219</i>&nbsp;		// Check for nulls... just to be sure
+<b class="nc"><i>220</i>&nbsp;		if (parentROI == null || childROI == null || !parentROI.isArea() || childROI.isEmpty() || parentROI.isEmpty())</b>
+<b class="nc"><i>221</i>&nbsp;			return false;</b>
+<i>222</i>&nbsp;		
+<i>223</i>&nbsp;		// Check points
+<b class="nc"><i>224</i>&nbsp;		if (childROI != null &amp;&amp; childROI.isPoint()) {</b>
+<b class="nc"><i>225</i>&nbsp;			for (Point2 p : childROI.getAllPoints()) {</b>
+<b class="nc"><i>226</i>&nbsp;				if (!parentROI.contains(p.getX(), p.getY()))</b>
+<b class="nc"><i>227</i>&nbsp;					return false;</b>
+<b class="nc"><i>228</i>&nbsp;			}</b>
+<b class="nc"><i>229</i>&nbsp;			return true;</b>
+<i>230</i>&nbsp;		}
+<i>231</i>&nbsp;		
+<i>232</i>&nbsp;		// Check areas - child can&#39;t have a larger area
+<b class="nc"><i>233</i>&nbsp;		if (childROI.isArea()) {</b>
+<b class="nc"><i>234</i>&nbsp;			if (childROI.getArea() &gt; parentROI.getArea())</b>
+<b class="nc"><i>235</i>&nbsp;				return false;</b>
+<i>236</i>&nbsp;		}
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;		// Check bounds dimensions
+<b class="nc"><i>239</i>&nbsp;		if (childROI.getBoundsWidth() &gt; parentROI.getBoundsWidth() || childROI.getBoundsHeight() &gt; parentROI.getBoundsHeight())</b>
+<b class="nc"><i>240</i>&nbsp;			return false;</b>
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;		// Check bounds
+<b class="nc"><i>243</i>&nbsp;		double px = parentROI.getBoundsX();</b>
+<b class="nc"><i>244</i>&nbsp;		double py = parentROI.getBoundsY();</b>
+<b class="nc"><i>245</i>&nbsp;		double px2 = px + parentROI.getBoundsWidth();</b>
+<b class="nc"><i>246</i>&nbsp;		double py2 = py + parentROI.getBoundsHeight();</b>
+<b class="nc"><i>247</i>&nbsp;		double cx = childROI.getBoundsX();</b>
+<b class="nc"><i>248</i>&nbsp;		double cy = childROI.getBoundsY();</b>
+<b class="nc"><i>249</i>&nbsp;		double cx2 = px + childROI.getBoundsWidth();</b>
+<b class="nc"><i>250</i>&nbsp;		double cy2 = py + childROI.getBoundsHeight();</b>
+<b class="nc"><i>251</i>&nbsp;		if (!(cx &gt;= px &amp;&amp; cx2 &lt;= px2 &amp;&amp; cy &gt;= py &amp;&amp; cy2 &lt;= py2))</b>
+<b class="nc"><i>252</i>&nbsp;			return false;</b>
+<i>253</i>&nbsp;		
+<i>254</i>&nbsp;		// Check shapes
+<b class="nc"><i>255</i>&nbsp;		for (Point2 p : childROI.getAllPoints()) {</b>
+<b class="nc"><i>256</i>&nbsp;			if (!parentROI.contains(p.getX(), p.getY()))</b>
+<b class="nc"><i>257</i>&nbsp;				return false;</b>
+<b class="nc"><i>258</i>&nbsp;		}</b>
+<i>259</i>&nbsp;		
+<b class="nc"><i>260</i>&nbsp;		if (parentROI.isArea() &amp;&amp; childROI.isArea())</b>
+<b class="nc"><i>261</i>&nbsp;			return parentROI.getGeometry().covers(childROI.getGeometry());</b>
+<i>262</i>&nbsp;		
+<i>263</i>&nbsp;//		List&lt;Point&gt; points = parentArea.getPolygonPoints();
+<i>264</i>&nbsp;//		for (Point p : childROI.getPolygonPoints()) {
+<i>265</i>&nbsp;//			int windingNumber = WindingTest.getWindingNumber(points, p.getX(), p.getY());
+<i>266</i>&nbsp;//			//				logger.info(&quot;Winding number: &quot; + windingNumber);
+<i>267</i>&nbsp;//			if (windingNumber == 0)
+<i>268</i>&nbsp;//				return false;
+<i>269</i>&nbsp;//		}
+<b class="nc"><i>270</i>&nbsp;		return true;</b>
+<i>271</i>&nbsp;//		logger.info(&quot;Doing standard (AWT) test...&quot;);
+<i>272</i>&nbsp;//		return PathROIToolsAwt.containsShape(parentArea, (PathShape)childROI);
+<i>273</i>&nbsp;
+<i>274</i>&nbsp;//		return false;
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;		//			// Check for lines
+<i>277</i>&nbsp;		//			if (childROI instanceof PathLineROI) {
+<i>278</i>&nbsp;		//				PathLineROI line = (PathLineROI)childROI;
+<i>279</i>&nbsp;		//				return parentROI.contains(line.getX1(), line.getY1()) &amp;&amp; parentROI.contains(line.getX2(), line.getY2());
+<i>280</i>&nbsp;		//			}
+<i>281</i>&nbsp;		//			
+<i>282</i>&nbsp;		//			// If we have areas, check these
+<i>283</i>&nbsp;		//			if (parentROI instanceof PathArea &amp;&amp; childROI instanceof PathArea) {
+<i>284</i>&nbsp;		//				double area = ((PathArea)parentROI).getArea();
+<i>285</i>&nbsp;		//				if (!Double.isNaN(area) &amp;&amp; area &lt; ((PathArea)childROI).getArea())
+<i>286</i>&nbsp;		//					return false;
+<i>287</i>&nbsp;		//			}
+<i>288</i>&nbsp;		//			
+<i>289</i>&nbsp;		//			// Check bounds
+<i>290</i>&nbsp;		//	//		if (!parentROI.getBounds2D().contains(childROI.getBounds2D())
+<i>291</i>&nbsp;		//			Rectangle2D childBounds = childROI.getBounds2D();
+<i>292</i>&nbsp;		//			if (!parentROI.intersects(childBounds))
+<i>293</i>&nbsp;		//				return false;
+<i>294</i>&nbsp;		//			
+<i>295</i>&nbsp;		//			// If we have shapes, do a proper test
+<i>296</i>&nbsp;		//			if ((parentROI instanceof PathShape) &amp;&amp; (childROI instanceof PathShape)) {
+<i>297</i>&nbsp;		//				PathShape parentShape = (PathShape)parentROI;
+<i>298</i>&nbsp;		//				if (parentShape.contains(childBounds))
+<i>299</i>&nbsp;		//					return true;
+<i>300</i>&nbsp;		//				PathShape childShape = (PathShape)childROI;
+<i>301</i>&nbsp;		//				Area areaDifference = parentShape.getShapeAsArea();
+<i>302</i>&nbsp;		//				areaDifference.subtract(childShape.getShapeAsArea());
+<i>303</i>&nbsp;		//				return areaDifference.isEmpty();
+<i>304</i>&nbsp;		//			}
+<i>305</i>&nbsp;		//			return true;
+<i>306</i>&nbsp;	}
+<i>307</i>&nbsp;
+<i>308</i>&nbsp;	
+<i>309</i>&nbsp;	/**
+<i>310</i>&nbsp;	 * Get a user-friendly name for a specific type of PathObject, based on its Java class.
+<i>311</i>&nbsp;	 * 
+<i>312</i>&nbsp;	 * @param cls
+<i>313</i>&nbsp;	 * @param makePlural
+<i>314</i>&nbsp;	 * @return
+<i>315</i>&nbsp;	 */
+<i>316</i>&nbsp;	public static String getSuitableName(Class&lt;? extends PathObject&gt; cls, boolean makePlural) {
+<b class="nc"><i>317</i>&nbsp;		if (makePlural) {</b>
+<b class="nc"><i>318</i>&nbsp;			if (cls.equals(PathRootObject.class))</b>
+<b class="nc"><i>319</i>&nbsp;				return &quot;Root objects&quot;;</b>
+<b class="nc"><i>320</i>&nbsp;			if (cls.equals(PathAnnotationObject.class))</b>
+<b class="nc"><i>321</i>&nbsp;				return &quot;Annotations&quot;;</b>
+<b class="nc"><i>322</i>&nbsp;			if (cls.equals(TMACoreObject.class))</b>
+<b class="nc"><i>323</i>&nbsp;				return &quot;TMA cores&quot;;</b>
+<b class="nc"><i>324</i>&nbsp;			if (cls.equals(PathDetectionObject.class))</b>
+<b class="nc"><i>325</i>&nbsp;				return &quot;Detections&quot;;</b>
+<b class="nc"><i>326</i>&nbsp;			if (cls.equals(PathCellObject.class))</b>
+<b class="nc"><i>327</i>&nbsp;				return &quot;Cells&quot;;</b>
+<b class="nc"><i>328</i>&nbsp;			if (cls.equals(PathTileObject.class))</b>
+<b class="nc"><i>329</i>&nbsp;				return &quot;Tiles&quot;;</b>
+<b class="nc"><i>330</i>&nbsp;			return cls.getSimpleName() + &quot; objects&quot;;</b>
+<i>331</i>&nbsp;		}
+<b class="nc"><i>332</i>&nbsp;		if (cls.equals(PathRootObject.class))</b>
+<b class="nc"><i>333</i>&nbsp;			return &quot;Root object&quot;;</b>
+<b class="nc"><i>334</i>&nbsp;		if (cls.equals(PathAnnotationObject.class))</b>
+<b class="nc"><i>335</i>&nbsp;			return &quot;Annotation&quot;;</b>
+<b class="nc"><i>336</i>&nbsp;		if (cls.equals(TMACoreObject.class))</b>
+<b class="nc"><i>337</i>&nbsp;			return &quot;TMA core&quot;;</b>
+<b class="nc"><i>338</i>&nbsp;		if (cls.equals(PathDetectionObject.class))</b>
+<b class="nc"><i>339</i>&nbsp;			return &quot;Detection&quot;;</b>
+<b class="nc"><i>340</i>&nbsp;		if (cls.equals(PathCellObject.class))</b>
+<b class="nc"><i>341</i>&nbsp;			return &quot;Cell&quot;;</b>
+<b class="nc"><i>342</i>&nbsp;		if (cls.equals(PathTileObject.class))</b>
+<b class="nc"><i>343</i>&nbsp;			return &quot;Tile&quot;;</b>
+<b class="nc"><i>344</i>&nbsp;		return cls.getSimpleName();</b>
+<i>345</i>&nbsp;	}
+<i>346</i>&nbsp;	
+<i>347</i>&nbsp;	
+<i>348</i>&nbsp;	/**
+<i>349</i>&nbsp;	 * Test whether the ROI associated with one object can completely the ROI of a second object.
+<i>350</i>&nbsp;	 * Returns false if either ROI is null.
+<i>351</i>&nbsp;	 * 
+<i>352</i>&nbsp;	 * @param parentObject
+<i>353</i>&nbsp;	 * @param childObject
+<i>354</i>&nbsp;	 * @return
+<i>355</i>&nbsp;	 */
+<i>356</i>&nbsp;	@Deprecated
+<i>357</i>&nbsp;	public static boolean containsObject(PathObject parentObject, PathObject childObject) {
+<b class="nc"><i>358</i>&nbsp;		if (parentObject == null || childObject == null)</b>
+<b class="nc"><i>359</i>&nbsp;			return false;</b>
+<b class="nc"><i>360</i>&nbsp;		return containsROI(parentObject.getROI(), childObject.getROI());</b>
+<i>361</i>&nbsp;	}
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;	/**
+<i>364</i>&nbsp;	 * Query if one object is the ancestor of another.
+<i>365</i>&nbsp;	 * @param pathObject
+<i>366</i>&nbsp;	 * @param possibleAncestor
+<i>367</i>&nbsp;	 * @return
+<i>368</i>&nbsp;	 */
+<i>369</i>&nbsp;	public static boolean isAncestor(final PathObject pathObject, final PathObject possibleAncestor) {
+<b class="nc"><i>370</i>&nbsp;		PathObject parent = pathObject.getParent();</b>
+<b class="nc"><i>371</i>&nbsp;		while (parent != null) {</b>
+<b class="nc"><i>372</i>&nbsp;			if (parent.equals(possibleAncestor))</b>
+<b class="nc"><i>373</i>&nbsp;				return true;</b>
+<b class="nc"><i>374</i>&nbsp;			parent = parent.getParent();</b>
+<i>375</i>&nbsp;		}
+<b class="nc"><i>376</i>&nbsp;		return false;</b>
+<i>377</i>&nbsp;	}
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;	/**
+<i>380</i>&nbsp;	 * Extract a list of TMA cores from an object hierarchy.  If no cores are present, an empty list is returned.
+<i>381</i>&nbsp;	 * 
+<i>382</i>&nbsp;	 * @param hierarchy
+<i>383</i>&nbsp;	 * @param includeMissingCores
+<i>384</i>&nbsp;	 * @return
+<i>385</i>&nbsp;	 */
+<i>386</i>&nbsp;	public static List&lt;TMACoreObject&gt; getTMACoreObjects(final PathObjectHierarchy hierarchy, final boolean includeMissingCores) {
+<b class="nc"><i>387</i>&nbsp;		TMAGrid tmaGrid = hierarchy.getTMAGrid();</b>
+<b class="nc"><i>388</i>&nbsp;		if (tmaGrid == null || tmaGrid.nCores() == 0)</b>
+<b class="nc"><i>389</i>&nbsp;			return Collections.emptyList();</b>
+<i>390</i>&nbsp;		// If we have a TMA grid, add all the objects
+<b class="nc"><i>391</i>&nbsp;		if (includeMissingCores)</b>
+<b class="nc"><i>392</i>&nbsp;			return tmaGrid.getTMACoreList();</b>
+<b class="nc"><i>393</i>&nbsp;		List&lt;TMACoreObject&gt; cores = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>394</i>&nbsp;		for (TMACoreObject core : tmaGrid.getTMACoreList()) {</b>
+<b class="nc"><i>395</i>&nbsp;			if (!core.isMissing())</b>
+<b class="nc"><i>396</i>&nbsp;				cores.add(core);</b>
+<b class="nc"><i>397</i>&nbsp;		}</b>
+<b class="nc"><i>398</i>&nbsp;		return cores;</b>
+<i>399</i>&nbsp;	}
+<i>400</i>&nbsp;	
+<i>401</i>&nbsp;	/**
+<i>402</i>&nbsp;	 * Get the TMA core object that contains a specified PathObject, or null if the object is not contained within a TMA core.
+<i>403</i>&nbsp;	 * &lt;p&gt;
+<i>404</i>&nbsp;	 * If the passed object already is a TMACore, it is returned directly.  Otherwise, all ancestors are checked.
+<i>405</i>&nbsp;	 * 
+<i>406</i>&nbsp;	 * @param pathObject
+<i>407</i>&nbsp;	 * @return
+<i>408</i>&nbsp;	 */
+<i>409</i>&nbsp;	public static TMACoreObject getAncestorTMACore(final PathObject pathObject) {
+<b class="nc"><i>410</i>&nbsp;		PathObject parent = pathObject;</b>
+<b class="nc"><i>411</i>&nbsp;		while (parent != null &amp;&amp; !(parent instanceof TMACoreObject))</b>
+<b class="nc"><i>412</i>&nbsp;			parent = parent.getParent();</b>
+<b class="nc"><i>413</i>&nbsp;		return (TMACoreObject)parent;</b>
+<i>414</i>&nbsp;	}
+<i>415</i>&nbsp;
+<i>416</i>&nbsp;	/**
+<i>417</i>&nbsp;	 * Get the TMA core that contains the specified x &amp;amp; y coordinate, or null if no core is available for the coordinates give.
+<i>418</i>&nbsp;	 * 
+<i>419</i>&nbsp;	 * @param tmaGrid
+<i>420</i>&nbsp;	 * @param x
+<i>421</i>&nbsp;	 * @param y
+<i>422</i>&nbsp;	 * @return
+<i>423</i>&nbsp;	 */
+<i>424</i>&nbsp;	public static TMACoreObject getTMACoreForPixel(final TMAGrid tmaGrid, final double x, final double y) {
+<b class="nc"><i>425</i>&nbsp;		return getPathObjectContainingPixel(tmaGrid.getTMACoreList(), x, y);</b>
+<i>426</i>&nbsp;	}
+<i>427</i>&nbsp;
+<i>428</i>&nbsp;	private static &lt;T extends PathObject&gt; T getPathObjectContainingPixel(Collection&lt;T&gt; pathObjects, double x, double y) {
+<b class="nc"><i>429</i>&nbsp;		for (T pathObject: pathObjects) {</b>
+<b class="nc"><i>430</i>&nbsp;			if (RoiTools.areaContains(pathObject.getROI(), x, y))</b>
+<b class="nc"><i>431</i>&nbsp;				return pathObject;</b>
+<b class="nc"><i>432</i>&nbsp;		}</b>
+<b class="nc"><i>433</i>&nbsp;		return null;</b>
+<i>434</i>&nbsp;	}
+<i>435</i>&nbsp;	
+<i>436</i>&nbsp;	
+<i>437</i>&nbsp;	/**
+<i>438</i>&nbsp;	 * Convert a collection of PathObjects to Point annotations, based on ROI centroids, and add the points to the hierarchy.
+<i>439</i>&nbsp;	 * 
+<i>440</i>&nbsp;	 * @param hierarchy the object hierarchy containing the objects, and to which the points should be added
+<i>441</i>&nbsp;	 * @param pathObjects input objects; these are expected to have ROIs
+<i>442</i>&nbsp;	 * @param preferNucleus if true, request the nucleus ROI from cell objects where possible; if false, request the outer ROI. 
+<i>443</i>&nbsp;	 * 					    This has no effect if the object is not a cell, or does not have two ROIs.
+<i>444</i>&nbsp;	 * @param deleteObjects if true, delete the objects from the input collection after point conversion; if false, retain both original objects and points
+<i>445</i>&nbsp;	 * 
+<i>446</i>&nbsp;	 * @see #convertToPoints(Collection, boolean)
+<i>447</i>&nbsp;	 */
+<i>448</i>&nbsp;	public static void convertToPoints(PathObjectHierarchy hierarchy, Collection&lt;PathObject&gt; pathObjects, boolean preferNucleus, boolean deleteObjects) {
+<b class="nc"><i>449</i>&nbsp;		var points = convertToPoints(pathObjects, preferNucleus);</b>
+<b class="nc"><i>450</i>&nbsp;		if (deleteObjects)</b>
+<b class="nc"><i>451</i>&nbsp;			hierarchy.removeObjects(pathObjects, true);</b>
+<b class="nc"><i>452</i>&nbsp;		hierarchy.addPathObjects(points);</b>
+<b class="nc"><i>453</i>&nbsp;	}</b>
+<i>454</i>&nbsp;	
+<i>455</i>&nbsp;	
+<i>456</i>&nbsp;	/**
+<i>457</i>&nbsp;	 * Convert a collection of PathObjects to Point annotations, based on ROI centroids.
+<i>458</i>&nbsp;	 * Each output annotation contains all points corresponding to input objects with the same classification.
+<i>459</i>&nbsp;	 * Consequently, the size of the output collection is equal to the number of distinct classifications 
+<i>460</i>&nbsp;	 * found among the input objects.
+<i>461</i>&nbsp;	 * 
+<i>462</i>&nbsp;	 * @param pathObjects input objects; these are expected to have ROIs
+<i>463</i>&nbsp;	 * @param preferNucleus if true, request the nucleus ROI from cell objects where possible; if false, request the outer ROI. 
+<i>464</i>&nbsp;	 * 					    This has no effect if the object is not a cell, or does not have two ROIs.
+<i>465</i>&nbsp;	 * @return a collection of annotations with point ROIs
+<i>466</i>&nbsp;	 * 
+<i>467</i>&nbsp;	 * @see #convertToPoints(PathObjectHierarchy, Collection, boolean, boolean)
+<i>468</i>&nbsp;	 */
+<i>469</i>&nbsp;	public static Collection&lt;PathObject&gt; convertToPoints(Collection&lt;PathObject&gt; pathObjects, boolean preferNucleus) {
+<i>470</i>&nbsp;		// Create Points lists for each class
+<b class="nc"><i>471</i>&nbsp;		Map&lt;PathClass, List&lt;Point2&gt;&gt; pointsMap = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>472</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>473</i>&nbsp;			PathClass pathClass = pathObject.getPathClass();</b>
+<b class="nc"><i>474</i>&nbsp;			List&lt;Point2&gt; points = pointsMap.get(pathClass);</b>
+<b class="nc"><i>475</i>&nbsp;			if (points == null) {</b>
+<b class="nc"><i>476</i>&nbsp;				points = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>477</i>&nbsp;				pointsMap.put(pathClass, points);</b>
+<i>478</i>&nbsp;			}
+<b class="nc"><i>479</i>&nbsp;			var roi = PathObjectTools.getROI(pathObject, preferNucleus);</b>
+<b class="nc"><i>480</i>&nbsp;			points.add(new Point2(roi.getCentroidX(), roi.getCentroidY()));</b>
+<b class="nc"><i>481</i>&nbsp;		}</b>
+<i>482</i>&nbsp;		
+<i>483</i>&nbsp;		// Create &amp; add annotation objects to hierarchy
+<b class="nc"><i>484</i>&nbsp;		List&lt;PathObject&gt; annotations = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>485</i>&nbsp;		for (Entry&lt;PathClass, List&lt;Point2&gt;&gt; entry : pointsMap.entrySet()) {</b>
+<b class="nc"><i>486</i>&nbsp;			PathObject pointObject = PathObjects.createAnnotationObject(ROIs.createPointsROI(entry.getValue(), ImagePlane.getDefaultPlane()));</b>
+<b class="nc"><i>487</i>&nbsp;			pointObject.setPathClass(entry.getKey());</b>
+<b class="nc"><i>488</i>&nbsp;			annotations.add(pointObject);</b>
+<b class="nc"><i>489</i>&nbsp;		}</b>
+<b class="nc"><i>490</i>&nbsp;		return annotations;</b>
+<i>491</i>&nbsp;	}
+<i>492</i>&nbsp;	
+<i>493</i>&nbsp;	
+<i>494</i>&nbsp;	/**
+<i>495</i>&nbsp;	 * Check if a hierarchy contains a specified PathObject.
+<i>496</i>&nbsp;	 * The actual check if carried out by seeing in the PathObject is descended from the root object of the hierarchy.
+<i>497</i>&nbsp;	 * 
+<i>498</i>&nbsp;	 * @param hierarchy
+<i>499</i>&nbsp;	 * @param pathObject
+<i>500</i>&nbsp;	 * @return
+<i>501</i>&nbsp;	 */
+<i>502</i>&nbsp;	public static boolean hierarchyContainsObject(final PathObjectHierarchy hierarchy, final PathObject pathObject) {
+<b class="fc"><i>503</i>&nbsp;		if (pathObject == null)</b>
+<b class="nc"><i>504</i>&nbsp;			return false;</b>
+<b class="fc"><i>505</i>&nbsp;		PathObject testObject = pathObject;</b>
+<b class="fc"><i>506</i>&nbsp;		while (testObject != null &amp;&amp; (!(testObject instanceof PathRootObject)))</b>
+<b class="nc"><i>507</i>&nbsp;			testObject = testObject.getParent();</b>
+<b class="fc"><i>508</i>&nbsp;		return testObject == hierarchy.getRootObject();</b>
+<i>509</i>&nbsp;	}
+<i>510</i>&nbsp;	
+<i>511</i>&nbsp;	/**
+<i>512</i>&nbsp;	 * Get a collection of objects that overlap a specified pixel location.
+<i>513</i>&nbsp;	 * &lt;p&gt;
+<i>514</i>&nbsp;	 * For area ROIs, this means the ROI should contain the pixel.  For non-area ROIs an 
+<i>515</i>&nbsp;	 * optional vertex distance can be used to define a distance tolerance to the nearest vertex 
+<i>516</i>&nbsp;	 * or line segment.
+<i>517</i>&nbsp;	 * 
+<i>518</i>&nbsp;	 * @param hierarchy object hierarchy within which to find the object
+<i>519</i>&nbsp;	 * @param x x-coordinate of the pixel
+<i>520</i>&nbsp;	 * @param y y-coordinate of the pixel
+<i>521</i>&nbsp;	 * @param zPos z-slice number
+<i>522</i>&nbsp;	 * @param tPos time-point number
+<i>523</i>&nbsp;	 * @param vertexDistance for non-area ROIs, the distance from the closest vertex or line segment (or &amp;lt; 0 to ignore non-area ROIs).
+<i>524</i>&nbsp;	 * @return
+<i>525</i>&nbsp;	 */
+<i>526</i>&nbsp;	public static Collection&lt;PathObject&gt; getObjectsForLocation(final PathObjectHierarchy hierarchy, 
+<i>527</i>&nbsp;			final double x, final double y, final int zPos, final int tPos, double vertexDistance) {
+<b class="fc"><i>528</i>&nbsp;			if (hierarchy == null)</b>
+<b class="nc"><i>529</i>&nbsp;				return Collections.emptyList();</b>
+<b class="fc"><i>530</i>&nbsp;			Set&lt;PathObject&gt; pathObjects = new HashSet&lt;&gt;(8);</b>
+<b class="fc"><i>531</i>&nbsp;			hierarchy.getObjectsForRegion(PathObject.class, ImageRegion.createInstance((int)x, (int)y, 1, 1, zPos, tPos), pathObjects);</b>
+<b class="fc"><i>532</i>&nbsp;			if (vertexDistance &lt; 0)</b>
+<b class="nc"><i>533</i>&nbsp;				removePoints(pathObjects); // Ensure we don&#39;t have any PointROIs</b>
+<i>534</i>&nbsp;			
+<i>535</i>&nbsp;			// Ensure the ROI contains the click
+<b class="fc"><i>536</i>&nbsp;			Iterator&lt;PathObject&gt; iter = pathObjects.iterator();</b>
+<b class="fc"><i>537</i>&nbsp;			double distSq = vertexDistance * vertexDistance;</b>
+<b class="fc"><i>538</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>539</i>&nbsp;				PathObject temp = iter.next();</b>
+<b class="nc"><i>540</i>&nbsp;				var roi = temp.getROI();</b>
+<b class="nc"><i>541</i>&nbsp;				if (!RoiTools.areaContains(temp.getROI(), x, y)) {</b>
+<b class="nc"><i>542</i>&nbsp;					if (!roi.isArea() &amp;&amp; vertexDistance &gt;= 0) {</b>
+<b class="nc"><i>543</i>&nbsp;						boolean isClose = false;</b>
+<b class="nc"><i>544</i>&nbsp;						if (roi instanceof LineROI) {</b>
+<b class="nc"><i>545</i>&nbsp;							var line = (LineROI)roi;</b>
+<b class="nc"><i>546</i>&nbsp;							if (Line2D.ptSegDistSq(</b>
+<b class="nc"><i>547</i>&nbsp;									line.getX1(), line.getY1(),</b>
+<b class="nc"><i>548</i>&nbsp;									line.getX2(), line.getY2(),</b>
+<i>549</i>&nbsp;									x, y) &lt;= distSq)
+<b class="nc"><i>550</i>&nbsp;								isClose = true;</b>
+<b class="nc"><i>551</i>&nbsp;						} else if (roi.isLine()) {</b>
+<b class="nc"><i>552</i>&nbsp;							Point2 lastPoint = null;</b>
+<b class="nc"><i>553</i>&nbsp;							for (var p : temp.getROI().getAllPoints()) {</b>
+<b class="nc"><i>554</i>&nbsp;								if (p.distanceSq(x, y) &lt;= distSq ||</b>
+<b class="nc"><i>555</i>&nbsp;										(lastPoint != null &amp;&amp; Line2D.ptSegDistSq(</b>
+<b class="nc"><i>556</i>&nbsp;												p.getX(), p.getY(),</b>
+<b class="nc"><i>557</i>&nbsp;												lastPoint.getX(), lastPoint.getY(),</b>
+<i>558</i>&nbsp;												x, y
+<i>559</i>&nbsp;												) &lt;= distSq)) {
+<b class="nc"><i>560</i>&nbsp;									isClose = true;</b>
+<b class="nc"><i>561</i>&nbsp;									break;</b>
+<i>562</i>&nbsp;								} else
+<b class="nc"><i>563</i>&nbsp;									lastPoint = p;</b>
+<b class="nc"><i>564</i>&nbsp;							}</b>
+<b class="nc"><i>565</i>&nbsp;						} else {</b>
+<b class="nc"><i>566</i>&nbsp;							for (var p : temp.getROI().getAllPoints()) {</b>
+<b class="nc"><i>567</i>&nbsp;								if (p.distanceSq(x, y) &lt;= distSq) {</b>
+<b class="nc"><i>568</i>&nbsp;									isClose = true;</b>
+<b class="nc"><i>569</i>&nbsp;									break;</b>
+<i>570</i>&nbsp;								}
+<b class="nc"><i>571</i>&nbsp;							}</b>
+<i>572</i>&nbsp;						}
+<b class="nc"><i>573</i>&nbsp;						if (isClose)</b>
+<b class="nc"><i>574</i>&nbsp;							continue;</b>
+<i>575</i>&nbsp;					}
+<b class="nc"><i>576</i>&nbsp;					iter.remove();					</b>
+<i>577</i>&nbsp;				}
+<i>578</i>&nbsp;
+<b class="nc"><i>579</i>&nbsp;			}</b>
+<i>580</i>&nbsp;			
+<b class="fc"><i>581</i>&nbsp;			if (pathObjects.isEmpty()) {</b>
+<b class="fc"><i>582</i>&nbsp;				return Collections.emptyList();</b>
+<i>583</i>&nbsp;			}
+<b class="nc"><i>584</i>&nbsp;			return pathObjects;</b>
+<i>585</i>&nbsp;		}
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;	/**
+<i>588</i>&nbsp;	 * Return a list of object ancestors, starting from the root object and ending with PathObject
+<i>589</i>&nbsp;	 * (assuming that the object is part of a hierarchy with a root).
+<i>590</i>&nbsp;	 * 
+<i>591</i>&nbsp;	 * @param pathObject
+<i>592</i>&nbsp;	 * @return
+<i>593</i>&nbsp;	 */
+<i>594</i>&nbsp;	public static List&lt;PathObject&gt; getAncestorList(final PathObject pathObject) {
+<b class="nc"><i>595</i>&nbsp;		List&lt;PathObject&gt; ancestors = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>596</i>&nbsp;		PathObject parent = pathObject;</b>
+<b class="nc"><i>597</i>&nbsp;		while (parent != null) {</b>
+<b class="nc"><i>598</i>&nbsp;			ancestors.add(0, parent);</b>
+<b class="nc"><i>599</i>&nbsp;			parent = parent.getParent();</b>
+<i>600</i>&nbsp;		}
+<b class="nc"><i>601</i>&nbsp;		return ancestors;</b>
+<i>602</i>&nbsp;	}
+<i>603</i>&nbsp;
+<i>604</i>&nbsp;	/**
+<i>605</i>&nbsp;	 * Swap the name and {@link PathClass} of an object.
+<i>606</i>&nbsp;	 * This can be used as a simple way to preserve a classification that might be required later.
+<i>607</i>&nbsp;	 * @param pathObject the object to adjust
+<i>608</i>&nbsp;	 * @param includeColor optionally set the color of the object to the color of the classification
+<i>609</i>&nbsp;	 */
+<i>610</i>&nbsp;	public static void swapNameAndClass(PathObject pathObject, boolean includeColor) {
+<b class="nc"><i>611</i>&nbsp;		var pathClass = pathObject.getPathClass();</b>
+<b class="nc"><i>612</i>&nbsp;		var name = pathObject.getName();</b>
+<b class="nc"><i>613</i>&nbsp;		var color = pathObject.getColorRGB();</b>
+<b class="nc"><i>614</i>&nbsp;		if (name == null)</b>
+<b class="nc"><i>615</i>&nbsp;			pathObject.setPathClass(null);</b>
+<i>616</i>&nbsp;		else
+<b class="nc"><i>617</i>&nbsp;			pathObject.setPathClass(PathClassFactory.getPathClass(name, color));</b>
+<b class="nc"><i>618</i>&nbsp;		if (pathClass == null) {</b>
+<b class="nc"><i>619</i>&nbsp;			pathObject.setName(null);</b>
+<b class="nc"><i>620</i>&nbsp;			if (includeColor)</b>
+<b class="nc"><i>621</i>&nbsp;				pathObject.setColorRGB(null);</b>
+<i>622</i>&nbsp;		} else {
+<b class="nc"><i>623</i>&nbsp;			pathObject.setName(pathClass.toString());</b>
+<b class="nc"><i>624</i>&nbsp;			if (includeColor)</b>
+<b class="nc"><i>625</i>&nbsp;				pathObject.setColorRGB(pathClass.getColor());				</b>
+<i>626</i>&nbsp;		}
+<b class="nc"><i>627</i>&nbsp;	}</b>
+<i>628</i>&nbsp;	
+<i>629</i>&nbsp;	/**
+<i>630</i>&nbsp;	 * Parse a string input representing potential TMA core labels.
+<i>631</i>&nbsp;	 * 
+<i>632</i>&nbsp;	 * @param labelString
+<i>633</i>&nbsp;	 * @return
+<i>634</i>&nbsp;	 */
+<i>635</i>&nbsp;	public static String[] parseTMALabelString(String labelString) {
+<b class="nc"><i>636</i>&nbsp;		if (labelString == null || labelString.length() == 0)</b>
+<b class="nc"><i>637</i>&nbsp;			return new String[0];</b>
+<b class="nc"><i>638</i>&nbsp;		labelString = labelString.trim();</b>
+<b class="nc"><i>639</i>&nbsp;		String[] labels = labelString.split(&quot; &quot;);</b>
+<i>640</i>&nbsp;		// If we have a dash indicating a range, split on that
+<b class="nc"><i>641</i>&nbsp;		if (labels.length == 1 &amp;&amp; labels[0].contains(&quot;-&quot;)) {</b>
+<b class="nc"><i>642</i>&nbsp;			String[] labelsSplit = labels[0].split(&quot;-&quot;);</b>
+<i>643</i>&nbsp;			try {
+<i>644</i>&nbsp;				// Try integer labels
+<b class="nc"><i>645</i>&nbsp;				int i1 = Integer.parseInt(labelsSplit[0]);</b>
+<b class="nc"><i>646</i>&nbsp;				int i2 = Integer.parseInt(labelsSplit[1]);</b>
+<i>647</i>&nbsp;				
+<i>648</i>&nbsp;				// Are we descending?
+<b class="nc"><i>649</i>&nbsp;				int inc = 1;</b>
+<b class="nc"><i>650</i>&nbsp;				int n = i2 - i1 + 1;</b>
+<b class="nc"><i>651</i>&nbsp;				if (i1 &gt; i2) {</b>
+<b class="nc"><i>652</i>&nbsp;					inc = -1;</b>
+<b class="nc"><i>653</i>&nbsp;					n = i1 - i2 + 1;</b>
+<i>654</i>&nbsp;				}
+<i>655</i>&nbsp;				
+<i>656</i>&nbsp;				// Check - do we want zero-padding?
+<b class="nc"><i>657</i>&nbsp;				String format = &quot;%d&quot;;</b>
+<b class="nc"><i>658</i>&nbsp;				if (labelsSplit[0].startsWith(&quot;0&quot;))</b>
+<b class="nc"><i>659</i>&nbsp;					format = &quot;%0&quot; + labelsSplit[0].length() + &quot;d&quot;;</b>
+<i>660</i>&nbsp;				
+<i>661</i>&nbsp;				// Create labels
+<b class="nc"><i>662</i>&nbsp;				labels = new String[n];</b>
+<b class="nc"><i>663</i>&nbsp;				for (int i = 0; i &lt; n; i++)</b>
+<b class="nc"><i>664</i>&nbsp;					labels[i] = String.format(format, i1+i*inc);</b>
+<b class="nc"><i>665</i>&nbsp;				return labels;</b>
+<b class="nc"><i>666</i>&nbsp;			} catch (Exception e) {}</b>
+<i>667</i>&nbsp;			try {
+<i>668</i>&nbsp;				// Try string labels
+<b class="nc"><i>669</i>&nbsp;				char c1 = labelsSplit[0].charAt(0);</b>
+<b class="nc"><i>670</i>&nbsp;				char c2 = labelsSplit[1].charAt(0);</b>
+<i>671</i>&nbsp;				
+<i>672</i>&nbsp;				// Are we descending?
+<b class="nc"><i>673</i>&nbsp;				int inc = 1;</b>
+<b class="nc"><i>674</i>&nbsp;				int n = c2 - c1 + 1;</b>
+<b class="nc"><i>675</i>&nbsp;				if (c1 &gt; c2) {</b>
+<b class="nc"><i>676</i>&nbsp;					inc = -1;</b>
+<b class="nc"><i>677</i>&nbsp;					n = c1 - c2 + 1;</b>
+<i>678</i>&nbsp;				}
+<i>679</i>&nbsp;				
+<i>680</i>&nbsp;				// Create labels
+<b class="nc"><i>681</i>&nbsp;				labels = new String[n];</b>
+<b class="nc"><i>682</i>&nbsp;				int counter = 0;</b>
+<b class="nc"><i>683</i>&nbsp;				for (char i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>684</i>&nbsp;					labels[counter] = &quot;&quot;+(char)(c1 + i*inc);</b>
+<b class="nc"><i>685</i>&nbsp;					counter++;</b>
+<i>686</i>&nbsp;				}
+<b class="nc"><i>687</i>&nbsp;				return labels;</b>
+<b class="nc"><i>688</i>&nbsp;			} catch (Exception e) {}	</b>
+<i>689</i>&nbsp;		}
+<i>690</i>&nbsp;		// Just use whatever we have
+<b class="nc"><i>691</i>&nbsp;		return labels;</b>
+<i>692</i>&nbsp;	}
+<i>693</i>&nbsp;
+<i>694</i>&nbsp;	/**
+<i>695</i>&nbsp;	 * From a collection of available objects, extract those that are instances of specified supported classes.
+<i>696</i>&nbsp;	 * 
+<i>697</i>&nbsp;	 * @param availableObjects
+<i>698</i>&nbsp;	 * @param supportedClasses
+<i>699</i>&nbsp;	 * @return
+<i>700</i>&nbsp;	 */
+<i>701</i>&nbsp;	public static Collection&lt;? extends PathObject&gt; getSupportedObjects(final Collection&lt;PathObject&gt; availableObjects, final Collection&lt;Class&lt;? extends PathObject&gt;&gt; supportedClasses) {
+<b class="nc"><i>702</i>&nbsp;		List&lt;PathObject&gt; objects = availableObjects</b>
+<b class="nc"><i>703</i>&nbsp;			.stream()</b>
+<b class="nc"><i>704</i>&nbsp;			.filter(p -&gt; supportedClasses.stream().anyMatch(s -&gt; s.isInstance(p)))</b>
+<b class="nc"><i>705</i>&nbsp;			.collect(Collectors.toList());</b>
+<i>706</i>&nbsp;		
+<b class="nc"><i>707</i>&nbsp;		return objects;</b>
+<i>708</i>&nbsp;	}
+<i>709</i>&nbsp;
+<i>710</i>&nbsp;	/**
+<i>711</i>&nbsp;	 * Get the ROI for a PathObject, with a preference for the nucleus ROI of a cell.
+<i>712</i>&nbsp;	 * 
+<i>713</i>&nbsp;	 * @param pathObject
+<i>714</i>&nbsp;	 * @param preferNucleus
+<i>715</i>&nbsp;	 * @return
+<i>716</i>&nbsp;	 */
+<i>717</i>&nbsp;	public static ROI getROI(final PathObject pathObject, final boolean preferNucleus) {
+<b class="nc"><i>718</i>&nbsp;		if (preferNucleus &amp;&amp; pathObject instanceof PathCellObject) {</b>
+<b class="nc"><i>719</i>&nbsp;			ROI roi = ((PathCellObject)pathObject).getNucleusROI();</b>
+<b class="nc"><i>720</i>&nbsp;			if (roi != null)</b>
+<b class="nc"><i>721</i>&nbsp;				return roi;</b>
+<i>722</i>&nbsp;		}
+<b class="nc"><i>723</i>&nbsp;		return pathObject.getROI();</b>
+<i>724</i>&nbsp;	}
+<i>725</i>&nbsp;
+<i>726</i>&nbsp;	/**
+<i>727</i>&nbsp;	 * Get all descendant objects with a specified type.
+<i>728</i>&nbsp;	 * 
+<i>729</i>&nbsp;	 * @param pathObject
+<i>730</i>&nbsp;	 * @param pathObjects
+<i>731</i>&nbsp;	 * @param cls
+<i>732</i>&nbsp;	 * @return
+<i>733</i>&nbsp;	 */
+<i>734</i>&nbsp;	public static Collection&lt;PathObject&gt; getDescendantObjects(PathObject pathObject, Collection&lt;PathObject&gt; pathObjects, Class&lt;? extends PathObject&gt; cls) {
+<b class="fc"><i>735</i>&nbsp;		if (pathObject == null || !pathObject.hasChildren())</b>
+<b class="fc"><i>736</i>&nbsp;			return pathObjects == null ? Collections.emptyList() : pathObjects;</b>
+<i>737</i>&nbsp;		
+<b class="nc"><i>738</i>&nbsp;		if (pathObjects == null)</b>
+<b class="nc"><i>739</i>&nbsp;			pathObjects = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>740</i>&nbsp;		if (cls == null)</b>
+<b class="nc"><i>741</i>&nbsp;			return pathObject.getDescendantObjects(pathObjects);</b>
+<b class="nc"><i>742</i>&nbsp;		addPathObjectsRecursively(pathObject.getChildObjectsAsArray(), pathObjects, cls);</b>
+<b class="nc"><i>743</i>&nbsp;		return pathObjects;</b>
+<i>744</i>&nbsp;		
+<i>745</i>&nbsp;		// Alternative method (doesn&#39;t require a new array to be created every time child objects are requested)
+<i>746</i>&nbsp;//		List&lt;PathObject&gt; buffer = new ArrayList&lt;&gt;();
+<i>747</i>&nbsp;//		pathObject.getChildObjects(buffer);
+<i>748</i>&nbsp;//		addPathObjectsRecursively(buffer, pathObjects, cls);
+<i>749</i>&nbsp;//		return pathObjects;
+<i>750</i>&nbsp;	}
+<i>751</i>&nbsp;	
+<i>752</i>&nbsp;	private static void addPathObjectsRecursively(PathObject[] pathObjectsInput, Collection&lt;PathObject&gt; pathObjects, Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>753</i>&nbsp;		for (PathObject childObject : pathObjectsInput) {</b>
+<b class="nc"><i>754</i>&nbsp;			if (cls == null || cls.isInstance(childObject)) {</b>
+<b class="nc"><i>755</i>&nbsp;				pathObjects.add(childObject);</b>
+<i>756</i>&nbsp;			}
+<b class="nc"><i>757</i>&nbsp;			if (childObject.hasChildren())</b>
+<b class="nc"><i>758</i>&nbsp;				addPathObjectsRecursively(childObject.getChildObjectsAsArray(), pathObjects, cls);</b>
+<i>759</i>&nbsp;		}
+<b class="nc"><i>760</i>&nbsp;	}</b>
+<i>761</i>&nbsp;	
+<i>762</i>&nbsp;//	private static void addPathObjectsRecursively(Collection&lt;PathObject&gt; pathObjectsInput, Collection&lt;PathObject&gt; pathObjects, Class&lt;? extends PathObject&gt; cls) {
+<i>763</i>&nbsp;//		Collection&lt;PathObject&gt; buffer = null;
+<i>764</i>&nbsp;//		for (PathObject childObject : pathObjectsInput) {
+<i>765</i>&nbsp;//			if (cls == null || cls.isInstance(childObject)) {
+<i>766</i>&nbsp;//				pathObjects.add(childObject);
+<i>767</i>&nbsp;//			}
+<i>768</i>&nbsp;//			if (childObject.hasChildren()) {
+<i>769</i>&nbsp;//				if (buffer == null)
+<i>770</i>&nbsp;//					buffer = new ArrayList&lt;&gt;();
+<i>771</i>&nbsp;//				else
+<i>772</i>&nbsp;//					buffer.clear();
+<i>773</i>&nbsp;//				childObject.getChildObjects(buffer);
+<i>774</i>&nbsp;//				addPathObjectsRecursively(buffer, pathObjects, cls);
+<i>775</i>&nbsp;//			}
+<i>776</i>&nbsp;//		}
+<i>777</i>&nbsp;//	}
+<i>778</i>&nbsp;	
+<i>779</i>&nbsp;	
+<i>780</i>&nbsp;//	/**
+<i>781</i>&nbsp;//	 * Split annotations containing multi-point ROIs into separate single-point ROIs.
+<i>782</i>&nbsp;//	 * 
+<i>783</i>&nbsp;//	 * @param hierarchy the object hierarchy
+<i>784</i>&nbsp;//	 * @param selectedOnly if true, consider only annotations that are currently selected; if false, consider all point annotations in the hierarchy
+<i>785</i>&nbsp;//	 * @return true if changes are made to the hierarchy, false otherwise
+<i>786</i>&nbsp;//	 */
+<i>787</i>&nbsp;//	public static boolean splitPoints(PathObjectHierarchy hierarchy, boolean selectedOnly) {
+<i>788</i>&nbsp;//		if (hierarchy == null) {
+<i>789</i>&nbsp;//			logger.debug(&quot;No hierarchy available, cannot split points!&quot;);
+<i>790</i>&nbsp;//			return false;
+<i>791</i>&nbsp;//		}
+<i>792</i>&nbsp;//		return splitPoints(hierarchy, selectedOnly ? hierarchy.getSelectionModel().getSelectedObjects() : hierarchy.getAnnotationObjects());
+<i>793</i>&nbsp;//	}
+<i>794</i>&nbsp;//
+<i>795</i>&nbsp;//	/**
+<i>796</i>&nbsp;//	 * Split annotations containing multi-point ROIs into separate single-point ROIs.
+<i>797</i>&nbsp;//	 * 
+<i>798</i>&nbsp;//	 * @param hierarchy the object hierarchy
+<i>799</i>&nbsp;//	 * @param pathObjects a collection of point annotations to split; non-points and non-annotations will be ignored
+<i>800</i>&nbsp;//	 * @return pathObjects if changes are made to the hierarchy, false otherwise
+<i>801</i>&nbsp;//	 */
+<i>802</i>&nbsp;//	public static boolean splitPoints(PathObjectHierarchy hierarchy, Collection&lt;PathObject&gt; pathObjects) {
+<i>803</i>&nbsp;//		var points = pathObjects.stream().filter(p -&gt; p.isAnnotation() &amp;&amp; p.getROI().isPoint() &amp;&amp; p.getROI().getNumPoints() &gt; 1).collect(Collectors.toList());
+<i>804</i>&nbsp;//		if (points.isEmpty()) {
+<i>805</i>&nbsp;//			logger.debug(&quot;No (multi)point ROIs available to split!&quot;);			
+<i>806</i>&nbsp;//			return false;
+<i>807</i>&nbsp;//		}
+<i>808</i>&nbsp;//		List&lt;PathObject&gt; newObjects = new ArrayList&lt;&gt;();
+<i>809</i>&nbsp;//		for (PathObject pathObject : points) {
+<i>810</i>&nbsp;//			ROI p = pathObject.getROI();
+<i>811</i>&nbsp;//			ImagePlane plane = p.getImagePlane();
+<i>812</i>&nbsp;//			PathClass pathClass = pathObject.getPathClass();
+<i>813</i>&nbsp;//			for (Point2 p2 : p.getAllPoints()) {
+<i>814</i>&nbsp;//				PathObject temp = PathObjects.createAnnotationObject(ROIs.createPointsROI(p2.getX(), p2.getY(), plane), pathClass);
+<i>815</i>&nbsp;//				newObjects.add(temp);
+<i>816</i>&nbsp;//			}
+<i>817</i>&nbsp;//		}
+<i>818</i>&nbsp;//		hierarchy.removeObjects(points, true);
+<i>819</i>&nbsp;//		hierarchy.addPathObjects(newObjects);
+<i>820</i>&nbsp;//		// Reset the selection
+<i>821</i>&nbsp;//		hierarchy.getSelectionModel().clearSelection();
+<i>822</i>&nbsp;//		return true;
+<i>823</i>&nbsp;//	}
+<i>824</i>&nbsp;	
+<i>825</i>&nbsp;	/**
+<i>826</i>&nbsp;	 * Merge point annotations sharing the same {@link PathClass} and {@link ImagePlane} as the selected annotations,
+<i>827</i>&nbsp;	 * creating multi-point annotations for all matching points and removing the (previously-separated) annotations.
+<i>828</i>&nbsp;	 * 
+<i>829</i>&nbsp;	 * @param hierarchy object hierarchy to modify
+<i>830</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>831</i>&nbsp;	 */
+<i>832</i>&nbsp;	public static boolean mergePointsForSelectedObjectClasses(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>833</i>&nbsp;		var pathClasses = hierarchy.getSelectionModel().getSelectedObjects().stream()</b>
+<b class="nc"><i>834</i>&nbsp;				.filter(p -&gt; p.isAnnotation() &amp;&amp; p.getROI().isPoint())</b>
+<b class="nc"><i>835</i>&nbsp;				.map(p -&gt; p.getPathClass())</b>
+<b class="nc"><i>836</i>&nbsp;				.collect(Collectors.toSet());</b>
+<b class="nc"><i>837</i>&nbsp;		boolean changes = false;</b>
+<b class="nc"><i>838</i>&nbsp;		for (PathClass pathClass : pathClasses)</b>
+<b class="nc"><i>839</i>&nbsp;			changes = changes || mergePointsForClass(hierarchy, pathClass);</b>
+<b class="nc"><i>840</i>&nbsp;		return changes;</b>
+<i>841</i>&nbsp;	}
+<i>842</i>&nbsp;	
+<i>843</i>&nbsp;	/**
+<i>844</i>&nbsp;	 * Merge point annotations sharing the same {@link PathClass} and {@link ImagePlane}, 
+<i>845</i>&nbsp;	 * creating multi-point annotations for all matching points and removing the (previously-separated) annotations.
+<i>846</i>&nbsp;	 * 
+<i>847</i>&nbsp;	 * @param hierarchy object hierarchy to modify
+<i>848</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>849</i>&nbsp;	 */
+<i>850</i>&nbsp;	public static boolean mergePointsForAllClasses(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>851</i>&nbsp;		if (hierarchy == null)</b>
+<b class="nc"><i>852</i>&nbsp;			return false;</b>
+<b class="nc"><i>853</i>&nbsp;		var pathClasses = hierarchy.getAnnotationObjects().stream()</b>
+<b class="nc"><i>854</i>&nbsp;			.filter(p -&gt; p.getROI().isPoint())</b>
+<b class="nc"><i>855</i>&nbsp;			.map(p -&gt; p.getPathClass())</b>
+<b class="nc"><i>856</i>&nbsp;			.collect(Collectors.toSet());</b>
+<b class="nc"><i>857</i>&nbsp;		boolean changes = false;</b>
+<b class="nc"><i>858</i>&nbsp;		for (PathClass pathClass : pathClasses)</b>
+<b class="nc"><i>859</i>&nbsp;			changes = changes || mergePointsForClass(hierarchy, pathClass);</b>
+<b class="nc"><i>860</i>&nbsp;		return changes;</b>
+<i>861</i>&nbsp;	}
+<i>862</i>&nbsp;	
+<i>863</i>&nbsp;	/**
+<i>864</i>&nbsp;	 * Merge point annotations with the specified {@link PathClass} sharing the same {@link ImagePlane}, 
+<i>865</i>&nbsp;	 * creating a single multi-point annotation for all matching points and removing the (previously-separated) annotations.
+<i>866</i>&nbsp;	 * 
+<i>867</i>&nbsp;	 * @param hierarchy object hierarchy to modify
+<i>868</i>&nbsp;	 * @param pathClass classification for annotations to merge
+<i>869</i>&nbsp;	 * @return true if changes are made to the hierarchy, false otherwise
+<i>870</i>&nbsp;	 * 
+<i>871</i>&nbsp;	 * @see #mergePointsForAllClasses(PathObjectHierarchy)
+<i>872</i>&nbsp;	 */
+<i>873</i>&nbsp;	public static boolean mergePointsForClass(PathObjectHierarchy hierarchy, PathClass pathClass) {
+<b class="nc"><i>874</i>&nbsp;		var map = hierarchy.getAnnotationObjects().stream()</b>
+<b class="nc"><i>875</i>&nbsp;				.filter(p -&gt; p.getROI().isPoint() &amp;&amp; p.getPathClass() == pathClass)</b>
+<b class="nc"><i>876</i>&nbsp;				.collect(Collectors.groupingBy(p -&gt; p.getROI().getImagePlane()));</b>
+<i>877</i>&nbsp;		
+<b class="nc"><i>878</i>&nbsp;		List&lt;PathObject&gt; toRemove = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>879</i>&nbsp;		List&lt;PathObject&gt; toAdd = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>880</i>&nbsp;		for (var entry : map.entrySet()) {</b>
+<b class="nc"><i>881</i>&nbsp;			List&lt;PathObject&gt; objectsToMerge = entry.getValue();</b>
+<b class="nc"><i>882</i>&nbsp;			if (objectsToMerge.size() &lt;= 1)</b>
+<b class="nc"><i>883</i>&nbsp;				continue;</b>
+<i>884</i>&nbsp;			// Create new points object
+<b class="nc"><i>885</i>&nbsp;			List&lt;Point2&gt; pointsList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>886</i>&nbsp;			for (PathObject temp : objectsToMerge) {</b>
+<b class="nc"><i>887</i>&nbsp;				pointsList.addAll(((PointsROI)temp.getROI()).getAllPoints());</b>
+<b class="nc"><i>888</i>&nbsp;			}</b>
+<b class="nc"><i>889</i>&nbsp;			var points = ROIs.createPointsROI(pointsList, entry.getKey());</b>
+<b class="nc"><i>890</i>&nbsp;			toAdd.add(PathObjects.createAnnotationObject(points, pathClass));</b>
+<b class="nc"><i>891</i>&nbsp;			toRemove.addAll(objectsToMerge);</b>
+<b class="nc"><i>892</i>&nbsp;		}</b>
+<b class="nc"><i>893</i>&nbsp;		if (toAdd.isEmpty() &amp;&amp; toRemove.isEmpty())</b>
+<b class="nc"><i>894</i>&nbsp;			return false;</b>
+<b class="nc"><i>895</i>&nbsp;		hierarchy.removeObjects(toRemove, true);</b>
+<b class="nc"><i>896</i>&nbsp;		hierarchy.addPathObjects(toAdd);</b>
+<b class="nc"><i>897</i>&nbsp;		return true;</b>
+<i>898</i>&nbsp;	}
+<i>899</i>&nbsp;	
+<i>900</i>&nbsp;	/**
+<i>901</i>&nbsp;	 * Standardize the classifications for a collection of objects.
+<i>902</i>&nbsp;	 * This involves sorting the names of derived classes alphabetically, and removing duplicates.
+<i>903</i>&nbsp;	 * 
+<i>904</i>&nbsp;	 * @param pathObjects collection of objects with classifications that should be standardized
+<i>905</i>&nbsp;	 * @return true if changes were made, false otherwise
+<i>906</i>&nbsp;	 */
+<i>907</i>&nbsp;	public static boolean standardizeClassifications(Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>908</i>&nbsp;		return standardizeClassifications(pathObjects, Comparator.naturalOrder());</b>
+<i>909</i>&nbsp;	}
+<i>910</i>&nbsp;	
+<i>911</i>&nbsp;	/**
+<i>912</i>&nbsp;	 * Standardize the classifications for a collection of objects.
+<i>913</i>&nbsp;	 * This involves sorting the names of derived classes, and removing duplicates.
+<i>914</i>&nbsp;	 * 
+<i>915</i>&nbsp;	 * @param pathObjects collection of objects with classifications that should be standardized
+<i>916</i>&nbsp;	 * @param comparator comparator to use when sorting
+<i>917</i>&nbsp;	 * @return true if changes were made, false otherwise
+<i>918</i>&nbsp;	 */
+<i>919</i>&nbsp;	public static boolean standardizeClassifications(Collection&lt;PathObject&gt; pathObjects, Comparator&lt;String&gt; comparator) {
+<b class="nc"><i>920</i>&nbsp;		int nChanges = 0;</b>
+<b class="nc"><i>921</i>&nbsp;		Map&lt;PathClass, PathClass&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>922</i>&nbsp;		for (var pathObject : pathObjects) {</b>
+<b class="nc"><i>923</i>&nbsp;			var pathClass = pathObject.getPathClass();</b>
+<b class="nc"><i>924</i>&nbsp;			if (pathClass == null)</b>
+<b class="nc"><i>925</i>&nbsp;				continue;</b>
+<i>926</i>&nbsp;			PathClass pathClassNew;
+<b class="nc"><i>927</i>&nbsp;			if (!map.containsKey(pathClass)) {</b>
+<b class="nc"><i>928</i>&nbsp;				pathClassNew =</b>
+<b class="nc"><i>929</i>&nbsp;						PathClassTools.sortNames(</b>
+<b class="nc"><i>930</i>&nbsp;							PathClassTools.uniqueNames(pathClass),</b>
+<i>931</i>&nbsp;						comparator);
+<b class="nc"><i>932</i>&nbsp;				map.put(pathClass, pathClassNew);</b>
+<i>933</i>&nbsp;			} else
+<b class="nc"><i>934</i>&nbsp;				pathClassNew = map.get(pathClass);</b>
+<i>935</i>&nbsp;			
+<b class="nc"><i>936</i>&nbsp;			if (!pathClass.equals(pathClassNew)) {</b>
+<b class="nc"><i>937</i>&nbsp;				pathObject.setPathClass(pathClassNew);</b>
+<b class="nc"><i>938</i>&nbsp;				nChanges++;</b>
+<i>939</i>&nbsp;			}
+<b class="nc"><i>940</i>&nbsp;		}</b>
+<b class="nc"><i>941</i>&nbsp;		return nChanges &gt; 0;		</b>
+<i>942</i>&nbsp;	}
+<i>943</i>&nbsp;	
+<i>944</i>&nbsp;	
+<i>945</i>&nbsp;	/**
+<i>946</i>&nbsp;	 * Create a(n optionally) transformed version of a {@link PathObject}.
+<i>947</i>&nbsp;	 * &lt;p&gt;
+<i>948</i>&nbsp;	 * Note: only detections (including tiles and cells) and annotations are supported by this method.
+<i>949</i>&nbsp;	 * Other object types (e.g. TMA cores) result in an {@link UnsupportedOperationException} being thrown.
+<i>950</i>&nbsp;	 * 
+<i>951</i>&nbsp;	 * @param pathObject the object to transform; this will be unchanged
+<i>952</i>&nbsp;	 * @param transform optional affine transform; if {@code null}, this effectively acts to duplicate the object
+<i>953</i>&nbsp;	 * @param copyMeasurements if true, the measurement list of the new object will be populated with the measurements of pathObject
+<i>954</i>&nbsp;	 * 
+<i>955</i>&nbsp;	 * @return a duplicate of pathObject, with affine transform applied to the object&#39;s ROI(s) if required
+<i>956</i>&nbsp;	 */
+<i>957</i>&nbsp;	public static PathObject transformObject(PathObject pathObject, AffineTransform transform, boolean copyMeasurements) {
+<b class="nc"><i>958</i>&nbsp;		ROI roi = maybeTransformROI(pathObject.getROI(), transform);</b>
+<b class="nc"><i>959</i>&nbsp;		PathClass pathClass = pathObject.getPathClass();</b>
+<i>960</i>&nbsp;		PathObject newObject;
+<b class="nc"><i>961</i>&nbsp;		if (pathObject instanceof PathCellObject) {</b>
+<b class="nc"><i>962</i>&nbsp;			ROI roiNucleus = maybeTransformROI(((PathCellObject)pathObject).getNucleusROI(), transform);</b>
+<b class="nc"><i>963</i>&nbsp;			newObject = PathObjects.createCellObject(roi, roiNucleus, pathClass, null);</b>
+<b class="nc"><i>964</i>&nbsp;		} else if (pathObject instanceof PathTileObject) {</b>
+<b class="nc"><i>965</i>&nbsp;			newObject = PathObjects.createTileObject(roi, pathClass, null);			</b>
+<b class="nc"><i>966</i>&nbsp;		} else if (pathObject instanceof PathDetectionObject) {</b>
+<b class="nc"><i>967</i>&nbsp;			newObject = PathObjects.createDetectionObject(roi, pathClass, null);			</b>
+<b class="nc"><i>968</i>&nbsp;		} else if (pathObject instanceof PathAnnotationObject) {</b>
+<b class="nc"><i>969</i>&nbsp;			newObject = PathObjects.createAnnotationObject(roi, pathClass, null);			</b>
+<i>970</i>&nbsp;		} else
+<b class="nc"><i>971</i>&nbsp;			throw new UnsupportedOperationException(&quot;Unable to transform object &quot; + pathObject);</b>
+<b class="nc"><i>972</i>&nbsp;		if (copyMeasurements &amp;&amp; !pathObject.getMeasurementList().isEmpty()) {</b>
+<b class="nc"><i>973</i>&nbsp;			MeasurementList measurements = pathObject.getMeasurementList();</b>
+<b class="nc"><i>974</i>&nbsp;			for (int i = 0; i &lt; measurements.size(); i++) {</b>
+<b class="nc"><i>975</i>&nbsp;				String name = measurements.getMeasurementName(i);</b>
+<b class="nc"><i>976</i>&nbsp;				double value = measurements.getMeasurementValue(i);</b>
+<b class="nc"><i>977</i>&nbsp;				newObject.getMeasurementList().addMeasurement(name, value);</b>
+<i>978</i>&nbsp;			}
+<b class="nc"><i>979</i>&nbsp;			newObject.getMeasurementList().close();</b>
+<i>980</i>&nbsp;		}
+<b class="nc"><i>981</i>&nbsp;		return newObject;</b>
+<i>982</i>&nbsp;	}
+<i>983</i>&nbsp;	
+<i>984</i>&nbsp;	private static ROI maybeTransformROI(ROI roi, AffineTransform transform) {
+<b class="nc"><i>985</i>&nbsp;		if (roi == null || transform == null || transform.isIdentity())</b>
+<b class="nc"><i>986</i>&nbsp;			return roi;</b>
+<b class="nc"><i>987</i>&nbsp;		return RoiTools.transformROI(roi, transform);</b>
+<i>988</i>&nbsp;	}
+<i>989</i>&nbsp;	
+<i>990</i>&nbsp;	
+<i>991</i>&nbsp;	/**
+<i>992</i>&nbsp;	 * Duplicate all the selected objects in a hierarchy.
+<i>993</i>&nbsp;	 * 
+<i>994</i>&nbsp;	 * @param hierarchy the hierarchy containing the objects to duplicate
+<i>995</i>&nbsp;	 * @return true if the hierarchy is changed, false otherwise
+<i>996</i>&nbsp;	 */
+<i>997</i>&nbsp;	public static boolean duplicateAllSelectedObjects(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>998</i>&nbsp;		return duplicateSelectedObjects(hierarchy, null);</b>
+<i>999</i>&nbsp;	}
+<i>1000</i>&nbsp;	
+<i>1001</i>&nbsp;	/**
+<i>1002</i>&nbsp;	 * Duplicate the selected annotation objects. Selected objects that are not annotations will be ignored.
+<i>1003</i>&nbsp;	 * 
+<i>1004</i>&nbsp;	 * @param hierarchy the hierarchy containing the objects to duplicate
+<i>1005</i>&nbsp;	 * @return true if the hierarchy is changed, false otherwise
+<i>1006</i>&nbsp;	 */
+<i>1007</i>&nbsp;	public static boolean duplicateSelectedAnnotations(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>1008</i>&nbsp;		return duplicateSelectedObjects(hierarchy, p -&gt; p.isAnnotation());</b>
+<i>1009</i>&nbsp;	}
+<i>1010</i>&nbsp;	
+<i>1011</i>&nbsp;	/**
+<i>1012</i>&nbsp;	 * Duplicate the selected objects 
+<i>1013</i>&nbsp;	 * 
+<i>1014</i>&nbsp;	 * @param hierarchy the hierarchy containing the objects to duplicate
+<i>1015</i>&nbsp;	 * @param predicate optional predicate (may be null) used to filter out invalid selected options that should not be duplicated
+<i>1016</i>&nbsp;	 * @return true if the hierarchy is changed, false otherwise
+<i>1017</i>&nbsp;	 */
+<i>1018</i>&nbsp;	public static boolean duplicateSelectedObjects(PathObjectHierarchy hierarchy, Predicate&lt;PathObject&gt; predicate) {
+<b class="nc"><i>1019</i>&nbsp;		if (predicate == null)</b>
+<b class="nc"><i>1020</i>&nbsp;			return duplicateObjects(hierarchy, new ArrayList&lt;&gt;(hierarchy.getSelectionModel().getSelectedObjects()));</b>
+<b class="nc"><i>1021</i>&nbsp;		var list = hierarchy.getSelectionModel().getSelectedObjects()</b>
+<b class="nc"><i>1022</i>&nbsp;				.stream()</b>
+<b class="nc"><i>1023</i>&nbsp;				.filter(predicate)</b>
+<b class="nc"><i>1024</i>&nbsp;				.collect(Collectors.toList());</b>
+<b class="nc"><i>1025</i>&nbsp;		return duplicateObjects(hierarchy, list);</b>
+<i>1026</i>&nbsp;	}
+<i>1027</i>&nbsp;	
+<i>1028</i>&nbsp;	/**
+<i>1029</i>&nbsp;	 * Duplicate the specified objects.
+<i>1030</i>&nbsp;	 * @param hierarchy hierarchy containing the objects to duplicate
+<i>1031</i>&nbsp;	 * @param pathObjects objects that should be duplicated
+<i>1032</i>&nbsp;	 * @return true if the hierarchy is changed, false otherwise
+<i>1033</i>&nbsp;	 */
+<i>1034</i>&nbsp;	public static boolean duplicateObjects(PathObjectHierarchy hierarchy, Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>1035</i>&nbsp;		var map = pathObjects</b>
+<b class="nc"><i>1036</i>&nbsp;				.stream()</b>
+<b class="nc"><i>1037</i>&nbsp;				.collect(Collectors.toMap(p -&gt; p,</b>
+<b class="nc"><i>1038</i>&nbsp;						p -&gt; PathObjectTools.transformObject(p, null, true)));</b>
+<b class="nc"><i>1039</i>&nbsp;		if (map.isEmpty()) {</b>
+<b class="nc"><i>1040</i>&nbsp;			logger.error(&quot;No selected objects to duplicate!&quot;);</b>
+<b class="nc"><i>1041</i>&nbsp;			return false;</b>
+<i>1042</i>&nbsp;		}
+<i>1043</i>&nbsp;		// Add objects using the default add method (not trying to resolve location)
+<b class="nc"><i>1044</i>&nbsp;		hierarchy.addPathObjects(map.values());</b>
+<i>1045</i>&nbsp;//		// Add objects, inserting with the same parents as the originals
+<i>1046</i>&nbsp;//		for (var entry : map.entrySet()) {
+<i>1047</i>&nbsp;//			entry.getKey().getParent().addPathObject(entry.getValue());
+<i>1048</i>&nbsp;//		}
+<i>1049</i>&nbsp;		// Conceivably we might not have a hierarchy.
+<i>1050</i>&nbsp;		// If we do, fire update and try to retain the same selected object (if it was already selected)
+<b class="nc"><i>1051</i>&nbsp;		if (hierarchy != null) {</b>
+<b class="nc"><i>1052</i>&nbsp;			PathObject currentMainObject = hierarchy.getSelectionModel().getSelectedObject();</b>
+<b class="nc"><i>1053</i>&nbsp;			hierarchy.fireHierarchyChangedEvent(PathObjectTools.class);</b>
+<i>1054</i>&nbsp;	//		hierarchy.addPathObjects(map.values());
+<b class="nc"><i>1055</i>&nbsp;			hierarchy.getSelectionModel().setSelectedObjects(map.values(), map.getOrDefault(currentMainObject, null));</b>
+<i>1056</i>&nbsp;		}
+<b class="nc"><i>1057</i>&nbsp;		return true;</b>
+<i>1058</i>&nbsp;	}
+<i>1059</i>&nbsp;	
+<i>1060</i>&nbsp;	
+<i>1061</i>&nbsp;	/**
+<i>1062</i>&nbsp;	 * Resolve overlapping objects by size, retaining the object with the larger ROI and discarding the object with the smaller ROI.
+<i>1063</i>&nbsp;	 * 
+<i>1064</i>&nbsp;	 * @param pathObjects input object collection, which may contain overlapping objects
+<i>1065</i>&nbsp;	 * @param overlapTolerance amount of overlap to permit; recommended value is 0, see {@link #removeOverlaps(Collection, Comparator, double)}
+<i>1066</i>&nbsp;	 * @return output collection of objects, which should have smaller overlapping objects removed
+<i>1067</i>&nbsp;	 */
+<i>1068</i>&nbsp;	public static Collection&lt;PathObject&gt; removeOverlapsBySize(Collection&lt;? extends PathObject&gt; pathObjects, double overlapTolerance) {
+<b class="nc"><i>1069</i>&nbsp;		return removeOverlaps(pathObjects, Comparator.comparingDouble((PathObject p) -&gt; getROI(p, false).getArea()).reversed(), overlapTolerance);</b>
+<i>1070</i>&nbsp;	}
+<i>1071</i>&nbsp;	
+<i>1072</i>&nbsp;	/**
+<i>1073</i>&nbsp;	 * Resolve overlapping object by location, retaining the object closest to the image &#39;origin&#39; and discarding the object further away.
+<i>1074</i>&nbsp;	 * Note that this is determined using first the bounding box, then the centroid.
+<i>1075</i>&nbsp;	 * This is a simpler (and faster) criterion than measuring distance to the original from the ROI itself.
+<i>1076</i>&nbsp;	 * 
+<i>1077</i>&nbsp;	 * @param pathObjects input object collection, which may contain overlapping objects
+<i>1078</i>&nbsp;	 * @param overlapTolerance amount of overlap to permit; recommended value is 0, see {@link #removeOverlaps(Collection, Comparator, double)}
+<i>1079</i>&nbsp;	 * @return output collection of objects, which should have smaller overlapping objects removed
+<i>1080</i>&nbsp;	 */
+<i>1081</i>&nbsp;	public static Collection&lt;PathObject&gt; removeOverlapsByLocation(Collection&lt;? extends PathObject&gt; pathObjects, double overlapTolerance) {
+<i>1082</i>&nbsp;		// Sort according to bounding box, then centroid, then area
+<b class="nc"><i>1083</i>&nbsp;		return removeOverlaps(pathObjects,</b>
+<b class="nc"><i>1084</i>&nbsp;				Comparator.comparingDouble((PathObject p) -&gt; p.getROI().getBoundsY())</b>
+<b class="nc"><i>1085</i>&nbsp;				.thenComparing((PathObject p) -&gt; p.getROI().getBoundsX())</b>
+<b class="nc"><i>1086</i>&nbsp;				.thenComparing((PathObject p) -&gt; p.getROI().getCentroidY())</b>
+<b class="nc"><i>1087</i>&nbsp;				.thenComparing((PathObject p) -&gt; p.getROI().getCentroidX())</b>
+<b class="nc"><i>1088</i>&nbsp;				.thenComparing((PathObject p) -&gt; getROI(p, false).getArea()),</b>
+<i>1089</i>&nbsp;				overlapTolerance);
+<i>1090</i>&nbsp;	}
+<i>1091</i>&nbsp;
+<i>1092</i>&nbsp;	
+<i>1093</i>&nbsp;	/**
+<i>1094</i>&nbsp;	 * Resolve overlaps, discarding one and keeping the other.
+<i>1095</i>&nbsp;	 * It assumes that the objects have been sorted so that &#39;preferred&#39; objects occur first.
+<i>1096</i>&nbsp;	 * &lt;p&gt;
+<i>1097</i>&nbsp;	 * &#39;How overlapping&#39; can be controlled by the {@code overlapTolerance}, where an overlap will be removed
+<i>1098</i>&nbsp;	 * &lt;ul&gt;
+<i>1099</i>&nbsp;	 * &lt;li&gt;if {@code overlapTolerance &gt; 0} and the area of the intersection between ROIs is {@code &lt; overlapTolerance} (an absolute comparison)
+<i>1100</i>&nbsp;	 * &lt;li&gt;if {@code overlapTolerance &lt; 0} and the proportion of the smaller ROI intersecting the larger ROI is {@code &lt; -overlapTolerance} (a relative comparison)
+<i>1101</i>&nbsp;	 * &lt;li&gt;if {@code overlapTolerance == 0} and there is any non-zero area intersection between ROIs
+<i>1102</i>&nbsp;	 * &lt;/ul&gt;
+<i>1103</i>&nbsp;	 * For example, {@code overlapTolerance == 10} will require at least 10 pixels between ROIs to intersect to be considered an overlap,
+<i>1104</i>&nbsp;	 * while {@code overlapTolerance == 0.01} will require at least 1% of the area of the smaller ROI to intersect.
+<i>1105</i>&nbsp;	 * &lt;p&gt;
+<i>1106</i>&nbsp;	 * It is recommended to keep {@code overlapTolerance == 0} in most instances to remove all overlaps.
+<i>1107</i>&nbsp;	 * This is also less computationally expensive because it means intersection areas do not need to be calculated.
+<i>1108</i>&nbsp;	 * 
+<i>1109</i>&nbsp;	 * @param pathObjects input object collection, which may contain overlapping objects
+<i>1110</i>&nbsp;	 * @param comparator comparator, which determines which object is retained when overlaps are found.
+<i>1111</i>&nbsp;	 *                   Considering the collection to be sorted by the comparator, the &#39;first&#39; object is the one that will be kept.
+<i>1112</i>&nbsp;	 * @param overlapTolerance amount of overlap to permit
+<i>1113</i>&nbsp;	 * @return collection of objects, which should have smaller overlapping objects removed
+<i>1114</i>&nbsp;	 */
+<i>1115</i>&nbsp;	public static Collection&lt;PathObject&gt; removeOverlaps(Collection&lt;? extends PathObject&gt; pathObjects, Comparator&lt;PathObject&gt; comparator, double overlapTolerance) {
+<i>1116</i>&nbsp;		
+<b class="nc"><i>1117</i>&nbsp;		if (overlapTolerance != 0 &amp;&amp; overlapTolerance &lt;= -1.0) {</b>
+<b class="nc"><i>1118</i>&nbsp;			logger.warn(&quot;A non-zero overlapTolerance &lt;= -1.0 has no effect! Returning the same objects.&quot;);</b>
+<b class="nc"><i>1119</i>&nbsp;			return new ArrayList&lt;&gt;(pathObjects);</b>
+<i>1120</i>&nbsp;		}
+<i>1121</i>&nbsp;		
+<i>1122</i>&nbsp;		// Start off by assuming we&#39;ll keep everything
+<b class="nc"><i>1123</i>&nbsp;		Collection&lt;PathObject&gt; output = new LinkedHashSet&lt;&gt;(pathObjects);</b>
+<i>1124</i>&nbsp;		
+<i>1125</i>&nbsp;		// Identify the objects we can potentially deal with (i.e. with area ROIs)
+<b class="nc"><i>1126</i>&nbsp;		List&lt;PathObject&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1127</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>1128</i>&nbsp;			if (pathObject.hasROI() &amp;&amp; pathObject.getROI().isArea())</b>
+<b class="nc"><i>1129</i>&nbsp;				list.add(pathObject);</b>
+<b class="nc"><i>1130</i>&nbsp;		}</b>
+<b class="nc"><i>1131</i>&nbsp;		Collections.sort(list, comparator);</b>
+<i>1132</i>&nbsp;		
+<i>1133</i>&nbsp;		// Create a spatial index
+<b class="nc"><i>1134</i>&nbsp;		var quadTree = new STRtree();</b>
+<b class="nc"><i>1135</i>&nbsp;		var geomMap = new HashMap&lt;PathObject, Geometry&gt;();</b>
+<b class="nc"><i>1136</i>&nbsp;		var planeMap = new HashMap&lt;PathObject, ImagePlane&gt;();</b>
+<b class="nc"><i>1137</i>&nbsp;		for (PathObject pathObject : list) {</b>
+<b class="nc"><i>1138</i>&nbsp;			var roi = PathObjectTools.getROI(pathObject, false);</b>
+<b class="nc"><i>1139</i>&nbsp;			var geom = roi.getGeometry();</b>
+<b class="nc"><i>1140</i>&nbsp;			quadTree.insert(geom.getEnvelopeInternal(), pathObject);</b>
+<b class="nc"><i>1141</i>&nbsp;			geomMap.put(pathObject, geom);</b>
+<b class="nc"><i>1142</i>&nbsp;			planeMap.put(pathObject, roi.getImagePlane());</b>
+<b class="nc"><i>1143</i>&nbsp;		}</b>
+<i>1144</i>&nbsp;		
+<i>1145</i>&nbsp;		// Identify what needs to be removed
+<b class="nc"><i>1146</i>&nbsp;		Set&lt;PathObject&gt; toRemove = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>1147</i>&nbsp;		for (PathObject pathObject : list) {</b>
+<b class="nc"><i>1148</i>&nbsp;			if (toRemove.contains(pathObject))</b>
+<b class="nc"><i>1149</i>&nbsp;				continue;</b>
+<b class="nc"><i>1150</i>&nbsp;			var geom = geomMap.get(pathObject);</b>
+<b class="nc"><i>1151</i>&nbsp;			var plane = planeMap.get(pathObject);</b>
+<i>1152</i>&nbsp;			@SuppressWarnings(&quot;unchecked&quot;)
+<b class="nc"><i>1153</i>&nbsp;			List&lt;PathObject&gt; potentialOverlaps = (List&lt;PathObject&gt;)quadTree.query(geom.getEnvelopeInternal());</b>
+<b class="nc"><i>1154</i>&nbsp;			for (PathObject p : potentialOverlaps) {</b>
+<b class="nc"><i>1155</i>&nbsp;				if (p == pathObject || toRemove.contains(p))</b>
+<b class="nc"><i>1156</i>&nbsp;					continue;</b>
+<b class="nc"><i>1157</i>&nbsp;				var planeP = planeMap.get(p);</b>
+<b class="nc"><i>1158</i>&nbsp;				if (plane.getZ() != planeP.getZ() || plane.getT() != planeP.getT())</b>
+<b class="nc"><i>1159</i>&nbsp;					continue;</b>
+<b class="nc"><i>1160</i>&nbsp;				var geomP = geomMap.get(p);</b>
+<i>1161</i>&nbsp;				// We allow &#39;touches&#39;, since this involves no area intersection
+<b class="nc"><i>1162</i>&nbsp;				if (!geom.intersects(geomP) || geom.touches(geomP))</b>
+<b class="nc"><i>1163</i>&nbsp;					continue;</b>
+<b class="nc"><i>1164</i>&nbsp;				if (overlapTolerance != 0) {</b>
+<i>1165</i>&nbsp;					try {
+<b class="nc"><i>1166</i>&nbsp;						var overlap = geom.intersection(geomP).getArea();</b>
+<b class="nc"><i>1167</i>&nbsp;						double tol = overlapTolerance;</b>
+<b class="nc"><i>1168</i>&nbsp;						if (overlapTolerance &lt; 0) {</b>
+<b class="nc"><i>1169</i>&nbsp;							tol = Math.min(geom.getArea(), geom.getArea()) * (-overlapTolerance);</b>
+<i>1170</i>&nbsp;						}
+<b class="nc"><i>1171</i>&nbsp;						if (overlap &lt; tol)</b>
+<b class="nc"><i>1172</i>&nbsp;							continue;</b>
+<b class="nc"><i>1173</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>1174</i>&nbsp;						logger.warn(&quot;Exception attempting to apply overlap tolerance: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>1175</i>&nbsp;					}</b>
+<i>1176</i>&nbsp;				}
+<b class="nc"><i>1177</i>&nbsp;				toRemove.add(p);</b>
+<b class="nc"><i>1178</i>&nbsp;			}</b>
+<b class="nc"><i>1179</i>&nbsp;		}</b>
+<b class="nc"><i>1180</i>&nbsp;		output.removeAll(toRemove);</b>
+<b class="nc"><i>1181</i>&nbsp;		return output;</b>
+<i>1182</i>&nbsp;	}
+<i>1183</i>&nbsp;	
+<i>1184</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

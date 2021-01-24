@@ -1,0 +1,288 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StatisticsHelper</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.stats</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StatisticsHelper (qupath.lib.analysis.stats)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StatisticsHelper</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 57)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.stats;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Static methods for computing statistics from images, with or without a corresponding labeled image.
+<i>34</i>&nbsp; * 
+<i>35</i>&nbsp; * @author Pete Bankhead
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; */
+<b class="nc"><i>38</i>&nbsp;public class StatisticsHelper {</b>
+<i>39</i>&nbsp;	
+<i>40</i>&nbsp;	/**
+<i>41</i>&nbsp;	 * Compute running statistics using all pixels from a SimpleImage.
+<i>42</i>&nbsp;	 * @param img
+<i>43</i>&nbsp;	 * @return
+<i>44</i>&nbsp;	 */
+<i>45</i>&nbsp;	public static RunningStatistics computeRunningStatistics(SimpleImage img) {
+<b class="nc"><i>46</i>&nbsp;		RunningStatistics stats = new RunningStatistics();</b>
+<b class="nc"><i>47</i>&nbsp;		updateRunningStatistics(stats, img);</b>
+<b class="nc"><i>48</i>&nbsp;		return stats;</b>
+<i>49</i>&nbsp;	}
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	
+<i>52</i>&nbsp;	/**
+<i>53</i>&nbsp;	 * Add all pixels from a SimpleImage to an existing RunningStatistics object.
+<i>54</i>&nbsp;	 * 
+<i>55</i>&nbsp;	 * @param stats 
+<i>56</i>&nbsp;	 * @param img
+<i>57</i>&nbsp;	 */
+<i>58</i>&nbsp;	public static void updateRunningStatistics(RunningStatistics stats, SimpleImage img) {
+<b class="nc"><i>59</i>&nbsp;		for (int y = 0; y &lt; img.getHeight(); y++) {</b>
+<b class="nc"><i>60</i>&nbsp;			for (int x = 0; x &lt; img.getWidth(); x++) {</b>
+<b class="nc"><i>61</i>&nbsp;				stats.addValue(img.getValue(x, y));</b>
+<i>62</i>&nbsp;			}			
+<i>63</i>&nbsp;		}
+<i>64</i>&nbsp;	}
+<i>65</i>&nbsp;	
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * Create a list of n (empty) RunningStatistics objects.
+<i>68</i>&nbsp;	 * 
+<i>69</i>&nbsp;	 * @param n
+<i>70</i>&nbsp;	 * @return
+<i>71</i>&nbsp;	 */
+<i>72</i>&nbsp;	public static List&lt;RunningStatistics&gt; createRunningStatisticsList(int n) {
+<b class="nc"><i>73</i>&nbsp;		List&lt;RunningStatistics&gt; stats = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>74</i>&nbsp;		for (int i = 0; i &lt; n; i++)</b>
+<b class="nc"><i>75</i>&nbsp;			stats.add(new RunningStatistics());</b>
+<b class="nc"><i>76</i>&nbsp;		return stats;</b>
+<i>77</i>&nbsp;	}
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * Create a RunningStatistics object using all the values from a specified array.
+<i>82</i>&nbsp;	 * 
+<i>83</i>&nbsp;	 * @param values
+<i>84</i>&nbsp;	 * @return
+<i>85</i>&nbsp;	 */
+<i>86</i>&nbsp;	public static RunningStatistics computeRunningStatistics(double[] values) {
+<b class="nc"><i>87</i>&nbsp;		RunningStatistics stats = new RunningStatistics();</b>
+<b class="nc"><i>88</i>&nbsp;		for (double v : values) {</b>
+<b class="nc"><i>89</i>&nbsp;			stats.addValue(v);</b>
+<i>90</i>&nbsp;		}
+<b class="nc"><i>91</i>&nbsp;		return stats;</b>
+<i>92</i>&nbsp;	}
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Calculate RunningStatistics for each label &amp;gt; 0 in an image, up to a maximum of {@code statsList.size()}.
+<i>97</i>&nbsp;	 * &lt;p&gt;
+<i>98</i>&nbsp;	 * The statistics for pixels in {@code img} corresponding to integer value {@code label} in {@code imgLabels} 
+<i>99</i>&nbsp;	 * are stored within {@code statsList.get(label-1)}.
+<i>100</i>&nbsp;	 * 
+<i>101</i>&nbsp;	 * @param img
+<i>102</i>&nbsp;	 * @param imgLabels
+<i>103</i>&nbsp;	 * @param statsList
+<i>104</i>&nbsp;	 */
+<i>105</i>&nbsp;	public static void computeRunningStatistics(SimpleImage img, SimpleImage imgLabels, List&lt;RunningStatistics&gt; statsList) {
+<b class="nc"><i>106</i>&nbsp;		float lastLabel = Float.NaN;</b>
+<b class="nc"><i>107</i>&nbsp;		int nLabels = statsList.size();</b>
+<b class="nc"><i>108</i>&nbsp;		RunningStatistics stats = null;</b>
+<b class="nc"><i>109</i>&nbsp;		for (int y = 0; y &lt; img.getHeight(); y++) {</b>
+<b class="nc"><i>110</i>&nbsp;			for (int x = 0; x &lt; img.getWidth(); x++) {</b>
+<b class="nc"><i>111</i>&nbsp;				float label = imgLabels.getValue(x, y);</b>
+<b class="nc"><i>112</i>&nbsp;				if (label == 0 || label &gt; nLabels)</b>
+<b class="nc"><i>113</i>&nbsp;					continue;</b>
+<i>114</i>&nbsp;				// Get a new statistics object if necessary
+<b class="nc"><i>115</i>&nbsp;				if (label != lastLabel) {</b>
+<b class="nc"><i>116</i>&nbsp;					stats = statsList.get((int)label-1);</b>
+<b class="nc"><i>117</i>&nbsp;					lastLabel = label;</b>
+<i>118</i>&nbsp;				}
+<i>119</i>&nbsp;				// Add the value
+<b class="nc"><i>120</i>&nbsp;				stats.addValue(img.getValue(x, y));</b>
+<i>121</i>&nbsp;			}			
+<i>122</i>&nbsp;		}
+<i>123</i>&nbsp;	}
+<i>124</i>&nbsp;	
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	/**
+<i>127</i>&nbsp;	 * Determine thresholds for dividing an array of double values into quartiles.
+<i>128</i>&nbsp;	 * &lt;p&gt;
+<i>129</i>&nbsp;	 * NaNs are effectively removed first, however the input array is left unchanged so
+<i>130</i>&nbsp;	 * there is no need to duplicate it first (i.e. it is duplicated within this method anyway).
+<i>131</i>&nbsp;	 * &lt;p&gt;
+<i>132</i>&nbsp;	 * Depending upon the number of non-NaN values in the input array, linear interpolation may be used 
+<i>133</i>&nbsp;	 * to obtain the split points.
+<i>134</i>&nbsp;	 * 
+<i>135</i>&nbsp;	 * @param scores
+<i>136</i>&nbsp;	 * @return Array containing three values, corresponding to the split points.
+<i>137</i>&nbsp;	 */
+<i>138</i>&nbsp;	public static double[] getQuartiles(double[] scores) {
+<b class="nc"><i>139</i>&nbsp;		scores = Arrays.copyOf(scores, scores.length);</b>
+<b class="nc"><i>140</i>&nbsp;		Arrays.sort(scores);</b>
+<b class="nc"><i>141</i>&nbsp;		int nScores = scores.length;</b>
+<b class="nc"><i>142</i>&nbsp;		while (nScores &gt; 0) {</b>
+<b class="nc"><i>143</i>&nbsp;			if (Double.isNaN(scores[nScores-1])) {</b>
+<b class="nc"><i>144</i>&nbsp;				nScores--;</b>
+<i>145</i>&nbsp;			} else
+<i>146</i>&nbsp;				break;
+<i>147</i>&nbsp;		}
+<b class="nc"><i>148</i>&nbsp;		if (nScores &lt;= 0)</b>
+<b class="nc"><i>149</i>&nbsp;			return new double[]{Double.NaN, Double.NaN, Double.NaN};</b>
+<i>150</i>&nbsp;		
+<b class="nc"><i>151</i>&nbsp;		double v1 = getInterpolatedSortedValue(scores, (double)(nScores - 1) / 4);</b>
+<b class="nc"><i>152</i>&nbsp;		double v2 = getInterpolatedSortedValue(scores, (double)(nScores - 1) / 2);</b>
+<b class="nc"><i>153</i>&nbsp;		double v3 = getInterpolatedSortedValue(scores, (double)(nScores - 1) * 3 / 4);</b>
+<b class="nc"><i>154</i>&nbsp;		return new double[]{v1, v2, v3};</b>
+<i>155</i>&nbsp;//		return new double[]{scores[indFinal/4], scores[indFinal/2], scores[indFinal*3/4]};
+<i>156</i>&nbsp;	}
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	/**
+<i>160</i>&nbsp;	 * Helper function for getting value from a sorted array using linear interpolation to deal with
+<i>161</i>&nbsp;	 * a non-integer index.
+<i>162</i>&nbsp;	 */
+<i>163</i>&nbsp;	private static double getInterpolatedSortedValue(final double[] values, final double ind) {
+<b class="nc"><i>164</i>&nbsp;		if (ind &gt; values.length-1)</b>
+<b class="nc"><i>165</i>&nbsp;			return Double.NaN;</b>
+<b class="nc"><i>166</i>&nbsp;		int flooredInd = (int)ind;</b>
+<b class="nc"><i>167</i>&nbsp;		double rem = ind - flooredInd;</b>
+<b class="nc"><i>168</i>&nbsp;		if (rem == 0)</b>
+<b class="nc"><i>169</i>&nbsp;			return values[flooredInd];</b>
+<b class="nc"><i>170</i>&nbsp;		return values[flooredInd] + rem * (values[flooredInd+1] - values[flooredInd]);</b>
+<i>171</i>&nbsp;	}
+<i>172</i>&nbsp;	
+<i>173</i>&nbsp;	
+<i>174</i>&nbsp;	/**
+<i>175</i>&nbsp;	 * Determine thresholds for dividing an array of double values into tertiles.
+<i>176</i>&nbsp;	 * &lt;p&gt;
+<i>177</i>&nbsp;	 * NaNs are effectively removed first, however the input array is left unchanged so
+<i>178</i>&nbsp;	 * there is no need to duplicate it in advance (i.e. it is duplicated within this method anyway).
+<i>179</i>&nbsp;	 * &lt;p&gt;
+<i>180</i>&nbsp;	 * Depending upon the number of non-NaN values in the input array, linear interpolation may be used 
+<i>181</i>&nbsp;	 * to obtain the split points.
+<i>182</i>&nbsp;	 * 
+<i>183</i>&nbsp;	 * @param scores
+<i>184</i>&nbsp;	 * @return Array containing two values, corresponding to the split points.
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public static double[] getTertiles(double[] scores) {
+<b class="nc"><i>187</i>&nbsp;		scores = Arrays.copyOf(scores, scores.length);</b>
+<b class="nc"><i>188</i>&nbsp;		Arrays.sort(scores);</b>
+<b class="nc"><i>189</i>&nbsp;		int nScores = scores.length;</b>
+<b class="nc"><i>190</i>&nbsp;		while (nScores &gt; 0) {</b>
+<b class="nc"><i>191</i>&nbsp;			if (Double.isNaN(scores[nScores-1])) {</b>
+<b class="nc"><i>192</i>&nbsp;				nScores--;</b>
+<i>193</i>&nbsp;			} else
+<i>194</i>&nbsp;				break;
+<i>195</i>&nbsp;		}
+<b class="nc"><i>196</i>&nbsp;		if (nScores &lt;= 0)</b>
+<b class="nc"><i>197</i>&nbsp;			return new double[]{Double.NaN, Double.NaN};</b>
+<i>198</i>&nbsp;		
+<b class="nc"><i>199</i>&nbsp;		double v1 = getInterpolatedSortedValue(scores, (double)(nScores - 1) / 3);</b>
+<b class="nc"><i>200</i>&nbsp;		double v2 = getInterpolatedSortedValue(scores, (double)(nScores - 1)*2 / 3);</b>
+<b class="nc"><i>201</i>&nbsp;		return new double[]{v1, v2};</b>
+<i>202</i>&nbsp;//		return new double[]{scores[indFinal/3], scores[indFinal*2/3]};
+<i>203</i>&nbsp;	}
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

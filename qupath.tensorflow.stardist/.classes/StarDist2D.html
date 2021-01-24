@@ -1,0 +1,1055 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StarDist2D</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.tensorflow.stardist</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StarDist2D (qupath.tensorflow.stardist)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StarDist2D</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 222)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">StarDist2D$Builder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 95)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">StarDist2D$PotentialNucleus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 61)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 322)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.tensorflow.stardist;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.Comparator;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import java.util.HashSet;
+<i>33</i>&nbsp;import java.util.LinkedHashSet;
+<i>34</i>&nbsp;import java.util.List;
+<i>35</i>&nbsp;import java.util.Map;
+<i>36</i>&nbsp;import java.util.Objects;
+<i>37</i>&nbsp;import java.util.concurrent.ForkJoinPool;
+<i>38</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>39</i>&nbsp;import java.util.stream.Collectors;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import org.bytedeco.javacpp.PointerScope;
+<i>42</i>&nbsp;import org.bytedeco.javacpp.indexer.FloatIndexer;
+<i>43</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>44</i>&nbsp;import org.locationtech.jts.algorithm.Centroid;
+<i>45</i>&nbsp;import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
+<i>46</i>&nbsp;import org.locationtech.jts.geom.Coordinate;
+<i>47</i>&nbsp;import org.locationtech.jts.geom.Envelope;
+<i>48</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>49</i>&nbsp;import org.locationtech.jts.geom.Location;
+<i>50</i>&nbsp;import org.locationtech.jts.geom.Polygon;
+<i>51</i>&nbsp;import org.locationtech.jts.index.strtree.STRtree;
+<i>52</i>&nbsp;import org.locationtech.jts.simplify.VWSimplifier;
+<i>53</i>&nbsp;import org.slf4j.Logger;
+<i>54</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;import qupath.lib.analysis.features.ObjectMeasurements;
+<i>57</i>&nbsp;import qupath.lib.analysis.features.ObjectMeasurements.Compartments;
+<i>58</i>&nbsp;import qupath.lib.analysis.features.ObjectMeasurements.Measurements;
+<i>59</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>60</i>&nbsp;import qupath.lib.images.ImageData;
+<i>61</i>&nbsp;import qupath.lib.images.servers.ColorTransforms;
+<i>62</i>&nbsp;import qupath.lib.images.servers.ColorTransforms.ColorTransform;
+<i>63</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>64</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>65</i>&nbsp;import qupath.lib.images.servers.TransformedServerBuilder;
+<i>66</i>&nbsp;import qupath.lib.objects.CellTools;
+<i>67</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>68</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>69</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>70</i>&nbsp;import qupath.lib.regions.Padding;
+<i>71</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>72</i>&nbsp;import qupath.lib.roi.GeometryTools;
+<i>73</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>74</i>&nbsp;import qupath.opencv.ops.ImageDataOp;
+<i>75</i>&nbsp;import qupath.opencv.ops.ImageOp;
+<i>76</i>&nbsp;import qupath.opencv.ops.ImageOps;
+<i>77</i>&nbsp;import qupath.tensorflow.TensorFlowTools;
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;/**
+<i>80</i>&nbsp; * Cell detection based on the following method:
+<i>81</i>&nbsp; * &lt;pre&gt;
+<i>82</i>&nbsp; *   Uwe Schmidt, Martin Weigert, Coleman Broaddus, and Gene Myers.
+<i>83</i>&nbsp; *     &quot;Cell Detection with Star-convex Polygons.&quot;
+<i>84</i>&nbsp; *   &lt;i&gt;International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI)&lt;/i&gt;, Granada, Spain, September 2018.
+<i>85</i>&nbsp; * &lt;/pre&gt;
+<i>86</i>&nbsp; * See the main repo at https://github.com/mpicbg-csbd/stardist
+<i>87</i>&nbsp; * &lt;p&gt;
+<i>88</i>&nbsp; * Very much inspired by stardist-imagej at https://github.com/mpicbg-csbd/stardist-imagej but re-written from scratch to use OpenCV and 
+<i>89</i>&nbsp; * adapt the method of converting predictions to contours (very slightly) to be more QuPath-friendly.
+<i>90</i>&nbsp; * &lt;p&gt;
+<i>91</i>&nbsp; * Models are expected in the same format as required by the Fiji plugin.
+<i>92</i>&nbsp; * 
+<i>93</i>&nbsp; * @author Pete Bankhead (this implementation, but based on the others)
+<i>94</i>&nbsp; */
+<b class="nc"><i>95</i>&nbsp;public class StarDist2D {</b>
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(StarDist2D.class);</b>
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	/**
+<i>100</i>&nbsp;	 * Builder to help create a {@link StarDist2D} with custom parameters.
+<i>101</i>&nbsp;	 */
+<i>102</i>&nbsp;	public static class Builder {
+<i>103</i>&nbsp;		
+<i>104</i>&nbsp;		private boolean doLog;
+<i>105</i>&nbsp;		
+<b class="nc"><i>106</i>&nbsp;		private int nThreads = -1;</b>
+<i>107</i>&nbsp;		
+<b class="nc"><i>108</i>&nbsp;		private String modelPath = null;</b>
+<b class="nc"><i>109</i>&nbsp;		private ColorTransform[] channels = new ColorTransform[0];</b>
+<i>110</i>&nbsp;		
+<b class="nc"><i>111</i>&nbsp;		private double threshold = 0.5;</b>
+<i>112</i>&nbsp;		
+<b class="nc"><i>113</i>&nbsp;		private double simplifyDistance = 1.4;</b>
+<b class="nc"><i>114</i>&nbsp;		private double cellExpansion = Double.NaN;</b>
+<b class="nc"><i>115</i>&nbsp;		private double cellConstrainScale = Double.NaN;</b>
+<b class="nc"><i>116</i>&nbsp;		private boolean ignoreCellOverlaps = false;</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;		private double pixelSize = Double.NaN;</b>
+<i>119</i>&nbsp;				
+<b class="nc"><i>120</i>&nbsp;		private int tileWidth = 1024;</b>
+<b class="nc"><i>121</i>&nbsp;		private int tileHeight = 1024;</b>
+<i>122</i>&nbsp;		
+<b class="nc"><i>123</i>&nbsp;		private boolean measureShape = false;</b>
+<b class="nc"><i>124</i>&nbsp;		private Collection&lt;Compartments&gt; compartments = Arrays.asList(Compartments.values());</b>
+<i>125</i>&nbsp;		private Collection&lt;Measurements&gt; measurements;
+<i>126</i>&nbsp;		
+<b class="nc"><i>127</i>&nbsp;		private boolean constrainToParent = true;</b>
+<i>128</i>&nbsp;		
+<b class="nc"><i>129</i>&nbsp;		private int pad = 32;</b>
+<i>130</i>&nbsp;		
+<b class="nc"><i>131</i>&nbsp;		private List&lt;ImageOp&gt; ops = new ArrayList&lt;&gt;();</b>
+<i>132</i>&nbsp;		
+<b class="nc"><i>133</i>&nbsp;		private boolean includeProbability = false;</b>
+<i>134</i>&nbsp;		
+<b class="nc"><i>135</i>&nbsp;		private Builder(String modelPath) {</b>
+<b class="nc"><i>136</i>&nbsp;			this.modelPath = modelPath;</b>
+<b class="nc"><i>137</i>&nbsp;			this.ops.add(ImageOps.Core.ensureType(PixelType.FLOAT32));</b>
+<i>138</i>&nbsp;		}
+<i>139</i>&nbsp;		
+<i>140</i>&nbsp;		/**
+<i>141</i>&nbsp;		 * Probability threshold to apply for detection, between 0 and 1.
+<i>142</i>&nbsp;		 * @param threshold
+<i>143</i>&nbsp;		 * @return this builder
+<i>144</i>&nbsp;		 * @see #includeProbability(boolean)
+<i>145</i>&nbsp;		 */
+<i>146</i>&nbsp;		public Builder threshold(double threshold) {
+<b class="nc"><i>147</i>&nbsp;			this.threshold = threshold;</b>
+<b class="nc"><i>148</i>&nbsp;			return this;</b>
+<i>149</i>&nbsp;		}
+<i>150</i>&nbsp;		
+<i>151</i>&nbsp;		/**
+<i>152</i>&nbsp;		 * Add preprocessing operations, if required.
+<i>153</i>&nbsp;		 * @param ops
+<i>154</i>&nbsp;		 * @return this builder
+<i>155</i>&nbsp;		 */
+<i>156</i>&nbsp;		public Builder preprocess(ImageOp... ops) {
+<b class="nc"><i>157</i>&nbsp;			for (var op : ops)</b>
+<b class="nc"><i>158</i>&nbsp;				this.ops.add(op);</b>
+<b class="nc"><i>159</i>&nbsp;			return this;</b>
+<i>160</i>&nbsp;		}
+<i>161</i>&nbsp;		
+<i>162</i>&nbsp;		/**
+<i>163</i>&nbsp;		 * Request that progress is logged. If this is not specified, progress is only logged at the DEBUG level.
+<i>164</i>&nbsp;		 * @return this builder
+<i>165</i>&nbsp;		 */
+<i>166</i>&nbsp;		public Builder doLog() {
+<b class="nc"><i>167</i>&nbsp;			this.doLog = true;</b>
+<b class="nc"><i>168</i>&nbsp;			return this;</b>
+<i>169</i>&nbsp;		}
+<i>170</i>&nbsp;		
+<i>171</i>&nbsp;		/**
+<i>172</i>&nbsp;		 * Customize the extent to which contours are simplified.
+<i>173</i>&nbsp;		 * Simplification reduces the number of vertices, which in turn can reduce memory requirements and 
+<i>174</i>&nbsp;		 * improve performance.
+<i>175</i>&nbsp;		 * &lt;p&gt;
+<i>176</i>&nbsp;		 * Implementation note: this currently uses the Visvalingam-Whyatt algorithm.
+<i>177</i>&nbsp;		 * 
+<i>178</i>&nbsp;		 * @param distance simplify distance threshold; set &amp;le; 0 to turn off additional simplification
+<i>179</i>&nbsp;		 * @return this builder
+<i>180</i>&nbsp;		 */
+<i>181</i>&nbsp;		public Builder simplify(double distance) {
+<b class="nc"><i>182</i>&nbsp;			this.simplifyDistance = distance;</b>
+<b class="nc"><i>183</i>&nbsp;			return this;</b>
+<i>184</i>&nbsp;		}
+<i>185</i>&nbsp;		
+<i>186</i>&nbsp;		/**
+<i>187</i>&nbsp;		 * Specify channels. Useful for detecting nuclei for one channel 
+<i>188</i>&nbsp;		 * within a multi-channel image, or potentially for trained models that 
+<i>189</i>&nbsp;		 * support multi-channel input.
+<i>190</i>&nbsp;		 * @param channels 0-based indices of the channels to use
+<i>191</i>&nbsp;		 * @return this builder
+<i>192</i>&nbsp;		 */
+<i>193</i>&nbsp;		public Builder channels(int... channels) {
+<b class="nc"><i>194</i>&nbsp;			return channels(Arrays.stream(channels)</b>
+<b class="nc"><i>195</i>&nbsp;					.mapToObj(c -&gt; ColorTransforms.createChannelExtractor(c))</b>
+<b class="nc"><i>196</i>&nbsp;					.toArray(ColorTransform[]::new));</b>
+<i>197</i>&nbsp;		}
+<i>198</i>&nbsp;		
+<i>199</i>&nbsp;		/**
+<i>200</i>&nbsp;		 * Specify channels by name. Useful for detecting nuclei for one channel 
+<i>201</i>&nbsp;		 * within a multi-channel image, or potentially for trained models that 
+<i>202</i>&nbsp;		 * support multi-channel input.
+<i>203</i>&nbsp;		 * @param channels 0-based indices of the channels to use
+<i>204</i>&nbsp;		 * @return this builder
+<i>205</i>&nbsp;		 */
+<i>206</i>&nbsp;		public Builder channels(String... channels) {
+<b class="nc"><i>207</i>&nbsp;			return channels(Arrays.stream(channels)</b>
+<b class="nc"><i>208</i>&nbsp;					.map(c -&gt; ColorTransforms.createChannelExtractor(c))</b>
+<b class="nc"><i>209</i>&nbsp;					.toArray(ColorTransform[]::new));</b>
+<i>210</i>&nbsp;		}
+<i>211</i>&nbsp;		
+<i>212</i>&nbsp;		/**
+<i>213</i>&nbsp;		 * Define the channels (or color transformers) to apply to the input image.
+<i>214</i>&nbsp;		 * &lt;p&gt;
+<i>215</i>&nbsp;		 * This makes it possible to supply color deconvolved channels, for example.
+<i>216</i>&nbsp;		 * @param channels
+<i>217</i>&nbsp;		 * @return this builder
+<i>218</i>&nbsp;		 */
+<i>219</i>&nbsp;		public Builder channels(ColorTransform... channels) {
+<b class="nc"><i>220</i>&nbsp;			this.channels = channels.clone();</b>
+<b class="nc"><i>221</i>&nbsp;			return this;</b>
+<i>222</i>&nbsp;		}
+<i>223</i>&nbsp;		
+<i>224</i>&nbsp;		/**
+<i>225</i>&nbsp;		 * Amount by which to expand detected nuclei to approximate the cell area.
+<i>226</i>&nbsp;		 * Units are the same as for the {@link PixelCalibration} of the input image.
+<i>227</i>&nbsp;		 * &lt;p&gt;
+<i>228</i>&nbsp;		 * Warning! This is rather experimental, relying heavily on JTS and a convoluted method of 
+<i>229</i>&nbsp;		 * resolving overlaps using a Voronoi tessellation.
+<i>230</i>&nbsp;		 * &lt;p&gt;
+<i>231</i>&nbsp;		 * In short, be wary.
+<i>232</i>&nbsp;		 * @param distance
+<i>233</i>&nbsp;		 * @return this builder
+<i>234</i>&nbsp;		 */
+<i>235</i>&nbsp;		public Builder cellExpansion(double distance) {
+<b class="nc"><i>236</i>&nbsp;			this.cellExpansion = distance;</b>
+<b class="nc"><i>237</i>&nbsp;			return this;</b>
+<i>238</i>&nbsp;		}
+<i>239</i>&nbsp;		
+<i>240</i>&nbsp;		/**
+<i>241</i>&nbsp;		 * Constrain any cell expansion defined using {@link #cellExpansion(double)} based upon 
+<i>242</i>&nbsp;		 * the nucleus size. Only meaningful for values &amp;gt; 1; the nucleus is expanded according 
+<i>243</i>&nbsp;		 * to the scale factor, and used to define the maximum permitted cell expansion.
+<i>244</i>&nbsp;		 * 
+<i>245</i>&nbsp;		 * @param scale
+<i>246</i>&nbsp;		 * @return this builder
+<i>247</i>&nbsp;		 */
+<i>248</i>&nbsp;		public Builder cellConstrainScale(double scale) {
+<b class="nc"><i>249</i>&nbsp;			this.cellConstrainScale = scale;</b>
+<b class="nc"><i>250</i>&nbsp;			return this;</b>
+<i>251</i>&nbsp;		}
+<i>252</i>&nbsp;		
+<i>253</i>&nbsp;		/**
+<i>254</i>&nbsp;		 * If true, ignore overlaps when computing cell expansion.
+<i>255</i>&nbsp;		 * @param ignore
+<i>256</i>&nbsp;		 * @return this builder
+<i>257</i>&nbsp;		 */
+<i>258</i>&nbsp;		public Builder ignoreCellOverlaps(boolean ignore) {
+<b class="nc"><i>259</i>&nbsp;			this.ignoreCellOverlaps = ignore;</b>
+<b class="nc"><i>260</i>&nbsp;			return this;</b>
+<i>261</i>&nbsp;		}
+<i>262</i>&nbsp;		
+<i>263</i>&nbsp;		/**
+<i>264</i>&nbsp;		 * If true, constrain nuclei and cells to any parent annotation (default is true).
+<i>265</i>&nbsp;		 * @param constrainToParent
+<i>266</i>&nbsp;		 * @return this builder
+<i>267</i>&nbsp;		 */
+<i>268</i>&nbsp;		public Builder constrainToParent(boolean constrainToParent) {
+<b class="nc"><i>269</i>&nbsp;			this.constrainToParent = constrainToParent;</b>
+<b class="nc"><i>270</i>&nbsp;			return this;</b>
+<i>271</i>&nbsp;		}
+<i>272</i>&nbsp;		
+<i>273</i>&nbsp;		/**
+<i>274</i>&nbsp;		 * Specify the number of threads to use for processing.
+<i>275</i>&nbsp;		 * If you encounter problems, setting this to 1 may help to resolve them by preventing 
+<i>276</i>&nbsp;		 * multithreading.
+<i>277</i>&nbsp;		 * @param nThreads
+<i>278</i>&nbsp;		 * @return this builder
+<i>279</i>&nbsp;		 */
+<i>280</i>&nbsp;		public Builder nThreads(int nThreads) {
+<b class="nc"><i>281</i>&nbsp;			this.nThreads = nThreads;</b>
+<b class="nc"><i>282</i>&nbsp;			return this;</b>
+<i>283</i>&nbsp;		}
+<i>284</i>&nbsp;		
+<i>285</i>&nbsp;		/**
+<i>286</i>&nbsp;		 * Request default intensity measurements are made for all available cell compartments.
+<i>287</i>&nbsp;		 * @return this builder
+<i>288</i>&nbsp;		 */
+<i>289</i>&nbsp;		public Builder measureIntensity() {
+<b class="nc"><i>290</i>&nbsp;			this.measurements = Arrays.asList(</b>
+<i>291</i>&nbsp;					Measurements.MEAN,
+<i>292</i>&nbsp;					Measurements.MEDIAN,
+<i>293</i>&nbsp;					Measurements.MIN,
+<i>294</i>&nbsp;					Measurements.MAX,
+<i>295</i>&nbsp;					Measurements.STD_DEV);
+<b class="nc"><i>296</i>&nbsp;			return this;</b>
+<i>297</i>&nbsp;		}
+<i>298</i>&nbsp;		
+<i>299</i>&nbsp;		/**
+<i>300</i>&nbsp;		 * Request specified intensity measurements are made for all available cell compartments.
+<i>301</i>&nbsp;		 * @param measurements the measurements to make
+<i>302</i>&nbsp;		 * @return this builder
+<i>303</i>&nbsp;		 */
+<i>304</i>&nbsp;		public Builder measureIntensity(Collection&lt;Measurements&gt; measurements) {
+<b class="nc"><i>305</i>&nbsp;			this.measurements = new ArrayList&lt;&gt;(measurements);</b>
+<b class="nc"><i>306</i>&nbsp;			return this;</b>
+<i>307</i>&nbsp;		}
+<i>308</i>&nbsp;		
+<i>309</i>&nbsp;		/**
+<i>310</i>&nbsp;		 * Request shape measurements are made for the detected cell or nucleus.
+<i>311</i>&nbsp;		 * @return this builder
+<i>312</i>&nbsp;		 */
+<i>313</i>&nbsp;		public Builder measureShape() {
+<b class="nc"><i>314</i>&nbsp;			measureShape = true;</b>
+<b class="nc"><i>315</i>&nbsp;			return this;</b>
+<i>316</i>&nbsp;		}
+<i>317</i>&nbsp;		
+<i>318</i>&nbsp;		/**
+<i>319</i>&nbsp;		 * Specify the compartments within which intensity measurements are made.
+<i>320</i>&nbsp;		 * Only effective if {@link #measureIntensity()} and {@link #cellExpansion(double)} have been selected.
+<i>321</i>&nbsp;		 * @param compartments cell compartments for intensity measurements
+<i>322</i>&nbsp;		 * @return this builder
+<i>323</i>&nbsp;		 */
+<i>324</i>&nbsp;		public Builder compartments(Compartments...compartments) {
+<b class="nc"><i>325</i>&nbsp;			this.compartments = Arrays.asList(compartments);</b>
+<b class="nc"><i>326</i>&nbsp;			return this;</b>
+<i>327</i>&nbsp;		}
+<i>328</i>&nbsp;		
+<i>329</i>&nbsp;		/**
+<i>330</i>&nbsp;		 * Optionally include the prediction probability as a measurement for the object.
+<i>331</i>&nbsp;		 * This can be helpful if detection is applied with a low (generous) probability threshold, 
+<i>332</i>&nbsp;		 * with the intention of filtering out less likely detections later.
+<i>333</i>&nbsp;		 * 
+<i>334</i>&nbsp;		 * @param include true if the probability should be included, false otherwise
+<i>335</i>&nbsp;		 * @return this builder
+<i>336</i>&nbsp;		 * @see #threshold(double)
+<i>337</i>&nbsp;		 */
+<i>338</i>&nbsp;		public Builder includeProbability(boolean include) {
+<b class="nc"><i>339</i>&nbsp;			this.includeProbability = include;</b>
+<b class="nc"><i>340</i>&nbsp;			return this;</b>
+<i>341</i>&nbsp;		}
+<i>342</i>&nbsp;		
+<i>343</i>&nbsp;		/**
+<i>344</i>&nbsp;		 * Resolution at which the cell detection should be run.
+<i>345</i>&nbsp;		 * The units depend upon the {@link PixelCalibration} of the input image.
+<i>346</i>&nbsp;		 * &lt;p&gt;
+<i>347</i>&nbsp;		 * The default is to use the full resolution of the input image.
+<i>348</i>&nbsp;		 * &lt;p&gt;
+<i>349</i>&nbsp;		 * For an image calibrated in microns, the recommended default is approximately 0.5.
+<i>350</i>&nbsp;		 * 
+<i>351</i>&nbsp;		 * @param pixelSize
+<i>352</i>&nbsp;		 * @return this builder
+<i>353</i>&nbsp;		 */
+<i>354</i>&nbsp;		public Builder pixelSize(double pixelSize) {
+<b class="nc"><i>355</i>&nbsp;			this.pixelSize = pixelSize;</b>
+<b class="nc"><i>356</i>&nbsp;			return this;</b>
+<i>357</i>&nbsp;		}
+<i>358</i>&nbsp;		
+<i>359</i>&nbsp;		/**
+<i>360</i>&nbsp;		 * Size in pixels of a tile used for detection.
+<i>361</i>&nbsp;		 * Note that tiles are independently normalized, and therefore tiling can impact 
+<i>362</i>&nbsp;		 * the results. Default is 1024.
+<i>363</i>&nbsp;		 * @param tileSize
+<i>364</i>&nbsp;		 * @return this builder
+<i>365</i>&nbsp;		 */
+<i>366</i>&nbsp;		public Builder tileSize(int tileSize) {
+<b class="nc"><i>367</i>&nbsp;			this.tileWidth = tileSize;</b>
+<b class="nc"><i>368</i>&nbsp;			this.tileHeight = tileSize;</b>
+<b class="nc"><i>369</i>&nbsp;			return this;</b>
+<i>370</i>&nbsp;		}
+<i>371</i>&nbsp;		
+<i>372</i>&nbsp;		/**
+<i>373</i>&nbsp;		 * Amount to pad tiles to reduce boundary artifacts.
+<i>374</i>&nbsp;		 * @param pad padding in pixels; width and height of tiles will be increased by pad x 2.
+<i>375</i>&nbsp;		 * @return this builder
+<i>376</i>&nbsp;		 */
+<i>377</i>&nbsp;		public Builder padding(int pad) {
+<b class="nc"><i>378</i>&nbsp;			this.pad = pad;</b>
+<b class="nc"><i>379</i>&nbsp;			return this;</b>
+<i>380</i>&nbsp;		}
+<i>381</i>&nbsp;				
+<i>382</i>&nbsp;		/**
+<i>383</i>&nbsp;		 * Apply percentile normalization to the input image channels.
+<i>384</i>&nbsp;		 * &lt;p&gt;
+<i>385</i>&nbsp;		 * Note that this can be used in combination with {@link #preprocess(ImageOp...)}, 
+<i>386</i>&nbsp;		 * in which case the order in which the operations are applied depends upon the order 
+<i>387</i>&nbsp;		 * in which the methods of the builder are called.
+<i>388</i>&nbsp;		 * &lt;p&gt;
+<i>389</i>&nbsp;		 * Warning! This is applied on a per-tile basis. This can result in artifacts and false detections 
+<i>390</i>&nbsp;		 * without background/constant regions. 
+<i>391</i>&nbsp;		 * Consider using {@link #inputAdd(double...)} and {@link #inputScale(double...)} as alternative 
+<i>392</i>&nbsp;		 * normalization strategies, if appropriate constants can be determined to apply globally.
+<i>393</i>&nbsp;		 * 
+<i>394</i>&nbsp;		 * @param min minimum percentile
+<i>395</i>&nbsp;		 * @param max maximum percentile
+<i>396</i>&nbsp;		 * @return this builder
+<i>397</i>&nbsp;		 */
+<i>398</i>&nbsp;		public Builder normalizePercentiles(double min, double max) {
+<b class="nc"><i>399</i>&nbsp;			this.ops.add(ImageOps.Normalize.percentile(min, max));</b>
+<b class="nc"><i>400</i>&nbsp;			return this;</b>
+<i>401</i>&nbsp;		}
+<i>402</i>&nbsp;		
+<i>403</i>&nbsp;		/**
+<i>404</i>&nbsp;		 * Add an offset as a preprocessing step.
+<i>405</i>&nbsp;		 * Usually the value will be negative. Along with {@link #inputScale(double...)} this can be used as an alternative (global) normalization.
+<i>406</i>&nbsp;		 * &lt;p&gt;
+<i>407</i>&nbsp;		 * Note that this can be used in combination with {@link #preprocess(ImageOp...)}, 
+<i>408</i>&nbsp;		 * in which case the order in which the operations are applied depends upon the order 
+<i>409</i>&nbsp;		 * in which the methods of the builder are called.
+<i>410</i>&nbsp;		 * 
+<i>411</i>&nbsp;		 * @param values either a single value to add to all channels, or an array of values equal to the number of channels
+<i>412</i>&nbsp;		 * @return this builder
+<i>413</i>&nbsp;		 */
+<i>414</i>&nbsp;		public Builder inputAdd(double... values) {
+<b class="nc"><i>415</i>&nbsp;			this.ops.add(ImageOps.Core.add(values));</b>
+<b class="nc"><i>416</i>&nbsp;			return this;</b>
+<i>417</i>&nbsp;		}
+<i>418</i>&nbsp;		
+<i>419</i>&nbsp;		/**
+<i>420</i>&nbsp;		 * Multiply by a scale factor as a preprocessing step.
+<i>421</i>&nbsp;		 * Along with {@link #inputAdd(double...)} this can be used as an alternative (global) normalization.
+<i>422</i>&nbsp;		 * &lt;p&gt;
+<i>423</i>&nbsp;		 * Note that this can be used in combination with {@link #preprocess(ImageOp...)}, 
+<i>424</i>&nbsp;		 * in which case the order in which the operations are applied depends upon the order 
+<i>425</i>&nbsp;		 * in which the methods of the builder are called.
+<i>426</i>&nbsp;		 * 
+<i>427</i>&nbsp;		 * @param values either a single value to add to all channels, or an array of values equal to the number of channels
+<i>428</i>&nbsp;		 * @return this builder
+<i>429</i>&nbsp;		 */
+<i>430</i>&nbsp;		public Builder inputScale(double... values) {
+<b class="nc"><i>431</i>&nbsp;			this.ops.add(ImageOps.Core.subtract(values));</b>
+<b class="nc"><i>432</i>&nbsp;			return this;</b>
+<i>433</i>&nbsp;		}
+<i>434</i>&nbsp;		
+<i>435</i>&nbsp;		/**
+<i>436</i>&nbsp;		 * Create a {@link StarDist2D}, all ready for detection.
+<i>437</i>&nbsp;		 * @return
+<i>438</i>&nbsp;		 */
+<i>439</i>&nbsp;		public StarDist2D build() {
+<b class="nc"><i>440</i>&nbsp;			var stardist = new StarDist2D();</b>
+<i>441</i>&nbsp;			
+<b class="nc"><i>442</i>&nbsp;			var padding = pad &gt; 0 ? Padding.symmetric(pad) : Padding.empty();</b>
+<b class="nc"><i>443</i>&nbsp;			var mergedOps = new ArrayList&lt;&gt;(ops);</b>
+<b class="nc"><i>444</i>&nbsp;			mergedOps.add(TensorFlowTools.createOp(modelPath, tileWidth, tileHeight, padding));</b>
+<b class="nc"><i>445</i>&nbsp;			mergedOps.add(ImageOps.Core.ensureType(PixelType.FLOAT32));</b>
+<i>446</i>&nbsp;			
+<b class="nc"><i>447</i>&nbsp;			stardist.op = ImageOps.buildImageDataOp(channels)</b>
+<b class="nc"><i>448</i>&nbsp;					.appendOps(mergedOps.toArray(ImageOp[]::new));</b>
+<b class="nc"><i>449</i>&nbsp;			stardist.threshold = threshold;</b>
+<b class="nc"><i>450</i>&nbsp;			stardist.pixelSize = pixelSize;</b>
+<b class="nc"><i>451</i>&nbsp;			stardist.cellConstrainScale = cellConstrainScale;</b>
+<b class="nc"><i>452</i>&nbsp;			stardist.cellExpansion = cellExpansion;</b>
+<b class="nc"><i>453</i>&nbsp;			stardist.tileWidth = tileWidth-pad*2;</b>
+<b class="nc"><i>454</i>&nbsp;			stardist.tileHeight = tileHeight-pad*2;</b>
+<b class="nc"><i>455</i>&nbsp;			stardist.includeProbability = includeProbability;</b>
+<b class="nc"><i>456</i>&nbsp;			stardist.ignoreCellOverlaps = ignoreCellOverlaps;</b>
+<b class="nc"><i>457</i>&nbsp;			stardist.measureShape = measureShape;</b>
+<b class="nc"><i>458</i>&nbsp;			stardist.doLog = doLog;</b>
+<b class="nc"><i>459</i>&nbsp;			stardist.simplifyDistance = simplifyDistance;</b>
+<b class="nc"><i>460</i>&nbsp;			stardist.nThreads = nThreads;</b>
+<b class="nc"><i>461</i>&nbsp;			stardist.constrainToParent = constrainToParent;</b>
+<i>462</i>&nbsp;			
+<b class="nc"><i>463</i>&nbsp;			stardist.compartments = new LinkedHashSet&lt;&gt;(compartments);</b>
+<i>464</i>&nbsp;			
+<b class="nc"><i>465</i>&nbsp;			if (measurements != null)</b>
+<b class="nc"><i>466</i>&nbsp;				stardist.measurements = new LinkedHashSet&lt;&gt;(measurements);</b>
+<i>467</i>&nbsp;			else
+<b class="nc"><i>468</i>&nbsp;				stardist.measurements = Collections.emptyList();</b>
+<i>469</i>&nbsp;			
+<b class="nc"><i>470</i>&nbsp;			return stardist;</b>
+<i>471</i>&nbsp;		}
+<i>472</i>&nbsp;		
+<i>473</i>&nbsp;	}
+<i>474</i>&nbsp;	
+<b class="nc"><i>475</i>&nbsp;	private boolean doLog = false;</b>
+<i>476</i>&nbsp;	
+<b class="nc"><i>477</i>&nbsp;	private double simplifyDistance = 1.4;</b>
+<i>478</i>&nbsp;	
+<i>479</i>&nbsp;	private double threshold;
+<i>480</i>&nbsp;	
+<i>481</i>&nbsp;	private ImageDataOp op;
+<i>482</i>&nbsp;	private double pixelSize;
+<i>483</i>&nbsp;	private double cellExpansion;
+<i>484</i>&nbsp;	private double cellConstrainScale;
+<i>485</i>&nbsp;	private boolean ignoreCellOverlaps;
+<i>486</i>&nbsp;	
+<b class="nc"><i>487</i>&nbsp;	private boolean constrainToParent = true;</b>
+<i>488</i>&nbsp;	
+<b class="nc"><i>489</i>&nbsp;	private int nThreads = -1;</b>
+<i>490</i>&nbsp;	
+<b class="nc"><i>491</i>&nbsp;	private boolean includeProbability = false;</b>
+<i>492</i>&nbsp;	
+<b class="nc"><i>493</i>&nbsp;	private int tileWidth = 1024;</b>
+<b class="nc"><i>494</i>&nbsp;	private int tileHeight = 1024;</b>
+<i>495</i>&nbsp;
+<b class="nc"><i>496</i>&nbsp;	private boolean measureShape = false;</b>
+<i>497</i>&nbsp;
+<i>498</i>&nbsp;	private Collection&lt;ObjectMeasurements.Compartments&gt; compartments;
+<i>499</i>&nbsp;	private Collection&lt;ObjectMeasurements.Measurements&gt; measurements;
+<i>500</i>&nbsp;	
+<i>501</i>&nbsp;	
+<i>502</i>&nbsp;	
+<i>503</i>&nbsp;	
+<i>504</i>&nbsp;	/**
+<i>505</i>&nbsp;	 * Detect cells within one or more parent objects, firing update events upon completion.
+<i>506</i>&nbsp;	 * 
+<i>507</i>&nbsp;	 * @param imageData the image data containing the object
+<i>508</i>&nbsp;	 * @param parents the parent objects; existing child objects will be removed, and replaced by the detected cells
+<i>509</i>&nbsp;	 */
+<i>510</i>&nbsp;	public void detectObjects(ImageData&lt;BufferedImage&gt; imageData, Collection&lt;? extends PathObject&gt; parents) {
+<b class="nc"><i>511</i>&nbsp;		runInPool(() -&gt; detectObjectsImpl(imageData, parents));		</b>
+<i>512</i>&nbsp;	}
+<i>513</i>&nbsp;
+<i>514</i>&nbsp;	/**
+<i>515</i>&nbsp;	 * Detect cells within a parent object.
+<i>516</i>&nbsp;	 * 
+<i>517</i>&nbsp;	 * @param imageData the image data containing the object
+<i>518</i>&nbsp;	 * @param parent the parent object; existing child objects will be removed, and replaced by the detected cells
+<i>519</i>&nbsp;	 * @param fireUpdate if true, a hierarchy update will be fired on completion
+<i>520</i>&nbsp;	 */
+<i>521</i>&nbsp;	public void detectObjects(ImageData&lt;BufferedImage&gt; imageData, PathObject parent, boolean fireUpdate) {
+<b class="nc"><i>522</i>&nbsp;		runInPool(() -&gt; detectObjectsImpl(imageData, parent, fireUpdate));</b>
+<i>523</i>&nbsp;	}
+<i>524</i>&nbsp;	
+<i>525</i>&nbsp;	/**
+<i>526</i>&nbsp;	 * Optionally submit runnable to a thread pool. This limits the parallelization used by parallel streams.
+<i>527</i>&nbsp;	 * @param runnable
+<i>528</i>&nbsp;	 */
+<i>529</i>&nbsp;	private void runInPool(Runnable runnable) {
+<b class="nc"><i>530</i>&nbsp;		if (nThreads &gt; 0) {</b>
+<b class="nc"><i>531</i>&nbsp;			if (nThreads == 1)</b>
+<b class="nc"><i>532</i>&nbsp;				log(&quot;Processing with {} thread&quot;, nThreads);</b>
+<i>533</i>&nbsp;			else
+<b class="nc"><i>534</i>&nbsp;				log(&quot;Processing with {} threads&quot;, nThreads);</b>
+<i>535</i>&nbsp;			// Using an outer thread poll impacts any parallel streams created inside
+<b class="nc"><i>536</i>&nbsp;			var pool = new ForkJoinPool(nThreads);</b>
+<i>537</i>&nbsp;			try {
+<b class="nc"><i>538</i>&nbsp;				pool.submit(() -&gt; runnable.run());</b>
+<i>539</i>&nbsp;			} finally {
+<b class="nc"><i>540</i>&nbsp;				pool.shutdown();</b>
+<i>541</i>&nbsp;				try {
+<b class="nc"><i>542</i>&nbsp;					pool.awaitTermination(24, TimeUnit.HOURS);</b>
+<b class="nc"><i>543</i>&nbsp;				} catch (InterruptedException e) {</b>
+<b class="nc"><i>544</i>&nbsp;					logger.warn(&quot;Process was interrupted! &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>545</i>&nbsp;				}</b>
+<b class="nc"><i>546</i>&nbsp;			}</b>
+<b class="nc"><i>547</i>&nbsp;		} else {</b>
+<b class="nc"><i>548</i>&nbsp;			runnable.run();	</b>
+<i>549</i>&nbsp;		}
+<i>550</i>&nbsp;	}
+<i>551</i>&nbsp;	
+<i>552</i>&nbsp;		
+<i>553</i>&nbsp;	private void detectObjectsImpl(ImageData&lt;BufferedImage&gt; imageData, Collection&lt;? extends PathObject&gt; parents) {
+<i>554</i>&nbsp;
+<b class="nc"><i>555</i>&nbsp;		if (parents.isEmpty())</b>
+<i>556</i>&nbsp;			return;
+<b class="nc"><i>557</i>&nbsp;		if (parents.size() == 1) {</b>
+<b class="nc"><i>558</i>&nbsp;			detectObjects(imageData, parents.iterator().next(), true);</b>
+<i>559</i>&nbsp;			return;
+<i>560</i>&nbsp;		}
+<b class="nc"><i>561</i>&nbsp;		log(&quot;Processing {} parent objects&quot;, parents.size());</b>
+<b class="nc"><i>562</i>&nbsp;		if (nThreads &gt;= 0)</b>
+<b class="nc"><i>563</i>&nbsp;			parents.stream().forEach(p -&gt; detectObjects(imageData, p, false));</b>
+<i>564</i>&nbsp;		else
+<b class="nc"><i>565</i>&nbsp;			parents.parallelStream().forEach(p -&gt; detectObjects(imageData, p, false));</b>
+<i>566</i>&nbsp;		// Fire a globel update event
+<b class="nc"><i>567</i>&nbsp;		imageData.getHierarchy().fireHierarchyChangedEvent(imageData.getHierarchy());</b>
+<i>568</i>&nbsp;	}
+<i>569</i>&nbsp;	
+<i>570</i>&nbsp;	
+<i>571</i>&nbsp;	/**
+<i>572</i>&nbsp;	 * Detect cells within a parent object.
+<i>573</i>&nbsp;	 * 
+<i>574</i>&nbsp;	 * @param imageData the image data containing the object
+<i>575</i>&nbsp;	 * @param parent the parent object; existing child objects will be removed, and replaced by the detected cells
+<i>576</i>&nbsp;	 * @param fireUpdate if true, a hierarchy update will be fired on completion
+<i>577</i>&nbsp;	 */
+<i>578</i>&nbsp;	private void detectObjectsImpl(ImageData&lt;BufferedImage&gt; imageData, PathObject parent, boolean fireUpdate) {
+<b class="nc"><i>579</i>&nbsp;		Objects.nonNull(parent);</b>
+<i>580</i>&nbsp;		// Lock early, so the user doesn&#39;t make modifications
+<b class="nc"><i>581</i>&nbsp;		parent.setLocked(true);</b>
+<i>582</i>&nbsp;		
+<b class="nc"><i>583</i>&nbsp;		List&lt;PathObject&gt; detections = detectObjects(imageData, parent.getROI());		</b>
+<i>584</i>&nbsp;		
+<b class="nc"><i>585</i>&nbsp;		parent.clearPathObjects();</b>
+<b class="nc"><i>586</i>&nbsp;		parent.addPathObjects(detections);</b>
+<b class="nc"><i>587</i>&nbsp;		if (fireUpdate)</b>
+<b class="nc"><i>588</i>&nbsp;			imageData.getHierarchy().fireHierarchyChangedEvent(imageData.getHierarchy(), parent);</b>
+<i>589</i>&nbsp;	}
+<i>590</i>&nbsp;	
+<i>591</i>&nbsp;	
+<i>592</i>&nbsp;	
+<i>593</i>&nbsp;	/**
+<i>594</i>&nbsp;	 * Detect cells within a {@link ROI}.
+<i>595</i>&nbsp;	 * @param imageData image to which the ROI belongs
+<i>596</i>&nbsp;	 * @param roi region of interest which which to detect cells. If null, the entire image will be used.
+<i>597</i>&nbsp;	 * @return the detected objects. Note that these will not automatically be added to the object hierarchy.
+<i>598</i>&nbsp;	 */
+<i>599</i>&nbsp;	public List&lt;PathObject&gt; detectObjects(ImageData&lt;BufferedImage&gt; imageData, ROI roi) {
+<i>600</i>&nbsp;
+<b class="nc"><i>601</i>&nbsp;		var resolution = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>602</i>&nbsp;		if (Double.isFinite(pixelSize) &amp;&amp; pixelSize &gt; 0) {</b>
+<b class="nc"><i>603</i>&nbsp;			double downsample = pixelSize / resolution.getAveragedPixelSize().doubleValue();</b>
+<b class="nc"><i>604</i>&nbsp;			resolution = resolution.createScaledInstance(downsample, downsample);</b>
+<i>605</i>&nbsp;		}
+<b class="nc"><i>606</i>&nbsp;		var opServer = ImageOps.buildServer(imageData, op, resolution, tileWidth, tileHeight);</b>
+<i>607</i>&nbsp;		
+<i>608</i>&nbsp;		RegionRequest request;
+<b class="nc"><i>609</i>&nbsp;		if (roi == null)</b>
+<b class="nc"><i>610</i>&nbsp;			request = RegionRequest.createInstance(opServer);</b>
+<i>611</i>&nbsp;		else
+<b class="nc"><i>612</i>&nbsp;			request = RegionRequest.createInstance(</b>
+<b class="nc"><i>613</i>&nbsp;				opServer.getPath(),</b>
+<b class="nc"><i>614</i>&nbsp;				opServer.getDownsampleForResolution(0),</b>
+<i>615</i>&nbsp;				roi);
+<i>616</i>&nbsp;
+<b class="nc"><i>617</i>&nbsp;		var tiles = opServer.getTileRequestManager().getTileRequests(request);</b>
+<b class="nc"><i>618</i>&nbsp;		var mask = roi == null ? null : roi.getGeometry();</b>
+<i>619</i>&nbsp;				
+<i>620</i>&nbsp;		// Detect all potential nuclei
+<b class="nc"><i>621</i>&nbsp;		var server = imageData.getServer();</b>
+<b class="nc"><i>622</i>&nbsp;		var cal = server.getPixelCalibration();</b>
+<b class="nc"><i>623</i>&nbsp;		double expansion = cellExpansion / cal.getAveragedPixelSize().doubleValue();</b>
+<b class="nc"><i>624</i>&nbsp;		var plane = roi.getImagePlane();</b>
+<i>625</i>&nbsp;//		var detections = tiles.parallelStream()
+<i>626</i>&nbsp;//			.flatMap(t -&gt; detectObjectsForTile(op, imageData, t.getRegionRequest(), tiles.size() &gt; 1, mask).stream())
+<i>627</i>&nbsp;//			.map(n -&gt; convertToObject(n, plane, expansion, mask))
+<i>628</i>&nbsp;//			.collect(Collectors.toList());
+<i>629</i>&nbsp;
+<b class="nc"><i>630</i>&nbsp;		if (tiles.size() &gt; 1)</b>
+<b class="nc"><i>631</i>&nbsp;			log(&quot;Detecting nuclei for {} tiles&quot;, tiles.size());</b>
+<i>632</i>&nbsp;		else
+<b class="nc"><i>633</i>&nbsp;			log(&quot;Detecting nuclei&quot;);</b>
+<b class="nc"><i>634</i>&nbsp;		var nuclei = tiles.parallelStream()</b>
+<b class="nc"><i>635</i>&nbsp;				.flatMap(t -&gt; detectObjectsForTile(op, imageData, t.getRegionRequest(), tiles.size() &gt; 1, mask).stream())</b>
+<b class="nc"><i>636</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>637</i>&nbsp;		
+<i>638</i>&nbsp;		// Filter nuclei again if we need to for resolving tile overlaps
+<b class="nc"><i>639</i>&nbsp;		if (tiles.size() &gt; 1) {</b>
+<b class="nc"><i>640</i>&nbsp;			log(&quot;Resolving nucleus overlaps&quot;);</b>
+<b class="nc"><i>641</i>&nbsp;			nuclei = filterNuclei(nuclei);</b>
+<i>642</i>&nbsp;		}
+<i>643</i>&nbsp;		
+<i>644</i>&nbsp;		// Convert to detections, dilating to approximate cells if necessary
+<i>645</i>&nbsp;		// Drop cells if they fail (rather than catastropically give up)
+<b class="nc"><i>646</i>&nbsp;		var detections = nuclei.parallelStream()</b>
+<b class="nc"><i>647</i>&nbsp;				.map(n -&gt; {</b>
+<i>648</i>&nbsp;					try {
+<b class="nc"><i>649</i>&nbsp;						return convertToObject(n, plane, expansion, constrainToParent ? mask : null);</b>
+<b class="nc"><i>650</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>651</i>&nbsp;						logger.warn(&quot;Error converting to object: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>652</i>&nbsp;						return null;</b>
+<i>653</i>&nbsp;					}
+<b class="nc"><i>654</i>&nbsp;				}).filter(n -&gt; n != null)</b>
+<b class="nc"><i>655</i>&nbsp;				.collect(Collectors.toList());</b>
+<i>656</i>&nbsp;		
+<i>657</i>&nbsp;		// Resolve cell overlaps, if needed
+<b class="nc"><i>658</i>&nbsp;		if (expansion &gt; 0 &amp;&amp; !ignoreCellOverlaps) {</b>
+<b class="nc"><i>659</i>&nbsp;			log(&quot;Resolving cell overlaps&quot;);</b>
+<b class="nc"><i>660</i>&nbsp;			detections = CellTools.constrainCellOverlaps(detections);</b>
+<i>661</i>&nbsp;		}
+<i>662</i>&nbsp;		
+<i>663</i>&nbsp;		// Add shape measurements, if needed
+<b class="nc"><i>664</i>&nbsp;		if (measureShape)</b>
+<b class="nc"><i>665</i>&nbsp;			detections.parallelStream().forEach(c -&gt; ObjectMeasurements.addShapeMeasurements(c, cal));</b>
+<i>666</i>&nbsp;		
+<i>667</i>&nbsp;		// Add intensity measurements, if needed
+<b class="nc"><i>668</i>&nbsp;		if (!detections.isEmpty() &amp;&amp; !measurements.isEmpty()) {</b>
+<b class="nc"><i>669</i>&nbsp;			log(&quot;Making measurements&quot;);</b>
+<b class="nc"><i>670</i>&nbsp;			var stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>671</i>&nbsp;			var builder = new TransformedServerBuilder(server);</b>
+<b class="nc"><i>672</i>&nbsp;			if (stains != null) {</b>
+<b class="nc"><i>673</i>&nbsp;				List&lt;Integer&gt; stainNumbers = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>674</i>&nbsp;				for (int s = 1; s &lt;= 3; s++) {</b>
+<b class="nc"><i>675</i>&nbsp;					if (!stains.getStain(s).isResidual())</b>
+<b class="nc"><i>676</i>&nbsp;						stainNumbers.add(s);</b>
+<i>677</i>&nbsp;				}
+<b class="nc"><i>678</i>&nbsp;				builder.deconvolveStains(stains, stainNumbers.stream().mapToInt(i -&gt; i).toArray());</b>
+<i>679</i>&nbsp;			}
+<i>680</i>&nbsp;			
+<b class="nc"><i>681</i>&nbsp;			var server2 = builder.build();</b>
+<b class="nc"><i>682</i>&nbsp;			double downsample = resolution.getAveragedPixelSize().doubleValue() / cal.getAveragedPixelSize().doubleValue();</b>
+<i>683</i>&nbsp;			
+<b class="nc"><i>684</i>&nbsp;			detections.parallelStream().forEach(cell -&gt; {</b>
+<i>685</i>&nbsp;				try {
+<b class="nc"><i>686</i>&nbsp;					ObjectMeasurements.addIntensityMeasurements(server2, cell, downsample, measurements, compartments);					</b>
+<b class="nc"><i>687</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>688</i>&nbsp;					log(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>689</i>&nbsp;				}</b>
+<i>690</i>&nbsp;			});
+<i>691</i>&nbsp;			
+<i>692</i>&nbsp;		}
+<i>693</i>&nbsp;		
+<b class="nc"><i>694</i>&nbsp;		log(&quot;Detected {} cells&quot;, detections.size());</b>
+<i>695</i>&nbsp;
+<b class="nc"><i>696</i>&nbsp;		return detections;</b>
+<i>697</i>&nbsp;	}
+<i>698</i>&nbsp;	
+<i>699</i>&nbsp;	
+<i>700</i>&nbsp;	
+<i>701</i>&nbsp;	private void log(String message, Object... arguments) {
+<b class="nc"><i>702</i>&nbsp;		if (doLog)</b>
+<b class="nc"><i>703</i>&nbsp;			logger.info(message, arguments);</b>
+<i>704</i>&nbsp;		else
+<b class="nc"><i>705</i>&nbsp;			logger.debug(message, arguments);			</b>
+<i>706</i>&nbsp;	}
+<i>707</i>&nbsp;	
+<i>708</i>&nbsp;	
+<i>709</i>&nbsp;	private PathObject convertToObject(PotentialNucleus nucleus, ImagePlane plane, double cellExpansion, Geometry mask) {
+<b class="nc"><i>710</i>&nbsp;		var geomNucleus = simplify(nucleus.geometry);</b>
+<i>711</i>&nbsp;		PathObject pathObject;
+<b class="nc"><i>712</i>&nbsp;		if (cellExpansion &gt; 0) {</b>
+<b class="nc"><i>713</i>&nbsp;			var geomCell = CellTools.estimateCellBoundary(geomNucleus, cellExpansion, cellConstrainScale);</b>
+<b class="nc"><i>714</i>&nbsp;			if (mask != null)</b>
+<b class="nc"><i>715</i>&nbsp;				geomCell = GeometryTools.attemptOperation(geomCell, g -&gt; g.intersection(mask));</b>
+<b class="nc"><i>716</i>&nbsp;			geomCell = simplify(geomCell);</b>
+<b class="nc"><i>717</i>&nbsp;			var roiCell = GeometryTools.geometryToROI(geomCell, plane);</b>
+<b class="nc"><i>718</i>&nbsp;			var roiNucleus = GeometryTools.geometryToROI(geomNucleus, plane);</b>
+<b class="nc"><i>719</i>&nbsp;			pathObject = PathObjects.createCellObject(roiCell, roiNucleus, null, null);</b>
+<b class="nc"><i>720</i>&nbsp;		} else {</b>
+<b class="nc"><i>721</i>&nbsp;			if (mask != null) {</b>
+<b class="nc"><i>722</i>&nbsp;				geomNucleus = GeometryTools.attemptOperation(geomNucleus, g -&gt; g.intersection(mask));</b>
+<i>723</i>&nbsp;			}
+<b class="nc"><i>724</i>&nbsp;			var roiNucleus = GeometryTools.geometryToROI(geomNucleus, plane);</b>
+<b class="nc"><i>725</i>&nbsp;			pathObject = PathObjects.createDetectionObject(roiNucleus);</b>
+<i>726</i>&nbsp;		}
+<b class="nc"><i>727</i>&nbsp;		if (includeProbability) {</b>
+<b class="nc"><i>728</i>&nbsp;        	try (var ml = pathObject.getMeasurementList()) {</b>
+<b class="nc"><i>729</i>&nbsp;        		ml.putMeasurement(&quot;Detection probability&quot;, nucleus.getProbability());</b>
+<b class="nc"><i>730</i>&nbsp;        	}</b>
+<i>731</i>&nbsp;        }
+<b class="nc"><i>732</i>&nbsp;		return pathObject;</b>
+<i>733</i>&nbsp;	}
+<i>734</i>&nbsp;	
+<i>735</i>&nbsp;	
+<i>736</i>&nbsp;	private Geometry simplify(Geometry geom) {
+<b class="nc"><i>737</i>&nbsp;		if (simplifyDistance &lt;= 0)</b>
+<b class="nc"><i>738</i>&nbsp;			return geom;</b>
+<i>739</i>&nbsp;		try {
+<b class="nc"><i>740</i>&nbsp;			return VWSimplifier.simplify(geom, simplifyDistance);</b>
+<b class="nc"><i>741</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>742</i>&nbsp;			return geom;</b>
+<i>743</i>&nbsp;		}
+<i>744</i>&nbsp;	}
+<i>745</i>&nbsp;	
+<i>746</i>&nbsp;	
+<i>747</i>&nbsp;	private List&lt;PotentialNucleus&gt; detectObjectsForTile(ImageDataOp op, ImageData&lt;BufferedImage&gt; imageData, RegionRequest request, boolean excludeOnBounds, Geometry mask) {
+<i>748</i>&nbsp;
+<i>749</i>&nbsp;		List&lt;PotentialNucleus&gt; nuclei;
+<i>750</i>&nbsp;		
+<b class="nc"><i>751</i>&nbsp;		try (@SuppressWarnings(&quot;unchecked&quot;)</b>
+<b class="nc"><i>752</i>&nbsp;		var scope = new PointerScope()) {</b>
+<i>753</i>&nbsp;			Mat mat;
+<i>754</i>&nbsp;			try {
+<b class="nc"><i>755</i>&nbsp;				mat = op.apply(imageData, request);</b>
+<b class="nc"><i>756</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>757</i>&nbsp;				logger.error(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>758</i>&nbsp;				return Collections.emptyList();</b>
+<b class="nc"><i>759</i>&nbsp;			}</b>
+<i>760</i>&nbsp;			
+<b class="nc"><i>761</i>&nbsp;			FloatIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>762</i>&nbsp;			nuclei = createNuclei(indexer, request, mask);</b>
+<i>763</i>&nbsp;			
+<i>764</i>&nbsp;			// Exclude anything that overlaps the right/bottom boundary of a region
+<b class="nc"><i>765</i>&nbsp;			if (excludeOnBounds) {</b>
+<b class="nc"><i>766</i>&nbsp;				var iter = nuclei.iterator();</b>
+<b class="nc"><i>767</i>&nbsp;				while (iter.hasNext()) {</b>
+<b class="nc"><i>768</i>&nbsp;					var n = iter.next();</b>
+<b class="nc"><i>769</i>&nbsp;					var env = n.geometry.getEnvelopeInternal();</b>
+<b class="nc"><i>770</i>&nbsp;					if (env.getMaxX() &gt;= request.getMaxX() || env.getMaxY() &gt;= request.getMaxY())</b>
+<b class="nc"><i>771</i>&nbsp;						iter.remove();</b>
+<b class="nc"><i>772</i>&nbsp;				}</b>
+<i>773</i>&nbsp;			}
+<b class="nc"><i>774</i>&nbsp;		}</b>
+<i>775</i>&nbsp;
+<b class="nc"><i>776</i>&nbsp;		return filterNuclei(nuclei);</b>
+<i>777</i>&nbsp;	}
+<i>778</i>&nbsp;	
+<i>779</i>&nbsp;	/**
+<i>780</i>&nbsp;	 * Create a builder to customize detection parameters.
+<i>781</i>&nbsp;	 * @param modelPath path to the StarDist/TensorFlow model to use for prediction.
+<i>782</i>&nbsp;	 * @return
+<i>783</i>&nbsp;	 */
+<i>784</i>&nbsp;	public static Builder builder(String modelPath) {
+<b class="nc"><i>785</i>&nbsp;		return new Builder(modelPath);</b>
+<i>786</i>&nbsp;	}
+<i>787</i>&nbsp;	
+<i>788</i>&nbsp;	
+<i>789</i>&nbsp;	
+<i>790</i>&nbsp;	private List&lt;PotentialNucleus&gt; createNuclei(FloatIndexer indexer, RegionRequest request, Geometry mask) {
+<b class="nc"><i>791</i>&nbsp;	    long[] sizes = indexer.sizes();</b>
+<b class="nc"><i>792</i>&nbsp;	    long[] inds = new long[3];</b>
+<b class="nc"><i>793</i>&nbsp;	    int h = (int)sizes[0];</b>
+<b class="nc"><i>794</i>&nbsp;	    int w = (int)sizes[1];</b>
+<b class="nc"><i>795</i>&nbsp;	    int nRays = (int)sizes[2] - 1;</b>
+<b class="nc"><i>796</i>&nbsp;	    double[][] rays = sinCosAngles(nRays);</b>
+<b class="nc"><i>797</i>&nbsp;	    double[] raySine = rays[0];</b>
+<b class="nc"><i>798</i>&nbsp;	    double[] rayCosine = rays[1];</b>
+<i>799</i>&nbsp;
+<b class="nc"><i>800</i>&nbsp;	    var nuclei = new ArrayList&lt;PotentialNucleus&gt;();</b>
+<i>801</i>&nbsp;	    
+<b class="nc"><i>802</i>&nbsp;	    var locator = mask == null ? null : new SimplePointInAreaLocator(mask);</b>
+<i>803</i>&nbsp;
+<b class="nc"><i>804</i>&nbsp;	    var downsample = request.getDownsample();</b>
+<b class="nc"><i>805</i>&nbsp;	    var factory = GeometryTools.getDefaultFactory();</b>
+<b class="nc"><i>806</i>&nbsp;	    var precisionModel = factory.getPrecisionModel();</b>
+<b class="nc"><i>807</i>&nbsp;	    for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>808</i>&nbsp;	        inds[0] = y;</b>
+<b class="nc"><i>809</i>&nbsp;	        for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>810</i>&nbsp;	            inds[1] = x;</b>
+<b class="nc"><i>811</i>&nbsp;	            inds[2] = 0;</b>
+<b class="nc"><i>812</i>&nbsp;	            double prob = indexer.get(inds);</b>
+<b class="nc"><i>813</i>&nbsp;	            if (prob &lt; threshold)</b>
+<b class="nc"><i>814</i>&nbsp;	                continue;</b>
+<b class="nc"><i>815</i>&nbsp;	            var coords = new ArrayList&lt;Coordinate&gt;();</b>
+<b class="nc"><i>816</i>&nbsp;	            for (int a = 1; a &lt;= nRays; a++) {</b>
+<b class="nc"><i>817</i>&nbsp;	                inds[2] = a;</b>
+<b class="nc"><i>818</i>&nbsp;	                double val = indexer.get(inds);</b>
+<b class="nc"><i>819</i>&nbsp;	                double xx = precisionModel.makePrecise(request.getX() + (x + val * rayCosine[a-1]) * downsample);</b>
+<b class="nc"><i>820</i>&nbsp;	                double yy = precisionModel.makePrecise(request.getY() + (y + val * raySine[a-1]) * downsample);</b>
+<b class="nc"><i>821</i>&nbsp;	                coords.add(new Coordinate(xx, yy));</b>
+<i>822</i>&nbsp;	            }
+<b class="nc"><i>823</i>&nbsp;	            coords.add(coords.get(0));</b>
+<b class="nc"><i>824</i>&nbsp;	            var polygon = factory.createPolygon(coords.toArray(Coordinate[]::new));</b>
+<b class="nc"><i>825</i>&nbsp;	            if (locator == null || locator.locate(new Centroid(polygon).getCentroid()) != Location.EXTERIOR) {</b>
+<i>826</i>&nbsp;	            	
+<b class="nc"><i>827</i>&nbsp;	            	var geom = simplify(polygon);</b>
+<i>828</i>&nbsp;	            	
+<b class="nc"><i>829</i>&nbsp;	            	nuclei.add(new PotentialNucleus(geom, prob));</b>
+<i>830</i>&nbsp;	            }
+<i>831</i>&nbsp;	        }
+<i>832</i>&nbsp;	    }
+<b class="nc"><i>833</i>&nbsp;	    return nuclei;</b>
+<i>834</i>&nbsp;	}
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;
+<i>837</i>&nbsp;	private List&lt;PotentialNucleus&gt; filterNuclei(List&lt;PotentialNucleus&gt; potentialNuclei) {
+<i>838</i>&nbsp;		
+<i>839</i>&nbsp;		// Sort in descending order of probability
+<b class="nc"><i>840</i>&nbsp;		Collections.sort(potentialNuclei, Comparator.comparingDouble((PotentialNucleus n) -&gt; n.getProbability()).reversed());</b>
+<i>841</i>&nbsp;		
+<i>842</i>&nbsp;		// Create array of nuclei to keep &amp; to skip
+<b class="nc"><i>843</i>&nbsp;	    var nuclei = new LinkedHashSet&lt;PotentialNucleus&gt;();</b>
+<b class="nc"><i>844</i>&nbsp;	    var skippedNucleus = new HashSet&lt;PotentialNucleus&gt;();</b>
+<b class="nc"><i>845</i>&nbsp;	    int skipErrorCount = 0;</b>
+<i>846</i>&nbsp;	    
+<i>847</i>&nbsp;	    // Create a spatial cache to find overlaps more quickly
+<i>848</i>&nbsp;	    // (Because of later tests, we don&#39;t need to update envelopes even though geometries may be modified)
+<b class="nc"><i>849</i>&nbsp;	    Map&lt;PotentialNucleus, Envelope&gt; envelopes = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>850</i>&nbsp;	    var tree = new STRtree();</b>
+<b class="nc"><i>851</i>&nbsp;	    for (var nuc : potentialNuclei) {</b>
+<b class="nc"><i>852</i>&nbsp;	    	var env = nuc.geometry.getEnvelopeInternal();</b>
+<b class="nc"><i>853</i>&nbsp;	    	envelopes.put(nuc, env);</b>
+<b class="nc"><i>854</i>&nbsp;	    	tree.insert(env, nuc);</b>
+<b class="nc"><i>855</i>&nbsp;	    }</b>
+<i>856</i>&nbsp;	    
+<b class="nc"><i>857</i>&nbsp;	    for (var nucleus : potentialNuclei) {</b>
+<b class="nc"><i>858</i>&nbsp;	        if (skippedNucleus.contains(nucleus))</b>
+<b class="nc"><i>859</i>&nbsp;	            continue;</b>
+<b class="nc"><i>860</i>&nbsp;	        nuclei.add(nucleus);</b>
+<b class="nc"><i>861</i>&nbsp;        	var envelope = envelopes.get(nucleus);</b>
+<i>862</i>&nbsp;        	
+<i>863</i>&nbsp;        	@SuppressWarnings(&quot;unchecked&quot;)
+<b class="nc"><i>864</i>&nbsp;			var overlaps = (List&lt;PotentialNucleus&gt;)tree.query(envelope);</b>
+<b class="nc"><i>865</i>&nbsp;        	for (var nucleus2 : overlaps) {</b>
+<b class="nc"><i>866</i>&nbsp;        		if (nucleus2 == nucleus || skippedNucleus.contains(nucleus2) || nuclei.contains(nucleus2))</b>
+<b class="nc"><i>867</i>&nbsp;        			continue;</b>
+<i>868</i>&nbsp;        		
+<i>869</i>&nbsp;            	// If we have an overlap, retain the higher-probability nucleus only (i.e. the one we met first)
+<i>870</i>&nbsp;        		// Try to refine other nuclei
+<i>871</i>&nbsp;	            try {
+<b class="nc"><i>872</i>&nbsp;	            	var env = envelopes.get(nucleus2);</b>
+<b class="nc"><i>873</i>&nbsp;	                if (envelope.intersects(env) &amp;&amp; nucleus.geometry.intersects(nucleus2.geometry)) {</b>
+<i>874</i>&nbsp;	                	// Retain the nucleus only if it is not fragmented, or less than half its original area
+<b class="nc"><i>875</i>&nbsp;	                    var difference = nucleus2.geometry.difference(nucleus.geometry);</b>
+<b class="nc"><i>876</i>&nbsp;	                    if (difference instanceof Polygon &amp;&amp; difference.getArea() &gt; nucleus2.fullArea / 2.0)</b>
+<b class="nc"><i>877</i>&nbsp;	                        nucleus2.geometry = difference;</b>
+<i>878</i>&nbsp;	                    else {
+<b class="nc"><i>879</i>&nbsp;	                    	skippedNucleus.add(nucleus2);</b>
+<i>880</i>&nbsp;	                    }
+<i>881</i>&nbsp;	                }
+<b class="nc"><i>882</i>&nbsp;	            } catch (Exception e) {</b>
+<b class="nc"><i>883</i>&nbsp;                	skippedNucleus.add(nucleus2);</b>
+<b class="nc"><i>884</i>&nbsp;	            	skipErrorCount++;</b>
+<b class="nc"><i>885</i>&nbsp;	            }</b>
+<i>886</i>&nbsp;
+<b class="nc"><i>887</i>&nbsp;        	}</b>
+<b class="nc"><i>888</i>&nbsp;	    }</b>
+<b class="nc"><i>889</i>&nbsp;	    if (skipErrorCount &gt; 0) {</b>
+<b class="nc"><i>890</i>&nbsp;	    	int skipCount = skippedNucleus.size();</b>
+<b class="nc"><i>891</i>&nbsp;	    	logger.warn(&quot;Skipped {} nucleus detection(s) due to error in resolving overlaps ({}% of all skipped)&quot;, </b>
+<b class="nc"><i>892</i>&nbsp;	    			skipErrorCount, GeneralTools.formatNumber(skipErrorCount*100.0/skipCount, 1));</b>
+<i>893</i>&nbsp;	    }
+<b class="nc"><i>894</i>&nbsp;	    return new ArrayList&lt;&gt;(nuclei);</b>
+<i>895</i>&nbsp;	}
+<i>896</i>&nbsp;	
+<i>897</i>&nbsp;	
+<i>898</i>&nbsp;	private static double[][] sinCosAngles(int n) {
+<b class="nc"><i>899</i>&nbsp;	    double[][] angles = new double[2][n];</b>
+<b class="nc"><i>900</i>&nbsp;	    for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>901</i>&nbsp;	        double theta = 2 * Math.PI / n * i;</b>
+<b class="nc"><i>902</i>&nbsp;	        angles[0][i] = Math.sin(theta);</b>
+<b class="nc"><i>903</i>&nbsp;	        angles[1][i] = Math.cos(theta);</b>
+<i>904</i>&nbsp;	    }
+<b class="nc"><i>905</i>&nbsp;	    return angles;</b>
+<i>906</i>&nbsp;	}
+<i>907</i>&nbsp;	
+<i>908</i>&nbsp;	
+<i>909</i>&nbsp;	private static class PotentialNucleus {
+<i>910</i>&nbsp;		
+<i>911</i>&nbsp;		private Geometry geometry;
+<i>912</i>&nbsp;	    private double fullArea;
+<i>913</i>&nbsp;	    private double probability;
+<i>914</i>&nbsp;
+<b class="nc"><i>915</i>&nbsp;	    PotentialNucleus(Geometry geom, double prob) {</b>
+<b class="nc"><i>916</i>&nbsp;	        this.geometry = geom;</b>
+<b class="nc"><i>917</i>&nbsp;	        this.probability = prob;</b>
+<b class="nc"><i>918</i>&nbsp;	        this.fullArea = geom.getArea();</b>
+<i>919</i>&nbsp;	    }
+<i>920</i>&nbsp;
+<i>921</i>&nbsp;	    double getProbability() {
+<b class="nc"><i>922</i>&nbsp;	        return probability;</b>
+<i>923</i>&nbsp;	    };
+<i>924</i>&nbsp;		
+<i>925</i>&nbsp;	}
+<i>926</i>&nbsp;	
+<i>927</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

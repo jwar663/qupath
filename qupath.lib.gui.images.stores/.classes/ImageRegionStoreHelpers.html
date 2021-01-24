@@ -1,0 +1,364 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageRegionStoreHelpers</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.images.stores</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageRegionStoreHelpers (qupath.lib.gui.images.stores)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageRegionStoreHelpers</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    44.4%
+  </span>
+  <span class="absValue">
+    (16/ 36)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.images.stores;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Shape;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>33</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>34</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>35</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>36</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>37</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Helper methods related to image region storage.
+<i>41</i>&nbsp; * 
+<i>42</i>&nbsp; * Provides a standard method of tiling an image, which are used by the viewer.
+<i>43</i>&nbsp; * 
+<i>44</i>&nbsp; * In cases where viewing tiles are cached, this makes it possible to find out
+<i>45</i>&nbsp; * what the tile boundaries are... and perhaps adjust requests accordingly to match with cached tiles.
+<i>46</i>&nbsp; * 
+<i>47</i>&nbsp; * @author Pete Bankhead
+<i>48</i>&nbsp; *
+<i>49</i>&nbsp; */
+<b class="nc"><i>50</i>&nbsp;public class ImageRegionStoreHelpers {</b>
+<i>51</i>&nbsp;	
+<i>52</i>&nbsp;	
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	
+<i>55</i>&nbsp;	static double distanceToCentroid(ImageRegion r, double x, double y) {
+<b class="nc"><i>56</i>&nbsp;		double dx = x - (r.getMinX() + r.getWidth() / 2.0);</b>
+<b class="nc"><i>57</i>&nbsp;		double dy = y - (r.getMinY() + r.getHeight() / 2.0);</b>
+<b class="nc"><i>58</i>&nbsp;		return (dx * dx) + (dy * dy);</b>
+<i>59</i>&nbsp;	}
+<i>60</i>&nbsp;	
+<i>61</i>&nbsp;	
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * Given ImageServer, determine the boundaries of the image tiles that would be needed to paint
+<i>64</i>&nbsp;	 * a specified shape (defined by coordinates in the full-resolution image space).
+<i>65</i>&nbsp;	 * The downsampleFactor is used to determine the resolution at which to request the tiles.
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param server The ImageServer from which the tiles would be requested
+<i>68</i>&nbsp;	 * @param clipShape The requested shape, defined in the full-resolution image space
+<i>69</i>&nbsp;	 * @param downsampleFactor The downsampleFactor determining the resolution at which tiles should be requested
+<i>70</i>&nbsp;	 * @param zPosition The zPosition from which to request tiles
+<i>71</i>&nbsp;	 * @param tPosition The tPosition from which to request tiles
+<i>72</i>&nbsp;	 * @param regions regions The list to which requests should be added, or null if a new list should be created
+<i>73</i>&nbsp;	 * @return The list of requests - identical to the one provided as an input parameter, unless this was null
+<i>74</i>&nbsp;	 */
+<i>75</i>&nbsp;	public static List&lt;RegionRequest&gt; getTilesToRequest(ImageServer&lt;?&gt; server, Shape clipShape, double downsampleFactor, int zPosition, int tPosition, List&lt;RegionRequest&gt; regions) {
+<i>76</i>&nbsp;		
+<b class="nc"><i>77</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>78</i>&nbsp;			return Collections.emptyList();</b>
+<i>79</i>&nbsp;
+<b class="nc"><i>80</i>&nbsp;		var request = RegionRequest.createInstance(server.getPath(), downsampleFactor, AwtTools.getImageRegion(clipShape, zPosition, tPosition));</b>
+<i>81</i>&nbsp;		
+<b class="nc"><i>82</i>&nbsp;		if (regions == null)</b>
+<b class="nc"><i>83</i>&nbsp;			regions = new ArrayList&lt;&gt;();</b>
+<i>84</i>&nbsp;		
+<b class="nc"><i>85</i>&nbsp;		for (var tile : server.getTileRequestManager().getTileRequests(request))</b>
+<b class="nc"><i>86</i>&nbsp;			regions.add(tile.getRegionRequest());</b>
+<i>87</i>&nbsp;		
+<b class="nc"><i>88</i>&nbsp;		double x = request.getX() + request.getWidth() / 2.0;</b>
+<b class="nc"><i>89</i>&nbsp;		double y = request.getY() + request.getHeight() / 2.0;</b>
+<i>90</i>&nbsp;
+<b class="nc"><i>91</i>&nbsp;		regions.sort((r1, r2) -&gt; Double.compare(distanceToCentroid(r1, x, y), distanceToCentroid(r2, x, y)));</b>
+<i>92</i>&nbsp;		
+<b class="nc"><i>93</i>&nbsp;		return regions;</b>
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;//		double downsamplePreferred = server.getPreferredDownsampleFactor(downsampleFactor);
+<i>96</i>&nbsp;//
+<i>97</i>&nbsp;//		// Determine what the tile size will be in the original image space for the requested downsample
+<i>98</i>&nbsp;//		// Aim for a round number - preferred downsamples can be a bit off due to rounding
+<i>99</i>&nbsp;//		if (tileWidth &lt;= 0)
+<i>100</i>&nbsp;//			tileWidth = server.getPreferredTileWidth();
+<i>101</i>&nbsp;//		if (tileHeight &lt;= 0)
+<i>102</i>&nbsp;//			tileHeight = server.getPreferredTileHeight();
+<i>103</i>&nbsp;//		// If the preferred sizes are out of range, use defaults
+<i>104</i>&nbsp;//		if (tileWidth &lt;= 0)
+<i>105</i>&nbsp;//			tileWidth = 256;
+<i>106</i>&nbsp;//		if (tileHeight &lt;= 0)
+<i>107</i>&nbsp;//			tileHeight = 256;
+<i>108</i>&nbsp;//		//		System.out.println(&quot;Tile size: &quot; + tileWidth + &quot;, &quot; + tileHeight);
+<i>109</i>&nbsp;//		int tileWidthForLevel;
+<i>110</i>&nbsp;//		int tileHeightForLevel;
+<i>111</i>&nbsp;//		if (GeneralTools.almostTheSame(downsamplePreferred, (int)(downsamplePreferred + .5), 0.001)) {
+<i>112</i>&nbsp;//			tileWidthForLevel = (int)(tileWidth * (int)(downsamplePreferred + .5) + .5);
+<i>113</i>&nbsp;//			tileHeightForLevel = (int)(tileHeight * (int)(downsamplePreferred + .5) + .5);
+<i>114</i>&nbsp;//		}
+<i>115</i>&nbsp;//		else {
+<i>116</i>&nbsp;//			tileWidthForLevel = (int)(tileWidth * downsamplePreferred + .5);
+<i>117</i>&nbsp;//			tileHeightForLevel = (int)(tileHeight * downsamplePreferred + .5);
+<i>118</i>&nbsp;//		}
+<i>119</i>&nbsp;//
+<i>120</i>&nbsp;//		// Get the current bounds
+<i>121</i>&nbsp;//		//		Shape clipShapeVisible = getDisplayedClipShape(clip);
+<i>122</i>&nbsp;//		Rectangle boundsVisible;
+<i>123</i>&nbsp;//		if (clipShape instanceof Rectangle)
+<i>124</i>&nbsp;//			boundsVisible = (Rectangle)clipShape;
+<i>125</i>&nbsp;//		else
+<i>126</i>&nbsp;//			boundsVisible = clipShape.getBounds();
+<i>127</i>&nbsp;//
+<i>128</i>&nbsp;//		// Get the starting indices, shifted to actual tile boundaries
+<i>129</i>&nbsp;//		int xStart = (int)Math.max(0, (int)(boundsVisible.x / tileWidthForLevel) * tileWidthForLevel);
+<i>130</i>&nbsp;//		int yStart = (int)Math.max(0, (int)(boundsVisible.y / tileHeightForLevel) * tileHeightForLevel);
+<i>131</i>&nbsp;//		// Determine the visible image dimensions at the current downsample
+<i>132</i>&nbsp;//		double visibleWidth = boundsVisible.width;
+<i>133</i>&nbsp;//		double visibleHeight = boundsVisible.height;
+<i>134</i>&nbsp;//
+<i>135</i>&nbsp;//		int serverWidth = server.getWidth();
+<i>136</i>&nbsp;//		int serverHeight = server.getHeight();
+<i>137</i>&nbsp;//
+<i>138</i>&nbsp;//		// Get the ending image indices (non-inclusive), again shifted to actual tile boundaries or the image end
+<i>139</i>&nbsp;//		int xEnd = (int)Math.min(serverWidth, Math.ceil(boundsVisible.x + visibleWidth));
+<i>140</i>&nbsp;//		int yEnd = (int)Math.min(serverHeight, Math.ceil(boundsVisible.y + visibleHeight));
+<i>141</i>&nbsp;//		
+<i>142</i>&nbsp;//		// Try to ensure that we have at least one full tile
+<i>143</i>&nbsp;//		if (serverWidth - xStart &lt; tileWidthForLevel &amp;&amp; serverWidth &gt;= tileWidthForLevel)
+<i>144</i>&nbsp;//			xStart = serverWidth - tileWidthForLevel;
+<i>145</i>&nbsp;//		if (serverHeight - yStart &lt; tileHeightForLevel &amp;&amp; serverHeight &gt;= tileHeightForLevel)
+<i>146</i>&nbsp;//			yStart = serverHeight - tileHeightForLevel;
+<i>147</i>&nbsp;//
+<i>148</i>&nbsp;//		//			// Loop through and create the tiles
+<i>149</i>&nbsp;//		//			for (int yy = yStart; yy &lt; yEnd; yy += tileHeightForLevel) {
+<i>150</i>&nbsp;//		//				for (int xx = xStart; xx &lt; xEnd; xx += tileWidthForLevel) {
+<i>151</i>&nbsp;//		//					
+<i>152</i>&nbsp;//		//					RegionRequest request = RegionRequest.createInstance(server.getPath(), downsamplePreferred, xx, yy, (int)Math.min(serverWidth, (xx+tileWidthForLevel))-xx,
+<i>153</i>&nbsp;//		//							(int)Math.min(serverHeight, (yy+tileHeightForLevel))-yy, zPosition, tPosition);
+<i>154</i>&nbsp;//		//					
+<i>155</i>&nbsp;//		//					// Check if this is worth loading - might be outside the clip bounds
+<i>156</i>&nbsp;//		//					if (clipShape != null &amp;&amp; !clipShape.intersects(request.getBounds()))
+<i>157</i>&nbsp;//		//						continue;
+<i>158</i>&nbsp;//		//					
+<i>159</i>&nbsp;//		//					// Add region to the list
+<i>160</i>&nbsp;//		//					regions.add(request);
+<i>161</i>&nbsp;//		//				}			
+<i>162</i>&nbsp;//		//			}
+<i>163</i>&nbsp;//
+<i>164</i>&nbsp;//
+<i>165</i>&nbsp;//		// Loop through and create the tile requests
+<i>166</i>&nbsp;//		// Here, I&#39;ve attempted to request central regions first in order to improve the perception of image loading
+<i>167</i>&nbsp;//		int nx = (int)Math.ceil((double)(xEnd - xStart) / tileWidthForLevel);
+<i>168</i>&nbsp;//		int ny = (int)Math.ceil((double)(yEnd - yStart) / tileHeightForLevel);
+<i>169</i>&nbsp;//
+<i>170</i>&nbsp;//		int xc = nx/2;
+<i>171</i>&nbsp;//		int yc = ny/2;
+<i>172</i>&nbsp;//		int maxDisplacement = Math.max(nx - xc, ny - yc);
+<i>173</i>&nbsp;//
+<i>174</i>&nbsp;//		for (int d = 0; d &lt;= maxDisplacement; d++) {
+<i>175</i>&nbsp;//
+<i>176</i>&nbsp;//			for (int yi = -d; yi &lt;= d; yi++) {
+<i>177</i>&nbsp;//				for (int xi = -d; xi &lt;= d; xi++) {
+<i>178</i>&nbsp;//
+<i>179</i>&nbsp;//					if ((Math.abs(xi) != d &amp;&amp; Math.abs(yi) != d) || xc + xi &lt; 0 || yc + yi &lt; 0)
+<i>180</i>&nbsp;//						continue;
+<i>181</i>&nbsp;//					
+<i>182</i>&nbsp;//					// Create central region
+<i>183</i>&nbsp;//					int xx = xStart + (xc + xi) * tileWidthForLevel;
+<i>184</i>&nbsp;//					int yy = yStart + (yc + yi) * tileHeightForLevel;
+<i>185</i>&nbsp;//
+<i>186</i>&nbsp;//					int ww = tileWidthForLevel;
+<i>187</i>&nbsp;//					int hh = tileHeightForLevel;
+<i>188</i>&nbsp;//					
+<i>189</i>&nbsp;//					// Check, if we have a partial tile - if so, then skip
+<i>190</i>&nbsp;//					// Otherwise, if we have a tile that is right next to the image boundary, expand it to include the rest of the image
+<i>191</i>&nbsp;//					int xRemainder = serverWidth - (xx + tileWidthForLevel);
+<i>192</i>&nbsp;//					if (xRemainder &lt; 0 &amp;&amp; nx &gt; 1) {
+<i>193</i>&nbsp;//						continue;
+<i>194</i>&nbsp;//					} else if (xRemainder &lt; tileWidthForLevel) {
+<i>195</i>&nbsp;//						ww = serverWidth - xx;
+<i>196</i>&nbsp;//					}
+<i>197</i>&nbsp;//					int yRemainder = serverHeight - (yy + tileHeightForLevel);
+<i>198</i>&nbsp;//					if (yRemainder &lt; 0 &amp;&amp; ny &gt; 1) {
+<i>199</i>&nbsp;//						continue;
+<i>200</i>&nbsp;//					} else if (yRemainder &lt; tileHeightForLevel) {
+<i>201</i>&nbsp;//						hh = serverHeight - yy;
+<i>202</i>&nbsp;//					}
+<i>203</i>&nbsp;//
+<i>204</i>&nbsp;//					RegionRequest request = RegionRequest.createInstance(server.getPath(), downsamplePreferred, xx, yy,
+<i>205</i>&nbsp;//							ww, hh,
+<i>206</i>&nbsp;//							zPosition, tPosition);
+<i>207</i>&nbsp;//
+<i>208</i>&nbsp;//					// Check if this is worth loading - might be outside the clip bounds
+<i>209</i>&nbsp;//					if (clipShape == null || clipShape.intersects(request.getX(), request.getY(), request.getWidth(), request.getHeight()))
+<i>210</i>&nbsp;//						regions.add(request);
+<i>211</i>&nbsp;//				}
+<i>212</i>&nbsp;//			}
+<i>213</i>&nbsp;//
+<i>214</i>&nbsp;//		}
+<i>215</i>&nbsp;//
+<i>216</i>&nbsp;//		
+<i>217</i>&nbsp;//		
+<i>218</i>&nbsp;////		String s = &quot;&quot;;
+<i>219</i>&nbsp;////		Point2D pCenter = new Point2D.Double(clipShape.getBounds2D().getCenterX(), clipShape.getBounds2D().getCenterY());
+<i>220</i>&nbsp;////		for (RegionRequest region : regions) {
+<i>221</i>&nbsp;////			s += pCenter.distance(region.getBounds().getCenterX(), region.getBounds().getCenterY()) + &quot;, &quot;;
+<i>222</i>&nbsp;////		}
+<i>223</i>&nbsp;////		System.out.println(s);
+<i>224</i>&nbsp;//		
+<i>225</i>&nbsp;////		System.out.println(regions.size() + &quot;, &quot; + new HashSet&lt;&gt;(regions).size());
+<i>226</i>&nbsp;//		
+<i>227</i>&nbsp;//
+<i>228</i>&nbsp;//		return regions;
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;	/**
+<i>232</i>&nbsp;	 * Given an {@code ImageServer}, determine the boundaries of the image tile that contains specified x, y coordinates.
+<i>233</i>&nbsp;	 * The downsampleFactor is used to determine the resolution at which to request the tiles.
+<i>234</i>&nbsp;	 * 
+<i>235</i>&nbsp;	 * @param server the {@code ImageServer} from which the tiles would be requested
+<i>236</i>&nbsp;	 * @param x
+<i>237</i>&nbsp;	 * @param y
+<i>238</i>&nbsp;	 * @param downsampleFactor	the downsampleFactor determining the resolution at which tiles should be requested
+<i>239</i>&nbsp;	 * @param zPosition
+<i>240</i>&nbsp;	 * @param tPosition
+<i>241</i>&nbsp;	 * @return
+<i>242</i>&nbsp;	 */
+<i>243</i>&nbsp;	public static RegionRequest getTileRequest(ImageServer&lt;BufferedImage&gt; server, double x, double y, double downsampleFactor, int zPosition, int tPosition) {
+<i>244</i>&nbsp;
+<b class="fc"><i>245</i>&nbsp;		int serverWidth = server.getWidth();</b>
+<b class="fc"><i>246</i>&nbsp;		int serverHeight = server.getHeight();</b>
+<b class="fc"><i>247</i>&nbsp;		if (x &lt; 0 || y &lt; 0 || x &gt;= serverWidth || y &gt;= serverHeight)</b>
+<b class="nc"><i>248</i>&nbsp;			return null;</b>
+<i>249</i>&nbsp;
+<b class="fc"><i>250</i>&nbsp;		double downsamplePreferred = ServerTools.getPreferredDownsampleFactor(server, downsampleFactor);</b>
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;		// Determine what the tile size will be in the original image space for the requested downsample
+<i>253</i>&nbsp;		// Aim for a round number - preferred downsamples can be a bit off due to rounding
+<b class="fc"><i>254</i>&nbsp;		int tileWidth = server.getMetadata().getPreferredTileWidth();</b>
+<b class="fc"><i>255</i>&nbsp;		int tileHeight = server.getMetadata().getPreferredTileHeight();</b>
+<b class="fc"><i>256</i>&nbsp;		if (tileWidth &lt; 0)</b>
+<b class="nc"><i>257</i>&nbsp;			tileWidth = 256;</b>
+<b class="fc"><i>258</i>&nbsp;		if (tileHeight &lt; 0)</b>
+<b class="nc"><i>259</i>&nbsp;			tileHeight = 256;</b>
+<i>260</i>&nbsp;		//		System.out.println(&quot;Tile size: &quot; + tileWidth + &quot;, &quot; + tileHeight);
+<i>261</i>&nbsp;		int tileWidthForLevel;
+<i>262</i>&nbsp;		int tileHeightForLevel;
+<b class="fc"><i>263</i>&nbsp;		if (GeneralTools.almostTheSame(downsamplePreferred, (int)(downsamplePreferred + .5), 0.001)) {</b>
+<b class="fc"><i>264</i>&nbsp;			tileWidthForLevel = (int)(tileWidth * (int)(downsamplePreferred + .5) + .5);</b>
+<b class="fc"><i>265</i>&nbsp;			tileHeightForLevel = (int)(tileHeight * (int)(downsamplePreferred + .5) + .5);</b>
+<i>266</i>&nbsp;		}
+<i>267</i>&nbsp;		else {
+<b class="nc"><i>268</i>&nbsp;			tileWidthForLevel = (int)(tileWidth * downsamplePreferred + .5);</b>
+<b class="nc"><i>269</i>&nbsp;			tileHeightForLevel = (int)(tileHeight * downsamplePreferred + .5);</b>
+<i>270</i>&nbsp;		}
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;		// Get the starting indices, shifted to actual tile boundaries
+<b class="fc"><i>273</i>&nbsp;		int xx = (int)(x / tileWidthForLevel) * tileWidthForLevel;</b>
+<b class="fc"><i>274</i>&nbsp;		int yy = (int)(y / tileHeightForLevel) * tileHeightForLevel;</b>
+<i>275</i>&nbsp;
+<b class="fc"><i>276</i>&nbsp;		RegionRequest request = RegionRequest.createInstance(server.getPath(), downsamplePreferred, xx, yy, (int)Math.min(serverWidth, (xx+tileWidthForLevel))-xx,</b>
+<b class="fc"><i>277</i>&nbsp;				(int)Math.min(serverHeight, (yy+tileHeightForLevel))-yy, zPosition, tPosition);</b>
+<b class="fc"><i>278</i>&nbsp;		return request;</b>
+<i>279</i>&nbsp;	}
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

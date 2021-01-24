@@ -1,0 +1,504 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HistogramDisplay</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.charts</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HistogramDisplay (qupath.lib.gui.charts)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HistogramDisplay</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 143)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">HistogramDisplay$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">HistogramDisplay$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">HistogramDisplay$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 155)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.charts;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.slf4j.Logger;
+<i>31</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import javafx.beans.property.Property;
+<i>34</i>&nbsp;import javafx.beans.property.SimpleDoubleProperty;
+<i>35</i>&nbsp;import javafx.beans.property.SimpleLongProperty;
+<i>36</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>37</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>38</i>&nbsp;import javafx.geometry.Insets;
+<i>39</i>&nbsp;import javafx.scene.chart.AreaChart;
+<i>40</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>41</i>&nbsp;import javafx.scene.control.TableCell;
+<i>42</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>43</i>&nbsp;import javafx.scene.control.TableView;
+<i>44</i>&nbsp;import javafx.scene.control.TableColumn.CellDataFeatures;
+<i>45</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>46</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>47</i>&nbsp;import javafx.scene.layout.Pane;
+<i>48</i>&nbsp;import javafx.scene.layout.Priority;
+<i>49</i>&nbsp;import javafx.util.Callback;
+<i>50</i>&nbsp;import qupath.lib.analysis.stats.Histogram;
+<i>51</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>52</i>&nbsp;import qupath.lib.gui.charts.HistogramPanelFX.HistogramData;
+<i>53</i>&nbsp;import qupath.lib.gui.dialogs.ParameterPanelFX;
+<i>54</i>&nbsp;import qupath.lib.gui.measure.PathTableData;
+<i>55</i>&nbsp;import qupath.lib.plugins.parameters.IntParameter;
+<i>56</i>&nbsp;import qupath.lib.plugins.parameters.ParameterChangeListener;
+<i>57</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;/**
+<i>60</i>&nbsp; * Wrapper close to enable the generation and display of histograms relating to a data table.
+<i>61</i>&nbsp; * Other UI controls are provided to enable selection of specific data columns for display in the histogram.
+<i>62</i>&nbsp; * 
+<i>63</i>&nbsp; * @author Pete Bankhead
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;public class HistogramDisplay implements ParameterChangeListener {
+<i>67</i>&nbsp;
+<b class="nc"><i>68</i>&nbsp;	final static Logger logger = LoggerFactory.getLogger(HistogramDisplay.class);</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	private PathTableData&lt;?&gt; model;
+<b class="nc"><i>71</i>&nbsp;	private BorderPane pane = new BorderPane();</b>
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;	private ComboBox&lt;String&gt; comboName = new ComboBox&lt;&gt;();</b>
+<b class="nc"><i>74</i>&nbsp;	private HistogramPanelFX panelHistogram = new HistogramPanelFX();</b>
+<i>75</i>&nbsp;	private ParameterPanelFX panelParams;
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;	private int currentBins;
+<i>78</i>&nbsp;	private double[] currentValues;
+<b class="nc"><i>79</i>&nbsp;	private String currentColumn = null;</b>
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;	private ParameterList params = new ParameterList()</b>
+<b class="nc"><i>82</i>&nbsp;			.addBooleanParameter(&quot;normalizeCounts&quot;, &quot;Normalize counts&quot;, false, &quot;Normalize counts (probability distribution)&quot;)</b>
+<b class="nc"><i>83</i>&nbsp;			.addBooleanParameter(&quot;drawGrid&quot;, &quot;Draw grid&quot;, true, &quot;Draw grid&quot;)</b>
+<b class="nc"><i>84</i>&nbsp;			.addBooleanParameter(&quot;drawAxes&quot;, &quot;Draw axes&quot;, true, &quot;Draw axes&quot;)</b>
+<b class="nc"><i>85</i>&nbsp;			.addIntParameter(&quot;nBins&quot;, &quot;Number of bins&quot;, 32, null, &quot;Number of histogram bins (&gt;= 2 and &lt;= 1000)&quot;)</b>
+<b class="nc"><i>86</i>&nbsp;			.addBooleanParameter(&quot;animate&quot;, &quot;Animate changes&quot;, false, &quot;Animate changes&quot;);</b>
+<b class="nc"><i>87</i>&nbsp;	private TableView&lt;Property&lt;Number&gt;&gt; table = new TableView&lt;&gt;();</b>
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Constructor.
+<i>91</i>&nbsp;	 * @param model the table data for histogramming
+<i>92</i>&nbsp;	 * @param showTable if true, include a measurement summary table along with the histogram
+<i>93</i>&nbsp;	 */
+<b class="nc"><i>94</i>&nbsp;	public HistogramDisplay(final PathTableData&lt;?&gt; model, final boolean showTable) {</b>
+<b class="nc"><i>95</i>&nbsp;		String selectColumn = null;</b>
+<b class="nc"><i>96</i>&nbsp;		this.model = model;</b>
+<b class="nc"><i>97</i>&nbsp;		comboName.getItems().setAll(model.getMeasurementNames());</b>
+<b class="nc"><i>98</i>&nbsp;		if (comboName.getItems().isEmpty()) {</b>
+<b class="nc"><i>99</i>&nbsp;			logger.debug(&quot;No items to display!&quot;);</b>
+<i>100</i>&nbsp;//			return;
+<i>101</i>&nbsp;		}
+<i>102</i>&nbsp;		// Try to select the first column that isn&#39;t for &#39;centroids&#39;...
+<b class="nc"><i>103</i>&nbsp;		for (String name : model.getMeasurementNames()) {</b>
+<b class="nc"><i>104</i>&nbsp;			if (!name.toLowerCase().startsWith(&quot;centroid&quot;)) {</b>
+<b class="nc"><i>105</i>&nbsp;				selectColumn = name;</b>
+<b class="nc"><i>106</i>&nbsp;				break;</b>
+<i>107</i>&nbsp;			}
+<b class="nc"><i>108</i>&nbsp;			if (selectColumn == null)</b>
+<b class="nc"><i>109</i>&nbsp;				selectColumn = name;</b>
+<b class="nc"><i>110</i>&nbsp;		}</b>
+<b class="nc"><i>111</i>&nbsp;		if (selectColumn != null)</b>
+<b class="nc"><i>112</i>&nbsp;			comboName.getSelectionModel().select(selectColumn);</b>
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;		
+<b class="nc"><i>115</i>&nbsp;		TableColumn&lt;Property&lt;Number&gt;, String&gt; colName = new TableColumn&lt;&gt;(&quot;Measurement&quot;);</b>
+<b class="nc"><i>116</i>&nbsp;		colName.setCellValueFactory(new Callback&lt;CellDataFeatures&lt;Property&lt;Number&gt;, String&gt;, ObservableValue&lt;String&gt;&gt;() {</b>
+<i>117</i>&nbsp;			@Override
+<i>118</i>&nbsp;			public ObservableValue&lt;String&gt; call(CellDataFeatures&lt;Property&lt;Number&gt;, String&gt; p) {
+<b class="nc"><i>119</i>&nbsp;				return new SimpleStringProperty(p.getValue().getName());</b>
+<i>120</i>&nbsp;			}
+<i>121</i>&nbsp;		});
+<b class="nc"><i>122</i>&nbsp;		TableColumn&lt;Property&lt;Number&gt;, Number&gt; colValue = new TableColumn&lt;&gt;(&quot;Value&quot;);</b>
+<b class="nc"><i>123</i>&nbsp;		colValue.setCellValueFactory(new Callback&lt;CellDataFeatures&lt;Property&lt;Number&gt;, Number&gt;, ObservableValue&lt;Number&gt;&gt;() {</b>
+<i>124</i>&nbsp;			@Override
+<i>125</i>&nbsp;			public ObservableValue&lt;Number&gt; call(CellDataFeatures&lt;Property&lt;Number&gt;, Number&gt; p) {
+<b class="nc"><i>126</i>&nbsp;				return p.getValue();</b>
+<i>127</i>&nbsp;			}
+<i>128</i>&nbsp;		});
+<b class="nc"><i>129</i>&nbsp;		colValue.setCellFactory(column -&gt; {</b>
+<b class="nc"><i>130</i>&nbsp;			return new TableCell&lt;Property&lt;Number&gt;, Number&gt;() {</b>
+<i>131</i>&nbsp;				@Override
+<i>132</i>&nbsp;				protected void updateItem(Number item, boolean empty) {
+<b class="nc"><i>133</i>&nbsp;					super.updateItem(item, empty);</b>
+<b class="nc"><i>134</i>&nbsp;					if (item == null || empty) {</b>
+<b class="nc"><i>135</i>&nbsp;						setText(null);</b>
+<b class="nc"><i>136</i>&nbsp;						setStyle(&quot;&quot;);</b>
+<i>137</i>&nbsp;					} else {
+<b class="nc"><i>138</i>&nbsp;						if (Double.isNaN(item.doubleValue()))</b>
+<b class="nc"><i>139</i>&nbsp;							setText(&quot;-&quot;);</b>
+<i>140</i>&nbsp;						else
+<b class="nc"><i>141</i>&nbsp;							setText(GeneralTools.createFormatter(3).format(item));</b>
+<i>142</i>&nbsp;					}
+<i>143</i>&nbsp;				}
+<i>144</i>&nbsp;			};
+<i>145</i>&nbsp;		});
+<b class="nc"><i>146</i>&nbsp;		table.getColumns().add(colName);</b>
+<b class="nc"><i>147</i>&nbsp;		table.getColumns().add(colValue);</b>
+<b class="nc"><i>148</i>&nbsp;		table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<b class="nc"><i>149</i>&nbsp;		table.maxHeightProperty().bind(table.prefHeightProperty());</b>
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;		BorderPane panelMain = new BorderPane();</b>
+<b class="nc"><i>153</i>&nbsp;		panelMain.setCenter(panelHistogram.getChart());</b>
+<i>154</i>&nbsp;
+<b class="nc"><i>155</i>&nbsp;		comboName.getSelectionModel().selectedItemProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>156</i>&nbsp;			setHistogram(model, n);</b>
+<i>157</i>&nbsp;		});
+<i>158</i>&nbsp;
+<b class="nc"><i>159</i>&nbsp;		panelHistogram.setShowTickLabels(params.getBooleanParameterValue(&quot;drawAxes&quot;));</b>
+<i>160</i>&nbsp;
+<i>161</i>&nbsp;
+<b class="nc"><i>162</i>&nbsp;		panelParams = new ParameterPanelFX(params);</b>
+<b class="nc"><i>163</i>&nbsp;		panelParams.addParameterChangeListener(this);</b>
+<b class="nc"><i>164</i>&nbsp;		panelParams.getPane().setPadding(new Insets(20, 5, 5, 5));</b>
+<b class="nc"><i>165</i>&nbsp;		panelParams.getPane().setMinWidth(Pane.USE_PREF_SIZE);</b>
+<b class="nc"><i>166</i>&nbsp;		updateTable(null);</b>
+<i>167</i>&nbsp;
+<b class="nc"><i>168</i>&nbsp;		table.setPrefHeight(180);</b>
+<b class="nc"><i>169</i>&nbsp;		table.setMinWidth(100);</b>
+<b class="nc"><i>170</i>&nbsp;		table.setStyle(&quot;-fx-font-size: 0.8em&quot;);</b>
+<i>171</i>&nbsp;//		var panelSouth = PaneTools.createColumnGrid(panelParams.getPane(), table);
+<i>172</i>&nbsp;		
+<b class="nc"><i>173</i>&nbsp;		GridPane panelSouth = new GridPane();</b>
+<b class="nc"><i>174</i>&nbsp;		panelSouth.add(panelParams.getPane(), 0, 0);</b>
+<b class="nc"><i>175</i>&nbsp;		if (showTable)	</b>
+<b class="nc"><i>176</i>&nbsp;			panelSouth.add(table, 1, 0);</b>
+<b class="nc"><i>177</i>&nbsp;		GridPane.setHgrow(panelParams.getPane(), Priority.NEVER);</b>
+<b class="nc"><i>178</i>&nbsp;		GridPane.setHgrow(table, Priority.ALWAYS);</b>
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;
+<b class="nc"><i>182</i>&nbsp;		pane.setTop(comboName);</b>
+<b class="nc"><i>183</i>&nbsp;		comboName.prefWidthProperty().bind(pane.widthProperty());</b>
+<b class="nc"><i>184</i>&nbsp;		panelMain.setMinSize(200, 200);</b>
+<b class="nc"><i>185</i>&nbsp;		panelMain.setPrefSize(600, 400);</b>
+<b class="nc"><i>186</i>&nbsp;		pane.setCenter(panelMain);</b>
+<b class="nc"><i>187</i>&nbsp;		pane.setBottom(panelSouth);</b>
+<i>188</i>&nbsp;
+<b class="nc"><i>189</i>&nbsp;		pane.setPadding(new Insets(10, 10, 10, 10));</b>
+<i>190</i>&nbsp;
+<b class="nc"><i>191</i>&nbsp;		setHistogram(model, comboName.getSelectionModel().getSelectedItem());</b>
+<i>192</i>&nbsp;	}
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	/**
+<i>195</i>&nbsp;	 * Refresh the available measurements.
+<i>196</i>&nbsp;	 */
+<i>197</i>&nbsp;	public void refreshCombo() {
+<b class="nc"><i>198</i>&nbsp;		String selected = comboName.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>199</i>&nbsp;		if (!model.getAllNames().equals(comboName.getItems())) {</b>
+<b class="nc"><i>200</i>&nbsp;			comboName.getItems().setAll(model.getAllNames());</b>
+<b class="nc"><i>201</i>&nbsp;			comboName.getSelectionModel().select(selected);</b>
+<i>202</i>&nbsp;		}
+<i>203</i>&nbsp;	}
+<i>204</i>&nbsp;	
+<i>205</i>&nbsp;	/**
+<i>206</i>&nbsp;	 * Set the number of bins for the histogram.
+<i>207</i>&nbsp;	 * @param nBins the number of bins to use
+<i>208</i>&nbsp;	 */
+<i>209</i>&nbsp;	public void setNumBins(final int nBins) {
+<b class="nc"><i>210</i>&nbsp;		if (panelParams != null)</b>
+<b class="nc"><i>211</i>&nbsp;			panelParams.setNumericParameterValue(&quot;nBins&quot;, nBins);</b>
+<i>212</i>&nbsp;		else
+<b class="nc"><i>213</i>&nbsp;			((IntParameter)params.getParameters().get(&quot;nBins&quot;)).setValue(nBins);</b>
+<i>214</i>&nbsp;	}
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;	/**
+<i>217</i>&nbsp;	 * Get the requested number of bins used for the histogram.
+<i>218</i>&nbsp;	 * @return
+<i>219</i>&nbsp;	 */
+<i>220</i>&nbsp;	public int getNumBins() {
+<b class="nc"><i>221</i>&nbsp;		return params.getIntParameterValue(&quot;nBins&quot;);</b>
+<i>222</i>&nbsp;	}
+<i>223</i>&nbsp;
+<i>224</i>&nbsp;	/**
+<i>225</i>&nbsp;	 * Get the pane containing the histogram and associated UI components, for addition to a scene.
+<i>226</i>&nbsp;	 * @return
+<i>227</i>&nbsp;	 */
+<i>228</i>&nbsp;	public Pane getPane() {
+<b class="nc"><i>229</i>&nbsp;		return pane;</b>
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;	void setHistogram(final PathTableData&lt;?&gt; model, final String columnName) {
+<b class="nc"><i>233</i>&nbsp;		if (model != null &amp;&amp; model.getMeasurementNames().contains(columnName)) {</b>
+<b class="nc"><i>234</i>&nbsp;			double[] values = model.getDoubleValues(columnName);</b>
+<b class="nc"><i>235</i>&nbsp;			int nBins = params.getIntParameterValue(&quot;nBins&quot;);</b>
+<b class="nc"><i>236</i>&nbsp;			if (nBins &lt; 2)</b>
+<b class="nc"><i>237</i>&nbsp;				nBins = 2;</b>
+<b class="nc"><i>238</i>&nbsp;			else if (nBins &gt; 1000)</b>
+<b class="nc"><i>239</i>&nbsp;				nBins = 1000;</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;			// We can have values in the &#39;wrong&#39; order to facilitate comparison...
+<b class="nc"><i>242</i>&nbsp;			Arrays.sort(values);</b>
+<i>243</i>&nbsp;
+<i>244</i>&nbsp;			// Check if we&#39;ve actually changed anything - if not, then abort
+<b class="nc"><i>245</i>&nbsp;			if (nBins == currentBins &amp;&amp; currentValues != null &amp;&amp; Arrays.equals(currentValues, values))</b>
+<i>246</i>&nbsp;				return;
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;			Histogram histogram = new Histogram(values, nBins);</b>
+<i>249</i>&nbsp;//			histogram.setNormalizeCounts(params.getBooleanParameterValue(&quot;normalizeCounts&quot;));
+<i>250</i>&nbsp;
+<b class="nc"><i>251</i>&nbsp;			HistogramData histogramData = HistogramPanelFX.createHistogramData(histogram, false, (Integer)null);</b>
+<b class="nc"><i>252</i>&nbsp;			histogramData.setNormalizeCounts(params.getBooleanParameterValue(&quot;normalizeCounts&quot;));</b>
+<b class="nc"><i>253</i>&nbsp;			panelHistogram.getHistogramData().setAll(histogramData);</b>
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;			AreaChart&lt;Number, Number&gt; chart = panelHistogram.getChart();</b>
+<b class="nc"><i>257</i>&nbsp;			chart.setVerticalGridLinesVisible(true);</b>
+<b class="nc"><i>258</i>&nbsp;			chart.setHorizontalGridLinesVisible(true);</b>
+<b class="nc"><i>259</i>&nbsp;			chart.setLegendVisible(false);</b>
+<b class="nc"><i>260</i>&nbsp;			chart.setCreateSymbols(false); // Can&#39;t stop them being orange...</b>
+<b class="nc"><i>261</i>&nbsp;			chart.getXAxis().setLabel(&quot;Values&quot;);</b>
+<b class="nc"><i>262</i>&nbsp;			chart.getYAxis().setLabel(&quot;Counts&quot;);</b>
+<b class="nc"><i>263</i>&nbsp;			chart.getYAxis().setTickLabelsVisible(true);</b>
+<b class="nc"><i>264</i>&nbsp;			chart.getYAxis().setTickMarkVisible(true);</b>
+<b class="nc"><i>265</i>&nbsp;			chart.getXAxis().setTickLabelsVisible(true);</b>
+<b class="nc"><i>266</i>&nbsp;			chart.getXAxis().setTickMarkVisible(true);</b>
+<i>267</i>&nbsp;			
+<b class="nc"><i>268</i>&nbsp;			chart.setAnimated(params.getBooleanParameterValue(&quot;animate&quot;));</b>
+<i>269</i>&nbsp;
+<b class="nc"><i>270</i>&nbsp;			updateTable(histogram);</b>
+<i>271</i>&nbsp;
+<b class="nc"><i>272</i>&nbsp;			currentColumn = columnName;</b>
+<b class="nc"><i>273</i>&nbsp;			currentBins = nBins;</b>
+<b class="nc"><i>274</i>&nbsp;			currentValues = values;</b>
+<b class="nc"><i>275</i>&nbsp;			this.model = model;</b>
+<b class="nc"><i>276</i>&nbsp;		} else</b>
+<b class="nc"><i>277</i>&nbsp;			panelHistogram.getHistogramData().clear();</b>
+<i>278</i>&nbsp;	}
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;	/**
+<i>282</i>&nbsp;	 * Refresh the currently-displayed histogram (e.g. because underlying data has changed).
+<i>283</i>&nbsp;	 */
+<i>284</i>&nbsp;	public void refreshHistogram() {
+<b class="nc"><i>285</i>&nbsp;		setHistogram(model, currentColumn);</b>
+<i>286</i>&nbsp;	}
+<i>287</i>&nbsp;
+<i>288</i>&nbsp;
+<i>289</i>&nbsp;	/**
+<i>290</i>&nbsp;	 * Show the histogram for a specified data column.
+<i>291</i>&nbsp;	 * @param column the name of the column to show
+<i>292</i>&nbsp;	 */
+<i>293</i>&nbsp;	public void showHistogram(final String column) {
+<b class="nc"><i>294</i>&nbsp;		if (comboName.getItems().contains(column))</b>
+<b class="nc"><i>295</i>&nbsp;			comboName.getSelectionModel().select(column);</b>
+<i>296</i>&nbsp;		else
+<b class="nc"><i>297</i>&nbsp;			logger.debug(&quot;Unknown column requested: {}&quot;, column);</b>
+<i>298</i>&nbsp;	}
+<i>299</i>&nbsp;
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;	@Override
+<i>303</i>&nbsp;	public void parameterChanged(ParameterList parameterList, String key, boolean isAdjusting) {
+<b class="nc"><i>304</i>&nbsp;		if (&quot;normalizeCounts&quot;.equals(key)) {</b>
+<b class="nc"><i>305</i>&nbsp;			boolean doNormalize = params.getBooleanParameterValue(&quot;normalizeCounts&quot;);</b>
+<i>306</i>&nbsp;			// This is rather clumsy (compared to just updating the histogram data),
+<i>307</i>&nbsp;			// but the reason is that the animations are poor when the data is updated in-place
+<b class="nc"><i>308</i>&nbsp;			List&lt;HistogramData&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>309</i>&nbsp;			for (HistogramData histogramData : panelHistogram.getHistogramData()) {</b>
+<b class="nc"><i>310</i>&nbsp;				histogramData.setNormalizeCounts(doNormalize);</b>
+<b class="nc"><i>311</i>&nbsp;				list.add(new HistogramData(histogramData.getHistogram(), false, histogramData.getStroke()));</b>
+<i>312</i>&nbsp;				//					histogramData.update();
+<b class="nc"><i>313</i>&nbsp;			}</b>
+<b class="nc"><i>314</i>&nbsp;			panelHistogram.getHistogramData().setAll(list);</b>
+<i>315</i>&nbsp;			return;
+<b class="nc"><i>316</i>&nbsp;		} else if (&quot;drawGrid&quot;.equals(key)) {</b>
+<b class="nc"><i>317</i>&nbsp;			panelHistogram.getChart().setHorizontalGridLinesVisible(params.getBooleanParameterValue(&quot;drawGrid&quot;));</b>
+<b class="nc"><i>318</i>&nbsp;			panelHistogram.getChart().setVerticalGridLinesVisible(params.getBooleanParameterValue(&quot;drawGrid&quot;));</b>
+<i>319</i>&nbsp;			return;
+<b class="nc"><i>320</i>&nbsp;		} else if (&quot;drawAxes&quot;.equals(key)) {</b>
+<b class="nc"><i>321</i>&nbsp;			panelHistogram.setShowTickLabels(params.getBooleanParameterValue(&quot;drawAxes&quot;));</b>
+<i>322</i>&nbsp;			return;
+<b class="nc"><i>323</i>&nbsp;		} else if (&quot;nBins&quot;.equals(key)) {</b>
+<b class="nc"><i>324</i>&nbsp;			setHistogram(model, comboName.getSelectionModel().getSelectedItem());</b>
+<i>325</i>&nbsp;			return;
+<b class="nc"><i>326</i>&nbsp;		} else if (&quot;animate&quot;.equals(key)) {</b>
+<b class="nc"><i>327</i>&nbsp;			panelHistogram.getChart().setAnimated(params.getBooleanParameterValue(&quot;animate&quot;));</b>
+<i>328</i>&nbsp;		}
+<i>329</i>&nbsp;	}
+<i>330</i>&nbsp;
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;	void updateTable(final Histogram histogram) {
+<b class="nc"><i>334</i>&nbsp;		if (histogram == null) {</b>
+<b class="nc"><i>335</i>&nbsp;			List&lt;Property&lt;Number&gt;&gt; stats = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>336</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Count&quot;, Double.NaN));</b>
+<b class="nc"><i>337</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Missing&quot;, Double.NaN));</b>
+<b class="nc"><i>338</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Mean&quot;, Double.NaN));</b>
+<b class="nc"><i>339</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Std.Dev&quot;, Double.NaN));</b>
+<b class="nc"><i>340</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Min&quot;, Double.NaN));</b>
+<b class="nc"><i>341</i>&nbsp;			stats.add(new SimpleDoubleProperty(null, &quot;Max&quot;, Double.NaN));</b>
+<b class="nc"><i>342</i>&nbsp;			table.getItems().setAll(stats);</b>
+<i>343</i>&nbsp;			return;
+<i>344</i>&nbsp;		}
+<i>345</i>&nbsp;
+<b class="nc"><i>346</i>&nbsp;		List&lt;Property&lt;Number&gt;&gt; stats = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>347</i>&nbsp;		stats.add(new SimpleLongProperty(null, &quot;Count&quot;, histogram.nValues()));</b>
+<b class="nc"><i>348</i>&nbsp;		stats.add(new SimpleLongProperty(null, &quot;Missing&quot;, histogram.nMissingValues()));</b>
+<b class="nc"><i>349</i>&nbsp;		stats.add(new SimpleDoubleProperty(null, &quot;Mean&quot;, histogram.getMeanValue()));</b>
+<b class="nc"><i>350</i>&nbsp;		stats.add(new SimpleDoubleProperty(null, &quot;Std.Dev&quot;, histogram.getStdDev()));</b>
+<b class="nc"><i>351</i>&nbsp;		stats.add(new SimpleDoubleProperty(null, &quot;Min&quot;, histogram.getMinValue()));</b>
+<b class="nc"><i>352</i>&nbsp;		stats.add(new SimpleDoubleProperty(null, &quot;Max&quot;, histogram.getMaxValue()));</b>
+<b class="nc"><i>353</i>&nbsp;		table.getItems().setAll(stats);</b>
+<i>354</i>&nbsp;	}
+<i>355</i>&nbsp;
+<i>356</i>&nbsp;
+<i>357</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

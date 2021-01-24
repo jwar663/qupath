@@ -1,0 +1,329 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathHierarchyImageServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathHierarchyImageServer (qupath.lib.gui.images.servers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathHierarchyImageServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20%
+  </span>
+  <span class="absValue">
+    (3/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    41.4%
+  </span>
+  <span class="absValue">
+    (24/ 58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.images.servers;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Graphics2D;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.io.IOException;
+<i>29</i>&nbsp;import java.net.URI;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;import java.util.UUID;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import qupath.lib.awt.common.AwtTools;
+<i>37</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>38</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>39</i>&nbsp;import qupath.lib.gui.viewer.PathHierarchyPaintingHelper;
+<i>40</i>&nbsp;import qupath.lib.gui.viewer.overlays.HierarchyOverlay;
+<i>41</i>&nbsp;import qupath.lib.images.ImageData;
+<i>42</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>43</i>&nbsp;import qupath.lib.images.servers.GeneratingImageServer;
+<i>44</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>45</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>46</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>47</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ImageResolutionLevel;
+<i>48</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>49</i>&nbsp;import qupath.lib.images.servers.TileRequest;
+<i>50</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>51</i>&nbsp;import qupath.lib.objects.DefaultPathObjectConnectionGroup;
+<i>52</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>53</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>54</i>&nbsp;import qupath.lib.objects.PathObjectConnections;
+<i>55</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>56</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;/**
+<i>60</i>&nbsp; * A special ImageServer implementation that doesn&#39;t have a backing image, but rather
+<i>61</i>&nbsp; * constructs tiles on request from a PathObjectHierarchy.
+<i>62</i>&nbsp; * 
+<i>63</i>&nbsp; * @author Pete Bankhead
+<i>64</i>&nbsp; *
+<i>65</i>&nbsp; */
+<i>66</i>&nbsp;public class PathHierarchyImageServer extends AbstractTileableImageServer implements GeneratingImageServer&lt;BufferedImage&gt; {
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;//	public static String DEFAULT_PREFIX = &quot;OVERLAY::&quot;;
+<b class="fc"><i>69</i>&nbsp;	static long counter = 0;</b>
+<i>70</i>&nbsp;	
+<i>71</i>&nbsp;	/**
+<i>72</i>&nbsp;	 * Prefix used for the path of all instances of this class.
+<i>73</i>&nbsp;	 * This can be used to help with caching (and in particular with clearing caches selectively).
+<i>74</i>&nbsp;	 */
+<b class="fc"><i>75</i>&nbsp;	public static String DEFAULT_PREFIX = &quot;OVERLAY::&quot;;</b>
+<i>76</i>&nbsp;	
+<i>77</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	private String prefix;
+<i>80</i>&nbsp;	private ImageData&lt;BufferedImage&gt; imageData;
+<i>81</i>&nbsp;	private ImageServer&lt;BufferedImage&gt; server;
+<i>82</i>&nbsp;	private OverlayOptions options;
+<i>83</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	/**
+<i>86</i>&nbsp;	 * Constructor.
+<i>87</i>&nbsp;	 * @param imageData the image data
+<i>88</i>&nbsp;	 * @param options options defining how objects will be painted
+<i>89</i>&nbsp;	 */
+<i>90</i>&nbsp;	public PathHierarchyImageServer(final ImageData&lt;BufferedImage&gt; imageData, final OverlayOptions options) {
+<b class="fc"><i>91</i>&nbsp;		this(DEFAULT_PREFIX + &quot; &quot; + counter + &quot;::&quot;, imageData, options);</b>
+<i>92</i>&nbsp;		//System.out.println(&quot;PathHierarchyImageServer PathHierarchyImageServer 1&quot;);
+<b class="fc"><i>93</i>&nbsp;	}</b>
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;//	public PathHierarchyImageServer(final ImageServer&lt;BufferedImage&gt; server, final PathObjectHierarchy hierarchy, final OverlayOptions options) {
+<i>96</i>&nbsp;//		this(DEFAULT_PREFIX + &quot; &quot; + counter + &quot;::&quot;, server, hierarchy, options);
+<i>97</i>&nbsp;//	}
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	private PathHierarchyImageServer(final String prefix, final ImageData&lt;BufferedImage&gt; imageData, final OverlayOptions options) {
+<b class="fc"><i>101</i>&nbsp;		super();</b>
+<b class="fc"><i>102</i>&nbsp;		this.imageData = imageData;</b>
+<b class="fc"><i>103</i>&nbsp;		this.prefix = prefix;</b>
+<b class="fc"><i>104</i>&nbsp;		this.server = imageData.getServer();</b>
+<b class="fc"><i>105</i>&nbsp;		this.hierarchy = imageData.getHierarchy();</b>
+<b class="fc"><i>106</i>&nbsp;		this.options = options;</b>
+<i>107</i>&nbsp;		//System.out.println(&quot;PathHierarchyImageServer PathHierarchyImageServer 2&quot;);
+<b class="fc"><i>108</i>&nbsp;		double minDim = Math.min(server.getWidth(), server.getHeight());</b>
+<i>109</i>&nbsp;//		double maxDim = Math.max(server.getWidth(), server.getHeight());
+<b class="fc"><i>110</i>&nbsp;		double nextDownsample = 1.0;</b>
+<b class="fc"><i>111</i>&nbsp;		var levelBuilder = new ImageResolutionLevel.Builder(server.getWidth(), server.getHeight());</b>
+<i>112</i>&nbsp;		do {
+<b class="fc"><i>113</i>&nbsp;			levelBuilder.addLevelByDownsample(nextDownsample);</b>
+<b class="fc"><i>114</i>&nbsp;			nextDownsample *= 4.0;</b>
+<b class="fc"><i>115</i>&nbsp;		} while ((minDim / nextDownsample) &gt;= 2048);</b>
+<i>116</i>&nbsp;		
+<i>117</i>&nbsp;//		String path = getPath();
+<i>118</i>&nbsp;//		cache.entrySet().removeIf(r -&gt; path.equals(r.getKey().getPath()));
+<i>119</i>&nbsp;		
+<i>120</i>&nbsp;		// Set metadata, using the underlying server as a basis
+<b class="fc"><i>121</i>&nbsp;		this.originalMetadata = new ImageServerMetadata.Builder(server.getOriginalMetadata())</b>
+<b class="fc"><i>122</i>&nbsp;				.preferredTileSize(256, 256)</b>
+<b class="fc"><i>123</i>&nbsp;				.levels(levelBuilder.build())</b>
+<b class="fc"><i>124</i>&nbsp;				.pixelType(PixelType.UINT8)</b>
+<b class="fc"><i>125</i>&nbsp;				.channels(ImageChannel.getDefaultRGBChannels())</b>
+<b class="fc"><i>126</i>&nbsp;				.rgb(true)</b>
+<b class="fc"><i>127</i>&nbsp;				.build();</b>
+<b class="fc"><i>128</i>&nbsp;	}</b>
+<i>129</i>&nbsp;	
+<i>130</i>&nbsp;	/**
+<i>131</i>&nbsp;	 * Returns null (does not support ServerBuilders).
+<i>132</i>&nbsp;	 */
+<i>133</i>&nbsp;	@Override
+<i>134</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>135</i>&nbsp;		return null;</b>
+<i>136</i>&nbsp;	}
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	@Override
+<i>139</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="nc"><i>140</i>&nbsp;		return Collections.emptyList();</b>
+<i>141</i>&nbsp;	}
+<i>142</i>&nbsp;	
+<i>143</i>&nbsp;	/**
+<i>144</i>&nbsp;	 * Returns a UUID.
+<i>145</i>&nbsp;	 */
+<i>146</i>&nbsp;	@Override
+<i>147</i>&nbsp;	protected String createID() {
+<b class="nc"><i>148</i>&nbsp;		return UUID.randomUUID().toString();</b>
+<i>149</i>&nbsp;	}
+<i>150</i>&nbsp;	
+<i>151</i>&nbsp;	@Override
+<i>152</i>&nbsp;	public String getPath() {
+<b class="nc"><i>153</i>&nbsp;		return prefix + server.getPath();</b>
+<i>154</i>&nbsp;	}
+<i>155</i>&nbsp;
+<i>156</i>&nbsp;	private Collection&lt;PathObject&gt; getObjectsToPaint(RegionRequest request) {
+<i>157</i>&nbsp;//		Rectangle region = request.getBounds();
+<b class="nc"><i>158</i>&nbsp;		return hierarchy.getObjectsForRegion(PathDetectionObject.class, request, null);</b>
+<i>159</i>&nbsp;	}
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;	/**
+<i>162</i>&nbsp;	 * Returns true if there are no objects to be painted within the requested region.
+<i>163</i>&nbsp;	 */
+<i>164</i>&nbsp;	@Override
+<i>165</i>&nbsp;	public boolean isEmptyRegion(RegionRequest request) {
+<b class="nc"><i>166</i>&nbsp;		return !hierarchy.hasObjectsForRegion(PathDetectionObject.class, request) &amp;&amp; (!options.getShowConnections() || imageData.getProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS) == null);</b>
+<i>167</i>&nbsp;	}
+<i>168</i>&nbsp;	
+<i>169</i>&nbsp;	@Override
+<b class="nc"><i>170</i>&nbsp;	public void close() {}</b>
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;	@Override
+<i>173</i>&nbsp;	public String getServerType() {
+<b class="nc"><i>174</i>&nbsp;		return &quot;Overlay&quot;;</b>
+<i>175</i>&nbsp;	}
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;	@Override
+<i>178</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="nc"><i>179</i>&nbsp;		return originalMetadata;</b>
+<i>180</i>&nbsp;	}
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;	/**
+<i>183</i>&nbsp;	 * Throws an exception - metadata should not be set for a hierarchy image server directly.  Any changes should be made to the underlying
+<i>184</i>&nbsp;	 * image server for which this server represents an object hierarchy.
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	@Override
+<i>187</i>&nbsp;	public void setMetadata(ImageServerMetadata metadata) {
+<b class="nc"><i>188</i>&nbsp;		throw new IllegalArgumentException(&quot;Metadata cannot be set for a hierarchy image server!&quot;);</b>
+<i>189</i>&nbsp;	}
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;	@Override
+<i>192</i>&nbsp;	protected BufferedImage createDefaultRGBImage(int width, int height) {
+<i>193</i>&nbsp;//		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+<i>194</i>&nbsp;//		return gc.createCompatibleImage(width, height, Transparency.TRANSLUCENT);
+<b class="nc"><i>195</i>&nbsp;		return new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);</b>
+<i>196</i>&nbsp;	}
+<i>197</i>&nbsp;	
+<i>198</i>&nbsp;	@Override
+<i>199</i>&nbsp;	protected BufferedImage readTile(TileRequest tileRequest) throws IOException {
+<b class="nc"><i>200</i>&nbsp;		RegionRequest request = tileRequest.getRegionRequest();</b>
+<i>201</i>&nbsp;//		long startTime = System.currentTimeMillis();
+<i>202</i>&nbsp;		
+<i>203</i>&nbsp;		// Get connections
+<b class="nc"><i>204</i>&nbsp;		Object o = options.getShowConnections() ? imageData.getProperty(DefaultPathObjectConnectionGroup.KEY_OBJECT_CONNECTIONS) : null;</b>
+<b class="nc"><i>205</i>&nbsp;		PathObjectConnections connections = (o instanceof PathObjectConnections) ? (PathObjectConnections)o : null;</b>
+<i>206</i>&nbsp;		
+<b class="nc"><i>207</i>&nbsp;		List&lt;PathObject&gt; pathObjects = new ArrayList&lt;&gt;(getObjectsToPaint(request));</b>
+<b class="nc"><i>208</i>&nbsp;		if (pathObjects == null || pathObjects.isEmpty()) {</b>
+<i>209</i>&nbsp;			// We can only return null if no connections - otherwise we might still need to draw something
+<b class="nc"><i>210</i>&nbsp;			if (connections == null) {</b>
+<b class="nc"><i>211</i>&nbsp;				return null;</b>
+<i>212</i>&nbsp;			}
+<i>213</i>&nbsp;		}
+<i>214</i>&nbsp;		
+<b class="nc"><i>215</i>&nbsp;		Collections.sort(pathObjects, new HierarchyOverlay.DetectionComparator());</b>
+<i>216</i>&nbsp;		
+<b class="nc"><i>217</i>&nbsp;		double downsampleFactor = request.getDownsample();</b>
+<b class="nc"><i>218</i>&nbsp;		int width = tileRequest.getTileWidth();</b>
+<b class="nc"><i>219</i>&nbsp;		int height = tileRequest.getTileHeight();</b>
+<b class="nc"><i>220</i>&nbsp;		BufferedImage img = createDefaultRGBImage(width, height);</b>
+<b class="nc"><i>221</i>&nbsp;		Graphics2D g2d = img.createGraphics();</b>
+<b class="nc"><i>222</i>&nbsp;		g2d.setClip(0, 0, width, height);</b>
+<i>223</i>&nbsp;//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+<b class="nc"><i>224</i>&nbsp;		double scale = 1.0/downsampleFactor;</b>
+<i>225</i>&nbsp;		
+<i>226</i>&nbsp;//		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+<b class="nc"><i>227</i>&nbsp;		g2d.scale(scale, scale);</b>
+<b class="nc"><i>228</i>&nbsp;		g2d.translate(-request.getX(), -request.getY());</b>
+<i>229</i>&nbsp;		// Note we don&#39;t want to pass a selection model, as selections shouldn&#39;t be included
+<b class="nc"><i>230</i>&nbsp;		if (pathObjects != null &amp;&amp; !pathObjects.isEmpty())</b>
+<b class="nc"><i>231</i>&nbsp;			PathHierarchyPaintingHelper.paintSpecifiedObjects(g2d, AwtTools.getBounds(request), pathObjects, options, null, downsampleFactor);</b>
+<i>232</i>&nbsp;		
+<i>233</i>&nbsp;		// See if we have any connections to draw
+<b class="nc"><i>234</i>&nbsp;		if (connections != null) {</b>
+<b class="nc"><i>235</i>&nbsp;			PathHierarchyPaintingHelper.paintConnections(connections, hierarchy, g2d, imageData.isFluorescence() ? ColorToolsAwt.TRANSLUCENT_WHITE : ColorToolsAwt.TRANSLUCENT_BLACK, downsampleFactor);</b>
+<i>236</i>&nbsp;		}
+<i>237</i>&nbsp;		
+<i>238</i>&nbsp;		
+<b class="nc"><i>239</i>&nbsp;		g2d.dispose();</b>
+<i>240</i>&nbsp;//		long endTime = System.currentTimeMillis();
+<i>241</i>&nbsp;//		System.out.println(&quot;Number of objects: &quot; + pathObjects.size());
+<i>242</i>&nbsp;//		System.out.println(&quot;Single tile image creation time: &quot; + (endTime - startTime)/1000.);
+<b class="nc"><i>243</i>&nbsp;		return img;</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

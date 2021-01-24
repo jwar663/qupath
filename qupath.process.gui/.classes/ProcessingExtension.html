@@ -1,0 +1,522 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ProcessingExtension</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ProcessingExtension (qupath.process.gui)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProcessingExtension</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (7/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    77.8%
+  </span>
+  <span class="absValue">
+    (28/ 36)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProcessingExtension$LegacyClassifiers</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (6/ 6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingExtension$ObjectClassificationCommands</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (13/ 13)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingExtension$OpenCVCommands</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingExtension$OtherCommands</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (9/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProcessingExtension$PixelClassificationCommands</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/ 10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (12/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89.7%
+  </span>
+  <span class="absValue">
+    (70/ 78)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import org.bytedeco.javacpp.Loader;
+<i>25</i>&nbsp;import org.bytedeco.openblas.global.openblas;
+<i>26</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>27</i>&nbsp;import org.controlsfx.control.action.Action;
+<i>28</i>&nbsp;import org.slf4j.Logger;
+<i>29</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import javafx.application.Platform;
+<i>32</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>33</i>&nbsp;import javafx.scene.input.KeyCodeCombination;
+<i>34</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>35</i>&nbsp;import qupath.lib.gui.ActionTools;
+<i>36</i>&nbsp;import qupath.lib.gui.ActionTools.ActionAccelerator;
+<i>37</i>&nbsp;import qupath.lib.gui.ActionTools.ActionDescription;
+<i>38</i>&nbsp;import qupath.lib.gui.ActionTools.ActionMenu;
+<i>39</i>&nbsp;import qupath.lib.gui.commands.Commands;
+<i>40</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>41</i>&nbsp;import qupath.lib.gui.extensions.QuPathExtension;
+<i>42</i>&nbsp;import qupath.lib.gui.tools.IconFactory;
+<i>43</i>&nbsp;import qupath.lib.gui.tools.IconFactory.PathIcons;
+<i>44</i>&nbsp;import qupath.lib.gui.viewer.tools.PathTools;
+<i>45</i>&nbsp;import qupath.lib.scripting.QP;
+<i>46</i>&nbsp;import qupath.opencv.CellCountsCV;
+<i>47</i>&nbsp;import qupath.opencv.features.DelaunayClusteringPlugin;
+<i>48</i>&nbsp;import qupath.opencv.ops.ImageOps;
+<i>49</i>&nbsp;import qupath.process.gui.commands.CellIntensityClassificationCommand;
+<i>50</i>&nbsp;import qupath.process.gui.commands.CreateChannelTrainingImagesCommand;
+<i>51</i>&nbsp;import qupath.process.gui.commands.CreateCompositeClassifierCommand;
+<i>52</i>&nbsp;import qupath.process.gui.commands.CreateRegionAnnotationsCommand;
+<i>53</i>&nbsp;import qupath.process.gui.commands.CreateTrainingImageCommand;
+<i>54</i>&nbsp;import qupath.process.gui.commands.ObjectClassifierCommand;
+<i>55</i>&nbsp;import qupath.process.gui.commands.ObjectClassifierLoadCommand;
+<i>56</i>&nbsp;import qupath.process.gui.commands.PixelClassifierCommand;
+<i>57</i>&nbsp;import qupath.process.gui.commands.PixelClassifierLoadCommand;
+<i>58</i>&nbsp;import qupath.process.gui.commands.SimpleThresholdCommand;
+<i>59</i>&nbsp;import qupath.process.gui.commands.SingleMeasurementClassificationCommand;
+<i>60</i>&nbsp;import qupath.process.gui.commands.SplitProjectTrainingCommand;
+<i>61</i>&nbsp;import qupath.process.gui.ml.legacy.LegacyDetectionClassifierCommand;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;/**
+<i>64</i>&nbsp; * General-purpose processing and machine learning commands.
+<i>65</i>&nbsp; */
+<b class="fc"><i>66</i>&nbsp;public class ProcessingExtension implements QuPathExtension {</b>
+<i>67</i>&nbsp;	
+<b class="fc"><i>68</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ProcessingExtension.class);</b>
+<i>69</i>&nbsp;	
+<i>70</i>&nbsp;	static {
+<i>71</i>&nbsp;		// TODO: Consider a better way to force initialization of key processing classes
+<b class="fc"><i>72</i>&nbsp;		var qp = new QP();</b>
+<b class="fc"><i>73</i>&nbsp;	}</b>
+<i>74</i>&nbsp;	
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	/**
+<i>77</i>&nbsp;	 * Commands based on OpenCV.
+<i>78</i>&nbsp;	 */
+<i>79</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>80</i>&nbsp;	public static class OpenCVCommands {
+<i>81</i>&nbsp;		
+<i>82</i>&nbsp;		@ActionMenu(&quot;Analyze&gt;Spatial analysis&gt;&quot;)
+<i>83</i>&nbsp;		@ActionDescription(&quot;Apply a Delaunay triangulation to detection objects based on their centroid locations. &quot;
+<i>84</i>&nbsp;				+ &quot;This helps identify clusters of objects neighboring one another.&quot;
+<i>85</i>&nbsp;				+ &quot;\n\nNote this command is likely to be replaced in a future version.&quot;)
+<i>86</i>&nbsp;		public final Action actionDelaunay;
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;//		@ActionMenu(&quot;Analyze&gt;Region identification&gt;&quot;)
+<i>89</i>&nbsp;//		@ActionDescription(&quot;&quot;)
+<i>90</i>&nbsp;//		@Deprecated
+<i>91</i>&nbsp;//		public final Action actionCytokeratin;
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;		@ActionMenu(&quot;Analyze&gt;Cell detection&gt;&quot;)
+<i>94</i>&nbsp;		@ActionDescription(&quot;Fast cell counting for hematoxylin and DAB images.&quot;)
+<i>95</i>&nbsp;		@Deprecated
+<i>96</i>&nbsp;		public final Action actionFastCellCounts;
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;				
+<b class="fc"><i>99</i>&nbsp;		private OpenCVCommands(QuPathGUI qupath) {</b>
+<b class="fc"><i>100</i>&nbsp;			actionDelaunay = qupath.createPluginAction(&quot;Delaunay cluster features 2D&quot;, DelaunayClusteringPlugin.class, null);</b>
+<i>101</i>&nbsp;//			actionCytokeratin = qupath.createPluginAction(&quot;Create cytokeratin annotations (experimental)&quot;, DetectCytokeratinCV.class, null);
+<b class="fc"><i>102</i>&nbsp;			actionFastCellCounts = qupath.createPluginAction(&quot;Fast cell counts (brightfield)&quot;, CellCountsCV.class, null);</b>
+<b class="fc"><i>103</i>&nbsp;		}</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;	}
+<i>106</i>&nbsp;	
+<i>107</i>&nbsp;	@ActionMenu(&quot;Classify&gt;Object classification&quot;)
+<i>108</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>109</i>&nbsp;	public static class LegacyClassifiers {
+<i>110</i>&nbsp;		
+<b class="fc"><i>111</i>&nbsp;		public final Action SEP = ActionTools.createSeparator();</b>
+<i>112</i>&nbsp;		
+<i>113</i>&nbsp;		@ActionMenu(&quot;Older classifiers&gt;Create detection classifier&quot;)
+<i>114</i>&nbsp;		@ActionDescription(&quot;QuPath&#39;s original detection classifier. &quot;
+<i>115</i>&nbsp;				+ &quot;\n\nThis is being replaced by a new and more flexible approach to object classification.&quot;)
+<i>116</i>&nbsp;		@Deprecated
+<i>117</i>&nbsp;		public final Action actionObjectClassifier;
+<i>118</i>&nbsp;		
+<i>119</i>&nbsp;		@ActionDescription(&quot;Load an old-style detection classifier. &quot; + 
+<i>120</i>&nbsp;				&quot;Note that it is not a good idea to mix classifiers across different QuPath versions.&quot;)
+<i>121</i>&nbsp;		@ActionMenu(&quot;Older classifiers&gt;Load detection classifier&quot;)
+<i>122</i>&nbsp;		@Deprecated
+<i>123</i>&nbsp;		public final Action actionLegacyDetectionLoad;
+<i>124</i>&nbsp;		
+<b class="fc"><i>125</i>&nbsp;		private LegacyClassifiers(QuPathGUI qupath) {</b>
+<b class="fc"><i>126</i>&nbsp;			var classifierCommand = new LegacyDetectionClassifierCommand(qupath);</b>
+<b class="fc"><i>127</i>&nbsp;			actionObjectClassifier = qupath.createImageDataAction(imageData -&gt; classifierCommand.run());</b>
+<b class="fc"><i>128</i>&nbsp;			actionLegacyDetectionLoad = Commands.createSingleStageAction(() -&gt; LegacyDetectionClassifierCommand.createLegacyLoadDetectionClassifierCommand(qupath));</b>
+<b class="fc"><i>129</i>&nbsp;		}</b>
+<i>130</i>&nbsp;		
+<i>131</i>&nbsp;	}
+<i>132</i>&nbsp;	
+<i>133</i>&nbsp;	
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;	@ActionMenu(&quot;Classify&gt;Pixel classification&gt;&quot;)
+<i>136</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>137</i>&nbsp;	public class PixelClassificationCommands {
+<i>138</i>&nbsp;		
+<i>139</i>&nbsp;		@ActionMenu(&quot;Load pixel classifier&quot;)
+<i>140</i>&nbsp;		@ActionDescription(&quot;Load an existing pixel classifier. &quot;
+<i>141</i>&nbsp;				+ &quot;This can be used to apply the classifier to new images, but not to continue training.&quot;)
+<i>142</i>&nbsp;		public final Action actionLoadPixelClassifier;
+<i>143</i>&nbsp;
+<b class="fc"><i>144</i>&nbsp;		@ActionMenu(&quot;&quot;)</b>
+<b class="fc"><i>145</i>&nbsp;		public final Action SEP = ActionTools.createSeparator();</b>
+<i>146</i>&nbsp;		
+<i>147</i>&nbsp;		@ActionMenu(&quot;Train pixel classifier&quot;)
+<i>148</i>&nbsp;		@ActionAccelerator(&quot;shortcut+shift+p&quot;)
+<i>149</i>&nbsp;		@ActionDescription(&quot;Train a pixel classifier. &quot;
+<i>150</i>&nbsp;				+ &quot;This can be used to quantify areas, or to generate or classify objects.&quot;)
+<i>151</i>&nbsp;		public final Action actionPixelClassifier;
+<i>152</i>&nbsp;		
+<i>153</i>&nbsp;		@ActionMenu(&quot;Create thresholder&quot;)
+<i>154</i>&nbsp;		@ActionDescription(&quot;Create a simple pixel classifier that applies a threshold to an image.&quot;)
+<i>155</i>&nbsp;		public final Action actionSimpleThreshold;
+<i>156</i>&nbsp;				
+<b class="fc"><i>157</i>&nbsp;		private PixelClassificationCommands(QuPathGUI qupath) {</b>
+<i>158</i>&nbsp;			
+<b class="fc"><i>159</i>&nbsp;			var commandPixel = new PixelClassifierCommand();</b>
+<b class="fc"><i>160</i>&nbsp;			actionPixelClassifier = qupath.createImageDataAction(imageData -&gt; commandPixel.run());</b>
+<i>161</i>&nbsp;			
+<b class="fc"><i>162</i>&nbsp;			var commandLoad = new PixelClassifierLoadCommand(qupath);</b>
+<b class="fc"><i>163</i>&nbsp;			actionLoadPixelClassifier = qupath.createImageDataAction(imageData -&gt; commandLoad.run());</b>
+<i>164</i>&nbsp;			
+<b class="fc"><i>165</i>&nbsp;			var commandThreshold = new SimpleThresholdCommand(qupath);</b>
+<b class="fc"><i>166</i>&nbsp;			actionSimpleThreshold = qupath.createImageDataAction(imageData -&gt; commandThreshold.run());</b>
+<b class="fc"><i>167</i>&nbsp;		}</b>
+<i>168</i>&nbsp;		
+<i>169</i>&nbsp;	}
+<i>170</i>&nbsp;	
+<i>171</i>&nbsp;	@ActionMenu(&quot;Classify&gt;Object classification&gt;&quot;)
+<i>172</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>173</i>&nbsp;	public class ObjectClassificationCommands {
+<i>174</i>&nbsp;				
+<i>175</i>&nbsp;		@ActionMenu(&quot;Load object classifier&quot;)
+<i>176</i>&nbsp;		@ActionDescription(&quot;Load an existing object classifier. &quot;
+<i>177</i>&nbsp;				+ &quot;This can be used to apply the classifier to new objects, but not to continue training.&quot;)
+<i>178</i>&nbsp;		public final Action actionLoadObjectClassifier;
+<i>179</i>&nbsp;
+<b class="fc"><i>180</i>&nbsp;		public final Action SEP = ActionTools.createSeparator();</b>
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;		@ActionMenu(&quot;Train object classifier&quot;)
+<i>183</i>&nbsp;		@ActionAccelerator(&quot;shortcut+shift+d&quot;)
+<i>184</i>&nbsp;		@ActionDescription(&quot;Interactively train an object classifier using machine learning. &quot;
+<i>185</i>&nbsp;				+ &quot;This is useful whenever objects cannot be classified based on one measurement alone.&quot;)
+<i>186</i>&nbsp;		public final Action actionObjectClassifier;
+<i>187</i>&nbsp;
+<i>188</i>&nbsp;		@ActionMenu(&quot;Create single measurement classifier&quot;)
+<i>189</i>&nbsp;		@ActionDescription(&quot;Create a simple object classifier that applies a threshold to a single measurement.&quot;)
+<i>190</i>&nbsp;		public final Action actionMeasurement;
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;		@ActionMenu(&quot;Create composite classifier&quot;)
+<i>193</i>&nbsp;		@ActionDescription(&quot;Combine multiple classifiers together to create a single classifier by applying them sequentially.&quot;)
+<i>194</i>&nbsp;		public final Action actionComposite;
+<i>195</i>&nbsp;				
+<i>196</i>&nbsp;		@ActionMenu(&quot;Set cell intensity classifications&quot;)
+<i>197</i>&nbsp;		@ActionDescription(&quot;Set cell intensity classifications based upon a single measurement. &quot;
+<i>198</i>&nbsp;				+ &quot;This is useful to calculate densities/percentages of positive cells or H-scores.&quot;)
+<i>199</i>&nbsp;		public final Action actionIntensity;
+<i>200</i>&nbsp;		
+<i>201</i>&nbsp;		
+<b class="fc"><i>202</i>&nbsp;		private ObjectClassificationCommands(QuPathGUI qupath) {</b>
+<b class="fc"><i>203</i>&nbsp;			var commandLoad = new ObjectClassifierLoadCommand(qupath);</b>
+<b class="fc"><i>204</i>&nbsp;			actionLoadObjectClassifier = qupath.createImageDataAction(imageData -&gt; commandLoad.run());</b>
+<i>205</i>&nbsp;			
+<b class="fc"><i>206</i>&nbsp;			var commandComposite = new CreateCompositeClassifierCommand(qupath);</b>
+<b class="fc"><i>207</i>&nbsp;			actionComposite = ActionTools.createAction(commandComposite);</b>
+<i>208</i>&nbsp;			
+<b class="fc"><i>209</i>&nbsp;			var commandSingle = new SingleMeasurementClassificationCommand(qupath);</b>
+<b class="fc"><i>210</i>&nbsp;			actionMeasurement = qupath.createImageDataAction(imageData -&gt; commandSingle.run());</b>
+<i>211</i>&nbsp;			
+<b class="fc"><i>212</i>&nbsp;			var commandIntensity = new CellIntensityClassificationCommand(qupath);</b>
+<b class="fc"><i>213</i>&nbsp;			actionIntensity = qupath.createImageDataAction(imageData -&gt; commandIntensity.run());</b>
+<i>214</i>&nbsp;			
+<b class="fc"><i>215</i>&nbsp;			var commandCreate = new ObjectClassifierCommand(qupath);</b>
+<b class="fc"><i>216</i>&nbsp;			actionObjectClassifier = qupath.createImageDataAction(imageData -&gt; commandCreate.run());</b>
+<b class="fc"><i>217</i>&nbsp;		}</b>
+<i>218</i>&nbsp;		
+<i>219</i>&nbsp;	}
+<i>220</i>&nbsp;	
+<i>221</i>&nbsp;	@SuppressWarnings(&quot;javadoc&quot;)
+<i>222</i>&nbsp;	public class OtherCommands {
+<i>223</i>&nbsp;		
+<i>224</i>&nbsp;		
+<i>225</i>&nbsp;		@ActionMenu(&quot;Classify&gt;Training images&gt;Create region annotations&quot;)
+<i>226</i>&nbsp;		@ActionDescription(&quot;Create annotations of fixed-size regions.&quot;
+<i>227</i>&nbsp;				+ &quot;\n\nThis can be used to select representative regions of multiple images to train (usually pixel) classifier, &quot;
+<i>228</i>&nbsp;				+ &quot;in combination with &#39;Create training image&#39;.&quot;)
+<i>229</i>&nbsp;		public final Action actionCreateRegions;
+<i>230</i>&nbsp;
+<i>231</i>&nbsp;		@ActionDescription(&quot;Create an image comprised of regions extracted from multiple images in a project. &quot; +
+<i>232</i>&nbsp;				&quot;This can be useful for interactively training a classifier across a varied dataset.&quot;)
+<i>233</i>&nbsp;		@ActionMenu(&quot;Classify&gt;Training images&gt;Create training image&quot;)
+<i>234</i>&nbsp;		public final Action actionTrainingImage;
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;		@ActionMenu(&quot;Classify&gt;Training images&gt;Create duplicate channel training images&quot;)
+<i>237</i>&nbsp;		@ActionDescription(&quot;Duplicate an image in a project so that there is one duplicate for each channel of the image. &quot;
+<i>238</i>&nbsp;				+ &quot;\n\nThis can be used to train separate classifiers for different channels in multiplexed images, &quot;
+<i>239</i>&nbsp;				+ &quot;which are then merged to form a composite classifier.&quot;)
+<i>240</i>&nbsp;		public final Action actionChannelTraining;
+<i>241</i>&nbsp;		
+<i>242</i>&nbsp;		@ActionMenu(&quot;Classify&gt;Training images&gt;Split project train/validation/test&quot;)
+<i>243</i>&nbsp;		@ActionDescription(&quot;Split images within a project into training, validation and test sets.&quot;)
+<i>244</i>&nbsp;		public final Action actionSplitProject;
+<i>245</i>&nbsp;				
+<i>246</i>&nbsp;//		@ActionMenu(&quot;Classify&gt;Training images&gt;Export training regions&quot;)
+<i>247</i>&nbsp;//		public final Action actionExportTraining;
+<i>248</i>&nbsp;		
+<i>249</i>&nbsp;		
+<b class="fc"><i>250</i>&nbsp;		private OtherCommands(QuPathGUI qupath) {</b>
+<i>251</i>&nbsp;			
+<b class="fc"><i>252</i>&nbsp;			actionTrainingImage = qupath.createProjectAction(project -&gt; promptToCreateSparseServer(qupath));</b>
+<i>253</i>&nbsp;			
+<b class="fc"><i>254</i>&nbsp;			var channelTraining = new CreateChannelTrainingImagesCommand(qupath);</b>
+<b class="fc"><i>255</i>&nbsp;			actionChannelTraining = qupath.createImageDataAction(imageData -&gt; channelTraining.run());</b>
+<i>256</i>&nbsp;			
+<b class="fc"><i>257</i>&nbsp;			var splitProject = new SplitProjectTrainingCommand(qupath);</b>
+<b class="fc"><i>258</i>&nbsp;			actionSplitProject = qupath.createProjectAction(project -&gt; splitProject.run());</b>
+<i>259</i>&nbsp;			
+<b class="fc"><i>260</i>&nbsp;			var createRegions = new CreateRegionAnnotationsCommand(qupath);</b>
+<b class="fc"><i>261</i>&nbsp;			actionCreateRegions = qupath.createImageDataAction(imageData -&gt; createRegions.run());</b>
+<i>262</i>&nbsp;			
+<i>263</i>&nbsp;//			var exportTraining = new ExportTrainingRegionsCommand(qupath);
+<i>264</i>&nbsp;//			actionExportTraining = qupath.createProjectAction(project -&gt; exportTraining.run());
+<b class="fc"><i>265</i>&nbsp;		}</b>
+<i>266</i>&nbsp;		
+<i>267</i>&nbsp;	}
+<i>268</i>&nbsp;	
+<i>269</i>&nbsp;	
+<i>270</i>&nbsp;	/**
+<i>271</i>&nbsp;	 * Prompt the user to create a sparse image server composed of annotated regions from images within the current QuPath project.
+<i>272</i>&nbsp;	 * @param qupath the current QuPath instance
+<i>273</i>&nbsp;	 */
+<i>274</i>&nbsp;	private static void promptToCreateSparseServer(QuPathGUI qupath) {
+<b class="nc"><i>275</i>&nbsp;		var project = qupath.getProject();</b>
+<b class="nc"><i>276</i>&nbsp;		var entry = CreateTrainingImageCommand.promptToCreateTrainingImage(project, qupath.getAvailablePathClasses());</b>
+<b class="nc"><i>277</i>&nbsp;		qupath.refreshProject();</b>
+<b class="nc"><i>278</i>&nbsp;		if (entry != null) {</b>
+<b class="nc"><i>279</i>&nbsp;			qupath.openImageEntry(entry);</b>
+<i>280</i>&nbsp;		}
+<b class="nc"><i>281</i>&nbsp;	}</b>
+<i>282</i>&nbsp;	
+<i>283</i>&nbsp;	
+<i>284</i>&nbsp;    @Override
+<i>285</i>&nbsp;    public void installExtension(QuPathGUI qupath) {
+<i>286</i>&nbsp;    	
+<b class="fc"><i>287</i>&nbsp;    	logger.debug(&quot;Installing extension&quot;);</b>
+<i>288</i>&nbsp;    	
+<b class="fc"><i>289</i>&nbsp;		qupath.installActions(ActionTools.getAnnotatedActions(new OpenCVCommands(qupath)));</b>
+<b class="fc"><i>290</i>&nbsp;    	qupath.installActions(ActionTools.getAnnotatedActions(new PixelClassificationCommands(qupath)));</b>
+<b class="fc"><i>291</i>&nbsp;    	qupath.installActions(ActionTools.getAnnotatedActions(new ObjectClassificationCommands(qupath)));</b>
+<b class="fc"><i>292</i>&nbsp;    	qupath.installActions(ActionTools.getAnnotatedActions(new OtherCommands(qupath)));</b>
+<b class="fc"><i>293</i>&nbsp;    	qupath.installActions(ActionTools.getAnnotatedActions(new LegacyClassifiers(qupath)));</b>
+<i>294</i>&nbsp;    	
+<b class="fc"><i>295</i>&nbsp;    	installWand(qupath);</b>
+<i>296</i>&nbsp;    	
+<i>297</i>&nbsp;    	// This is needed for Gson serialization
+<b class="fc"><i>298</i>&nbsp;    	new ImageOps();</b>
+<b class="fc"><i>299</i>&nbsp;    }</b>
+<i>300</i>&nbsp;    
+<i>301</i>&nbsp;    
+<i>302</i>&nbsp;    private void installWand(QuPathGUI qupath) {
+<b class="fc"><i>303</i>&nbsp;    	var t = new Thread(() -&gt; {</b>
+<i>304</i>&nbsp;	    	// TODO: Check if openblas multithreading continues to have trouble with Mac/Linux
+<b class="fc"><i>305</i>&nbsp;	    	if (!GeneralTools.isWindows()) {</b>
+<b class="nc"><i>306</i>&nbsp;	    		openblas.blas_set_num_threads(1);</b>
+<i>307</i>&nbsp;	    	}
+<i>308</i>&nbsp;	    	
+<i>309</i>&nbsp;			// Install the Wand tool
+<b class="fc"><i>310</i>&nbsp;			Loader.load(opencv_core.class);</b>
+<b class="fc"><i>311</i>&nbsp;			var wandTool = PathTools.createTool(new WandToolCV(qupath), &quot;Wand tool&quot;,</b>
+<b class="fc"><i>312</i>&nbsp;					IconFactory.createNode(QuPathGUI.TOOLBAR_ICON_SIZE, QuPathGUI.TOOLBAR_ICON_SIZE, PathIcons.WAND_TOOL));</b>
+<b class="fc"><i>313</i>&nbsp;			logger.debug(&quot;Installing wand tool&quot;);</b>
+<b class="fc"><i>314</i>&nbsp;			Platform.runLater(() -&gt; {</b>
+<b class="fc"><i>315</i>&nbsp;				qupath.installTool(wandTool, new KeyCodeCombination(KeyCode.W));</b>
+<b class="fc"><i>316</i>&nbsp;				qupath.getToolAction(wandTool).setLongText(</b>
+<i>317</i>&nbsp;						&quot;Click and drag to draw with a wand tool. &quot;
+<i>318</i>&nbsp;						+ &quot;Adjust brightness/contrast or wand preferences to customize the sensitivity and behavior.&quot;
+<i>319</i>&nbsp;						);
+<b class="fc"><i>320</i>&nbsp;			});</b>
+<i>321</i>&nbsp;			
+<b class="fc"><i>322</i>&nbsp;			logger.debug(&quot;Loading OpenCV classes&quot;);</b>
+<b class="fc"><i>323</i>&nbsp;		});</b>
+<b class="fc"><i>324</i>&nbsp;		t.start();</b>
+<b class="fc"><i>325</i>&nbsp;    }</b>
+<i>326</i>&nbsp;    
+<i>327</i>&nbsp;
+<i>328</i>&nbsp;    @Override
+<i>329</i>&nbsp;    public String getName() {
+<b class="fc"><i>330</i>&nbsp;        return &quot;Processing extension&quot;;</b>
+<i>331</i>&nbsp;    }
+<i>332</i>&nbsp;
+<i>333</i>&nbsp;    @Override
+<i>334</i>&nbsp;    public String getDescription() {
+<b class="nc"><i>335</i>&nbsp;        return &quot;Core processing &amp; classification commands&quot;;</b>
+<i>336</i>&nbsp;    }
+<i>337</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

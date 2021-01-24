@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MetadataStore</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MetadataStore (qupath.lib.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">MetadataStore</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Map;
+<i>27</i>&nbsp;import java.util.Set;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * Interface that may be used to indicate that a PathObject (or other object) can store metadata.
+<i>31</i>&nbsp; * &lt;p&gt;
+<i>32</i>&nbsp; * Implementing classes should ensure that entries are stored in insertion order.
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; */
+<i>37</i>&nbsp;public interface MetadataStore {
+<i>38</i>&nbsp;	
+<i>39</i>&nbsp;	/**
+<i>40</i>&nbsp;	 * Store a new metadata value.
+<i>41</i>&nbsp;	 * @param key
+<i>42</i>&nbsp;	 * @param value
+<i>43</i>&nbsp;	 * @return
+<i>44</i>&nbsp;	 */
+<i>45</i>&nbsp;	public Object putMetadataValue(final String key, final String value);
+<i>46</i>&nbsp;	
+<i>47</i>&nbsp;	/**
+<i>48</i>&nbsp;	 * Get a metadata value, cast as a String if possible.
+<i>49</i>&nbsp;	 * @param key
+<i>50</i>&nbsp;	 * @return
+<i>51</i>&nbsp;	 */
+<i>52</i>&nbsp;	public String getMetadataString(final String key);
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	/**
+<i>55</i>&nbsp;	 * Get a metadata value of any kind.
+<i>56</i>&nbsp;	 * 
+<i>57</i>&nbsp;	 * @param key
+<i>58</i>&nbsp;	 * @return
+<i>59</i>&nbsp;	 */
+<i>60</i>&nbsp;	public Object getMetadataValue(final String key);
+<i>61</i>&nbsp;	
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * Get all metadata keys.
+<i>64</i>&nbsp;	 * 
+<i>65</i>&nbsp;	 * @return
+<i>66</i>&nbsp;	 */
+<i>67</i>&nbsp;	public Set&lt;String&gt; getMetadataKeys();
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	/**
+<i>70</i>&nbsp;	 * Returns an unmodifiable map containing the metadata.
+<i>71</i>&nbsp;	 * 
+<i>72</i>&nbsp;	 * @return
+<i>73</i>&nbsp;	 */
+<i>74</i>&nbsp;	public Map&lt;String, String&gt; getMetadataMap();
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

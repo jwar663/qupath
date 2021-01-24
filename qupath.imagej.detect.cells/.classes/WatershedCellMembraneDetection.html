@@ -1,0 +1,1266 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: WatershedCellMembraneDetection</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.detect.cells</a> ]
+</div>
+
+<h1>Coverage Summary for Class: WatershedCellMembraneDetection (qupath.imagej.detect.cells)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WatershedCellMembraneDetection</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 56)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">WatershedCellMembraneDetection$CellDetector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 80)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">WatershedCellMembraneDetection$WatershedCellDetector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 370)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 506)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.detect.cells;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Collection;
+<i>31</i>&nbsp;import java.util.Iterator;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.Map;
+<i>34</i>&nbsp;import java.util.Map.Entry;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;import org.slf4j.Logger;
+<i>37</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;import ij.ImagePlus;
+<i>40</i>&nbsp;import ij.Prefs;
+<i>41</i>&nbsp;import ij.gui.PolygonRoi;
+<i>42</i>&nbsp;import ij.gui.Roi;
+<i>43</i>&nbsp;import ij.gui.Wand;
+<i>44</i>&nbsp;import ij.measure.Calibration;
+<i>45</i>&nbsp;import ij.measure.Measurements;
+<i>46</i>&nbsp;import ij.plugin.filter.EDM;
+<i>47</i>&nbsp;import ij.plugin.filter.MaximumFinder;
+<i>48</i>&nbsp;import ij.plugin.filter.RankFilters;
+<i>49</i>&nbsp;import ij.process.Blitter;
+<i>50</i>&nbsp;import ij.process.ByteProcessor;
+<i>51</i>&nbsp;import ij.process.ColorProcessor;
+<i>52</i>&nbsp;import ij.process.FloatProcessor;
+<i>53</i>&nbsp;import ij.process.FloodFiller;
+<i>54</i>&nbsp;import ij.process.ImageProcessor;
+<i>55</i>&nbsp;import ij.process.ImageStatistics;
+<i>56</i>&nbsp;import ij.process.ShortProcessor;
+<i>57</i>&nbsp;import qupath.imagej.processing.MorphologicalReconstruction;
+<i>58</i>&nbsp;import qupath.imagej.processing.RoiLabeling;
+<i>59</i>&nbsp;import qupath.imagej.processing.SimpleThresholding;
+<i>60</i>&nbsp;import qupath.imagej.processing.Watershed;
+<i>61</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>62</i>&nbsp;import qupath.imagej.tools.PixelImageIJ;
+<i>63</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>64</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>65</i>&nbsp;import qupath.lib.analysis.stats.StatisticsHelper;
+<i>66</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>67</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>68</i>&nbsp;import qupath.lib.images.ImageData;
+<i>69</i>&nbsp;import qupath.lib.images.PathImage;
+<i>70</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>71</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>72</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>73</i>&nbsp;import qupath.lib.measurements.MeasurementListFactory;
+<i>74</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>75</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>76</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>77</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>78</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>79</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>80</i>&nbsp;import qupath.lib.plugins.AbstractTileableDetectionPlugin;
+<i>81</i>&nbsp;import qupath.lib.plugins.ObjectDetector;
+<i>82</i>&nbsp;import qupath.lib.plugins.parameters.Parameter;
+<i>83</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>84</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>85</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>86</i>&nbsp;import qupath.lib.roi.PolygonROI;
+<i>87</i>&nbsp;import qupath.lib.roi.ShapeSimplifier;
+<i>88</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;/**
+<i>91</i>&nbsp; * Cell detection that takes into consideration membrane staining.
+<i>92</i>&nbsp; * &lt;p&gt;
+<i>93</i>&nbsp; * This command only works (somewhat) for hematoxylin and DAB staining.
+<i>94</i>&nbsp; * If membrane quantification is not required, {@link WatershedCellDetection} is more robust and versatile.
+<i>95</i>&nbsp; * 
+<i>96</i>&nbsp; * @author Pete Bankhead
+<i>97</i>&nbsp; *
+<i>98</i>&nbsp; */
+<i>99</i>&nbsp;public class WatershedCellMembraneDetection extends AbstractTileableDetectionPlugin&lt;BufferedImage&gt; {
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;	private static String[] micronParameters = {</b>
+<i>102</i>&nbsp;		&quot;requestedPixelSizeMicrons&quot;,
+<i>103</i>&nbsp;		&quot;backgroundRadiusMicrons&quot;,
+<i>104</i>&nbsp;		&quot;medianRadiusMicrons&quot;,
+<i>105</i>&nbsp;		&quot;sigmaMicrons&quot;,
+<i>106</i>&nbsp;		&quot;minAreaMicrons&quot;,
+<i>107</i>&nbsp;		&quot;maxAreaMicrons&quot;,
+<i>108</i>&nbsp;		&quot;cellExpansionMicrons&quot;,
+<i>109</i>&nbsp;		};
+<i>110</i>&nbsp;	
+<b class="nc"><i>111</i>&nbsp;	private static String[] pixelParameters = {</b>
+<i>112</i>&nbsp;//		&quot;requestedPixelSize&quot;,
+<i>113</i>&nbsp;		&quot;backgroundRadius&quot;,
+<i>114</i>&nbsp;		&quot;medianRadius&quot;,
+<i>115</i>&nbsp;		&quot;sigma&quot;,
+<i>116</i>&nbsp;		&quot;minArea&quot;,
+<i>117</i>&nbsp;		&quot;maxArea&quot;,
+<i>118</i>&nbsp;		&quot;cellExpansion&quot;,
+<i>119</i>&nbsp;		};
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	transient private CellDetector detector;
+<i>122</i>&nbsp;	
+<b class="nc"><i>123</i>&nbsp;	static String IMAGE_OPTICAL_DENSITY = &quot;Optical density sum&quot;;</b>
+<b class="nc"><i>124</i>&nbsp;	static String IMAGE_HEMATOXYLIN = &quot;Hematoxylin&quot;;</b>
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	private ParameterList params;
+<i>127</i>&nbsp;	
+<i>128</i>&nbsp;	/**
+<i>129</i>&nbsp;	 * Default constructor.
+<i>130</i>&nbsp;	 */
+<b class="nc"><i>131</i>&nbsp;	public WatershedCellMembraneDetection() {</b>
+<i>132</i>&nbsp;		
+<b class="nc"><i>133</i>&nbsp;		Prefs.setThreads(1);</b>
+<b class="nc"><i>134</i>&nbsp;		params = new ParameterList();</b>
+<i>135</i>&nbsp;		// TODO: Use a better way to determining if pixel size is available in microns
+<i>136</i>&nbsp;//		params.addEmptyParameter(&quot;detectionParameters&quot;, &quot;Detection parameters&quot;, true);
+<i>137</i>&nbsp;
+<b class="nc"><i>138</i>&nbsp;		String microns = GeneralTools.micrometerSymbol();</b>
+<i>139</i>&nbsp;		
+<b class="nc"><i>140</i>&nbsp;		params.addTitleParameter(&quot;Setup parameters&quot;);</b>
+<i>141</i>&nbsp;		
+<b class="nc"><i>142</i>&nbsp;		params.addChoiceParameter(&quot;detectionImageBrightfield&quot;, &quot;Choose detection image&quot;, IMAGE_HEMATOXYLIN, Arrays.asList(IMAGE_HEMATOXYLIN, IMAGE_OPTICAL_DENSITY),</b>
+<i>143</i>&nbsp;				&quot;Transformed image to which to apply the detection&quot;);
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;		params.addDoubleParameter(&quot;requestedPixelSizeMicrons&quot;, &quot;Requested pixel size&quot;, .5, microns, </b>
+<i>146</i>&nbsp;				&quot;Choose pixel size at which detection will be performed - higher values are likely to be faster, but may be less accurate; set &lt;= 0 to use the full image resolution&quot;);
+<i>147</i>&nbsp;//		params.addDoubleParameter(&quot;requestedPixelSize&quot;, &quot;Requested downsample factor&quot;, 1, &quot;&quot;);
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;		
+<b class="nc"><i>150</i>&nbsp;		params.addTitleParameter(&quot;Nucleus parameters&quot;);</b>
+<i>151</i>&nbsp;		
+<b class="nc"><i>152</i>&nbsp;		params.addDoubleParameter(&quot;backgroundRadiusMicrons&quot;, &quot;Background radius&quot;, 8, microns, </b>
+<i>153</i>&nbsp;				&quot;Radius for background estimation, should be &gt; the largest nucleus radius, or &lt;= 0 to turn off background subtraction&quot;);
+<b class="nc"><i>154</i>&nbsp;		params.addDoubleParameter(&quot;medianRadiusMicrons&quot;, &quot;Median filter radius&quot;, 0, microns,</b>
+<i>155</i>&nbsp;				&quot;Radius of median filter used to reduce image texture (optional)&quot;);
+<b class="nc"><i>156</i>&nbsp;		params.addDoubleParameter(&quot;sigmaMicrons&quot;, &quot;Sigma&quot;, 1.5, microns,</b>
+<i>157</i>&nbsp;				&quot;Sigma value for Gaussian filter used to reduce noise; increasing the value stops nuclei being fragmented, but may reduce the accuracy of boundaries&quot;);
+<b class="nc"><i>158</i>&nbsp;		params.addDoubleParameter(&quot;minAreaMicrons&quot;, &quot;Minimum area&quot;, 10, microns+&quot;^2&quot;,</b>
+<i>159</i>&nbsp;				&quot;Detected nuclei with an area &lt; minimum area will be discarded&quot;);
+<b class="nc"><i>160</i>&nbsp;		params.addDoubleParameter(&quot;maxAreaMicrons&quot;, &quot;Maximum area&quot;, 1000, microns+&quot;^2&quot;,</b>
+<i>161</i>&nbsp;				&quot;Detected nuclei with an area &gt; maximum area will be discarded&quot;);
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;		params.addDoubleParameter(&quot;backgroundRadius&quot;, &quot;Background radius&quot;, 15, &quot;px&quot;, </b>
+<i>164</i>&nbsp;				&quot;Radius for background estimation, should be &gt; the largest nucleus radius, or &lt;= 0 to turn off background subtraction&quot;);
+<b class="nc"><i>165</i>&nbsp;		params.addDoubleParameter(&quot;medianRadius&quot;, &quot;Median filter radius&quot;, 0, &quot;px&quot;,</b>
+<i>166</i>&nbsp;				&quot;Radius of median filter used to reduce image texture (optional)&quot;);
+<b class="nc"><i>167</i>&nbsp;		params.addDoubleParameter(&quot;sigma&quot;, &quot;Sigma&quot;, 3, &quot;px&quot;,</b>
+<i>168</i>&nbsp;				&quot;Sigma value for Gaussian filter used to reduce noise; increasing the value stops nuclei being fragmented, but may reduce the accuracy of boundaries&quot;);
+<b class="nc"><i>169</i>&nbsp;		params.addDoubleParameter(&quot;minArea&quot;, &quot;Minimum area&quot;, 10, &quot;px^2&quot;,</b>
+<i>170</i>&nbsp;				&quot;Detected nuclei with an area &lt; minimum area will be discarded&quot;);
+<b class="nc"><i>171</i>&nbsp;		params.addDoubleParameter(&quot;maxArea&quot;, &quot;Maximum area&quot;, 1000, &quot;px^2&quot;,</b>
+<i>172</i>&nbsp;				&quot;Detected nuclei with an area &gt; maximum area will be discarded&quot;);
+<i>173</i>&nbsp;
+<b class="nc"><i>174</i>&nbsp;		params.addDoubleParameter(&quot;threshold&quot;, &quot;Threshold&quot;, 0.1, null, 0, 2.5,</b>
+<i>175</i>&nbsp;				&quot;Intensity threshold - detected nuclei must have a mean intensity &gt;= threshold&quot;);
+<b class="nc"><i>176</i>&nbsp;		params.addDoubleParameter(&quot;maxBackground&quot;, &quot;Max background intensity&quot;, 2, null,</b>
+<i>177</i>&nbsp;				&quot;If background radius &gt; 0, detected nuclei occurring on a background &gt; max background intensity will be discarded&quot;);
+<i>178</i>&nbsp;		
+<i>179</i>&nbsp;//		params.addBooleanParameter(&quot;mergeAll&quot;, &quot;Merge all&quot;, true);
+<b class="nc"><i>180</i>&nbsp;		params.addBooleanParameter(&quot;watershedPostProcess&quot;, &quot;Split by shape&quot;, true,</b>
+<i>181</i>&nbsp;				&quot;Split merged detected nuclei based on shape (&#39;roundness&#39;)&quot;);
+<b class="nc"><i>182</i>&nbsp;		params.addBooleanParameter(&quot;excludeDAB&quot;, &quot;Exclude DAB (membrane staining)&quot;, true,</b>
+<i>183</i>&nbsp;				&quot;Set to &#39;true&#39; if regions of high DAB staining should not be considered nuclei; useful if DAB stains cell membranes&quot;);
+<i>184</i>&nbsp;		
+<i>185</i>&nbsp;		
+<b class="nc"><i>186</i>&nbsp;		params.addTitleParameter(&quot;Cell parameters&quot;);</b>
+<i>187</i>&nbsp;
+<b class="nc"><i>188</i>&nbsp;		params.addDoubleParameter(&quot;cellExpansionMicrons&quot;, &quot;Cell expansion&quot;, 8, microns, 0, 25,</b>
+<i>189</i>&nbsp;				&quot;Amount by which to expand detected nuclei to approximate the full cell area&quot;);
+<b class="nc"><i>190</i>&nbsp;		params.addDoubleParameter(&quot;cellExpansion&quot;, &quot;Cell expansion&quot;, 10, &quot;px&quot;,</b>
+<i>191</i>&nbsp;				&quot;Amount by which to expand detected nuclei to approximate the full cell area&quot;);
+<i>192</i>&nbsp;		
+<b class="nc"><i>193</i>&nbsp;		params.addBooleanParameter(&quot;limitExpansionByNucleusSize&quot;, &quot;Limit cell expansion by nucleus size&quot;, false, &quot;If checked, nuclei will not be expanded by more than their (estimated) smallest diameter in any direction - may give more realistic results for smaller, or &#39;thinner&#39; nuclei&quot;);</b>
+<i>194</i>&nbsp;			
+<b class="nc"><i>195</i>&nbsp;		params.addBooleanParameter(&quot;includeNuclei&quot;, &quot;Include cell nucleus&quot;, true,</b>
+<i>196</i>&nbsp;				&quot;If cell expansion is used, optionally include/exclude the nuclei within the detected cells&quot;);
+<i>197</i>&nbsp;		
+<i>198</i>&nbsp;		
+<b class="nc"><i>199</i>&nbsp;		params.addTitleParameter(&quot;General parameters&quot;);</b>
+<b class="nc"><i>200</i>&nbsp;		params.addBooleanParameter(&quot;smoothBoundaries&quot;, &quot;Smooth boundaries&quot;, false,</b>
+<i>201</i>&nbsp;				&quot;Smooth the detected nucleus/cell boundaries&quot;);
+<b class="nc"><i>202</i>&nbsp;		params.addBooleanParameter(&quot;makeMeasurements&quot;, &quot;Make measurements&quot;, true,</b>
+<i>203</i>&nbsp;				&quot;Add default shape &amp; intensity measurements during detection&quot;);
+<b class="nc"><i>204</i>&nbsp;	}</b>
+<i>205</i>&nbsp;	
+<i>206</i>&nbsp;	
+<b class="nc"><i>207</i>&nbsp;	static class CellDetector implements ObjectDetector&lt;BufferedImage&gt; {</b>
+<i>208</i>&nbsp;	
+<b class="nc"><i>209</i>&nbsp;		private List&lt;PathObject&gt; pathObjects = null;</b>
+<i>210</i>&nbsp;		
+<b class="nc"><i>211</i>&nbsp;		private boolean nucleiClassified = false;</b>
+<i>212</i>&nbsp;	
+<i>213</i>&nbsp;			
+<i>214</i>&nbsp;		public static double getPreferredPixelSizeMicrons(ImageData&lt;BufferedImage&gt; imageData, ParameterList params) {
+<b class="nc"><i>215</i>&nbsp;			PixelCalibration cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>216</i>&nbsp;			if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>217</i>&nbsp;				double requestedPixelSize = params.getDoubleParameterValue(&quot;requestedPixelSizeMicrons&quot;);</b>
+<b class="nc"><i>218</i>&nbsp;				double averagedPixelSize = cal.getAveragedPixelSizeMicrons();</b>
+<b class="nc"><i>219</i>&nbsp;				if (requestedPixelSize &lt; 0)</b>
+<b class="nc"><i>220</i>&nbsp;					requestedPixelSize = averagedPixelSize * (-requestedPixelSize);</b>
+<b class="nc"><i>221</i>&nbsp;				requestedPixelSize = Math.max(requestedPixelSize, averagedPixelSize);</b>
+<b class="nc"><i>222</i>&nbsp;				return requestedPixelSize;</b>
+<i>223</i>&nbsp;			}
+<b class="nc"><i>224</i>&nbsp;			return Double.NaN;</b>
+<i>225</i>&nbsp;		}
+<i>226</i>&nbsp;		
+<i>227</i>&nbsp;	
+<i>228</i>&nbsp;		@Override
+<i>229</i>&nbsp;		public Collection&lt;PathObject&gt; runDetection(final ImageData&lt;BufferedImage&gt; imageData, ParameterList params, ROI pathROI) throws IOException {
+<i>230</i>&nbsp;			// TODO: Give a sensible error
+<b class="nc"><i>231</i>&nbsp;			if (pathROI == null)</b>
+<b class="nc"><i>232</i>&nbsp;				return null;</b>
+<i>233</i>&nbsp;			// Get a PathImage if we have a new ROI
+<i>234</i>&nbsp;//			boolean imageChanged = false;
+<b class="nc"><i>235</i>&nbsp;			PathImage&lt;ImagePlus&gt; pathImage = null;</b>
+<i>236</i>&nbsp;//			if (pathImage == null || lastServerPath == null || !lastServerPath.equals(imageData.getServerPath()) || !pathROI.equals(this.pathROI)) {
+<b class="nc"><i>237</i>&nbsp;				ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="nc"><i>238</i>&nbsp;				pathImage = IJTools.convertToImagePlus(server, RegionRequest.createInstance(server.getPath(),</b>
+<b class="nc"><i>239</i>&nbsp;						ServerTools.getDownsampleFactor(server, getPreferredPixelSizeMicrons(imageData, params)),</b>
+<i>240</i>&nbsp;						pathROI));
+<i>241</i>&nbsp;//				System.out.println(&quot;Downsample: &quot; + pathImage.getDownsampleFactor());
+<i>242</i>&nbsp;//				this.pathROI = pathROI;
+<i>243</i>&nbsp;//				lastServerPath = imageData.getServerPath();
+<i>244</i>&nbsp;//				imageChanged = true;
+<i>245</i>&nbsp;//			}
+<i>246</i>&nbsp;			// Create a detector if we don&#39;t already have one for this image
+<b class="nc"><i>247</i>&nbsp;			boolean isBrightfield = imageData.isBrightfield();</b>
+<b class="nc"><i>248</i>&nbsp;			FloatProcessor fpDetection = null, fpH = null, fpDAB = null;</b>
+<i>249</i>&nbsp;//			if (detector2 == null || imageChanged || stains != imageData.getColorDeconvolutionStains()) {
+<b class="nc"><i>250</i>&nbsp;				ImageProcessor ip = pathImage.getImage().getProcessor();</b>
+<b class="nc"><i>251</i>&nbsp;				ColorDeconvolutionStains stains = imageData.getColorDeconvolutionStains();</b>
+<b class="nc"><i>252</i>&nbsp;				if (ip instanceof ColorProcessor &amp;&amp; stains != null) {</b>
+<i>253</i>&nbsp;					
+<b class="nc"><i>254</i>&nbsp;					FloatProcessor[] fps = IJTools.colorDeconvolve((ColorProcessor)ip, stains);</b>
+<b class="nc"><i>255</i>&nbsp;					fpH = fps[0];</b>
+<b class="nc"><i>256</i>&nbsp;					if (stains.isH_DAB())</b>
+<b class="nc"><i>257</i>&nbsp;						fpDAB = fps[1];</b>
+<i>258</i>&nbsp;					else
+<b class="nc"><i>259</i>&nbsp;						fpDAB = null; // At this point, only DAB is quantified (eosin ignored for H&amp;E)</b>
+<i>260</i>&nbsp;					
+<b class="nc"><i>261</i>&nbsp;					if (!params.getParameters().get(&quot;detectionImageBrightfield&quot;).isHidden()) {</b>
+<b class="nc"><i>262</i>&nbsp;						if (params.getChoiceParameterValue(&quot;detectionImageBrightfield&quot;).equals(IMAGE_OPTICAL_DENSITY))</b>
+<b class="nc"><i>263</i>&nbsp;							fpDetection = IJTools.convertToOpticalDensitySum((ColorProcessor)ip, stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue());</b>
+<i>264</i>&nbsp;						else
+<b class="nc"><i>265</i>&nbsp;							fpDetection = (FloatProcessor)fpH.duplicate();</b>
+<i>266</i>&nbsp;					}
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;					
+<i>269</i>&nbsp;				}
+<b class="nc"><i>270</i>&nbsp;				if (fpDetection == null) {</b>
+<i>271</i>&nbsp;					// TODO: Deal with fluorescence
+<b class="nc"><i>272</i>&nbsp;					fpDetection = ip.convertToFloatProcessor();</b>
+<b class="nc"><i>273</i>&nbsp;					fpH = ip.convertToFloatProcessor();</b>
+<b class="nc"><i>274</i>&nbsp;					fpDAB = null;</b>
+<i>275</i>&nbsp;				}
+<i>276</i>&nbsp;//			}
+<b class="nc"><i>277</i>&nbsp;			Roi roi = null;</b>
+<b class="nc"><i>278</i>&nbsp;			if (pathROI != null)</b>
+<b class="nc"><i>279</i>&nbsp;				roi = IJTools.convertToIJRoi(pathROI, pathImage);</b>
+<b class="nc"><i>280</i>&nbsp;			WatershedCellDetector detector2 = new WatershedCellDetector(fpDetection, fpH, fpDAB, roi, pathImage);</b>
+<i>281</i>&nbsp;			
+<i>282</i>&nbsp;			// Create or reset the PathObjects list
+<b class="nc"><i>283</i>&nbsp;			if (pathObjects == null)</b>
+<b class="nc"><i>284</i>&nbsp;				pathObjects = new ArrayList&lt;&gt;();</b>
+<i>285</i>&nbsp;			else
+<b class="nc"><i>286</i>&nbsp;				pathObjects.clear();</b>
+<i>287</i>&nbsp;	
+<i>288</i>&nbsp;			
+<i>289</i>&nbsp;			// Convert parameters where needed
+<i>290</i>&nbsp;			double sigma, medianRadius, backgroundRadius, minArea, maxArea, cellExpansion;
+<b class="nc"><i>291</i>&nbsp;			if (pathImage.getPixelCalibration().hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>292</i>&nbsp;				double pixelSize = pathImage.getPixelCalibration().getAveragedPixelSizeMicrons();</b>
+<b class="nc"><i>293</i>&nbsp;				backgroundRadius = params.getDoubleParameterValue(&quot;backgroundRadiusMicrons&quot;) / pixelSize;</b>
+<b class="nc"><i>294</i>&nbsp;				medianRadius = params.getDoubleParameterValue(&quot;medianRadiusMicrons&quot;) / pixelSize;</b>
+<b class="nc"><i>295</i>&nbsp;				sigma = params.getDoubleParameterValue(&quot;sigmaMicrons&quot;) / pixelSize;</b>
+<b class="nc"><i>296</i>&nbsp;				minArea = params.getDoubleParameterValue(&quot;minAreaMicrons&quot;) / (pixelSize * pixelSize);</b>
+<b class="nc"><i>297</i>&nbsp;				maxArea = params.getDoubleParameterValue(&quot;maxAreaMicrons&quot;) / (pixelSize * pixelSize);</b>
+<b class="nc"><i>298</i>&nbsp;				cellExpansion = params.getDoubleParameterValue(&quot;cellExpansionMicrons&quot;) / (pixelSize);</b>
+<b class="nc"><i>299</i>&nbsp;			} else {</b>
+<b class="nc"><i>300</i>&nbsp;				backgroundRadius = params.getDoubleParameterValue(&quot;backgroundRadius&quot;);</b>
+<b class="nc"><i>301</i>&nbsp;				medianRadius = params.getDoubleParameterValue(&quot;medianRadius&quot;);</b>
+<b class="nc"><i>302</i>&nbsp;				sigma = params.getDoubleParameterValue(&quot;sigma&quot;);</b>
+<b class="nc"><i>303</i>&nbsp;				minArea = params.getDoubleParameterValue(&quot;minArea&quot;);</b>
+<b class="nc"><i>304</i>&nbsp;				maxArea = params.getDoubleParameterValue(&quot;maxArea&quot;);</b>
+<b class="nc"><i>305</i>&nbsp;				cellExpansion = params.getDoubleParameterValue(&quot;cellExpansion&quot;);</b>
+<i>306</i>&nbsp;			}
+<i>307</i>&nbsp;			
+<b class="nc"><i>308</i>&nbsp;			detector2.runDetection(</b>
+<i>309</i>&nbsp;					backgroundRadius,
+<b class="nc"><i>310</i>&nbsp;					params.getDoubleParameterValue(&quot;maxBackground&quot;),</b>
+<i>311</i>&nbsp;					medianRadius,
+<i>312</i>&nbsp;					sigma,
+<b class="nc"><i>313</i>&nbsp;					params.getDoubleParameterValue(&quot;threshold&quot;),</b>
+<i>314</i>&nbsp;					minArea,
+<i>315</i>&nbsp;					maxArea,
+<i>316</i>&nbsp;					true, // always use &#39;merge all&#39; params.getBooleanParameterValue(&quot;mergeAll&quot;),
+<b class="nc"><i>317</i>&nbsp;					params.getBooleanParameterValue(&quot;watershedPostProcess&quot;),</b>
+<b class="nc"><i>318</i>&nbsp;					params.getBooleanParameterValue(&quot;excludeDAB&quot;),</b>
+<i>319</i>&nbsp;					cellExpansion,
+<b class="nc"><i>320</i>&nbsp;					params.getBooleanParameterValue(&quot;limitExpansionByNucleusSize&quot;),</b>
+<b class="nc"><i>321</i>&nbsp;					params.getBooleanParameterValue(&quot;smoothBoundaries&quot;),</b>
+<b class="nc"><i>322</i>&nbsp;					params.getBooleanParameterValue(&quot;includeNuclei&quot;),</b>
+<b class="nc"><i>323</i>&nbsp;					params.getBooleanParameterValue(&quot;makeMeasurements&quot;) &amp;&amp; isBrightfield);</b>
+<i>324</i>&nbsp;			
+<b class="nc"><i>325</i>&nbsp;			pathObjects.addAll(detector2.getPathObjects());</b>
+<i>326</i>&nbsp;					
+<b class="nc"><i>327</i>&nbsp;			return pathObjects;</b>
+<i>328</i>&nbsp;		}
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;		
+<i>331</i>&nbsp;		
+<i>332</i>&nbsp;		@Override
+<i>333</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>334</i>&nbsp;			if (pathObjects == null)</b>
+<b class="nc"><i>335</i>&nbsp;				return null;</b>
+<b class="nc"><i>336</i>&nbsp;			int nDetections = pathObjects.size();</b>
+<b class="nc"><i>337</i>&nbsp;			if (nDetections == 1)</b>
+<b class="nc"><i>338</i>&nbsp;				return &quot;1 nucleus detected&quot;;</b>
+<b class="nc"><i>339</i>&nbsp;			String s = String.format(&quot;%d nuclei detected&quot;, nDetections);</b>
+<b class="nc"><i>340</i>&nbsp;			if (nucleiClassified) {</b>
+<b class="nc"><i>341</i>&nbsp;				int nPositive = PathObjectTools.countObjectsWithClass(pathObjects, PathClassFactory.getPositive(null), false);</b>
+<b class="nc"><i>342</i>&nbsp;				int nNegative = PathObjectTools.countObjectsWithClass(pathObjects, PathClassFactory.getNegative(null), false);</b>
+<b class="nc"><i>343</i>&nbsp;				return String.format(&quot;%s (%.3f%% positive)&quot;, s, ((double)nPositive * 100.0 / (nPositive + nNegative)));			</b>
+<i>344</i>&nbsp;			} else
+<b class="nc"><i>345</i>&nbsp;				return s;</b>
+<i>346</i>&nbsp;		}
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;		
+<i>349</i>&nbsp;	}
+<i>350</i>&nbsp;	
+<i>351</i>&nbsp;	
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;	@Override
+<i>354</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<i>355</i>&nbsp;		
+<i>356</i>&nbsp;		// Show/hide parameters depending on whether the pixel size is known
+<b class="nc"><i>357</i>&nbsp;		Map&lt;String, Parameter&lt;?&gt;&gt; map = params.getParameters();</b>
+<b class="nc"><i>358</i>&nbsp;		boolean pixelSizeKnown = imageData.getServer() != null &amp;&amp; imageData.getServer().getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>359</i>&nbsp;		for (String name : micronParameters)</b>
+<b class="nc"><i>360</i>&nbsp;			map.get(name).setHidden(!pixelSizeKnown);</b>
+<b class="nc"><i>361</i>&nbsp;		for (String name : pixelParameters)</b>
+<b class="nc"><i>362</i>&nbsp;			map.get(name).setHidden(pixelSizeKnown);</b>
+<i>363</i>&nbsp;
+<b class="nc"><i>364</i>&nbsp;		map.get(&quot;detectionImageBrightfield&quot;).setHidden(imageData.getColorDeconvolutionStains() == null);</b>
+<i>365</i>&nbsp;
+<b class="nc"><i>366</i>&nbsp;		map.get(&quot;excludeDAB&quot;).setHidden(imageData.getColorDeconvolutionStains() == null || !imageData.getColorDeconvolutionStains().isH_DAB());</b>
+<i>367</i>&nbsp;		
+<b class="nc"><i>368</i>&nbsp;		map.get(&quot;makeMeasurements&quot;).setHidden(!imageData.isBrightfield());</b>
+<i>369</i>&nbsp;
+<b class="nc"><i>370</i>&nbsp;		return params;</b>
+<i>371</i>&nbsp;	}
+<i>372</i>&nbsp;
+<i>373</i>&nbsp;	@Override
+<i>374</i>&nbsp;	public String getName() {
+<b class="nc"><i>375</i>&nbsp;		return &quot;Watershed cell detection&quot;;</b>
+<i>376</i>&nbsp;	}
+<i>377</i>&nbsp;
+<i>378</i>&nbsp;	
+<i>379</i>&nbsp;	@Override
+<i>380</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>381</i>&nbsp;		return detector == null ? &quot;&quot; : detector.getLastResultsDescription();</b>
+<i>382</i>&nbsp;	}
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;	
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;	
+<i>387</i>&nbsp;	
+<i>388</i>&nbsp;	
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;	static class WatershedCellDetector {
+<i>391</i>&nbsp;		
+<b class="nc"><i>392</i>&nbsp;		final private static Logger logger = LoggerFactory.getLogger(WatershedCellDetector.class);</b>
+<i>393</i>&nbsp;		
+<b class="nc"><i>394</i>&nbsp;		private boolean refineBoundary = true; // TODO: Consider making this variable accessible</b>
+<i>395</i>&nbsp;		
+<i>396</i>&nbsp;		
+<b class="nc"><i>397</i>&nbsp;		private double backgroundRadius = 15;</b>
+<b class="nc"><i>398</i>&nbsp;		private double maxBackground = 0.3;</b>
+<i>399</i>&nbsp;		
+<b class="nc"><i>400</i>&nbsp;		private boolean lastRunCompleted = false;</b>
+<i>401</i>&nbsp;		
+<b class="nc"><i>402</i>&nbsp;		private boolean includeNuclei = true;</b>
+<b class="nc"><i>403</i>&nbsp;		private double cellExpansion = 0;</b>
+<i>404</i>&nbsp;		
+<b class="nc"><i>405</i>&nbsp;		private double minArea = 0;</b>
+<b class="nc"><i>406</i>&nbsp;		private double maxArea = 0;</b>
+<i>407</i>&nbsp;		
+<b class="nc"><i>408</i>&nbsp;		private double medianRadius = 2;</b>
+<b class="nc"><i>409</i>&nbsp;		private double sigma = 2.5;</b>
+<b class="nc"><i>410</i>&nbsp;		private double threshold = 0.3;</b>
+<b class="nc"><i>411</i>&nbsp;		private boolean mergeAll = true;</b>
+<b class="nc"><i>412</i>&nbsp;		private boolean watershedPostProcess = true; // TODO: COMBINE WITH MERGEALL OPTION</b>
+<b class="nc"><i>413</i>&nbsp;		private boolean excludeDAB = false;</b>
+<b class="nc"><i>414</i>&nbsp;		private boolean smoothBoundaries = false;</b>
+<i>415</i>&nbsp;
+<b class="nc"><i>416</i>&nbsp;		private boolean limitExpansionByNucleusSize = false;</b>
+<i>417</i>&nbsp;
+<b class="nc"><i>418</i>&nbsp;		private boolean makeMeasurements = true;</b>
+<i>419</i>&nbsp;		
+<b class="nc"><i>420</i>&nbsp;		private Roi roi = null;</b>
+<b class="nc"><i>421</i>&nbsp;		private FloatProcessor fpDetection = null;</b>
+<b class="nc"><i>422</i>&nbsp;		private FloatProcessor fpH = null;</b>
+<b class="nc"><i>423</i>&nbsp;		private FloatProcessor fpDAB = null;</b>
+<b class="nc"><i>424</i>&nbsp;		private ImageProcessor ipToMeasure = null;</b>
+<b class="nc"><i>425</i>&nbsp;		private ImageProcessor ipBackground = null;</b>
+<b class="nc"><i>426</i>&nbsp;		private List&lt;PolygonRoi&gt; rois = null;</b>
+<b class="nc"><i>427</i>&nbsp;		private ByteProcessor bpLoG = null;</b>
+<i>428</i>&nbsp;		
+<b class="nc"><i>429</i>&nbsp;		private List&lt;PolygonRoi&gt; roisNuclei = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>430</i>&nbsp;		private List&lt;PathObject&gt; pathObjects = new ArrayList&lt;&gt;();</b>
+<i>431</i>&nbsp;		
+<b class="nc"><i>432</i>&nbsp;		private PathImage&lt;ImagePlus&gt; pathImage = null;</b>
+<i>433</i>&nbsp;		
+<b class="nc"><i>434</i>&nbsp;		public WatershedCellDetector(FloatProcessor fpDetection, FloatProcessor fpH, FloatProcessor fpDAB, Roi roi, PathImage&lt;ImagePlus&gt; pathImage) {</b>
+<b class="nc"><i>435</i>&nbsp;			this.fpDetection = fpDetection;</b>
+<b class="nc"><i>436</i>&nbsp;			this.fpH = fpH;</b>
+<b class="nc"><i>437</i>&nbsp;			this.fpDAB = fpDAB;</b>
+<b class="nc"><i>438</i>&nbsp;			this.roi = roi;</b>
+<b class="nc"><i>439</i>&nbsp;			this.pathImage = pathImage;</b>
+<i>440</i>&nbsp;//			Prefs.setThreads(1);
+<i>441</i>&nbsp;		}
+<i>442</i>&nbsp;		
+<i>443</i>&nbsp;		
+<i>444</i>&nbsp;		
+<i>445</i>&nbsp;		public static ByteProcessor limitedOpeningByReconstruction(final ImageProcessor ip, final ImageProcessor ipBackground, final double radius, final double maxBackground) {
+<i>446</i>&nbsp;			// Apply (initial) morphological opening
+<b class="nc"><i>447</i>&nbsp;			final RankFilters rf = new RankFilters();</b>
+<b class="nc"><i>448</i>&nbsp;			ipBackground.setRoi(ip.getRoi());</b>
+<b class="nc"><i>449</i>&nbsp;			rf.rank(ipBackground, radius, RankFilters.MIN);</b>
+<i>450</i>&nbsp;			
+<i>451</i>&nbsp;			// Mask out any above-threshold background pixels &amp; their surroundings
+<b class="nc"><i>452</i>&nbsp;			ByteProcessor bpMask = null;</b>
+<b class="nc"><i>453</i>&nbsp;			if (!Double.isNaN(maxBackground) &amp;&amp; maxBackground &gt; 0) {</b>
+<b class="nc"><i>454</i>&nbsp;				int w = ip.getWidth();</b>
+<b class="nc"><i>455</i>&nbsp;				int h = ip.getHeight();</b>
+<b class="nc"><i>456</i>&nbsp;				for (int i = 0; i &lt; w * h; i++) {</b>
+<b class="nc"><i>457</i>&nbsp;					if (ipBackground.getf(i) &gt; maxBackground) {</b>
+<b class="nc"><i>458</i>&nbsp;						if (bpMask == null)</b>
+<b class="nc"><i>459</i>&nbsp;							bpMask = new ByteProcessor(w, h);</b>
+<b class="nc"><i>460</i>&nbsp;						bpMask.setf(i, 1f);</b>
+<i>461</i>&nbsp;					}
+<i>462</i>&nbsp;				}
+<i>463</i>&nbsp;				// Apply mask if required
+<b class="nc"><i>464</i>&nbsp;				if (bpMask != null) {</b>
+<b class="nc"><i>465</i>&nbsp;					rf.rank(bpMask, radius*2, RankFilters.MAX);</b>
+<b class="nc"><i>466</i>&nbsp;					for (int i = 0; i &lt; w * h; i++) {</b>
+<b class="nc"><i>467</i>&nbsp;						if (bpMask.getf(i) != 0f) {</b>
+<b class="nc"><i>468</i>&nbsp;							ipBackground.setf(i, Float.NEGATIVE_INFINITY);</b>
+<i>469</i>&nbsp;						}
+<i>470</i>&nbsp;					}				
+<i>471</i>&nbsp;//				} else {
+<i>472</i>&nbsp;//					// Don&#39;t return a mask - all pixels are ok
+<i>473</i>&nbsp;//					System.out.println(&quot;Skipping background mask!&quot;);
+<i>474</i>&nbsp;				}
+<i>475</i>&nbsp;			}
+<i>476</i>&nbsp;			
+<i>477</i>&nbsp;			// Apply the morphological reconstruction
+<b class="nc"><i>478</i>&nbsp;			MorphologicalReconstruction.morphologicalReconstruction(ipBackground, ip);</b>
+<b class="nc"><i>479</i>&nbsp;			return bpMask;</b>
+<i>480</i>&nbsp;		}
+<i>481</i>&nbsp;		
+<i>482</i>&nbsp;		
+<i>483</i>&nbsp;		
+<i>484</i>&nbsp;		private void doDetection(boolean regenerateROIs) {
+<b class="nc"><i>485</i>&nbsp;			int width = fpDetection.getWidth();</b>
+<b class="nc"><i>486</i>&nbsp;			int height = fpDetection.getHeight();</b>
+<i>487</i>&nbsp;//			Prefs.setThreads(1);
+<b class="nc"><i>488</i>&nbsp;			lastRunCompleted = false;</b>
+<b class="nc"><i>489</i>&nbsp;			pathObjects.clear();</b>
+<b class="nc"><i>490</i>&nbsp;			ByteProcessor bp = null;</b>
+<b class="nc"><i>491</i>&nbsp;			ByteProcessor bpBackgroundMask = null;</b>
+<b class="nc"><i>492</i>&nbsp;			fpDetection.setRoi(roi);</b>
+<b class="nc"><i>493</i>&nbsp;			if (regenerateROIs) {</b>
+<b class="nc"><i>494</i>&nbsp;				rois = null;</b>
+<b class="nc"><i>495</i>&nbsp;				bpLoG = null;</b>
+<i>496</i>&nbsp;				
+<i>497</i>&nbsp;				// Use Laplacian of Gaussian filtering followed by watershed transform to determine possible nucleus segments
+<i>498</i>&nbsp;				// Result will be a dramatic over-segmentation...
+<b class="nc"><i>499</i>&nbsp;				FloatProcessor fpLoG = (FloatProcessor)fpDetection.duplicate();</b>
+<i>500</i>&nbsp;								
+<i>501</i>&nbsp;////				fpLoG.copyBits(fpDAB, 0, 0, Blitter.ADD); // Testing is adding the optical densities helps...
+<i>502</i>&nbsp;//				// Check we have some above-threshold pixels - if not, don&#39;t do more
+<i>503</i>&nbsp;//				int indAbove = 0;
+<i>504</i>&nbsp;//				int n = fpLoG.getWidth() * fpLoG.getHeight();
+<i>505</i>&nbsp;//				while (indAbove &lt; n &amp;&amp; fpLoG.getf(indAbove) &lt; threshold)
+<i>506</i>&nbsp;//					indAbove++;
+<i>507</i>&nbsp;//				if (indAbove == n)
+<i>508</i>&nbsp;//					return;
+<i>509</i>&nbsp;
+<i>510</i>&nbsp;				// Start off with a median filter to reduce texture, if necessary
+<b class="nc"><i>511</i>&nbsp;				RankFilters rf = new RankFilters();</b>
+<b class="nc"><i>512</i>&nbsp;				if (medianRadius &gt; 0)</b>
+<b class="nc"><i>513</i>&nbsp;					rf.rank(fpLoG, medianRadius, RankFilters.MEDIAN);</b>
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;				// Subtract background first, if needed
+<b class="nc"><i>516</i>&nbsp;				if (backgroundRadius &gt; 0) {</b>
+<i>517</i>&nbsp;					
+<i>518</i>&nbsp;//					// Could mask out definitely-background pixels if we wanted (and could be confident in background radius)... although it doesn&#39;t actually help all that much
+<i>519</i>&nbsp;//					ByteProcessor bpPossible = SimpleThresholding.thresholdAboveEquals(fpH, (float)threshold);
+<i>520</i>&nbsp;//					rf.rank(bpPossible, backgroundRadius, RankFilters.MAX);
+<i>521</i>&nbsp;//					if (roi != null)
+<i>522</i>&nbsp;//						ROILabeling.fillOutside(bpPossible, roi, 0);
+<i>523</i>&nbsp;//					for (int i = 0; i &lt; width * height; i++) {
+<i>524</i>&nbsp;//						if (bpPossible.get(i) == 0)
+<i>525</i>&nbsp;//							fpLoG.setf(i, Float.NEGATIVE_INFINITY);
+<i>526</i>&nbsp;//					}
+<i>527</i>&nbsp;////					bpPossible.max(1);
+<i>528</i>&nbsp;////					new ImagePlus(&quot;Possible&quot;, bpPossible.duplicate()).show();
+<i>529</i>&nbsp;
+<i>530</i>&nbsp;//					ROILabeling.fillOutside(fpLoG, roi, Float.NEGATIVE_INFINITY);
+<i>531</i>&nbsp;
+<b class="nc"><i>532</i>&nbsp;					ipBackground = fpLoG.duplicate();</b>
+<i>533</i>&nbsp;									
+<b class="nc"><i>534</i>&nbsp;					bpBackgroundMask = limitedOpeningByReconstruction(fpLoG, ipBackground, backgroundRadius, maxBackground);</b>
+<i>535</i>&nbsp;					
+<i>536</i>&nbsp;//					ipBackground = MorphologicalReconstructionInteger.openingByReconstruction(fpLoG, backgroundRadius);
+<b class="nc"><i>537</i>&nbsp;					fpLoG.copyBits(ipBackground, 0, 0, Blitter.SUBTRACT);</b>
+<b class="nc"><i>538</i>&nbsp;					ipToMeasure = fpLoG.duplicate();</b>
+<i>539</i>&nbsp;//					new ImagePlus(&quot;Background&quot;, ipBackground.duplicate()).show();
+<i>540</i>&nbsp;				} else {
+<b class="nc"><i>541</i>&nbsp;					ipToMeasure = fpDetection;</b>
+<b class="nc"><i>542</i>&nbsp;					ipBackground = null;</b>
+<i>543</i>&nbsp;				}
+<i>544</i>&nbsp;				
+<i>545</i>&nbsp;				//--------NEW--------
+<b class="nc"><i>546</i>&nbsp;				if (excludeDAB &amp;&amp; fpH != null &amp;&amp; fpDAB != null) {</b>
+<i>547</i>&nbsp;					// If we are avoiding DAB, set pixels away from potential nuclei to zero
+<b class="nc"><i>548</i>&nbsp;					fpDAB.setRoi(roi);</b>
+<b class="nc"><i>549</i>&nbsp;					ByteProcessor bpH = SimpleThresholding.greaterThanOrEqual(fpH, fpDAB);</b>
+<b class="nc"><i>550</i>&nbsp;					bpH.multiply(1.0/255.0);</b>
+<b class="nc"><i>551</i>&nbsp;					rf.rank(bpH, 2.5, RankFilters.MEDIAN); // TODO: Check hard-coded filter sizes for reasonableness</b>
+<b class="nc"><i>552</i>&nbsp;					rf.rank(bpH, 2.5, RankFilters.MAX);</b>
+<b class="nc"><i>553</i>&nbsp;					fpLoG.copyBits(bpH, 0, 0, Blitter.MULTIPLY);</b>
+<i>554</i>&nbsp;				}
+<i>555</i>&nbsp;//				new ImagePlus(&quot;Log&quot;, fpLoG.duplicate()).show();
+<i>556</i>&nbsp;				//--------END_NEW--------
+<i>557</i>&nbsp;				
+<i>558</i>&nbsp;				// Apply (approximation of) Laplacian of Gaussian filter
+<b class="nc"><i>559</i>&nbsp;				fpLoG.blurGaussian(sigma);</b>
+<b class="nc"><i>560</i>&nbsp;				fpLoG.convolve(new float[]{0, -1, 0, -1, 4, -1, 0, -1, 0}, 3, 3);</b>
+<i>561</i>&nbsp;				
+<i>562</i>&nbsp;				// Threshold the main LoG image
+<b class="nc"><i>563</i>&nbsp;				bpLoG = SimpleThresholding.thresholdAbove(fpLoG, 0f);</b>
+<i>564</i>&nbsp;				// Need to set the threshold very slightly above zero for ImageJ
+<b class="nc"><i>565</i>&nbsp;				fpLoG.setRoi(roi);</b>
+<i>566</i>&nbsp;				
+<i>567</i>&nbsp;//				ROILabeling.fillOutside(fpLoG, roi, Float.NEGATIVE_INFINITY);
+<i>568</i>&nbsp;				
+<b class="nc"><i>569</i>&nbsp;				ImageProcessor ipTemp = MorphologicalReconstruction.findRegionalMaxima(fpLoG, 0.001f, false);</b>
+<b class="nc"><i>570</i>&nbsp;				ImageProcessor ipLabels = RoiLabeling.labelImage(ipTemp, 0, false);</b>
+<i>571</i>&nbsp;//				new ImagePlus(&quot;Labels before&quot;, ipLabels.duplicate()).show();
+<b class="nc"><i>572</i>&nbsp;				Watershed.doWatershed(fpLoG, ipLabels, 0, false);</b>
+<i>573</i>&nbsp;//				new ImagePlus(&quot;Labels after&quot;, ipLabels.duplicate()).show();
+<i>574</i>&nbsp;				
+<i>575</i>&nbsp;				
+<b class="nc"><i>576</i>&nbsp;				ipLabels.setThreshold(0.5, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<i>577</i>&nbsp;				// TODO: Consider 4/8 connectivity for watershed nucleus ROIs
+<b class="nc"><i>578</i>&nbsp;				rois = RoiLabeling.getFilledPolygonROIs(ipLabels, Wand.FOUR_CONNECTED);			</b>
+<i>579</i>&nbsp;//				rois = ROILabeling.getFilledPolygonROIsExperimental(ipLabels);
+<i>580</i>&nbsp;				
+<i>581</i>&nbsp;				
+<i>582</i>&nbsp;//				new ImagePlus(&quot;Labels&quot;, ipLabels.duplicate()).show();
+<b class="nc"><i>583</i>&nbsp;				if (Thread.currentThread().isInterrupted())</b>
+<i>584</i>&nbsp;					return;
+<i>585</i>&nbsp;			} 
+<i>586</i>&nbsp;			
+<b class="nc"><i>587</i>&nbsp;			if (bp == null)</b>
+<b class="nc"><i>588</i>&nbsp;				bp = new ByteProcessor(width, height);			</b>
+<i>589</i>&nbsp;
+<b class="nc"><i>590</i>&nbsp;			bp.setValue(255);</b>
+<b class="nc"><i>591</i>&nbsp;			for (Roi r : rois) {</b>
+<i>592</i>&nbsp;				// Perform mean intensity check - skip if below threshold
+<b class="nc"><i>593</i>&nbsp;				ipToMeasure.setRoi(r);</b>
+<b class="nc"><i>594</i>&nbsp;				double mean = ipToMeasure.getStatistics().mean;</b>
+<b class="nc"><i>595</i>&nbsp;				if (mean &lt;= threshold) {</b>
+<b class="nc"><i>596</i>&nbsp;					continue;</b>
+<i>597</i>&nbsp;				}
+<i>598</i>&nbsp;				// Perform background intensity check, if required
+<b class="nc"><i>599</i>&nbsp;				if (bpBackgroundMask != null) {</b>
+<b class="nc"><i>600</i>&nbsp;					bpBackgroundMask.setRoi(r);</b>
+<b class="nc"><i>601</i>&nbsp;					if (bpBackgroundMask.getStatistics().mean &gt; 0)</b>
+<b class="nc"><i>602</i>&nbsp;						continue;				</b>
+<i>603</i>&nbsp;				}
+<i>604</i>&nbsp;//				if (ipBackground != null &amp;&amp; !Double.isNaN(maxBackground)) {
+<i>605</i>&nbsp;//					ipBackground.setRoi(r);
+<i>606</i>&nbsp;//					if (ipBackground.getStatistics().mean &gt; maxBackground)
+<i>607</i>&nbsp;//						continue;
+<i>608</i>&nbsp;//				}
+<i>609</i>&nbsp;				// Fill the ROI to keep it
+<b class="nc"><i>610</i>&nbsp;				bp.fill(r);</b>
+<b class="nc"><i>611</i>&nbsp;			}</b>
+<i>612</i>&nbsp;			
+<i>613</i>&nbsp;//			new ImagePlus(&quot;BP early&quot;, bp.duplicate()).show();
+<i>614</i>&nbsp;			
+<b class="nc"><i>615</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<i>616</i>&nbsp;				return;
+<i>617</i>&nbsp;			
+<i>618</i>&nbsp;			// Create a new, updated binary image with the potential nucleus regions &amp; (optionally) merge these
+<b class="nc"><i>619</i>&nbsp;			bp.setThreshold(127, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>620</i>&nbsp;			if (mergeAll) {</b>
+<b class="nc"><i>621</i>&nbsp;				bp.filter(ImageProcessor.MAX);</b>
+<b class="nc"><i>622</i>&nbsp;				bp.copyBits(bpLoG, 0, 0, Blitter.AND);	</b>
+<b class="nc"><i>623</i>&nbsp;				if (watershedPostProcess) {</b>
+<i>624</i>&nbsp;					// TODO: ARRANGE A MORE EFFICIENT FILL HOLES
+<b class="nc"><i>625</i>&nbsp;					List&lt;PolygonRoi&gt; rois2 = RoiLabeling.getFilledPolygonROIs(bp, Wand.FOUR_CONNECTED);</b>
+<b class="nc"><i>626</i>&nbsp;					bp.setValue(255);</b>
+<b class="nc"><i>627</i>&nbsp;					for (Roi r : rois2)</b>
+<b class="nc"><i>628</i>&nbsp;						bp.fill(r);</b>
+<b class="nc"><i>629</i>&nbsp;					new EDM().toWatershed(bp);</b>
+<i>630</i>&nbsp;				}
+<i>631</i>&nbsp;			}
+<i>632</i>&nbsp;			// TODO: Look at the better boundary clearing implemented in Fast_nucleus_counts
+<b class="nc"><i>633</i>&nbsp;			if (roi != null)</b>
+<b class="nc"><i>634</i>&nbsp;				RoiLabeling.clearOutside(bp, roi);</b>
+<i>635</i>&nbsp;//				ROILabeling.clearBoundary(bp, roi, 0);
+<i>636</i>&nbsp;			
+<i>637</i>&nbsp;			// Locate nucleus ROIs
+<b class="nc"><i>638</i>&nbsp;			bp.setThreshold(127, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<i>639</i>&nbsp;			
+<i>640</i>&nbsp;			
+<i>641</i>&nbsp;//			new ImagePlus(&quot;BP later&quot;, bp.duplicate()).show();
+<i>642</i>&nbsp;
+<i>643</i>&nbsp;			//----------------------------
+<i>644</i>&nbsp;			// MINOR BOUNDARY REFINEMENT
+<i>645</i>&nbsp;			// The idea is that Gaussian smoothing tends to cause the boundaries of &#39;thin&#39; nuclei to be overestimated;
+<i>646</i>&nbsp;			// this uses a smaller filter to correct instances where the boundary has moved by just one pixel
+<b class="nc"><i>647</i>&nbsp;			if (refineBoundary &amp;&amp; sigma &gt; 1.5) {</b>
+<i>648</i>&nbsp;				
+<i>649</i>&nbsp;//				new ImagePlus(&quot;Before&quot;, bp.duplicate()).show();
+<i>650</i>&nbsp;				
+<b class="nc"><i>651</i>&nbsp;				FloatProcessor fpLoG = (FloatProcessor)fpDetection.duplicate();</b>
+<b class="nc"><i>652</i>&nbsp;				fpLoG.blurGaussian(1);</b>
+<b class="nc"><i>653</i>&nbsp;				fpLoG.convolve(new float[]{0, -1, 0, -1, 4, -1, 0, -1, 0}, 3, 3);</b>
+<b class="nc"><i>654</i>&nbsp;				ByteProcessor bp2 = SimpleThresholding.thresholdAbove(fpLoG, 0f);</b>
+<b class="nc"><i>655</i>&nbsp;				bp2.copyBits(bp, 0, 0, Blitter.MIN); // Remove everything not detected in bp</b>
+<b class="nc"><i>656</i>&nbsp;				bp.filter(ByteProcessor.MIN);</b>
+<b class="nc"><i>657</i>&nbsp;				bp.copyBits(bp2, 0, 0, Blitter.MAX);</b>
+<i>658</i>&nbsp;
+<i>659</i>&nbsp;//				new ImagePlus(&quot;After&quot;, bp.duplicate()).show();
+<i>660</i>&nbsp;
+<b class="nc"><i>661</i>&nbsp;				regenerateROIs = true;</b>
+<i>662</i>&nbsp;			}
+<i>663</i>&nbsp;			
+<b class="nc"><i>664</i>&nbsp;			roisNuclei = RoiLabeling.getFilledPolygonROIs(bp, Wand.FOUR_CONNECTED);</b>
+<i>665</i>&nbsp;
+<b class="nc"><i>666</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<i>667</i>&nbsp;				return;
+<i>668</i>&nbsp;			
+<i>669</i>&nbsp;			// Remove nuclei with areas outside the permitted range - updating the binary image as we go
+<b class="nc"><i>670</i>&nbsp;			if (minArea &gt; 0 || maxArea &gt; 0) {</b>
+<b class="nc"><i>671</i>&nbsp;				bp.setValue(0);</b>
+<b class="nc"><i>672</i>&nbsp;				Iterator&lt;PolygonRoi&gt; iter = roisNuclei.iterator();</b>
+<b class="nc"><i>673</i>&nbsp;				while (iter.hasNext()) {</b>
+<b class="nc"><i>674</i>&nbsp;					Roi roiTemp = iter.next();</b>
+<b class="nc"><i>675</i>&nbsp;					fpDetection.setRoi(roiTemp);</b>
+<b class="nc"><i>676</i>&nbsp;					double area = ImageStatistics.getStatistics(fpDetection, Measurements.AREA, null).pixelCount;</b>
+<b class="nc"><i>677</i>&nbsp;					if ((minArea &gt; 0 &amp;&amp; area &lt; minArea) || (maxArea &gt; 0 &amp;&amp; area &gt; maxArea)) {</b>
+<b class="nc"><i>678</i>&nbsp;						iter.remove();</b>
+<b class="nc"><i>679</i>&nbsp;						bp.fill(roiTemp);</b>
+<i>680</i>&nbsp;					}
+<b class="nc"><i>681</i>&nbsp;				}</b>
+<b class="nc"><i>682</i>&nbsp;				fpDetection.resetRoi();</b>
+<i>683</i>&nbsp;			}
+<i>684</i>&nbsp;			
+<i>685</i>&nbsp;			
+<i>686</i>&nbsp;			// Label nuclei
+<b class="nc"><i>687</i>&nbsp;			ShortProcessor ipLabels = new ShortProcessor(width, height);</b>
+<b class="nc"><i>688</i>&nbsp;			RoiLabeling.labelROIs(ipLabels, roisNuclei);</b>
+<i>689</i>&nbsp;			
+<i>690</i>&nbsp;			
+<i>691</i>&nbsp;			
+<i>692</i>&nbsp;			
+<i>693</i>&nbsp;			//----------------------------
+<b class="nc"><i>694</i>&nbsp;			Map&lt;Float, PolygonRoi&gt; roisCellsList = null;</b>
+<b class="nc"><i>695</i>&nbsp;			ImageProcessor ipLabelsCells = null;</b>
+<b class="nc"><i>696</i>&nbsp;			int nCells = 0;</b>
+<i>697</i>&nbsp;			
+<i>698</i>&nbsp;			// Membrane detection (new 9/8/2015)
+<b class="nc"><i>699</i>&nbsp;			if (excludeDAB &amp;&amp; fpDAB != null) {</b>
+<i>700</i>&nbsp;				
+<b class="nc"><i>701</i>&nbsp;				FloatProcessor fpMembranes = (FloatProcessor)fpDAB.duplicate();</b>
+<b class="nc"><i>702</i>&nbsp;				fpMembranes.blurGaussian(2); // TODO: Enable a different sigma parameter?</b>
+<i>703</i>&nbsp;				
+<b class="nc"><i>704</i>&nbsp;				float membraneThreshold = .2f; // TODO: Enable a different membrane threshold?</b>
+<b class="nc"><i>705</i>&nbsp;				for (int i = 0; i &lt; width * height; i++) {</b>
+<b class="nc"><i>706</i>&nbsp;					fpMembranes.setf(i, membraneThreshold - fpMembranes.getf(i));</b>
+<i>707</i>&nbsp;				}
+<b class="nc"><i>708</i>&nbsp;				fpMembranes.max(0.);</b>
+<i>709</i>&nbsp;				
+<i>710</i>&nbsp;				// Fill nuclei with max values
+<b class="nc"><i>711</i>&nbsp;				fpMembranes.setValue(0.1);</b>
+<b class="nc"><i>712</i>&nbsp;				for (Roi r : roisNuclei) {</b>
+<b class="nc"><i>713</i>&nbsp;					fpMembranes.fill(r);</b>
+<b class="nc"><i>714</i>&nbsp;				}</b>
+<i>715</i>&nbsp;				
+<i>716</i>&nbsp;				// Locate regional maxima that will be used for detection
+<b class="nc"><i>717</i>&nbsp;				ByteProcessor bpMarkers = new MaximumFinder().findMaxima(fpMembranes, 0.09, ImageProcessor.NO_THRESHOLD, MaximumFinder.IN_TOLERANCE, false, false);</b>
+<i>718</i>&nbsp;				
+<i>719</i>&nbsp;				// Remove any impossibly-large areas
+<b class="nc"><i>720</i>&nbsp;				RoiLabeling.removeByAreas(bpMarkers, 1, maxArea, true);</b>
+<i>721</i>&nbsp;				
+<i>722</i>&nbsp;				// Determine a mask of the furthest anything can expand
+<b class="nc"><i>723</i>&nbsp;				ByteProcessor bpMaxExpansion = (ByteProcessor)bpMarkers.duplicate();</b>
+<b class="nc"><i>724</i>&nbsp;				new RankFilters().rank(bpMaxExpansion, cellExpansion, RankFilters.MAX);</b>
+<i>725</i>&nbsp;				
+<i>726</i>&nbsp;				// Update the mask to remove completely unstained pixels
+<b class="nc"><i>727</i>&nbsp;				for (int i = 0; i &lt; width * height; i++) {</b>
+<b class="nc"><i>728</i>&nbsp;					if (fpH.getf(i) + fpDAB.getf(i) &lt; 0.025f)</b>
+<b class="nc"><i>729</i>&nbsp;						bpMaxExpansion.set(i, 0);</b>
+<i>730</i>&nbsp;				}
+<i>731</i>&nbsp;				
+<i>732</i>&nbsp;				// Expand all potential cells as much as possible
+<b class="nc"><i>733</i>&nbsp;				float minThreshold = (float)(fpMembranes.getStatistics().min - 0.05);</b>
+<b class="nc"><i>734</i>&nbsp;				for (int i = 0; i &lt; width * height; i++) {</b>
+<b class="nc"><i>735</i>&nbsp;					if (bpMaxExpansion.get(i) == 0)</b>
+<b class="nc"><i>736</i>&nbsp;						fpMembranes.setf(i, minThreshold);</b>
+<i>737</i>&nbsp;				}
+<b class="nc"><i>738</i>&nbsp;				fpMembranes.resetMinAndMax();</b>
+<b class="nc"><i>739</i>&nbsp;				int lastLabel = roisNuclei.size();</b>
+<b class="nc"><i>740</i>&nbsp;				ipLabelsCells = ipLabels.duplicate();</b>
+<b class="nc"><i>741</i>&nbsp;				for (int i = 0; i &lt; width * height; i++) {</b>
+<b class="nc"><i>742</i>&nbsp;					if (bpMarkers.get(i) != 0 &amp;&amp; ipLabelsCells.get(i) == 0) {</b>
+<b class="nc"><i>743</i>&nbsp;						ipLabelsCells.set(i, Short.MAX_VALUE);</b>
+<i>744</i>&nbsp;					}
+<i>745</i>&nbsp;				}
+<b class="nc"><i>746</i>&nbsp;				FloodFiller ff = new FloodFiller(ipLabelsCells);</b>
+<b class="nc"><i>747</i>&nbsp;				for (int i = 0; i &lt; width * height; i++) {</b>
+<b class="nc"><i>748</i>&nbsp;					if (ipLabelsCells.get(i) == Short.MAX_VALUE) {</b>
+<b class="nc"><i>749</i>&nbsp;						lastLabel++;</b>
+<b class="nc"><i>750</i>&nbsp;						ipLabelsCells.setValue(lastLabel);</b>
+<b class="nc"><i>751</i>&nbsp;						ff.fill(i%width, i/width);</b>
+<i>752</i>&nbsp;					}
+<i>753</i>&nbsp;				}
+<i>754</i>&nbsp;				
+<i>755</i>&nbsp;//				fpMembranes.resetMinAndMax();
+<i>756</i>&nbsp;//				new ImagePlus(&quot;BEFORE&quot;, fpMembranes.duplicate()).show();
+<i>757</i>&nbsp;//				ipLabels = ROILabeling.labelImage(bpMarkers, false);
+<b class="nc"><i>758</i>&nbsp;				Watershed.doWatershed(fpMembranes, ipLabelsCells, minThreshold+.025, false);</b>
+<b class="nc"><i>759</i>&nbsp;				ipLabelsCells.setThreshold(0.5, Double.POSITIVE_INFINITY, ImageProcessor.NO_LUT_UPDATE);</b>
+<b class="nc"><i>760</i>&nbsp;				roisCellsList = RoiLabeling.getFilledPolygonROIsFromLabels(ipLabelsCells, Wand.FOUR_CONNECTED);</b>
+<b class="nc"><i>761</i>&nbsp;				nCells = lastLabel;</b>
+<i>762</i>&nbsp;			}
+<i>763</i>&nbsp;			
+<i>764</i>&nbsp;			
+<i>765</i>&nbsp;			
+<i>766</i>&nbsp;			//----------------------------
+<i>767</i>&nbsp;			
+<i>768</i>&nbsp;			
+<i>769</i>&nbsp;			
+<i>770</i>&nbsp;			
+<i>771</i>&nbsp;			
+<i>772</i>&nbsp;			// Measure nuclei
+<b class="nc"><i>773</i>&nbsp;			List&lt;RunningStatistics&gt; statsHematoxylin = null;</b>
+<b class="nc"><i>774</i>&nbsp;			List&lt;RunningStatistics&gt; statsDAB = null;</b>
+<b class="nc"><i>775</i>&nbsp;			if (makeMeasurements) {</b>
+<b class="nc"><i>776</i>&nbsp;				statsHematoxylin = StatisticsHelper.createRunningStatisticsList(roisNuclei.size());</b>
+<b class="nc"><i>777</i>&nbsp;				SimpleImage imgLabels = new PixelImageIJ(ipLabels);</b>
+<b class="nc"><i>778</i>&nbsp;				StatisticsHelper.computeRunningStatistics(new PixelImageIJ(fpH), imgLabels, statsHematoxylin);</b>
+<b class="nc"><i>779</i>&nbsp;				if (fpDAB != null) {</b>
+<b class="nc"><i>780</i>&nbsp;					statsDAB = StatisticsHelper.createRunningStatisticsList(roisNuclei.size());</b>
+<b class="nc"><i>781</i>&nbsp;					StatisticsHelper.computeRunningStatistics(new PixelImageIJ(fpDAB), imgLabels, statsDAB);</b>
+<i>782</i>&nbsp;				}
+<i>783</i>&nbsp;			}
+<i>784</i>&nbsp;			
+<b class="nc"><i>785</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<i>786</i>&nbsp;				return;
+<i>787</i>&nbsp;
+<i>788</i>&nbsp;			
+<i>789</i>&nbsp;			// Create nucleus objects
+<i>790</i>&nbsp;			// TODO: Set the measurement capacity to improve efficiency
+<b class="nc"><i>791</i>&nbsp;			List&lt;PathObject&gt; nucleiObjects = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>792</i>&nbsp;			Calibration cal = pathImage.getImage().getCalibration();</b>
+<b class="nc"><i>793</i>&nbsp;			ImagePlane plane = pathImage.getImageRegion().getPlane();</b>
+<b class="nc"><i>794</i>&nbsp;			for (int i = 0; i &lt; roisNuclei.size(); i++) {</b>
+<b class="nc"><i>795</i>&nbsp;				PolygonRoi r = roisNuclei.get(i);</b>
+<i>796</i>&nbsp;				
+<b class="nc"><i>797</i>&nbsp;				if (smoothBoundaries)</b>
+<b class="nc"><i>798</i>&nbsp;					r = new PolygonRoi(r.getInterpolatedPolygon(Math.min(2.5, r.getNCoordinates()*0.1), true), Roi.POLYGON);</b>
+<i>799</i>&nbsp;				
+<b class="nc"><i>800</i>&nbsp;				PolygonROI pathROI = IJTools.convertToPolygonROI(r, cal, pathImage.getDownsampleFactor(), plane);</b>
+<i>801</i>&nbsp;				
+<b class="nc"><i>802</i>&nbsp;				if (smoothBoundaries) {</b>
+<i>803</i>&nbsp;//					int nBefore = pathROI.nVertices();
+<b class="nc"><i>804</i>&nbsp;					pathROI = ShapeSimplifier.simplifyPolygon(pathROI, pathImage.getDownsampleFactor()/4.0);</b>
+<i>805</i>&nbsp;//					int nAfter = pathROI.nVertices();
+<i>806</i>&nbsp;//					System.out.println(&quot;Vertices removed: &quot; + (nBefore - nAfter));
+<i>807</i>&nbsp;				}
+<i>808</i>&nbsp;				
+<i>809</i>&nbsp;				// Create a new shared measurement list
+<b class="nc"><i>810</i>&nbsp;				MeasurementList measurementList = MeasurementListFactory.createMeasurementList(makeMeasurements ? 30 : 0, MeasurementList.MeasurementListType.FLOAT);</b>
+<i>811</i>&nbsp;				
+<b class="nc"><i>812</i>&nbsp;				if (makeMeasurements) {</b>
+<b class="nc"><i>813</i>&nbsp;					ObjectMeasurements.addShapeStatistics(measurementList, r, fpH, cal, &quot;Nucleus: &quot;);</b>
+<i>814</i>&nbsp;	
+<i>815</i>&nbsp;	//				PathObject pathObject = new PathDetectionObject(pathROI, PathPrefs.getNucleusClass());
+<i>816</i>&nbsp;	//				PathObjectIJ.computeShapeStatistics(pathObject, pathImage, fpH, pathImage.getImage().getCalibration(), &quot;Nucleus: &quot;);
+<i>817</i>&nbsp;					
+<b class="nc"><i>818</i>&nbsp;					RunningStatistics stats = statsHematoxylin.get(i);</b>
+<b class="nc"><i>819</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD mean&quot;, stats.getMean());</b>
+<b class="nc"><i>820</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD sum&quot;, stats.getSum());</b>
+<b class="nc"><i>821</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD std dev&quot;, stats.getStdDev());</b>
+<b class="nc"><i>822</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD max&quot;, stats.getMax());</b>
+<b class="nc"><i>823</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD min&quot;, stats.getMin());</b>
+<b class="nc"><i>824</i>&nbsp;					measurementList.addMeasurement(&quot;Nucleus: Hematoxylin OD range&quot;, stats.getRange());</b>
+<b class="nc"><i>825</i>&nbsp;					if (statsDAB != null) {</b>
+<b class="nc"><i>826</i>&nbsp;						stats = statsDAB.get(i);</b>
+<b class="nc"><i>827</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD mean&quot;, stats.getMean());</b>
+<b class="nc"><i>828</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD sum&quot;, stats.getSum());</b>
+<b class="nc"><i>829</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD std dev&quot;, stats.getStdDev());</b>
+<b class="nc"><i>830</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD max&quot;, stats.getMax());</b>
+<b class="nc"><i>831</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD min&quot;, stats.getMin());</b>
+<b class="nc"><i>832</i>&nbsp;						measurementList.addMeasurement(&quot;Nucleus: DAB OD range&quot;, stats.getRange());</b>
+<i>833</i>&nbsp;					}
+<i>834</i>&nbsp;				}
+<i>835</i>&nbsp;				
+<i>836</i>&nbsp;				// TODO: It would be more efficient to measure the hematoxylin intensities along with the shapes
+<i>837</i>&nbsp;//				PathObject pathObject = new PathDetectionObject(pathROI, PathClassFactory.getNucleusClass(), measurementList);
+<b class="nc"><i>838</i>&nbsp;				PathObject pathObject = PathObjects.createDetectionObject(pathROI, null, measurementList);</b>
+<b class="nc"><i>839</i>&nbsp;				nucleiObjects.add(pathObject);</b>
+<i>840</i>&nbsp;
+<i>841</i>&nbsp;			}
+<i>842</i>&nbsp;			
+<b class="nc"><i>843</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<i>844</i>&nbsp;				return;
+<i>845</i>&nbsp;
+<i>846</i>&nbsp;//			List&lt;Roi&gt; roisCellsList = null;
+<i>847</i>&nbsp;			
+<i>848</i>&nbsp;			// Optionally expand the nuclei to become cells
+<b class="nc"><i>849</i>&nbsp;			if (cellExpansion &gt; 0) {</b>
+<i>850</i>&nbsp;				
+<i>851</i>&nbsp;				Map&lt;Float, PolygonRoi&gt; roisCells;
+<b class="nc"><i>852</i>&nbsp;				if (roisCellsList == null) {</b>
+<i>853</i>&nbsp;				
+<b class="nc"><i>854</i>&nbsp;					FloatProcessor fpEDM = new EDM().makeFloatEDM(bp, (byte)255, false);</b>
+<b class="nc"><i>855</i>&nbsp;					fpEDM.multiply(-1);</b>
+<i>856</i>&nbsp;					
+<i>857</i>&nbsp;					// ---------------------- EXPERIMENTAL - CONSTRAIN CELL EXPANSION BY NUCLEUS SIZE
+<b class="nc"><i>858</i>&nbsp;					double cellExpansionThreshold = -cellExpansion;</b>
+<b class="nc"><i>859</i>&nbsp;					if (limitExpansionByNucleusSize) {</b>
+<b class="nc"><i>860</i>&nbsp;						MaximumFinder mf = new MaximumFinder();</b>
+<b class="nc"><i>861</i>&nbsp;						ByteProcessor bpVoronoi = mf.findMaxima(fpEDM, .5, cellExpansionThreshold, MaximumFinder.SEGMENTED, false, false);</b>
+<b class="nc"><i>862</i>&nbsp;						FloatProcessor fpEDM2 = new EDM().makeFloatEDM(bp, (byte)0, false);</b>
+<i>863</i>&nbsp;						
+<b class="nc"><i>864</i>&nbsp;						FloatProcessor fpMarkers = new FloatProcessor(fpEDM2.getWidth(), fpEDM2.getHeight());</b>
+<b class="nc"><i>865</i>&nbsp;						Arrays.fill((float[])(fpMarkers.getPixels()), Float.NEGATIVE_INFINITY);</b>
+<b class="nc"><i>866</i>&nbsp;						for (Roi r : roisNuclei) {</b>
+<b class="nc"><i>867</i>&nbsp;							fpEDM2.setRoi(r);</b>
+<b class="nc"><i>868</i>&nbsp;							double max = fpEDM2.getStatistics().max;</b>
+<b class="nc"><i>869</i>&nbsp;							fpMarkers.setValue(-2. * max);</b>
+<b class="nc"><i>870</i>&nbsp;							fpMarkers.fill(r);</b>
+<b class="nc"><i>871</i>&nbsp;						}</b>
+<i>872</i>&nbsp;						
+<b class="nc"><i>873</i>&nbsp;						for (int i = 0; i &lt; bpVoronoi.getWidth()*bpVoronoi.getHeight(); i++) {</b>
+<b class="nc"><i>874</i>&nbsp;							if (bpVoronoi.getf(i) == 0)</b>
+<b class="nc"><i>875</i>&nbsp;								fpEDM.setf(i, Float.NEGATIVE_INFINITY);</b>
+<i>876</i>&nbsp;						}
+<b class="nc"><i>877</i>&nbsp;						if (!MorphologicalReconstruction.morphologicalReconstruction(fpMarkers, fpEDM))</b>
+<b class="nc"><i>878</i>&nbsp;							logger.error(&quot;Problem during morphological reconstruction!&quot;);</b>
+<b class="nc"><i>879</i>&nbsp;						ByteProcessor bpMax = mf.findMaxima(fpMarkers, 0.0001, MaximumFinder.IN_TOLERANCE, false);</b>
+<b class="nc"><i>880</i>&nbsp;						fpEDM.copyBits(bpMax, 0, 0, Blitter.COPY);</b>
+<b class="nc"><i>881</i>&nbsp;						cellExpansionThreshold = 128; // Cell expansion has already been applied</b>
+<i>882</i>&nbsp;					}
+<i>883</i>&nbsp;					
+<i>884</i>&nbsp;					// ---------------------- END EXPERIMENTAL
+<i>885</i>&nbsp;					
+<i>886</i>&nbsp;					// Create cell ROIs
+<b class="nc"><i>887</i>&nbsp;					ipLabelsCells = ipLabels.duplicate();</b>
+<b class="nc"><i>888</i>&nbsp;					Watershed.doWatershed(fpEDM, ipLabelsCells, cellExpansionThreshold, false);</b>
+<b class="nc"><i>889</i>&nbsp;					roisCells = RoiLabeling.getFilledPolygonROIsFromLabels(ipLabelsCells, roisNuclei.size());</b>
+<b class="nc"><i>890</i>&nbsp;					nCells = roisCells.size();</b>
+<b class="nc"><i>891</i>&nbsp;				} else {</b>
+<b class="nc"><i>892</i>&nbsp;					roisCells = roisCellsList;</b>
+<i>893</i>&nbsp;				}
+<i>894</i>&nbsp;				
+<i>895</i>&nbsp;				
+<i>896</i>&nbsp;				
+<i>897</i>&nbsp;				
+<i>898</i>&nbsp;				// Compute cell DAB stats
+<b class="nc"><i>899</i>&nbsp;				List&lt;RunningStatistics&gt; statsDABCell = null;</b>
+<b class="nc"><i>900</i>&nbsp;				if (fpDAB != null &amp;&amp; makeMeasurements) {</b>
+<b class="nc"><i>901</i>&nbsp;					statsDABCell = StatisticsHelper.createRunningStatisticsList(nCells);</b>
+<b class="nc"><i>902</i>&nbsp;					StatisticsHelper.computeRunningStatistics(new PixelImageIJ(fpDAB), new PixelImageIJ(ipLabelsCells), statsDABCell);</b>
+<i>903</i>&nbsp;				}
+<i>904</i>&nbsp;							
+<i>905</i>&nbsp;				// Create labelled image for cytoplasm, i.e. remove all nucleus pixels
+<i>906</i>&nbsp;				// TODO: Make a buffer zone between nucleus and cytoplasm?!
+<b class="nc"><i>907</i>&nbsp;				for (int i = 0; i &lt; ipLabels.getWidth() * ipLabels.getHeight(); i++) {</b>
+<b class="nc"><i>908</i>&nbsp;					if (ipLabels.getf(i) != 0)</b>
+<b class="nc"><i>909</i>&nbsp;						ipLabelsCells.setf(i, 0f);</b>
+<i>910</i>&nbsp;				}
+<i>911</i>&nbsp;				
+<i>912</i>&nbsp;				// Compute cytoplasm stats
+<b class="nc"><i>913</i>&nbsp;				List&lt;RunningStatistics&gt; statsDABCytoplasm = null;</b>
+<b class="nc"><i>914</i>&nbsp;				if (includeNuclei &amp;&amp; fpDAB != null &amp;&amp; makeMeasurements) {</b>
+<b class="nc"><i>915</i>&nbsp;					statsDABCytoplasm = StatisticsHelper.createRunningStatisticsList(nCells);</b>
+<b class="nc"><i>916</i>&nbsp;					StatisticsHelper.computeRunningStatistics(new PixelImageIJ(fpDAB), new PixelImageIJ(ipLabelsCells), statsDABCytoplasm);</b>
+<i>917</i>&nbsp;				}
+<i>918</i>&nbsp;				
+<i>919</i>&nbsp;				// Create membrane stats
+<b class="nc"><i>920</i>&nbsp;				List&lt;RunningStatistics&gt; statsDABMembrane = null;</b>
+<b class="nc"><i>921</i>&nbsp;				if (includeNuclei &amp;&amp; excludeDAB &amp;&amp; fpDAB != null &amp;&amp; makeMeasurements) {</b>
+<b class="nc"><i>922</i>&nbsp;					statsDABMembrane = StatisticsHelper.createRunningStatisticsList(nCells);</b>
+<b class="nc"><i>923</i>&nbsp;					ImageProcessor ipLabelsMembrane = new ShortProcessor(width, height);</b>
+<i>924</i>&nbsp;					// TODO: WARNING!  This method of creating measurements doesn&#39;t permit membranes to overlap.
+<i>925</i>&nbsp;					// This means that sometimes one cell could &#39;steal&#39; a bit of the membrane of another cell.
+<i>926</i>&nbsp;					// However it&#39;s unlikely this actually make any substantial difference...
+<b class="nc"><i>927</i>&nbsp;					for (Entry&lt;Float, PolygonRoi&gt; entry : roisCells.entrySet()) {</b>
+<b class="nc"><i>928</i>&nbsp;						Float label = entry.getKey();</b>
+<b class="nc"><i>929</i>&nbsp;						PolygonRoi roiTemp = entry.getValue();</b>
+<b class="nc"><i>930</i>&nbsp;						ipLabelsMembrane.setValue(label.doubleValue());</b>
+<b class="nc"><i>931</i>&nbsp;						ipLabelsMembrane.draw(roiTemp);</b>
+<b class="nc"><i>932</i>&nbsp;					}</b>
+<b class="nc"><i>933</i>&nbsp;					StatisticsHelper.computeRunningStatistics(new PixelImageIJ(fpDAB), new PixelImageIJ(ipLabelsMembrane), statsDABMembrane);</b>
+<i>934</i>&nbsp;//					ipLabelsMembrane.resetMinAndMax();
+<i>935</i>&nbsp;//					new ImagePlus(&quot;LABELS&quot;, ipLabelsMembrane.duplicate()).show();
+<i>936</i>&nbsp;				}
+<i>937</i>&nbsp;				
+<i>938</i>&nbsp;				
+<i>939</i>&nbsp;				// Create cell objects
+<i>940</i>&nbsp;//				PathClass cellClass = PathClassFactory.getPathClass(&quot;Cell&quot;, ColorTools.makeRGB(255, 200, 0));
+<b class="nc"><i>941</i>&nbsp;				PathClass cellClass = null;</b>
+<b class="nc"><i>942</i>&nbsp;				for (Entry&lt;Float, PolygonRoi&gt; entry : roisCells.entrySet()) {</b>
+<b class="nc"><i>943</i>&nbsp;					PolygonRoi r = entry.getValue();</b>
+<b class="nc"><i>944</i>&nbsp;					if (r == null)</b>
+<b class="nc"><i>945</i>&nbsp;						continue;</b>
+<b class="nc"><i>946</i>&nbsp;					if (smoothBoundaries)</b>
+<b class="nc"><i>947</i>&nbsp;						r = new PolygonRoi(r.getInterpolatedPolygon(Math.min(2.5, r.getNCoordinates()*0.1), false), Roi.POLYGON); // TODO: Check this smoothing - it can be troublesome, causing nuclei to be outside cells</b>
+<i>948</i>&nbsp;//						r = smoothPolygonRoi(r);
+<i>949</i>&nbsp;
+<b class="nc"><i>950</i>&nbsp;					PolygonROI pathROI = IJTools.convertToPolygonROI(r, pathImage.getImage().getCalibration(), pathImage.getDownsampleFactor(), plane);</b>
+<b class="nc"><i>951</i>&nbsp;					if (smoothBoundaries)</b>
+<b class="nc"><i>952</i>&nbsp;						pathROI = ShapeSimplifier.simplifyPolygon(pathROI, pathImage.getDownsampleFactor()/4.0);</b>
+<i>953</i>&nbsp;
+<i>954</i>&nbsp;					
+<b class="nc"><i>955</i>&nbsp;					MeasurementList measurementList = null;</b>
+<b class="nc"><i>956</i>&nbsp;					PathObject nucleus = null;</b>
+<b class="nc"><i>957</i>&nbsp;					int label = entry.getKey().intValue();</b>
+<b class="nc"><i>958</i>&nbsp;					if (label &lt; nucleiObjects.size())</b>
+<b class="nc"><i>959</i>&nbsp;						nucleus = nucleiObjects.get(label-1);</b>
+<i>960</i>&nbsp;
+<i>961</i>&nbsp;					// If we don&#39;t have a nucleus, check the cell area isn&#39;t too large
+<b class="nc"><i>962</i>&nbsp;					if (nucleus == null &amp;&amp; pathROI.getArea() &gt; maxArea * 2)</b>
+<b class="nc"><i>963</i>&nbsp;						continue;</b>
+<i>964</i>&nbsp;
+<i>965</i>&nbsp;					// Prepare measurement list with/without nucleus
+<b class="nc"><i>966</i>&nbsp;					if (includeNuclei &amp;&amp; nucleus != null) {</b>
+<i>967</i>&nbsp;						// Use the nucleus&#39; measurement list
+<b class="nc"><i>968</i>&nbsp;						measurementList = nucleus.getMeasurementList();					</b>
+<i>969</i>&nbsp;					} else {
+<i>970</i>&nbsp;						// Create a new measurement list
+<b class="nc"><i>971</i>&nbsp;						measurementList = MeasurementListFactory.createMeasurementList(makeMeasurements ? 12 : 0, MeasurementList.MeasurementListType.GENERAL);</b>
+<b class="nc"><i>972</i>&nbsp;						nucleus = null;</b>
+<i>973</i>&nbsp;					}
+<i>974</i>&nbsp;					
+<i>975</i>&nbsp;					
+<i>976</i>&nbsp;					// Add cell shape measurements
+<b class="nc"><i>977</i>&nbsp;					if (makeMeasurements) {</b>
+<b class="nc"><i>978</i>&nbsp;						ObjectMeasurements.addShapeStatistics(measurementList, r, fpDetection, pathImage.getImage().getCalibration(), &quot;Cell: &quot;);</b>
+<i>979</i>&nbsp;	//					ObjectMeasurements.computeShapeStatistics(pathObject, pathImage, fpH, pathImage.getImage().getCalibration());
+<i>980</i>&nbsp;	
+<i>981</i>&nbsp;						// Add cell measurements
+<b class="nc"><i>982</i>&nbsp;						if (statsDABCell != null) {</b>
+<b class="nc"><i>983</i>&nbsp;							RunningStatistics stats = statsDABCell.get(label-1);</b>
+<b class="nc"><i>984</i>&nbsp;							measurementList.addMeasurement(&quot;Cell: DAB OD mean&quot;, stats.getMean());</b>
+<b class="nc"><i>985</i>&nbsp;							measurementList.addMeasurement(&quot;Cell: DAB OD std dev&quot;, stats.getStdDev());</b>
+<b class="nc"><i>986</i>&nbsp;							measurementList.addMeasurement(&quot;Cell: DAB OD max&quot;, stats.getMax());</b>
+<b class="nc"><i>987</i>&nbsp;							measurementList.addMeasurement(&quot;Cell: DAB OD min&quot;, stats.getMin());</b>
+<i>988</i>&nbsp;	//						pathObject.addMeasurement(&quot;Cytoplasm: DAB OD range&quot;, stats.getRange());
+<i>989</i>&nbsp;						}
+<i>990</i>&nbsp;						
+<i>991</i>&nbsp;						// Add cytoplasm measurements
+<b class="nc"><i>992</i>&nbsp;						if (statsDABCytoplasm != null) {</b>
+<b class="nc"><i>993</i>&nbsp;							RunningStatistics stats = statsDABCytoplasm.get(label-1);</b>
+<b class="nc"><i>994</i>&nbsp;							measurementList.addMeasurement(&quot;Cytoplasm: DAB OD mean&quot;, stats.getMean());</b>
+<b class="nc"><i>995</i>&nbsp;							measurementList.addMeasurement(&quot;Cytoplasm: DAB OD std dev&quot;, stats.getStdDev());</b>
+<b class="nc"><i>996</i>&nbsp;							measurementList.addMeasurement(&quot;Cytoplasm: DAB OD max&quot;, stats.getMax());</b>
+<b class="nc"><i>997</i>&nbsp;							measurementList.addMeasurement(&quot;Cytoplasm: DAB OD min&quot;, stats.getMin());</b>
+<i>998</i>&nbsp;	//						pathObject.addMeasurement(&quot;Cytoplasm: DAB OD range&quot;, stats.getRange());
+<i>999</i>&nbsp;						}
+<i>1000</i>&nbsp;						
+<i>1001</i>&nbsp;						// Add membrane measurements
+<b class="nc"><i>1002</i>&nbsp;						if (statsDABMembrane != null) {</b>
+<b class="nc"><i>1003</i>&nbsp;							RunningStatistics stats = statsDABMembrane.get(label-1);</b>
+<b class="nc"><i>1004</i>&nbsp;							measurementList.addMeasurement(&quot;Membrane: DAB OD mean&quot;, stats.getMean());</b>
+<b class="nc"><i>1005</i>&nbsp;							measurementList.addMeasurement(&quot;Membrane: DAB OD std dev&quot;, stats.getStdDev());</b>
+<b class="nc"><i>1006</i>&nbsp;							measurementList.addMeasurement(&quot;Membrane: DAB OD max&quot;, stats.getMax());</b>
+<b class="nc"><i>1007</i>&nbsp;							measurementList.addMeasurement(&quot;Membrane: DAB OD min&quot;, stats.getMin());</b>
+<i>1008</i>&nbsp;	//						pathObject.addMeasurement(&quot;Cytoplasm: DAB OD range&quot;, stats.getRange());
+<i>1009</i>&nbsp;						}
+<i>1010</i>&nbsp;						
+<i>1011</i>&nbsp;						// Add nucleus area ratio, if available
+<b class="nc"><i>1012</i>&nbsp;						if (nucleus != null &amp;&amp; nucleus.getROI().isArea()) {</b>
+<b class="nc"><i>1013</i>&nbsp;							double nucleusArea = nucleus.getROI().getArea();</b>
+<b class="nc"><i>1014</i>&nbsp;							double cellArea = pathROI.getArea();</b>
+<b class="nc"><i>1015</i>&nbsp;							measurementList.addMeasurement(&quot;Nucleus/Cell area ratio&quot;, Math.min(nucleusArea / cellArea, 1.0));</b>
+<i>1016</i>&nbsp;	//						measurementList.addMeasurement(&quot;Nucleus/Cell expansion&quot;, cellArea - nucleusArea);
+<i>1017</i>&nbsp;						}
+<i>1018</i>&nbsp;					}
+<i>1019</i>&nbsp;
+<i>1020</i>&nbsp;					
+<i>1021</i>&nbsp;					// Create &amp; store the cell object
+<b class="nc"><i>1022</i>&nbsp;					PathObject pathObject = PathObjects.createCellObject(pathROI, nucleus == null ? null : nucleus.getROI(), cellClass, measurementList);</b>
+<b class="nc"><i>1023</i>&nbsp;					pathObjects.add(pathObject);</b>
+<b class="nc"><i>1024</i>&nbsp;				}</b>
+<b class="nc"><i>1025</i>&nbsp;			} else {</b>
+<b class="nc"><i>1026</i>&nbsp;				pathObjects.addAll(nucleiObjects);</b>
+<i>1027</i>&nbsp;			}
+<i>1028</i>&nbsp;			
+<i>1029</i>&nbsp;			// Close the measurement lists
+<b class="nc"><i>1030</i>&nbsp;			for (PathObject pathObject : pathObjects)</b>
+<b class="nc"><i>1031</i>&nbsp;				pathObject.getMeasurementList().close();</b>
+<i>1032</i>&nbsp;			
+<b class="nc"><i>1033</i>&nbsp;			lastRunCompleted = true;</b>
+<i>1034</i>&nbsp;		}
+<i>1035</i>&nbsp;		
+<i>1036</i>&nbsp;		
+<i>1037</i>&nbsp;		public List&lt;PathObject&gt; getPathObjects() {
+<b class="nc"><i>1038</i>&nbsp;			return pathObjects;</b>
+<i>1039</i>&nbsp;		}
+<i>1040</i>&nbsp;		
+<i>1041</i>&nbsp;		
+<i>1042</i>&nbsp;		public void runDetection(double backgroundRadius, double maxBackground, double medianRadius, double sigma, double threshold, double minArea, double maxArea, boolean mergeAll, boolean watershedPostProcess, boolean excludeDAB, double cellExpansion, boolean limitExpansionByNucleusSize, boolean smoothBoundaries, boolean includeNuclei, boolean makeMeasurements) {
+<i>1043</i>&nbsp;			
+<b class="nc"><i>1044</i>&nbsp;			boolean updateNucleusROIs = rois == null || bpLoG == null;</b>
+<b class="nc"><i>1045</i>&nbsp;			updateNucleusROIs = updateNucleusROIs ? updateNucleusROIs : this.medianRadius != medianRadius;</b>
+<b class="nc"><i>1046</i>&nbsp;			this.medianRadius = medianRadius;</b>
+<i>1047</i>&nbsp;			
+<b class="nc"><i>1048</i>&nbsp;			updateNucleusROIs = updateNucleusROIs ? updateNucleusROIs : this.backgroundRadius != backgroundRadius;</b>
+<b class="nc"><i>1049</i>&nbsp;			this.backgroundRadius = backgroundRadius;</b>
+<i>1050</i>&nbsp;
+<b class="nc"><i>1051</i>&nbsp;			updateNucleusROIs = updateNucleusROIs ? updateNucleusROIs : this.sigma != sigma;</b>
+<b class="nc"><i>1052</i>&nbsp;			this.sigma = sigma;</b>
+<i>1053</i>&nbsp;			
+<b class="nc"><i>1054</i>&nbsp;			updateNucleusROIs = updateNucleusROIs ? updateNucleusROIs : this.excludeDAB != excludeDAB;</b>
+<b class="nc"><i>1055</i>&nbsp;			this.excludeDAB = excludeDAB;</b>
+<i>1056</i>&nbsp;
+<b class="nc"><i>1057</i>&nbsp;			boolean updateAnything = updateNucleusROIs || !lastRunCompleted;</b>
+<i>1058</i>&nbsp;
+<b class="nc"><i>1059</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.minArea != minArea;</b>
+<b class="nc"><i>1060</i>&nbsp;			this.minArea = minArea;</b>
+<i>1061</i>&nbsp;
+<b class="nc"><i>1062</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.maxArea != maxArea;</b>
+<b class="nc"><i>1063</i>&nbsp;			this.maxArea = maxArea;</b>
+<i>1064</i>&nbsp;
+<b class="nc"><i>1065</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.maxBackground != maxBackground;</b>
+<b class="nc"><i>1066</i>&nbsp;			this.maxBackground = maxBackground;</b>
+<i>1067</i>&nbsp;
+<b class="nc"><i>1068</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.threshold != threshold;</b>
+<b class="nc"><i>1069</i>&nbsp;			this.threshold = threshold;</b>
+<i>1070</i>&nbsp;
+<b class="nc"><i>1071</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.mergeAll != mergeAll;</b>
+<b class="nc"><i>1072</i>&nbsp;			this.mergeAll = mergeAll;</b>
+<i>1073</i>&nbsp;
+<b class="nc"><i>1074</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.watershedPostProcess != watershedPostProcess;</b>
+<b class="nc"><i>1075</i>&nbsp;			this.watershedPostProcess = watershedPostProcess;</b>
+<i>1076</i>&nbsp;
+<b class="nc"><i>1077</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.cellExpansion != cellExpansion;</b>
+<b class="nc"><i>1078</i>&nbsp;			this.cellExpansion = cellExpansion;</b>
+<i>1079</i>&nbsp;			
+<b class="nc"><i>1080</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.smoothBoundaries != smoothBoundaries;</b>
+<b class="nc"><i>1081</i>&nbsp;			this.smoothBoundaries = smoothBoundaries;</b>
+<i>1082</i>&nbsp;			
+<b class="nc"><i>1083</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.includeNuclei != includeNuclei;</b>
+<b class="nc"><i>1084</i>&nbsp;			this.includeNuclei = includeNuclei;</b>
+<i>1085</i>&nbsp;			
+<b class="nc"><i>1086</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.makeMeasurements != makeMeasurements;</b>
+<b class="nc"><i>1087</i>&nbsp;			this.makeMeasurements = makeMeasurements;</b>
+<i>1088</i>&nbsp;			
+<b class="nc"><i>1089</i>&nbsp;			updateAnything = updateAnything ? updateAnything : this.limitExpansionByNucleusSize != limitExpansionByNucleusSize;</b>
+<b class="nc"><i>1090</i>&nbsp;			this.limitExpansionByNucleusSize = limitExpansionByNucleusSize;</b>
+<i>1091</i>&nbsp;			
+<i>1092</i>&nbsp;//			if (!updateAnything)
+<i>1093</i>&nbsp;//				return;
+<i>1094</i>&nbsp;			
+<i>1095</i>&nbsp;			try {
+<b class="nc"><i>1096</i>&nbsp;				doDetection(updateNucleusROIs);</b>
+<b class="nc"><i>1097</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>1098</i>&nbsp;				e.printStackTrace();</b>
+<b class="nc"><i>1099</i>&nbsp;			}</b>
+<i>1100</i>&nbsp;		}
+<i>1101</i>&nbsp;		
+<i>1102</i>&nbsp;		
+<i>1103</i>&nbsp;	}
+<i>1104</i>&nbsp;
+<i>1105</i>&nbsp;	
+<i>1106</i>&nbsp;	
+<i>1107</i>&nbsp;	@Override
+<i>1108</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>1109</i>&nbsp;		return &quot;Default cell detection algorithm for brightfield images with membrane staining&quot;;</b>
+<i>1110</i>&nbsp;	}
+<i>1111</i>&nbsp;
+<i>1112</i>&nbsp;
+<i>1113</i>&nbsp;
+<i>1114</i>&nbsp;	@Override
+<i>1115</i>&nbsp;	protected double getPreferredPixelSizeMicrons(ImageData&lt;BufferedImage&gt; imageData, ParameterList params) {
+<b class="nc"><i>1116</i>&nbsp;		return CellDetector.getPreferredPixelSizeMicrons(imageData, params);</b>
+<i>1117</i>&nbsp;	}
+<i>1118</i>&nbsp;
+<i>1119</i>&nbsp;
+<i>1120</i>&nbsp;	@Override
+<i>1121</i>&nbsp;	protected ObjectDetector&lt;BufferedImage&gt; createDetector(ImageData&lt;BufferedImage&gt; imageData, ParameterList params) {
+<b class="nc"><i>1122</i>&nbsp;		return new CellDetector();</b>
+<i>1123</i>&nbsp;	}
+<i>1124</i>&nbsp;
+<i>1125</i>&nbsp;
+<i>1126</i>&nbsp;	@Override
+<i>1127</i>&nbsp;	protected int getTileOverlap(ImageData&lt;BufferedImage&gt; imageData, ParameterList params) {
+<b class="nc"><i>1128</i>&nbsp;		double pxSize = imageData.getServer().getPixelCalibration().getAveragedPixelSizeMicrons();</b>
+<b class="nc"><i>1129</i>&nbsp;		if (Double.isNaN(pxSize))</b>
+<b class="nc"><i>1130</i>&nbsp;			return params.getDoubleParameterValue(&quot;cellExpansion&quot;) &gt; 0 ? 25 : 10;</b>
+<b class="nc"><i>1131</i>&nbsp;		double cellExpansion = params.getDoubleParameterValue(&quot;cellExpansionMicrons&quot;) / pxSize;</b>
+<b class="nc"><i>1132</i>&nbsp;		int overlap = cellExpansion &gt; 0 ? (int)(cellExpansion * 2) : 10;</b>
+<i>1133</i>&nbsp;//		System.out.println(&quot;Tile overlap: &quot; + overlap + &quot; pixels&quot;);
+<b class="nc"><i>1134</i>&nbsp;		return overlap;</b>
+<i>1135</i>&nbsp;	}
+<i>1136</i>&nbsp;	
+<i>1137</i>&nbsp;	
+<i>1138</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

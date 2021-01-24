@@ -1,0 +1,1352 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OpenCVTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.opencv.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OpenCVTools (qupath.opencv.tools)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OpenCVTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 41)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 510)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OpenCVTools$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 511)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.opencv.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BandedSampleModel;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.awt.image.ColorModel;
+<i>29</i>&nbsp;import java.awt.image.DataBuffer;
+<i>30</i>&nbsp;import java.awt.image.IndexColorModel;
+<i>31</i>&nbsp;import java.awt.image.WritableRaster;
+<i>32</i>&nbsp;import java.io.IOException;
+<i>33</i>&nbsp;import java.util.ArrayList;
+<i>34</i>&nbsp;import java.util.Arrays;
+<i>35</i>&nbsp;import java.util.Collection;
+<i>36</i>&nbsp;import java.util.List;
+<i>37</i>&nbsp;import java.util.function.Consumer;
+<i>38</i>&nbsp;import java.util.function.Function;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import static org.bytedeco.opencv.global.opencv_core.*;
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>43</i>&nbsp;import org.bytedeco.opencv.global.opencv_imgproc;
+<i>44</i>&nbsp;import org.bytedeco.javacpp.indexer.ByteIndexer;
+<i>45</i>&nbsp;import org.bytedeco.javacpp.indexer.DoubleIndexer;
+<i>46</i>&nbsp;import org.bytedeco.javacpp.indexer.FloatIndexer;
+<i>47</i>&nbsp;import org.bytedeco.javacpp.indexer.Indexer;
+<i>48</i>&nbsp;import org.bytedeco.javacpp.indexer.ShortIndexer;
+<i>49</i>&nbsp;import org.bytedeco.javacpp.indexer.UByteIndexer;
+<i>50</i>&nbsp;import org.bytedeco.javacpp.indexer.UShortIndexer;
+<i>51</i>&nbsp;import org.slf4j.Logger;
+<i>52</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>53</i>&nbsp;
+<i>54</i>&nbsp;import ij.CompositeImage;
+<i>55</i>&nbsp;import ij.ImagePlus;
+<i>56</i>&nbsp;import ij.ImageStack;
+<i>57</i>&nbsp;import ij.process.ByteProcessor;
+<i>58</i>&nbsp;import ij.process.FloatProcessor;
+<i>59</i>&nbsp;import ij.process.ImageProcessor;
+<i>60</i>&nbsp;import ij.process.ShortProcessor;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>63</i>&nbsp;import org.bytedeco.opencv.opencv_core.MatVector;
+<i>64</i>&nbsp;import org.bytedeco.opencv.opencv_core.Point;
+<i>65</i>&nbsp;import org.bytedeco.opencv.opencv_core.Rect;
+<i>66</i>&nbsp;import org.bytedeco.opencv.opencv_core.Scalar;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>69</i>&nbsp;import qupath.lib.analysis.images.SimpleImages;
+<i>70</i>&nbsp;import qupath.lib.color.ColorModelFactory;
+<i>71</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>72</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>73</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>74</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;/**
+<i>77</i>&nbsp; * Collection of static methods to help with using OpenCV from Java.
+<i>78</i>&nbsp; * 
+<i>79</i>&nbsp; * @author Pete Bankhead
+<i>80</i>&nbsp; *
+<i>81</i>&nbsp; */
+<b class="nc"><i>82</i>&nbsp;public class OpenCVTools {</b>
+<i>83</i>&nbsp;	
+<b class="nc"><i>84</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(OpenCVTools.class);</b>
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	/**
+<i>87</i>&nbsp;	 * Convert a BufferedImage to an OpenCV Mat.
+<i>88</i>&nbsp;	 * &lt;p&gt;
+<i>89</i>&nbsp;	 * An effort will be made to do a sensible conversion based on the BufferedImage type, 
+<i>90</i>&nbsp;	 * returning a Mat with a suitable type.
+<i>91</i>&nbsp;	 * &lt;p&gt;
+<i>92</i>&nbsp;	 * BGR and RGB images will remain with the same channel order, and an alpha channel 
+<i>93</i>&nbsp;	 * (if present) will be included at the end (i.e. to give BGRA or RGBA).
+<i>94</i>&nbsp;	 * &lt;p&gt;
+<i>95</i>&nbsp;	 * Note: the behavior of this method has changed; in QuPath &amp;lt;= 0.1.2 only
+<i>96</i>&nbsp;	 * RGB images were really supported, and an RGB conversion was *always* made.
+<i>97</i>&nbsp;	 * 
+<i>98</i>&nbsp;	 * @see #imageToMatRGB
+<i>99</i>&nbsp;	 * @see #imageToMatBGR
+<i>100</i>&nbsp;	 * 
+<i>101</i>&nbsp;	 * @param img
+<i>102</i>&nbsp;	 * @return
+<i>103</i>&nbsp;	 */
+<i>104</i>&nbsp;	public static Mat imageToMat(BufferedImage img) {
+<b class="nc"><i>105</i>&nbsp;		switch (img.getType()) {</b>
+<i>106</i>&nbsp;			case BufferedImage.TYPE_INT_BGR:
+<i>107</i>&nbsp;			case BufferedImage.TYPE_3BYTE_BGR:
+<b class="nc"><i>108</i>&nbsp;				return imageToMatBGR(img, false);</b>
+<i>109</i>&nbsp;			case BufferedImage.TYPE_4BYTE_ABGR:
+<i>110</i>&nbsp;			case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+<b class="nc"><i>111</i>&nbsp;				return imageToMatBGR(img, true);</b>
+<i>112</i>&nbsp;			case BufferedImage.TYPE_INT_ARGB:
+<i>113</i>&nbsp;			case BufferedImage.TYPE_INT_ARGB_PRE:
+<b class="nc"><i>114</i>&nbsp;				return imageToMatRGB(img, true);</b>
+<i>115</i>&nbsp;			case BufferedImage.TYPE_USHORT_555_RGB:
+<i>116</i>&nbsp;			case BufferedImage.TYPE_USHORT_565_RGB:
+<i>117</i>&nbsp;			case BufferedImage.TYPE_INT_RGB:
+<b class="nc"><i>118</i>&nbsp;				return imageToMatRGB(img, false);</b>
+<i>119</i>&nbsp;			case BufferedImage.TYPE_USHORT_GRAY:
+<i>120</i>&nbsp;		}
+<i>121</i>&nbsp;		
+<b class="nc"><i>122</i>&nbsp;		int width = img.getWidth();</b>
+<b class="nc"><i>123</i>&nbsp;		int height = img.getHeight();</b>
+<b class="nc"><i>124</i>&nbsp;		WritableRaster raster = img.getRaster();</b>
+<i>125</i>&nbsp;		
+<b class="nc"><i>126</i>&nbsp;		DataBuffer buffer = raster.getDataBuffer();</b>
+<b class="nc"><i>127</i>&nbsp;		int nChannels = raster.getNumBands();</b>
+<i>128</i>&nbsp;		int typeCV;
+<b class="nc"><i>129</i>&nbsp;		switch (buffer.getDataType()) {</b>
+<i>130</i>&nbsp;			case DataBuffer.TYPE_BYTE:
+<b class="nc"><i>131</i>&nbsp;				typeCV = CV_8UC(nChannels);</b>
+<b class="nc"><i>132</i>&nbsp;				break;</b>
+<i>133</i>&nbsp;//			case DataBuffer.TYPE_DOUBLE:
+<i>134</i>&nbsp;//				typeCV = CV_64FC(nChannels); 
+<i>135</i>&nbsp;//				mat = new Mat(height, width, typeCV, Scalar.ZERO);
+<i>136</i>&nbsp;//				break;
+<i>137</i>&nbsp;			case DataBuffer.TYPE_FLOAT:
+<b class="nc"><i>138</i>&nbsp;				typeCV = CV_32FC(nChannels); </b>
+<b class="nc"><i>139</i>&nbsp;				break;</b>
+<i>140</i>&nbsp;			case DataBuffer.TYPE_INT:
+<b class="nc"><i>141</i>&nbsp;				typeCV = CV_32SC(nChannels); // Assuming signed int</b>
+<b class="nc"><i>142</i>&nbsp;				break;</b>
+<i>143</i>&nbsp;			case DataBuffer.TYPE_SHORT:
+<b class="nc"><i>144</i>&nbsp;				typeCV = CV_16SC(nChannels); </b>
+<b class="nc"><i>145</i>&nbsp;				break;</b>
+<i>146</i>&nbsp;			case DataBuffer.TYPE_USHORT:
+<b class="nc"><i>147</i>&nbsp;				typeCV = CV_16UC(nChannels); </b>
+<b class="nc"><i>148</i>&nbsp;				break;</b>
+<i>149</i>&nbsp;			default:
+<b class="nc"><i>150</i>&nbsp;				typeCV = CV_64FC(nChannels); // Assume 64-bit is as flexible as we can manage</b>
+<i>151</i>&nbsp;		}
+<i>152</i>&nbsp;		
+<i>153</i>&nbsp;		// Create a new Mat &amp; put the pixels
+<b class="nc"><i>154</i>&nbsp;		Mat mat = new Mat(height, width, typeCV, Scalar.ZERO);</b>
+<b class="nc"><i>155</i>&nbsp;		putPixels(raster, mat);</b>
+<b class="nc"><i>156</i>&nbsp;		return mat;</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	private static void putPixels(WritableRaster raster, UByteIndexer indexer) {
+<b class="nc"><i>161</i>&nbsp;		int[] pixels = null;</b>
+<b class="nc"><i>162</i>&nbsp;		int width = raster.getWidth();</b>
+<b class="nc"><i>163</i>&nbsp;		int height = raster.getHeight();</b>
+<b class="nc"><i>164</i>&nbsp;		for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>165</i>&nbsp;			pixels = raster.getSamples(0, 0, width, height, b, pixels);</b>
+<b class="nc"><i>166</i>&nbsp;			for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>167</i>&nbsp;				for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>168</i>&nbsp;					indexer.put(y, x, b, pixels[y*width + x]);</b>
+<i>169</i>&nbsp;				}
+<i>170</i>&nbsp;			}
+<i>171</i>&nbsp;		}
+<b class="nc"><i>172</i>&nbsp;	}</b>
+<i>173</i>&nbsp;	
+<i>174</i>&nbsp;	
+<i>175</i>&nbsp;	/**
+<i>176</i>&nbsp;	 * Get the OpenCV type code corresponding to a {@link PixelType}.
+<i>177</i>&nbsp;	 * &lt;p&gt;
+<i>178</i>&nbsp;	 * Note, OpenCV has no matching type for {@link PixelType#UINT32}. In this case a signed 32-bit int 
+<i>179</i>&nbsp;	 * type will be returned, and a warning logged.
+<i>180</i>&nbsp;	 * 
+<i>181</i>&nbsp;	 * @param pixelType the QuPath pixel type
+<i>182</i>&nbsp;	 * @return the closest OpenCV pixel type
+<i>183</i>&nbsp;	 * @throws IllegalArgumentException if the {@link PixelType} is unknown
+<i>184</i>&nbsp;	 */
+<i>185</i>&nbsp;	public static int getOpenCVPixelType(PixelType pixelType) throws IllegalArgumentException {
+<b class="nc"><i>186</i>&nbsp;		switch (pixelType) {</b>
+<i>187</i>&nbsp;		case FLOAT32:
+<b class="nc"><i>188</i>&nbsp;			return opencv_core.CV_32F;</b>
+<i>189</i>&nbsp;		case FLOAT64:
+<b class="nc"><i>190</i>&nbsp;			return opencv_core.CV_64F;</b>
+<i>191</i>&nbsp;		case INT16:
+<b class="nc"><i>192</i>&nbsp;			return opencv_core.CV_16S;</b>
+<i>193</i>&nbsp;		case INT32:
+<b class="nc"><i>194</i>&nbsp;			return opencv_core.CV_32S;</b>
+<i>195</i>&nbsp;		case INT8:
+<b class="nc"><i>196</i>&nbsp;			return opencv_core.CV_8S;</b>
+<i>197</i>&nbsp;		case UINT16:
+<b class="nc"><i>198</i>&nbsp;			return opencv_core.CV_16U;</b>
+<i>199</i>&nbsp;		case UINT32:
+<b class="nc"><i>200</i>&nbsp;			logger.warn(&quot;OpenCV does not have a uint32 pixel type! Will returned signed type instead as the closest match.&quot;);</b>
+<b class="nc"><i>201</i>&nbsp;			return opencv_core.CV_32S;</b>
+<i>202</i>&nbsp;		case UINT8:
+<b class="nc"><i>203</i>&nbsp;			return opencv_core.CV_8U;</b>
+<i>204</i>&nbsp;		default:
+<b class="nc"><i>205</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown pixel type &quot; + pixelType);</b>
+<i>206</i>&nbsp;		}
+<i>207</i>&nbsp;	}
+<i>208</i>&nbsp;	
+<i>209</i>&nbsp;	/**
+<i>210</i>&nbsp;	 * Split channels from a {@link Mat}.
+<i>211</i>&nbsp;	 * May be more convenient than OpenCV&#39;s built-in approach.
+<i>212</i>&nbsp;	 * 
+<i>213</i>&nbsp;	 * @param mat
+<i>214</i>&nbsp;	 * @return a list of {@link Mat}, containing each split channel in order
+<i>215</i>&nbsp;	 */
+<i>216</i>&nbsp;	public static List&lt;Mat&gt; splitChannels(Mat mat) {
+<b class="nc"><i>217</i>&nbsp;		var list = new ArrayList&lt;Mat&gt;();</b>
+<b class="nc"><i>218</i>&nbsp;		var channels = mat.channels();</b>
+<b class="nc"><i>219</i>&nbsp;		for (int c = 0; c &lt; channels; c++) {</b>
+<b class="nc"><i>220</i>&nbsp;			var temp = new Mat();</b>
+<b class="nc"><i>221</i>&nbsp;			opencv_core.extractChannel(mat, temp, c);</b>
+<b class="nc"><i>222</i>&nbsp;			list.add(temp);</b>
+<i>223</i>&nbsp;		}
+<b class="nc"><i>224</i>&nbsp;		return list;</b>
+<i>225</i>&nbsp;		// This code appeared to give the occasional crazy result (perhaps followed by a segfault?)
+<i>226</i>&nbsp;//		var matvec = new MatVector();
+<i>227</i>&nbsp;//		opencv_core.split(mat, matvec);
+<i>228</i>&nbsp;//		return Arrays.asList(matvec.get());
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	/**
+<i>232</i>&nbsp;	 * Merge channels from a multichannel {@link Mat}.
+<i>233</i>&nbsp;	 * May be more convenient than OpenCV&#39;s built-in approach.
+<i>234</i>&nbsp;	 * 
+<i>235</i>&nbsp;	 * @param channels separate channels
+<i>236</i>&nbsp;	 * @param dest optional destination (may be null)
+<i>237</i>&nbsp;	 * @return merged {@link Mat}, which will be the same as dest if provided
+<i>238</i>&nbsp;	 */
+<i>239</i>&nbsp;	public static Mat mergeChannels(Collection&lt;? extends Mat&gt; channels, Mat dest) {
+<b class="nc"><i>240</i>&nbsp;		if (dest == null)</b>
+<b class="nc"><i>241</i>&nbsp;			dest = new Mat();</b>
+<b class="nc"><i>242</i>&nbsp;		opencv_core.merge(new MatVector(channels.toArray(Mat[]::new)), dest);</b>
+<b class="nc"><i>243</i>&nbsp;		return dest;</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;	
+<i>246</i>&nbsp;	
+<i>247</i>&nbsp;	/**
+<i>248</i>&nbsp;	 * Vertical concatenation for a {@link Mat}.
+<i>249</i>&nbsp;	 * May be more convenient than OpenCV&#39;s built-in approach.
+<i>250</i>&nbsp;	 * 
+<i>251</i>&nbsp;	 * @param mats mats to concatenate
+<i>252</i>&nbsp;	 * @param dest optional destination (may be null)
+<i>253</i>&nbsp;	 * @return merged {@link Mat}, which will be the same as dest if provided
+<i>254</i>&nbsp;	 */
+<i>255</i>&nbsp;	public static Mat vConcat(Collection&lt;? extends Mat&gt; mats, Mat dest) {
+<b class="nc"><i>256</i>&nbsp;		if (dest == null)</b>
+<b class="nc"><i>257</i>&nbsp;			dest = new Mat();</b>
+<b class="nc"><i>258</i>&nbsp;		opencv_core.vconcat(new MatVector(mats.toArray(Mat[]::new)), dest);</b>
+<b class="nc"><i>259</i>&nbsp;		return dest;</b>
+<i>260</i>&nbsp;	}
+<i>261</i>&nbsp;	
+<i>262</i>&nbsp;	/**
+<i>263</i>&nbsp;	 * Horizontal concatenation for a {@link Mat}.
+<i>264</i>&nbsp;	 * May be more convenient than OpenCV&#39;s built-in approach.
+<i>265</i>&nbsp;	 * 
+<i>266</i>&nbsp;	 * @param mats mats to concatenate
+<i>267</i>&nbsp;	 * @param dest optional destination (may be null)
+<i>268</i>&nbsp;	 * @return merged {@link Mat}, which will be the same as dest if provided
+<i>269</i>&nbsp;	 */
+<i>270</i>&nbsp;	public static Mat hConcat(Collection&lt;? extends Mat&gt; mats, Mat dest) {
+<b class="nc"><i>271</i>&nbsp;		if (dest == null)</b>
+<b class="nc"><i>272</i>&nbsp;			dest = new Mat();</b>
+<b class="nc"><i>273</i>&nbsp;		opencv_core.hconcat(new MatVector(mats.toArray(Mat[]::new)), dest);</b>
+<b class="nc"><i>274</i>&nbsp;		return dest;</b>
+<i>275</i>&nbsp;	}
+<i>276</i>&nbsp;	
+<i>277</i>&nbsp;	
+<i>278</i>&nbsp;	/**
+<i>279</i>&nbsp;	 * Apply a method that modifies a {@link Mat} in-place to all 
+<i>280</i>&nbsp;	 * channels of the {@link Mat}, merging the result and storing the result in-place.
+<i>281</i>&nbsp;	 * @param input the (possibly-multichannel) mat
+<i>282</i>&nbsp;	 * @param fun the consumer to apply
+<i>283</i>&nbsp;	 */
+<i>284</i>&nbsp;	public static void applyToChannels(Mat input, Consumer&lt;Mat&gt; fun) {
+<b class="nc"><i>285</i>&nbsp;		if (input.channels() == 1) {</b>
+<b class="nc"><i>286</i>&nbsp;			fun.accept(input);</b>
+<b class="nc"><i>287</i>&nbsp;			return;</b>
+<i>288</i>&nbsp;		}
+<b class="nc"><i>289</i>&nbsp;		var channels = splitChannels(input);</b>
+<b class="nc"><i>290</i>&nbsp;		for (var c : channels) {</b>
+<b class="nc"><i>291</i>&nbsp;			fun.accept(c);</b>
+<b class="nc"><i>292</i>&nbsp;		}</b>
+<b class="nc"><i>293</i>&nbsp;		mergeChannels(channels, input);</b>
+<b class="nc"><i>294</i>&nbsp;	}</b>
+<i>295</i>&nbsp;	
+<i>296</i>&nbsp;	private static void putPixels(WritableRaster raster, UShortIndexer indexer) {
+<b class="nc"><i>297</i>&nbsp;		int[] pixels = null;</b>
+<b class="nc"><i>298</i>&nbsp;		int width = raster.getWidth();</b>
+<b class="nc"><i>299</i>&nbsp;		int height = raster.getHeight();</b>
+<b class="nc"><i>300</i>&nbsp;		for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>301</i>&nbsp;			pixels = raster.getSamples(0, 0, width, height, b, pixels);</b>
+<b class="nc"><i>302</i>&nbsp;			for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>303</i>&nbsp;				for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>304</i>&nbsp;					indexer.put(y, x, b, pixels[y*width + x]);</b>
+<i>305</i>&nbsp;				}
+<i>306</i>&nbsp;			}
+<i>307</i>&nbsp;		}
+<b class="nc"><i>308</i>&nbsp;	}</b>
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;	private static void putPixels(WritableRaster raster, ShortIndexer indexer) {
+<b class="nc"><i>311</i>&nbsp;		int[] pixels = null;</b>
+<b class="nc"><i>312</i>&nbsp;		int width = raster.getWidth();</b>
+<b class="nc"><i>313</i>&nbsp;		int height = raster.getHeight();</b>
+<b class="nc"><i>314</i>&nbsp;		for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>315</i>&nbsp;			pixels = raster.getSamples(0, 0, width, height, b, pixels);</b>
+<b class="nc"><i>316</i>&nbsp;			for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>317</i>&nbsp;				for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>318</i>&nbsp;					indexer.put(y, x, b, (short)pixels[y*width + x]);</b>
+<i>319</i>&nbsp;				}
+<i>320</i>&nbsp;			}
+<i>321</i>&nbsp;		}
+<b class="nc"><i>322</i>&nbsp;	}</b>
+<i>323</i>&nbsp;	
+<i>324</i>&nbsp;	private static void putPixels(WritableRaster raster, FloatIndexer indexer) {
+<b class="nc"><i>325</i>&nbsp;		float[] pixels = null;</b>
+<b class="nc"><i>326</i>&nbsp;		int width = raster.getWidth();</b>
+<b class="nc"><i>327</i>&nbsp;		int height = raster.getHeight();</b>
+<b class="nc"><i>328</i>&nbsp;		for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>329</i>&nbsp;			pixels = raster.getSamples(0, 0, width, height, b, pixels);</b>
+<b class="nc"><i>330</i>&nbsp;			for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>331</i>&nbsp;				for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>332</i>&nbsp;					indexer.put(y, x, b, pixels[y*width + x]);</b>
+<i>333</i>&nbsp;				}
+<i>334</i>&nbsp;			}
+<i>335</i>&nbsp;		}
+<b class="nc"><i>336</i>&nbsp;	}</b>
+<i>337</i>&nbsp;	
+<i>338</i>&nbsp;	/**
+<i>339</i>&nbsp;	 * Put the pixels for the specified raster into a preallocated Mat.
+<i>340</i>&nbsp;	 * 
+<i>341</i>&nbsp;	 * @param raster
+<i>342</i>&nbsp;	 * @param mat
+<i>343</i>&nbsp;	 */
+<i>344</i>&nbsp;	private static void putPixels(WritableRaster raster, Mat mat) {
+<b class="nc"><i>345</i>&nbsp;		Indexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>346</i>&nbsp;		if (indexer instanceof UByteIndexer)</b>
+<b class="nc"><i>347</i>&nbsp;			putPixels(raster, (UByteIndexer)indexer);</b>
+<b class="nc"><i>348</i>&nbsp;		else if (indexer instanceof ShortIndexer)</b>
+<b class="nc"><i>349</i>&nbsp;			putPixels(raster, (ShortIndexer)indexer);</b>
+<b class="nc"><i>350</i>&nbsp;		else if (indexer instanceof UShortIndexer)</b>
+<b class="nc"><i>351</i>&nbsp;			putPixels(raster, (UShortIndexer)indexer);</b>
+<b class="nc"><i>352</i>&nbsp;		else if (indexer instanceof FloatIndexer)</b>
+<b class="nc"><i>353</i>&nbsp;			putPixels(raster, (FloatIndexer)indexer);</b>
+<i>354</i>&nbsp;		else {
+<b class="nc"><i>355</i>&nbsp;			double[] pixels = null;</b>
+<b class="nc"><i>356</i>&nbsp;			int width = raster.getWidth();</b>
+<b class="nc"><i>357</i>&nbsp;			int height = raster.getHeight();</b>
+<b class="nc"><i>358</i>&nbsp;			long[] indices = new long[3];</b>
+<b class="nc"><i>359</i>&nbsp;			for (int b = 0; b &lt; raster.getNumBands(); b++) {</b>
+<b class="nc"><i>360</i>&nbsp;				pixels = raster.getSamples(0, 0, width, height, b, pixels);</b>
+<b class="nc"><i>361</i>&nbsp;				indices[2] = b;</b>
+<b class="nc"><i>362</i>&nbsp;				for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>363</i>&nbsp;					indices[0] = y;</b>
+<b class="nc"><i>364</i>&nbsp;					for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>365</i>&nbsp;						indices[1] = x;</b>
+<b class="nc"><i>366</i>&nbsp;						indexer.putDouble(indices, pixels[y*width + x]);</b>
+<i>367</i>&nbsp;					}
+<i>368</i>&nbsp;				}
+<i>369</i>&nbsp;			}
+<i>370</i>&nbsp;		}
+<b class="nc"><i>371</i>&nbsp;		indexer.release();</b>
+<b class="nc"><i>372</i>&nbsp;	}</b>
+<i>373</i>&nbsp;	
+<i>374</i>&nbsp;	
+<i>375</i>&nbsp;	/**
+<i>376</i>&nbsp;	 * Convert a Mat to a BufferedImage.
+<i>377</i>&nbsp;	 * &lt;p&gt;
+<i>378</i>&nbsp;	 * This is equivalent to matToBufferedImage(mat, null);
+<i>379</i>&nbsp;	 * As such, the ColorModel may or may not end up being something useful.
+<i>380</i>&nbsp;	 * 
+<i>381</i>&nbsp;	 * @see #matToBufferedImage
+<i>382</i>&nbsp;	 * 
+<i>383</i>&nbsp;	 * @param mat
+<i>384</i>&nbsp;	 * @return
+<i>385</i>&nbsp;	 */
+<i>386</i>&nbsp;	public static BufferedImage matToBufferedImage(final Mat mat) {
+<b class="nc"><i>387</i>&nbsp;		return matToBufferedImage(mat, null);</b>
+<i>388</i>&nbsp;	}
+<i>389</i>&nbsp;
+<i>390</i>&nbsp;	
+<i>391</i>&nbsp;	/**
+<i>392</i>&nbsp;	 * Convert a Mat to a BufferedImage.
+<i>393</i>&nbsp;	 * &lt;p&gt;
+<i>394</i>&nbsp;	 * If no ColorModel is specified, a grayscale model will be used for single-channel 8-bit 
+<i>395</i>&nbsp;	 * images and RGB/ARGB for 3/4 channel 8-bit images.
+<i>396</i>&nbsp;	 * &lt;p&gt;
+<i>397</i>&nbsp;	 * For all other cases a ColorModel should be specified for meaningful display.
+<i>398</i>&nbsp;	 * 
+<i>399</i>&nbsp;	 * @param mat
+<i>400</i>&nbsp;	 * @param colorModel
+<i>401</i>&nbsp;	 * @return
+<i>402</i>&nbsp;	 */
+<i>403</i>&nbsp;	public static BufferedImage matToBufferedImage(final Mat mat, ColorModel colorModel) {
+<i>404</i>&nbsp;		
+<i>405</i>&nbsp;		int type;
+<b class="nc"><i>406</i>&nbsp;		int bpp = 0;</b>
+<b class="nc"><i>407</i>&nbsp;		switch (mat.depth()) {</b>
+<i>408</i>&nbsp;			case CV_8U:
+<b class="nc"><i>409</i>&nbsp;				type = DataBuffer.TYPE_BYTE;</b>
+<b class="nc"><i>410</i>&nbsp;				bpp = 8;</b>
+<b class="nc"><i>411</i>&nbsp;				break;</b>
+<i>412</i>&nbsp;			case CV_8S:
+<b class="nc"><i>413</i>&nbsp;				type = DataBuffer.TYPE_SHORT; // Byte is unsigned</b>
+<b class="nc"><i>414</i>&nbsp;				bpp = 16;</b>
+<b class="nc"><i>415</i>&nbsp;				break;</b>
+<i>416</i>&nbsp;			case CV_16U:
+<b class="nc"><i>417</i>&nbsp;				type = DataBuffer.TYPE_USHORT;</b>
+<b class="nc"><i>418</i>&nbsp;				bpp = 16;</b>
+<b class="nc"><i>419</i>&nbsp;				break;</b>
+<i>420</i>&nbsp;			case CV_16S:
+<b class="nc"><i>421</i>&nbsp;				type = DataBuffer.TYPE_SHORT;</b>
+<b class="nc"><i>422</i>&nbsp;				bpp = 16;</b>
+<b class="nc"><i>423</i>&nbsp;				break;</b>
+<i>424</i>&nbsp;			case CV_32S:
+<b class="nc"><i>425</i>&nbsp;				type = DataBuffer.TYPE_INT;</b>
+<b class="nc"><i>426</i>&nbsp;				bpp = 32;</b>
+<b class="nc"><i>427</i>&nbsp;				break;</b>
+<i>428</i>&nbsp;			case CV_32F:
+<b class="nc"><i>429</i>&nbsp;				type = DataBuffer.TYPE_FLOAT;</b>
+<b class="nc"><i>430</i>&nbsp;				bpp = 32;</b>
+<b class="nc"><i>431</i>&nbsp;				break;</b>
+<i>432</i>&nbsp;			default:
+<b class="nc"><i>433</i>&nbsp;				logger.warn(&quot;Unknown Mat depth {}, will default to CV64F ({})&quot;, mat.depth(), CV_64F);</b>
+<i>434</i>&nbsp;			case CV_64F:
+<b class="nc"><i>435</i>&nbsp;				type = DataBuffer.TYPE_DOUBLE;</b>
+<b class="nc"><i>436</i>&nbsp;				bpp = 64;</b>
+<i>437</i>&nbsp;		}
+<i>438</i>&nbsp;		
+<i>439</i>&nbsp;		// Create a suitable raster
+<b class="nc"><i>440</i>&nbsp;		int width = mat.cols();</b>
+<b class="nc"><i>441</i>&nbsp;		int height = mat.rows();</b>
+<b class="nc"><i>442</i>&nbsp;		int channels = mat.channels();</b>
+<i>443</i>&nbsp;	
+<i>444</i>&nbsp;		// We might generate an image for a special case
+<b class="nc"><i>445</i>&nbsp;		BufferedImage img = null;</b>
+<i>446</i>&nbsp;		
+<i>447</i>&nbsp;		// Handle some special cases
+<b class="nc"><i>448</i>&nbsp;		if (colorModel == null) {</b>
+<b class="nc"><i>449</i>&nbsp;			if (type == DataBuffer.TYPE_BYTE) {</b>
+<b class="nc"><i>450</i>&nbsp;				if (channels == 1) {</b>
+<b class="nc"><i>451</i>&nbsp;					img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);</b>
+<i>452</i>&nbsp;					// TODO: Set the bytes
+<b class="nc"><i>453</i>&nbsp;				} else if (channels == 3) {</b>
+<b class="nc"><i>454</i>&nbsp;					img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);</b>
+<b class="nc"><i>455</i>&nbsp;				} else if (channels == 4) {</b>
+<b class="nc"><i>456</i>&nbsp;					img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);</b>
+<i>457</i>&nbsp;				}
+<i>458</i>&nbsp;			}
+<b class="nc"><i>459</i>&nbsp;		} else if (colorModel instanceof IndexColorModel) {</b>
+<b class="nc"><i>460</i>&nbsp;			img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED, (IndexColorModel)colorModel);</b>
+<i>461</i>&nbsp;		}
+<i>462</i>&nbsp;		
+<i>463</i>&nbsp;		// Create the image
+<i>464</i>&nbsp;		WritableRaster raster;
+<b class="nc"><i>465</i>&nbsp;		if (img != null) {</b>
+<b class="nc"><i>466</i>&nbsp;			raster = img.getRaster();</b>
+<b class="nc"><i>467</i>&nbsp;		} else if (colorModel != null) {</b>
+<b class="nc"><i>468</i>&nbsp;			raster = colorModel.createCompatibleWritableRaster(width, height);</b>
+<b class="nc"><i>469</i>&nbsp;			img = new BufferedImage(colorModel, raster, false, null);</b>
+<i>470</i>&nbsp;		} else {
+<i>471</i>&nbsp;			// Create some kind of raster we can use
+<b class="nc"><i>472</i>&nbsp;			var sampleModel = new BandedSampleModel(type, width, height, channels);</b>
+<b class="nc"><i>473</i>&nbsp;			raster = WritableRaster.createWritableRaster(sampleModel, null);</b>
+<i>474</i>&nbsp;			// We do need a ColorModel or some description
+<b class="nc"><i>475</i>&nbsp;			colorModel = ColorModelFactory.getDummyColorModel(bpp * channels);</b>
+<b class="nc"><i>476</i>&nbsp;			img = new BufferedImage(colorModel, raster, false, null);</b>
+<i>477</i>&nbsp;		}
+<b class="nc"><i>478</i>&nbsp;		MatVector matvector = new MatVector();</b>
+<b class="nc"><i>479</i>&nbsp;		split(mat, matvector);</b>
+<i>480</i>&nbsp;		// We don&#39;t know which of the 3 supported array types will be needed yet...
+<b class="nc"><i>481</i>&nbsp;		int[] pixelsInt = null;</b>
+<b class="nc"><i>482</i>&nbsp;		float[] pixelsFloat = null;</b>
+<b class="nc"><i>483</i>&nbsp;		double[] pixelsDouble = null;</b>
+<b class="nc"><i>484</i>&nbsp;		for (int b = 0; b &lt; channels; b++) {</b>
+<i>485</i>&nbsp;			// Extract pixels for the current channel
+<b class="nc"><i>486</i>&nbsp;			Mat matChannel = matvector.get(b);</b>
+<b class="nc"><i>487</i>&nbsp;			Indexer indexer = matChannel.createIndexer();</b>
+<b class="nc"><i>488</i>&nbsp;			if (indexer instanceof UByteIndexer) {</b>
+<b class="nc"><i>489</i>&nbsp;				if (pixelsInt == null)</b>
+<b class="nc"><i>490</i>&nbsp;					pixelsInt = new int[width*height];</b>
+<b class="nc"><i>491</i>&nbsp;				((UByteIndexer) indexer).get(0L, pixelsInt);</b>
+<b class="nc"><i>492</i>&nbsp;			} else if (indexer instanceof UShortIndexer) {</b>
+<b class="nc"><i>493</i>&nbsp;				if (pixelsInt == null)</b>
+<b class="nc"><i>494</i>&nbsp;					pixelsInt = new int[width*height];</b>
+<b class="nc"><i>495</i>&nbsp;				((UShortIndexer) indexer).get(0L, pixelsInt);</b>
+<b class="nc"><i>496</i>&nbsp;			} else if (indexer instanceof FloatIndexer) {</b>
+<b class="nc"><i>497</i>&nbsp;				if (pixelsFloat == null)</b>
+<b class="nc"><i>498</i>&nbsp;					pixelsFloat = new float[width*height];</b>
+<b class="nc"><i>499</i>&nbsp;				((FloatIndexer) indexer).get(0L, pixelsFloat);				</b>
+<b class="nc"><i>500</i>&nbsp;			} else if (indexer instanceof DoubleIndexer) {</b>
+<b class="nc"><i>501</i>&nbsp;				if (pixelsDouble == null)</b>
+<b class="nc"><i>502</i>&nbsp;					pixelsDouble = new double[width*height];</b>
+<b class="nc"><i>503</i>&nbsp;				((DoubleIndexer) indexer).get(0L, pixelsDouble);				</b>
+<i>504</i>&nbsp;			} else {
+<b class="nc"><i>505</i>&nbsp;				if (pixelsDouble == null)</b>
+<b class="nc"><i>506</i>&nbsp;					pixelsDouble = new double[width*height];</b>
+<i>507</i>&nbsp;				// This is inefficient, but unlikely to occur too often
+<b class="nc"><i>508</i>&nbsp;				pixelsDouble = new double[width * height];</b>
+<b class="nc"><i>509</i>&nbsp;				for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>510</i>&nbsp;					for (int x = 0; x &lt; width; x++){</b>
+<b class="nc"><i>511</i>&nbsp;						pixelsDouble[y * width + x] = indexer.getDouble(y, x, b);</b>
+<i>512</i>&nbsp;					}
+<i>513</i>&nbsp;				}
+<i>514</i>&nbsp;			}
+<i>515</i>&nbsp;			// Set the samples
+<b class="nc"><i>516</i>&nbsp;			if (pixelsInt != null)</b>
+<b class="nc"><i>517</i>&nbsp;				raster.setSamples(0, 0, width, height, b, pixelsInt);</b>
+<b class="nc"><i>518</i>&nbsp;			else if (pixelsFloat != null)</b>
+<b class="nc"><i>519</i>&nbsp;				raster.setSamples(0, 0, width, height, b, pixelsFloat);</b>
+<b class="nc"><i>520</i>&nbsp;			else if (pixelsDouble != null)</b>
+<b class="nc"><i>521</i>&nbsp;				raster.setSamples(0, 0, width, height, b, pixelsDouble);</b>
+<i>522</i>&nbsp;		}
+<b class="nc"><i>523</i>&nbsp;		return img;</b>
+<i>524</i>&nbsp;	}
+<i>525</i>&nbsp;		
+<i>526</i>&nbsp;	
+<i>527</i>&nbsp;
+<i>528</i>&nbsp;	/**
+<i>529</i>&nbsp;	 * Extract 8-bit unsigned pixels from a BufferedImage as a multichannel RGB(A) Mat.
+<i>530</i>&nbsp;	 * 
+<i>531</i>&nbsp;	 * @param img input image
+<i>532</i>&nbsp;	 * @param includeAlpha if true, return any available alpha data as a 4th channel.
+<i>533</i>&nbsp;	 * @return
+<i>534</i>&nbsp;	 */
+<i>535</i>&nbsp;	public static Mat imageToMatRGB(final BufferedImage img, final boolean includeAlpha) {
+<b class="nc"><i>536</i>&nbsp;		return imageToMatRGBorBGR(img, false, includeAlpha);</b>
+<i>537</i>&nbsp;	}
+<i>538</i>&nbsp;	
+<i>539</i>&nbsp;	/**
+<i>540</i>&nbsp;	 * Extract 8-bit unsigned pixels from a BufferedImage as a multichannel BGR(A) Mat.
+<i>541</i>&nbsp;	 * 
+<i>542</i>&nbsp;	 * @param img input image
+<i>543</i>&nbsp;	 * @param includeAlpha if true, return any available alpha data as a 4th channel.
+<i>544</i>&nbsp;	 * @return
+<i>545</i>&nbsp;	 */
+<i>546</i>&nbsp;	public static Mat imageToMatBGR(final BufferedImage img, final boolean includeAlpha) {
+<b class="nc"><i>547</i>&nbsp;		return imageToMatRGBorBGR(img, true, includeAlpha);</b>
+<i>548</i>&nbsp;	}
+<i>549</i>&nbsp;	
+<i>550</i>&nbsp;	/**
+<i>551</i>&nbsp;	 * Extract 8-bit unsigned pixels from a BufferedImage, either as RGB(A) (default) 
+<i>552</i>&nbsp;	 * or BGR(A) (OpenCV&#39;s preferred format).
+<i>553</i>&nbsp;	 * 
+<i>554</i>&nbsp;	 * @param img input image
+<i>555</i>&nbsp;	 * @param doBGR if true, request BGR rather than RGB
+<i>556</i>&nbsp;	 * @param includeAlpha if true, return any available alpha data as a 4th channel.
+<i>557</i>&nbsp;	 * @return
+<i>558</i>&nbsp;	 */
+<i>559</i>&nbsp;	private static Mat imageToMatRGBorBGR(final BufferedImage img, final boolean doBGR, final boolean includeAlpha) {
+<i>560</i>&nbsp;		// We can request the RGB values directly
+<b class="nc"><i>561</i>&nbsp;		int width = img.getWidth();</b>
+<b class="nc"><i>562</i>&nbsp;		int height = img.getHeight();</b>
+<b class="nc"><i>563</i>&nbsp;		int[] data = img.getRGB(0, 0, width, height, null, 0, img.getWidth());</b>
+<i>564</i>&nbsp;		
+<i>565</i>&nbsp;		Mat mat;
+<b class="nc"><i>566</i>&nbsp;		if (includeAlpha)</b>
+<b class="nc"><i>567</i>&nbsp;			mat = new Mat(height, width, CV_8UC4);</b>
+<i>568</i>&nbsp;		else
+<b class="nc"><i>569</i>&nbsp;			mat = new Mat(height, width, CV_8UC3);</b>
+<i>570</i>&nbsp;
+<b class="nc"><i>571</i>&nbsp;		UByteIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>572</i>&nbsp;		for (int y = 0; y &lt; height; y++) {</b>
+<b class="nc"><i>573</i>&nbsp;			for (int x = 0; x &lt; width; x++) {</b>
+<b class="nc"><i>574</i>&nbsp;				int val = data[y*width + x];</b>
+<b class="nc"><i>575</i>&nbsp;				int r = ColorTools.red(val);</b>
+<b class="nc"><i>576</i>&nbsp;				int g = ColorTools.green(val);</b>
+<b class="nc"><i>577</i>&nbsp;				int b = ColorTools.blue(val);</b>
+<b class="nc"><i>578</i>&nbsp;				if (doBGR) {</b>
+<b class="nc"><i>579</i>&nbsp;					indexer.put(y, x, 0, b);</b>
+<b class="nc"><i>580</i>&nbsp;					indexer.put(y, x, 1, g);</b>
+<b class="nc"><i>581</i>&nbsp;					indexer.put(y, x, 2, r);</b>
+<i>582</i>&nbsp;				} else {
+<b class="nc"><i>583</i>&nbsp;					indexer.put(y, x, 0, r);</b>
+<b class="nc"><i>584</i>&nbsp;					indexer.put(y, x, 1, g);</b>
+<b class="nc"><i>585</i>&nbsp;					indexer.put(y, x, 2, b);</b>
+<i>586</i>&nbsp;				}
+<b class="nc"><i>587</i>&nbsp;				if (includeAlpha) {</b>
+<b class="nc"><i>588</i>&nbsp;					int a = ColorTools.alpha(val);</b>
+<b class="nc"><i>589</i>&nbsp;					indexer.put(y, x, 3, a);</b>
+<i>590</i>&nbsp;				}
+<i>591</i>&nbsp;			}
+<i>592</i>&nbsp;		}
+<b class="nc"><i>593</i>&nbsp;		indexer.release();</b>
+<i>594</i>&nbsp;		
+<b class="nc"><i>595</i>&nbsp;		return mat;</b>
+<i>596</i>&nbsp;	}
+<i>597</i>&nbsp;	
+<i>598</i>&nbsp;	/**
+<i>599</i>&nbsp;	 * Create a labelled image from a binary image using findContours and drawContours.
+<i>600</i>&nbsp;	 * @param matBinary
+<i>601</i>&nbsp;	 * @param matLabels
+<i>602</i>&nbsp;	 * @param contourRetrievalMode defined within OpenCV findContours
+<i>603</i>&nbsp;	 */
+<i>604</i>&nbsp;	public static void labelImage(Mat matBinary, Mat matLabels, int contourRetrievalMode) {
+<b class="nc"><i>605</i>&nbsp;		MatVector contours = new MatVector();</b>
+<b class="nc"><i>606</i>&nbsp;		Mat hierarchy = new Mat();</b>
+<b class="nc"><i>607</i>&nbsp;		opencv_imgproc.findContours(matBinary, contours, hierarchy, contourRetrievalMode, opencv_imgproc.CHAIN_APPROX_SIMPLE);</b>
+<b class="nc"><i>608</i>&nbsp;		Point offset = new Point(0, 0);</b>
+<b class="nc"><i>609</i>&nbsp;		for (int c = 0; c &lt; contours.size(); c++) {</b>
+<b class="nc"><i>610</i>&nbsp;			opencv_imgproc.drawContours(matLabels, contours, c, Scalar.all(c+1), -1, 8, hierarchy, 2, offset);</b>
+<i>611</i>&nbsp;		}
+<b class="nc"><i>612</i>&nbsp;		hierarchy.close();</b>
+<b class="nc"><i>613</i>&nbsp;		contours.close();</b>
+<b class="nc"><i>614</i>&nbsp;	}</b>
+<i>615</i>&nbsp;	
+<i>616</i>&nbsp;	
+<i>617</i>&nbsp;	/**
+<i>618</i>&nbsp;	 * Set pixels from a byte array.
+<i>619</i>&nbsp;	 * &lt;p&gt;
+<i>620</i>&nbsp;	 * There is no real error checking; it is assumed that the pixel array is in the appropriate format.
+<i>621</i>&nbsp;	 * 
+<i>622</i>&nbsp;	 * @param mat
+<i>623</i>&nbsp;	 * @param pixels
+<i>624</i>&nbsp;	 */
+<i>625</i>&nbsp;	public static void putPixelsUnsigned(Mat mat, byte[] pixels) {
+<b class="nc"><i>626</i>&nbsp;		Indexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>627</i>&nbsp;		if (indexer instanceof ByteIndexer) {</b>
+<b class="nc"><i>628</i>&nbsp;			((ByteIndexer) indexer).put(0, pixels);</b>
+<b class="nc"><i>629</i>&nbsp;		} else if (indexer instanceof UByteIndexer) {</b>
+<b class="nc"><i>630</i>&nbsp;			int n = pixels.length;</b>
+<b class="nc"><i>631</i>&nbsp;			for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>632</i>&nbsp;				((UByteIndexer) indexer).put(0, pixels[i] &amp; 0xFF);</b>
+<i>633</i>&nbsp;			}
+<b class="nc"><i>634</i>&nbsp;		} else</b>
+<b class="nc"><i>635</i>&nbsp;			throw new IllegalArgumentException(&quot;Expected a ByteIndexer, but instead got &quot; + indexer.getClass());</b>
+<b class="nc"><i>636</i>&nbsp;	}</b>
+<i>637</i>&nbsp;	
+<i>638</i>&nbsp;	/**
+<i>639</i>&nbsp;	 * Set pixels from a float array.
+<i>640</i>&nbsp;	 * &lt;p&gt;
+<i>641</i>&nbsp;	 * There is no real error checking; it is assumed that the pixel array is in the appropriate format.
+<i>642</i>&nbsp;	 * 
+<i>643</i>&nbsp;	 * @param mat
+<i>644</i>&nbsp;	 * @param pixels
+<i>645</i>&nbsp;	 */
+<i>646</i>&nbsp;	public static void putPixelsFloat(Mat mat, float[] pixels) {
+<b class="nc"><i>647</i>&nbsp;		Indexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>648</i>&nbsp;		if (indexer instanceof FloatIndexer) {</b>
+<b class="nc"><i>649</i>&nbsp;			((FloatIndexer) indexer).put(0, pixels);</b>
+<i>650</i>&nbsp;		} else
+<b class="nc"><i>651</i>&nbsp;			throw new IllegalArgumentException(&quot;Expected a FloatIndexer, but instead got &quot; + indexer.getClass());</b>
+<b class="nc"><i>652</i>&nbsp;	}</b>
+<i>653</i>&nbsp;
+<i>654</i>&nbsp;	/**
+<i>655</i>&nbsp;	 * Create a Mat depicting a circle of the specified radius.
+<i>656</i>&nbsp;	 * &lt;p&gt;
+<i>657</i>&nbsp;	 * Pixels within the circle have the value 1, pixels outside are 0.
+<i>658</i>&nbsp;	 * 
+<i>659</i>&nbsp;	 * @param radius
+<i>660</i>&nbsp;	 * @return
+<i>661</i>&nbsp;	 */
+<i>662</i>&nbsp;	public static Mat getCircularStructuringElement(int radius) {
+<i>663</i>&nbsp;		// TODO: Find out why this doesn&#39;t just call a standard request for a strel...
+<b class="nc"><i>664</i>&nbsp;		Mat strel = new Mat(radius*2+1, radius*2+1, CV_8UC1, Scalar.ZERO);</b>
+<b class="nc"><i>665</i>&nbsp;		opencv_imgproc.circle(strel, new Point(radius, radius), radius, Scalar.ONE, -1, opencv_imgproc.LINE_8, 0);</b>
+<b class="nc"><i>666</i>&nbsp;		return strel;</b>
+<i>667</i>&nbsp;	}
+<i>668</i>&nbsp;
+<i>669</i>&nbsp;	/**
+<i>670</i>&nbsp;	 * Invert a binary image.
+<i>671</i>&nbsp;	 * &lt;p&gt;
+<i>672</i>&nbsp;	 * Specifically, sets all zero pixels to 255 and all non-zero pixels to 0.
+<i>673</i>&nbsp;	 * 
+<i>674</i>&nbsp;	 * @param matBinary
+<i>675</i>&nbsp;	 * @param matDest
+<i>676</i>&nbsp;	 */
+<i>677</i>&nbsp;	public static void invertBinary(Mat matBinary, Mat matDest) {
+<b class="nc"><i>678</i>&nbsp;		compare(matBinary, new Mat(1, 1, CV_32FC1, Scalar.ZERO), matDest, CMP_EQ);</b>
+<b class="nc"><i>679</i>&nbsp;	}</b>
+<i>680</i>&nbsp;	
+<i>681</i>&nbsp;	
+<i>682</i>&nbsp;	/**
+<i>683</i>&nbsp;	 * Extract pixels as a float[] array.
+<i>684</i>&nbsp;	 * &lt;p&gt;
+<i>685</i>&nbsp;	 * Implementation note: In its current form, this is not terribly efficient. 
+<i>686</i>&nbsp;	 * Also be wary if the Mat is not continuous.
+<i>687</i>&nbsp;	 * 
+<i>688</i>&nbsp;	 * @param mat
+<i>689</i>&nbsp;	 * @param pixels
+<i>690</i>&nbsp;	 * @return
+<i>691</i>&nbsp;	 */
+<i>692</i>&nbsp;	public static float[] extractPixels(Mat mat, float[] pixels) {
+<b class="nc"><i>693</i>&nbsp;		if (pixels == null)</b>
+<b class="nc"><i>694</i>&nbsp;			pixels = new float[(int)mat.total()];</b>
+<b class="nc"><i>695</i>&nbsp;		Mat mat2 = null;</b>
+<b class="nc"><i>696</i>&nbsp;		if (mat.depth() != CV_32F) {</b>
+<b class="nc"><i>697</i>&nbsp;			mat2 = new Mat();</b>
+<b class="nc"><i>698</i>&nbsp;			mat.convertTo(mat2, CV_32F);</b>
+<b class="nc"><i>699</i>&nbsp;			mat = mat2;</b>
+<i>700</i>&nbsp;		}
+<b class="nc"><i>701</i>&nbsp;		FloatIndexer idx = mat.createIndexer();</b>
+<b class="nc"><i>702</i>&nbsp;		idx.get(0L, pixels);</b>
+<b class="nc"><i>703</i>&nbsp;		idx.release();</b>
+<i>704</i>&nbsp;		
+<i>705</i>&nbsp;//		FloatBuffer buffer = mat.createBuffer();
+<i>706</i>&nbsp;//		buffer.get(pixels);
+<b class="nc"><i>707</i>&nbsp;		if (mat2 != null)</b>
+<b class="nc"><i>708</i>&nbsp;			mat2.release();</b>
+<b class="nc"><i>709</i>&nbsp;		return pixels;</b>
+<i>710</i>&nbsp;	}
+<i>711</i>&nbsp;	
+<i>712</i>&nbsp;	/**
+<i>713</i>&nbsp;	 * Convert a Mat to a {@link SimpleImage}.
+<i>714</i>&nbsp;	 * @param mat
+<i>715</i>&nbsp;	 * @param channel
+<i>716</i>&nbsp;	 * @return
+<i>717</i>&nbsp;	 */
+<i>718</i>&nbsp;	public static SimpleImage matToSimpleImage(Mat mat, int channel) {
+<b class="nc"><i>719</i>&nbsp;		Mat temp = mat;</b>
+<b class="nc"><i>720</i>&nbsp;		if (mat.channels() &gt; 1) {</b>
+<b class="nc"><i>721</i>&nbsp;			temp = new Mat();</b>
+<b class="nc"><i>722</i>&nbsp;			opencv_core.extractChannel(mat, temp, channel);</b>
+<i>723</i>&nbsp;		}
+<b class="nc"><i>724</i>&nbsp;		float[] pixels = extractPixels(temp, null);</b>
+<b class="nc"><i>725</i>&nbsp;		return SimpleImages.createFloatImage(pixels, mat.cols(), mat.rows());</b>
+<i>726</i>&nbsp;	}
+<i>727</i>&nbsp;	
+<i>728</i>&nbsp;
+<i>729</i>&nbsp;	/**
+<i>730</i>&nbsp;	 * Fill holes in a binary image (1-channel, 8-bit unsigned) with an area &amp;lt;= maxArea.
+<i>731</i>&nbsp;	 * 
+<i>732</i>&nbsp;	 * @param matBinary
+<i>733</i>&nbsp;	 * @param maxArea
+<i>734</i>&nbsp;	 */
+<i>735</i>&nbsp;	public static void fillSmallHoles(Mat matBinary, double maxArea) {
+<b class="nc"><i>736</i>&nbsp;		Mat matHoles = new Mat();</b>
+<b class="nc"><i>737</i>&nbsp;		invertBinary(matBinary, matHoles);</b>
+<b class="nc"><i>738</i>&nbsp;		MatVector contours = new MatVector();</b>
+<b class="nc"><i>739</i>&nbsp;		Mat hierarchy = new Mat();</b>
+<b class="nc"><i>740</i>&nbsp;		opencv_imgproc.findContours(matHoles, contours, hierarchy, opencv_imgproc.RETR_CCOMP, opencv_imgproc.CHAIN_APPROX_SIMPLE);</b>
+<b class="nc"><i>741</i>&nbsp;		Scalar color = Scalar.WHITE;</b>
+<b class="nc"><i>742</i>&nbsp;		int ind = 0;</b>
+<b class="nc"><i>743</i>&nbsp;		Point offset = new Point(0, 0);</b>
+<b class="nc"><i>744</i>&nbsp;		Indexer indexerHierarchy = hierarchy.createIndexer();</b>
+<b class="nc"><i>745</i>&nbsp;		for (int c = 0; c &lt; contours.size(); c++) {</b>
+<b class="nc"><i>746</i>&nbsp;			Mat contour = contours.get(c);</b>
+<i>747</i>&nbsp;			// Only fill the small, inner contours
+<i>748</i>&nbsp;			// TODO: Check hierarchy indexing after switch to JavaCPP!!
+<b class="nc"><i>749</i>&nbsp;			if (indexerHierarchy.getDouble(0, ind, 3) &gt;= 0 || opencv_imgproc.contourArea(contour) &gt; maxArea) {</b>
+<b class="nc"><i>750</i>&nbsp;				ind++;</b>
+<b class="nc"><i>751</i>&nbsp;				continue;</b>
+<i>752</i>&nbsp;			}
+<b class="nc"><i>753</i>&nbsp;			opencv_imgproc.drawContours(matBinary, contours, c, color, -1, opencv_imgproc.LINE_8, null, Integer.MAX_VALUE, offset);</b>
+<b class="nc"><i>754</i>&nbsp;			ind++;</b>
+<i>755</i>&nbsp;		}
+<b class="nc"><i>756</i>&nbsp;	}</b>
+<i>757</i>&nbsp;
+<i>758</i>&nbsp;	/**
+<i>759</i>&nbsp;	 * Apply a watershed transform to refine a binary image, guided either by a distance transform or a supplied intensity image.
+<i>760</i>&nbsp;	 * 
+<i>761</i>&nbsp;	 * @param matBinary thresholded, 8-bit unsigned integer binary image
+<i>762</i>&nbsp;	 * @param matWatershedIntensities optional intensity image for applying watershed transform; if not set, distance transform of binary will be used
+<i>763</i>&nbsp;	 * @param threshold
+<i>764</i>&nbsp;	 * @param maximaRadius
+<i>765</i>&nbsp;	 */
+<i>766</i>&nbsp;	public static void watershedIntensitySplit(Mat matBinary, Mat matWatershedIntensities, double threshold, int maximaRadius) {
+<i>767</i>&nbsp;	
+<i>768</i>&nbsp;		// Separate by intensity using the watershed transform
+<i>769</i>&nbsp;		// Find local maxima
+<b class="nc"><i>770</i>&nbsp;		Mat matTemp = new Mat();</b>
+<i>771</i>&nbsp;		
+<b class="nc"><i>772</i>&nbsp;		Mat strel = getCircularStructuringElement(maximaRadius);</b>
+<b class="nc"><i>773</i>&nbsp;		opencv_imgproc.dilate(matWatershedIntensities, matTemp, strel);</b>
+<b class="nc"><i>774</i>&nbsp;		compare(matWatershedIntensities, matTemp, matTemp, CMP_EQ);</b>
+<b class="nc"><i>775</i>&nbsp;		opencv_imgproc.dilate(matTemp, matTemp, getCircularStructuringElement(2));</b>
+<b class="nc"><i>776</i>&nbsp;		Mat matWatershedSeedsBinary = matTemp;</b>
+<i>777</i>&nbsp;	
+<i>778</i>&nbsp;		// Remove everything outside the thresholded region
+<b class="nc"><i>779</i>&nbsp;		min(matWatershedSeedsBinary, matBinary, matWatershedSeedsBinary);</b>
+<i>780</i>&nbsp;	
+<i>781</i>&nbsp;		// Create labels for watershed
+<b class="nc"><i>782</i>&nbsp;		Mat matLabels = new Mat(matWatershedIntensities.size(), CV_32F, Scalar.ZERO);</b>
+<b class="nc"><i>783</i>&nbsp;		labelImage(matWatershedSeedsBinary, matLabels, opencv_imgproc.RETR_CCOMP);</b>
+<i>784</i>&nbsp;		
+<i>785</i>&nbsp;		// Do watershed
+<i>786</i>&nbsp;		// 8-connectivity is essential for the watershed lines to be preserved - otherwise OpenCV&#39;s findContours could not be used
+<b class="nc"><i>787</i>&nbsp;		ProcessingCV.doWatershed(matWatershedIntensities, matLabels, threshold, true);</b>
+<i>788</i>&nbsp;	
+<i>789</i>&nbsp;		// Update the binary image to remove the watershed lines
+<b class="nc"><i>790</i>&nbsp;		multiply(matBinary, matLabels, matBinary, 1, matBinary.type());</b>
+<b class="nc"><i>791</i>&nbsp;	}</b>
+<i>792</i>&nbsp;	
+<i>793</i>&nbsp;	
+<i>794</i>&nbsp;	/**
+<i>795</i>&nbsp;	 * Convert a single-channel OpenCV {@code Mat} into an ImageJ {@code ImageProcessor}.
+<i>796</i>&nbsp;	 * 
+<i>797</i>&nbsp;	 * @param mat
+<i>798</i>&nbsp;	 * @return
+<i>799</i>&nbsp;	 */
+<i>800</i>&nbsp;	public static ImageProcessor matToImageProcessor(Mat mat) {
+<b class="nc"><i>801</i>&nbsp;		if (mat.channels() != 1)</b>
+<b class="nc"><i>802</i>&nbsp;			throw new IllegalArgumentException(&quot;Only a single-channel Mat can be converted to an ImageProcessor! Specified Mat has &quot; + mat.channels() + &quot; channels&quot;);</b>
+<b class="nc"><i>803</i>&nbsp;	    int w = mat.cols();</b>
+<b class="nc"><i>804</i>&nbsp;	    int h = mat.rows();</b>
+<b class="nc"><i>805</i>&nbsp;	    if (mat.depth() == opencv_core.CV_32F) {</b>
+<b class="nc"><i>806</i>&nbsp;	        FloatIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>807</i>&nbsp;	        float[] pixels = new float[w*h];</b>
+<b class="nc"><i>808</i>&nbsp;	        indexer.get(0L, pixels);</b>
+<b class="nc"><i>809</i>&nbsp;	        return new FloatProcessor(w, h, pixels);</b>
+<b class="nc"><i>810</i>&nbsp;	    } else if (mat.depth() == opencv_core.CV_8U) {</b>
+<b class="nc"><i>811</i>&nbsp;	        UByteIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>812</i>&nbsp;	        int[] pixels = new int[w*h];</b>
+<b class="nc"><i>813</i>&nbsp;	        indexer.get(0L, pixels);</b>
+<b class="nc"><i>814</i>&nbsp;	        ByteProcessor bp = new ByteProcessor(w, h);</b>
+<b class="nc"><i>815</i>&nbsp;	        for (int i = 0; i &lt; pixels.length; i++)</b>
+<b class="nc"><i>816</i>&nbsp;	        	bp.set(i, pixels[i]);</b>
+<b class="nc"><i>817</i>&nbsp;	        return bp;</b>
+<b class="nc"><i>818</i>&nbsp;	    } else if (mat.depth() == opencv_core.CV_16U) {</b>
+<b class="nc"><i>819</i>&nbsp;	        UShortIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>820</i>&nbsp;	        int[] pixels = new int[w*h];</b>
+<b class="nc"><i>821</i>&nbsp;	        indexer.get(0L, pixels);</b>
+<b class="nc"><i>822</i>&nbsp;	        short[] shortPixels = new short[pixels.length];</b>
+<b class="nc"><i>823</i>&nbsp;	        for (int i = 0; i &lt; pixels.length; i++)</b>
+<b class="nc"><i>824</i>&nbsp;	        	shortPixels[i] = (short)pixels[i];</b>
+<b class="nc"><i>825</i>&nbsp;	        return new ShortProcessor(w, h, shortPixels, null); // TODO: Test!</b>
+<i>826</i>&nbsp;	    } else {
+<b class="nc"><i>827</i>&nbsp;	    	Mat mat2 = new Mat();</b>
+<b class="nc"><i>828</i>&nbsp;	        mat.convertTo(mat2, opencv_core.CV_32F);</b>
+<b class="nc"><i>829</i>&nbsp;	        ImageProcessor ip = matToImageProcessor(mat2);</b>
+<b class="nc"><i>830</i>&nbsp;	        mat2.release();</b>
+<b class="nc"><i>831</i>&nbsp;	        return ip;</b>
+<i>832</i>&nbsp;	    }
+<i>833</i>&nbsp;	}
+<i>834</i>&nbsp;
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;	/**
+<i>837</i>&nbsp;	 * Convert an OpenCV {@code Mat} into an ImageJ {@code ImagePlus}.
+<i>838</i>&nbsp;	 * 
+<i>839</i>&nbsp;	 * @param mat
+<i>840</i>&nbsp;	 * @param title
+<i>841</i>&nbsp;	 * @return
+<i>842</i>&nbsp;	 */
+<i>843</i>&nbsp;	public static ImagePlus matToImagePlus(Mat mat, String title) {
+<b class="nc"><i>844</i>&nbsp;	    if (mat.channels() == 1) {</b>
+<b class="nc"><i>845</i>&nbsp;	        return new ImagePlus(title, matToImageProcessor(mat));</b>
+<i>846</i>&nbsp;	    }
+<b class="nc"><i>847</i>&nbsp;	    return matToImagePlus(title, mat);</b>
+<i>848</i>&nbsp;//	    MatVector matvec = new MatVector();
+<i>849</i>&nbsp;//	    opencv_core.split(mat, matvec);
+<i>850</i>&nbsp;//	    return matToImagePlus(matvec, title);
+<i>851</i>&nbsp;	};
+<i>852</i>&nbsp;	
+<i>853</i>&nbsp;	/**
+<i>854</i>&nbsp;	 * Convert an OpenCV {@code MatVector} into an ImageJ {@code ImagePlus}.
+<i>855</i>&nbsp;	 * 
+<i>856</i>&nbsp;	 * @param title
+<i>857</i>&nbsp;	 * @param mats
+<i>858</i>&nbsp;	 * @return 
+<i>859</i>&nbsp;	 */
+<i>860</i>&nbsp;	public static ImagePlus matToImagePlus(String title, Mat... mats) {
+<b class="nc"><i>861</i>&nbsp;		ImageStack stack = null;</b>
+<b class="nc"><i>862</i>&nbsp;		int nChannels = 1;</b>
+<b class="nc"><i>863</i>&nbsp;	    for (Mat mat : mats) {</b>
+<b class="nc"><i>864</i>&nbsp;	    	if (stack == null) {</b>
+<b class="nc"><i>865</i>&nbsp;	    		stack = new ImageStack(mat.cols(), mat.rows());</b>
+<b class="nc"><i>866</i>&nbsp;	    	} else if (mat.channels() != nChannels) {</b>
+<b class="nc"><i>867</i>&nbsp;	    		throw new IllegalArgumentException(&quot;Number of channels must be the same for all Mats!&quot;);</b>
+<i>868</i>&nbsp;	    	}
+<i>869</i>&nbsp;	    	
+<b class="nc"><i>870</i>&nbsp;	    	if (mat.channels() == 1) {</b>
+<b class="nc"><i>871</i>&nbsp;		    	ImageProcessor ip = matToImageProcessor(mat);</b>
+<b class="nc"><i>872</i>&nbsp;		        stack.addSlice(ip);	    		</b>
+<b class="nc"><i>873</i>&nbsp;	    	} else {</b>
+<b class="nc"><i>874</i>&nbsp;	    		nChannels = mat.channels();</b>
+<b class="nc"><i>875</i>&nbsp;	    		MatVector split = new MatVector();</b>
+<b class="nc"><i>876</i>&nbsp;	    		opencv_core.split(mat, split);</b>
+<b class="nc"><i>877</i>&nbsp;	    		for (int c = 0; c &lt; split.size(); c++)</b>
+<b class="nc"><i>878</i>&nbsp;	    			stack.addSlice(matToImageProcessor(split.get(c)));	</b>
+<i>879</i>&nbsp;	    	}
+<i>880</i>&nbsp;	    }
+<b class="nc"><i>881</i>&nbsp;	    ImagePlus imp = new ImagePlus(title, stack);</b>
+<b class="nc"><i>882</i>&nbsp;	    imp.setDimensions(nChannels, mats.length, 1);</b>
+<b class="nc"><i>883</i>&nbsp;	    return nChannels == 1 ? imp : new CompositeImage(imp);</b>
+<i>884</i>&nbsp;	}
+<i>885</i>&nbsp;
+<i>886</i>&nbsp;
+<i>887</i>&nbsp;	/**
+<i>888</i>&nbsp;	 * Get filter coefficients for a 1D Gaussian (derivative) kernel.
+<i>889</i>&nbsp;	 * 
+<i>890</i>&nbsp;	 * @param sigma Gaussian sigma
+<i>891</i>&nbsp;	 * @param order order of the derivative: 0, (&#39;standard&#39; Gaussian filter), 1 (first derivative) or 2 (second derivative)
+<i>892</i>&nbsp;	 * @param length number of coefficients in the kernel; in general, this should be an odd number
+<i>893</i>&nbsp;	 * @return
+<i>894</i>&nbsp;	 */
+<i>895</i>&nbsp;	public static double[] getGaussianDeriv(double sigma, int order, int length) {
+<b class="nc"><i>896</i>&nbsp;		int n = length / 2;</b>
+<b class="nc"><i>897</i>&nbsp;	    double[] kernel = new double[length];</b>
+<b class="nc"><i>898</i>&nbsp;	    double denom2 = 2 * sigma * sigma;</b>
+<b class="nc"><i>899</i>&nbsp;	    double denom = sigma * Math.sqrt(2 * Math.PI);</b>
+<b class="nc"><i>900</i>&nbsp;	    switch (order) {</b>
+<i>901</i>&nbsp;	        case 0:
+<b class="nc"><i>902</i>&nbsp;	            for (int x = -n; x &lt; length-n; x++) {</b>
+<b class="nc"><i>903</i>&nbsp;	                double val = Math.exp(-(double)(x * x)/denom2);</b>
+<b class="nc"><i>904</i>&nbsp;	                kernel[x + n] = (float)(val / denom);</b>
+<i>905</i>&nbsp;	            }
+<b class="nc"><i>906</i>&nbsp;	            return kernel;</b>
+<i>907</i>&nbsp;	        case 1:
+<b class="nc"><i>908</i>&nbsp;	            denom *= sigma * sigma;</b>
+<b class="nc"><i>909</i>&nbsp;	            for (int x = -n; x &lt; length-n; x++) {</b>
+<b class="nc"><i>910</i>&nbsp;	                double val = - x * Math.exp(-(double)(x * x)/denom2);</b>
+<b class="nc"><i>911</i>&nbsp;	                kernel[x + n] = (float)(val / denom);</b>
+<i>912</i>&nbsp;	            }
+<b class="nc"><i>913</i>&nbsp;	            return kernel;</b>
+<i>914</i>&nbsp;	        case 2:
+<b class="nc"><i>915</i>&nbsp;	            denom *= sigma * sigma * sigma * sigma;</b>
+<b class="nc"><i>916</i>&nbsp;	            for (int x = -n; x &lt; length-n; x++) {</b>
+<b class="nc"><i>917</i>&nbsp;	                double val = - (sigma*sigma - x*x) * Math.exp(-(double)(x * x)/denom2);</b>
+<b class="nc"><i>918</i>&nbsp;	                kernel[x + n] = (float)(val / denom);</b>
+<i>919</i>&nbsp;	            }
+<b class="nc"><i>920</i>&nbsp;	            return kernel;</b>
+<i>921</i>&nbsp;	        default:
+<b class="nc"><i>922</i>&nbsp;	            throw new IllegalArgumentException(&quot;Order must be &lt;= 2&quot;);</b>
+<i>923</i>&nbsp;	    }
+<i>924</i>&nbsp;	}
+<i>925</i>&nbsp;
+<i>926</i>&nbsp;
+<i>927</i>&nbsp;	/**
+<i>928</i>&nbsp;	 * Get filter coefficients for a 1D Gaussian (derivative) kernel.
+<i>929</i>&nbsp;	 * 
+<i>930</i>&nbsp;	 * @param sigma Gaussian sigma
+<i>931</i>&nbsp;	 * @param order order of the derivative: 0, (&#39;standard&#39; Gaussian filter), 1 (first derivative) or 2 (second derivative)
+<i>932</i>&nbsp;	 * @param doColumn if true, return coefficients as a column vector rather than a row vector (default)
+<i>933</i>&nbsp;	 * @return
+<i>934</i>&nbsp;	 */
+<i>935</i>&nbsp;	public static Mat getGaussianDerivKernel(double sigma, int order, boolean doColumn) {
+<b class="nc"><i>936</i>&nbsp;	    int n = (int)(sigma * 4);</b>
+<b class="nc"><i>937</i>&nbsp;		int len = n * 2 + 1;</b>
+<b class="nc"><i>938</i>&nbsp;		double[] kernel = getGaussianDeriv(sigma, order, len);</b>
+<i>939</i>&nbsp;		Mat mat;
+<b class="nc"><i>940</i>&nbsp;		if (doColumn)</b>
+<b class="nc"><i>941</i>&nbsp;			mat = new Mat(1, kernel.length, opencv_core.CV_64F);</b>
+<i>942</i>&nbsp;		else
+<b class="nc"><i>943</i>&nbsp;			mat = new Mat(kernel.length, 1, opencv_core.CV_64F);</b>
+<i>944</i>&nbsp;		
+<b class="nc"><i>945</i>&nbsp;		DoubleIndexer indexer = mat.createIndexer();</b>
+<b class="nc"><i>946</i>&nbsp;		indexer.put(0L, kernel);</b>
+<b class="nc"><i>947</i>&nbsp;		indexer.release();</b>
+<i>948</i>&nbsp;		
+<b class="nc"><i>949</i>&nbsp;		return mat;</b>
+<i>950</i>&nbsp;	}
+<i>951</i>&nbsp;
+<i>952</i>&nbsp;
+<i>953</i>&nbsp;	static int ensureInRange(int ind, int max, int border) {
+<b class="nc"><i>954</i>&nbsp;		if (ind &lt; 0) {</b>
+<b class="nc"><i>955</i>&nbsp;			switch(border) {</b>
+<i>956</i>&nbsp;			case opencv_core.BORDER_REFLECT:
+<b class="nc"><i>957</i>&nbsp;				return ensureInRange(-(ind + 1), max, border);</b>
+<i>958</i>&nbsp;			case opencv_core.BORDER_REFLECT_101:
+<b class="nc"><i>959</i>&nbsp;				return ensureInRange(-ind, max, border);</b>
+<i>960</i>&nbsp;			case opencv_core.BORDER_REPLICATE:
+<i>961</i>&nbsp;			default:
+<b class="nc"><i>962</i>&nbsp;				return 0;</b>
+<i>963</i>&nbsp;			}
+<i>964</i>&nbsp;		}
+<i>965</i>&nbsp;		
+<b class="nc"><i>966</i>&nbsp;		if (ind &gt;= max) {</b>
+<b class="nc"><i>967</i>&nbsp;			switch(border) {</b>
+<i>968</i>&nbsp;			case opencv_core.BORDER_REFLECT:
+<b class="nc"><i>969</i>&nbsp;				return ensureInRange(2*max - ind - 1, max, border);</b>
+<i>970</i>&nbsp;			case opencv_core.BORDER_REFLECT_101:
+<b class="nc"><i>971</i>&nbsp;				return ensureInRange(2*max - ind - 2, max, border);</b>
+<i>972</i>&nbsp;			case opencv_core.BORDER_REPLICATE:
+<i>973</i>&nbsp;			default:
+<b class="nc"><i>974</i>&nbsp;				return max-1;</b>
+<i>975</i>&nbsp;			}
+<i>976</i>&nbsp;		}
+<b class="nc"><i>977</i>&nbsp;		return ind;</b>
+<i>978</i>&nbsp;	}
+<i>979</i>&nbsp;	
+<i>980</i>&nbsp;	
+<i>981</i>&nbsp;	static void weightedSum(List&lt;Mat&gt; mats, double[] weights, Mat dest) {
+<b class="nc"><i>982</i>&nbsp;		boolean isFirst = true;</b>
+<b class="nc"><i>983</i>&nbsp;		for (int i = 0; i &lt; weights.length; i++) {</b>
+<b class="nc"><i>984</i>&nbsp;			double w = weights[i];</b>
+<b class="nc"><i>985</i>&nbsp;			if (w == 0)</b>
+<b class="nc"><i>986</i>&nbsp;				continue;</b>
+<b class="nc"><i>987</i>&nbsp;			if (isFirst) {</b>
+<b class="nc"><i>988</i>&nbsp;				dest.put(opencv_core.multiply(mats.get(i), w));</b>
+<b class="nc"><i>989</i>&nbsp;				isFirst = false;</b>
+<i>990</i>&nbsp;			} else
+<b class="nc"><i>991</i>&nbsp;				opencv_core.scaleAdd(mats.get(i), w, dest, dest);</b>
+<i>992</i>&nbsp;		}
+<i>993</i>&nbsp;		// TODO: Check this does something sensible!
+<b class="nc"><i>994</i>&nbsp;		if (isFirst) {</b>
+<b class="nc"><i>995</i>&nbsp;			dest.create(mats.get(0).size(), mats.get(0).type());</b>
+<b class="nc"><i>996</i>&nbsp;			dest.put(Scalar.ZERO);</b>
+<i>997</i>&nbsp;		}
+<i>998</i>&nbsp;		
+<i>999</i>&nbsp;//		MatExpr expr = null;
+<i>1000</i>&nbsp;//		for (int i = 0; i &lt; weights.length; i++) {
+<i>1001</i>&nbsp;//			double w = weights[i];
+<i>1002</i>&nbsp;//			if (w == 0)
+<i>1003</i>&nbsp;//				continue;
+<i>1004</i>&nbsp;//			if (expr == null)
+<i>1005</i>&nbsp;//				expr = opencv_core.multiply(mats.get(i), w);
+<i>1006</i>&nbsp;//			else {
+<i>1007</i>&nbsp;//				MatExpr expr2 = opencv_core.add(expr, opencv_core.multiply(mats.get(i), w));
+<i>1008</i>&nbsp;//				expr.close();
+<i>1009</i>&nbsp;//				expr = expr2;
+<i>1010</i>&nbsp;//			}
+<i>1011</i>&nbsp;//		}
+<i>1012</i>&nbsp;//		dest.put(expr);
+<b class="nc"><i>1013</i>&nbsp;	}</b>
+<i>1014</i>&nbsp;	
+<i>1015</i>&nbsp;	/**
+<i>1016</i>&nbsp;	 * Apply a filter along the &#39;list&#39; dimension for a list of Mats, computing the value 
+<i>1017</i>&nbsp;	 * for a single entry. This is effectively computing a weighted sum of images in the list.
+<i>1018</i>&nbsp;	 * @param mats
+<i>1019</i>&nbsp;	 * @param kernel
+<i>1020</i>&nbsp;	 * @param ind3D
+<i>1021</i>&nbsp;	 * @param border
+<i>1022</i>&nbsp;	 * @return
+<i>1023</i>&nbsp;	 */
+<i>1024</i>&nbsp;	public static Mat filterSingleZ(List&lt;Mat&gt; mats, double[] kernel, int ind3D, int border) {
+<i>1025</i>&nbsp;		// Calculate weights for each image
+<b class="nc"><i>1026</i>&nbsp;		int n = mats.size();</b>
+<b class="nc"><i>1027</i>&nbsp;		int halfSize = kernel.length / 2;</b>
+<b class="nc"><i>1028</i>&nbsp;		int startInd = ind3D - halfSize;</b>
+<b class="nc"><i>1029</i>&nbsp;		int endInd = startInd + kernel.length;</b>
+<b class="nc"><i>1030</i>&nbsp;		double[] weights = new double[mats.size()];</b>
+<b class="nc"><i>1031</i>&nbsp;		int k = 0;</b>
+<b class="nc"><i>1032</i>&nbsp;		for (int i = startInd; i &lt; endInd; i++) {</b>
+<b class="nc"><i>1033</i>&nbsp;			int ind = ensureInRange(i, n, border);</b>
+<b class="nc"><i>1034</i>&nbsp;			weights[ind] += kernel[k];</b>
+<b class="nc"><i>1035</i>&nbsp;			k++;</b>
+<i>1036</i>&nbsp;		}
+<b class="nc"><i>1037</i>&nbsp;		Mat result = new Mat();</b>
+<b class="nc"><i>1038</i>&nbsp;		weightedSum(mats, weights, result);</b>
+<b class="nc"><i>1039</i>&nbsp;		return result;</b>
+<i>1040</i>&nbsp;	}
+<i>1041</i>&nbsp;	
+<i>1042</i>&nbsp;	
+<i>1043</i>&nbsp;	/**
+<i>1044</i>&nbsp;	 * Filter filter along entries in the input list.
+<i>1045</i>&nbsp;	 * &lt;p&gt;
+<i>1046</i>&nbsp;	 * If each Mat in the list can be considered a consecutive 2D image plane from a z-stack, 
+<i>1047</i>&nbsp;	 * this can be considered filtering along the z-dimension.
+<i>1048</i>&nbsp;	 * 
+<i>1049</i>&nbsp;	 * @param mats
+<i>1050</i>&nbsp;	 * @param kernelZ
+<i>1051</i>&nbsp;	 * @param ind3D if -1, return filtered results for all mats, otherwise only return results for the mat at the specified ind3D
+<i>1052</i>&nbsp;	 * @param border 
+<i>1053</i>&nbsp;	 * @return
+<i>1054</i>&nbsp;	 */
+<i>1055</i>&nbsp;	public static List&lt;Mat&gt; filterZ(List&lt;Mat&gt; mats, Mat kernelZ, int ind3D, int border) {
+<i>1056</i>&nbsp;		
+<i>1057</i>&nbsp;		/*
+<i>1058</i>&nbsp;		 * We can avoid the rigmarole of applying the full filtering 
+<i>1059</i>&nbsp;		 * by instead simply calculating the weighted sum corresponding to the convolution 
+<i>1060</i>&nbsp;		 * around the z-slice of interest only.
+<i>1061</i>&nbsp;		 */
+<i>1062</i>&nbsp;		
+<b class="nc"><i>1063</i>&nbsp;		boolean doWeightedSums = true;//ind3D &gt;= 0;</b>
+<i>1064</i>&nbsp;
+<b class="nc"><i>1065</i>&nbsp;		if (doWeightedSums) {</b>
+<i>1066</i>&nbsp;			// Extract kernel values
+<b class="nc"><i>1067</i>&nbsp;			int ks = (int)kernelZ.total();</b>
+<b class="nc"><i>1068</i>&nbsp;			double[] kernelArray = new double[ks];</b>
+<b class="nc"><i>1069</i>&nbsp;			DoubleIndexer idx = kernelZ.createIndexer();</b>
+<b class="nc"><i>1070</i>&nbsp;			idx.get(0L, kernelArray);</b>
+<b class="nc"><i>1071</i>&nbsp;			idx.release();</b>
+<i>1072</i>&nbsp;	
+<b class="nc"><i>1073</i>&nbsp;			if (ind3D &gt;= 0) {</b>
+<i>1074</i>&nbsp;				// Calculate weights for each image
+<b class="nc"><i>1075</i>&nbsp;				Mat result = filterSingleZ(mats, kernelArray, ind3D, border);</b>
+<b class="nc"><i>1076</i>&nbsp;				return Arrays.asList(result);</b>
+<i>1077</i>&nbsp;			} else {
+<b class="nc"><i>1078</i>&nbsp;				List&lt;Mat&gt; output = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1079</i>&nbsp;				for (int i = 0; i &lt; mats.size(); i++) {</b>
+<b class="nc"><i>1080</i>&nbsp;					Mat result = filterSingleZ(mats, kernelArray, i, border);</b>
+<b class="nc"><i>1081</i>&nbsp;					output.add(result);</b>
+<i>1082</i>&nbsp;				}
+<b class="nc"><i>1083</i>&nbsp;				return output;</b>
+<i>1084</i>&nbsp;			}
+<i>1085</i>&nbsp;		}		
+<i>1086</i>&nbsp;		
+<i>1087</i>&nbsp;		// Create a an array of images reshaped as column vectors
+<b class="nc"><i>1088</i>&nbsp;		Mat[] columns = new Mat[mats.size()];</b>
+<b class="nc"><i>1089</i>&nbsp;		int nRows = 0;</b>
+<b class="nc"><i>1090</i>&nbsp;		for (int i = 0; i &lt; mats.size(); i++) {</b>
+<b class="nc"><i>1091</i>&nbsp;			Mat mat = mats.get(i);</b>
+<b class="nc"><i>1092</i>&nbsp;			nRows = mat.rows();</b>
+<b class="nc"><i>1093</i>&nbsp;			columns[i] = mat.reshape(mat.channels(), mat.rows()*mat.cols());</b>
+<i>1094</i>&nbsp;		}
+<i>1095</i>&nbsp;		
+<i>1096</i>&nbsp;		// Concatenate columns, effectively meaning z dimension now along rows
+<b class="nc"><i>1097</i>&nbsp;		Mat matConcatZ = new Mat();</b>
+<b class="nc"><i>1098</i>&nbsp;		opencv_core.hconcat(new MatVector(columns), matConcatZ);</b>
+<i>1099</i>&nbsp;		
+<i>1100</i>&nbsp;		// Apply z filtering along rows
+<b class="nc"><i>1101</i>&nbsp;		if (kernelZ.rows() &gt; 1)</b>
+<b class="nc"><i>1102</i>&nbsp;			kernelZ = kernelZ.t().asMat();</b>
+<i>1103</i>&nbsp;		
+<i>1104</i>&nbsp;//		Mat empty = new Mat(1, 1, opencv_core.CV_64FC1, Scalar.ONE);
+<i>1105</i>&nbsp;//		opencv_imgproc.sepFilter2D(matConcatZ, matConcatZ, opencv_core.CV_32F, kernelZ, empty, null, 0.0, border);
+<b class="nc"><i>1106</i>&nbsp;		opencv_imgproc.filter2D(matConcatZ, matConcatZ, opencv_core.CV_32F, kernelZ, null, 0.0, border);</b>
+<i>1107</i>&nbsp;		
+<b class="nc"><i>1108</i>&nbsp;		int start = 0;</b>
+<b class="nc"><i>1109</i>&nbsp;		int end = mats.size();</b>
+<b class="nc"><i>1110</i>&nbsp;		if (ind3D &gt;= 0) {</b>
+<b class="nc"><i>1111</i>&nbsp;			start = ind3D;</b>
+<b class="nc"><i>1112</i>&nbsp;			end = ind3D+1;</b>
+<i>1113</i>&nbsp;		}
+<i>1114</i>&nbsp;		
+<i>1115</i>&nbsp;		// Reshape to create output list
+<b class="nc"><i>1116</i>&nbsp;		List&lt;Mat&gt; output = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1117</i>&nbsp;		for (int i = start; i &lt; end; i++) {</b>
+<b class="nc"><i>1118</i>&nbsp;			output.add(matConcatZ.col(i).clone().reshape(matConcatZ.channels(), nRows));</b>
+<i>1119</i>&nbsp;		}
+<i>1120</i>&nbsp;		
+<b class="nc"><i>1121</i>&nbsp;		return output;</b>
+<i>1122</i>&nbsp;	}
+<i>1123</i>&nbsp;
+<i>1124</i>&nbsp;
+<i>1125</i>&nbsp;	/**
+<i>1126</i>&nbsp;	 * Extract a list of Mats, where each Mat corresponds to a z-slice.
+<i>1127</i>&nbsp;	 * 
+<i>1128</i>&nbsp;	 * @param server
+<i>1129</i>&nbsp;	 * @param request
+<i>1130</i>&nbsp;	 * @param zMin first z slice, inclusive
+<i>1131</i>&nbsp;	 * @param zMax last z slice, exclusive
+<i>1132</i>&nbsp;	 * @return
+<i>1133</i>&nbsp;	 * @throws IOException
+<i>1134</i>&nbsp;	 */
+<i>1135</i>&nbsp;	public static List&lt;Mat&gt; extractZStack(ImageServer&lt;BufferedImage&gt; server, RegionRequest request, int zMin, int zMax) throws IOException {
+<b class="nc"><i>1136</i>&nbsp;		List&lt;Mat&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1137</i>&nbsp;		for (int z = zMin; z &lt; zMax; z++) {</b>
+<b class="nc"><i>1138</i>&nbsp;			RegionRequest request2 = RegionRequest.createInstance(server.getPath(), request.getDownsample(),</b>
+<b class="nc"><i>1139</i>&nbsp;					request.getX(), request.getY(), request.getWidth(), request.getHeight(), z, request.getT());</b>
+<b class="nc"><i>1140</i>&nbsp;			BufferedImage img = server.readBufferedImage(request2);</b>
+<b class="nc"><i>1141</i>&nbsp;			list.add(imageToMat(img));</b>
+<i>1142</i>&nbsp;		}
+<b class="nc"><i>1143</i>&nbsp;		return list;</b>
+<i>1144</i>&nbsp;	}
+<i>1145</i>&nbsp;
+<i>1146</i>&nbsp;
+<i>1147</i>&nbsp;	/**
+<i>1148</i>&nbsp;	 * Extract a list of Mats, where each Mat corresponds to a z-slice, for all available z-slices of a region.
+<i>1149</i>&nbsp;	 * 
+<i>1150</i>&nbsp;	 * @param server
+<i>1151</i>&nbsp;	 * @param request
+<i>1152</i>&nbsp;	 * @return
+<i>1153</i>&nbsp;	 * @throws IOException
+<i>1154</i>&nbsp;	 * @see #extractZStack(ImageServer, RegionRequest, int, int)
+<i>1155</i>&nbsp;	 */
+<i>1156</i>&nbsp;	public static List&lt;Mat&gt; extractZStack(ImageServer&lt;BufferedImage&gt; server, RegionRequest request) throws IOException {
+<b class="nc"><i>1157</i>&nbsp;		return extractZStack(server, request, 0, server.nZSlices());</b>
+<i>1158</i>&nbsp;	}
+<i>1159</i>&nbsp;
+<i>1160</i>&nbsp;
+<i>1161</i>&nbsp;	/**
+<i>1162</i>&nbsp;	 * Crop a region from a Mat based on its bounding box, returning a new image (not a subregion).
+<i>1163</i>&nbsp;	 * @param mat
+<i>1164</i>&nbsp;	 * @param x
+<i>1165</i>&nbsp;	 * @param y
+<i>1166</i>&nbsp;	 * @param width
+<i>1167</i>&nbsp;	 * @param height
+<i>1168</i>&nbsp;	 * @return
+<i>1169</i>&nbsp;	 */
+<i>1170</i>&nbsp;	public static Mat crop(Mat mat, int x, int y, int width, int height) {
+<b class="nc"><i>1171</i>&nbsp;		try (Rect rect = new Rect(x, y, width, height)) {</b>
+<b class="nc"><i>1172</i>&nbsp;	    	var temp = mat.apply(rect);</b>
+<b class="nc"><i>1173</i>&nbsp;	    	return temp.clone();</b>
+<b class="nc"><i>1174</i>&nbsp;		}</b>
+<i>1175</i>&nbsp;	}
+<i>1176</i>&nbsp;
+<i>1177</i>&nbsp;
+<i>1178</i>&nbsp;	/**
+<i>1179</i>&nbsp;	 * Apply a function to a {@link Mat} that strictly requires a specific input size.
+<i>1180</i>&nbsp;	 * The output is expected to have the same size as the input, but may have a different number of channels.
+<i>1181</i>&nbsp;	 * &lt;p&gt;
+<i>1182</i>&nbsp;	 * This method can be used to:
+<i>1183</i>&nbsp;	 * &lt;ul&gt;
+<i>1184</i>&nbsp;	 *   &lt;li&gt;Split larger input into tiles of the required size, apply the function and merge the result&lt;/li&gt;
+<i>1185</i>&nbsp;	 *   &lt;li&gt;Pad smaller input into tiles of the required size, apply the function and strip padding from the result&lt;/li&gt;
+<i>1186</i>&nbsp;	 * &lt;/ul&gt;
+<i>1187</i>&nbsp;	 * If the image dimensions are not an exact multiple of the requested tile sizes, both steps may be required.
+<i>1188</i>&nbsp;	 * 
+<i>1189</i>&nbsp;	 * @param fun the function to apply to the input
+<i>1190</i>&nbsp;	 * @param mat the input Mat
+<i>1191</i>&nbsp;	 * @param tileWidth the strict tile width required by the input
+<i>1192</i>&nbsp;	 * @param tileHeight the strict tile height required by the input
+<i>1193</i>&nbsp;	 * @param borderType an OpenCV border type, in case padding is needed
+<i>1194</i>&nbsp;	 * @return the result of applying fun to mat, having applied any necessary tiling along the way
+<i>1195</i>&nbsp;	 */
+<i>1196</i>&nbsp;	public static Mat applyTiled(Function&lt;Mat, Mat&gt; fun, Mat mat, int tileWidth, int tileHeight, int borderType) {
+<i>1197</i>&nbsp;		
+<b class="nc"><i>1198</i>&nbsp;		int top = 0, bottom = 0, left = 0, right = 0;</b>
+<b class="nc"><i>1199</i>&nbsp;	    boolean doPad = false;</b>
+<i>1200</i>&nbsp;		
+<b class="nc"><i>1201</i>&nbsp;		if (mat.cols() &gt; tileWidth) {</b>
+<b class="nc"><i>1202</i>&nbsp;			List&lt;Mat&gt; horizontal = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1203</i>&nbsp;			for (int x = 0; x &lt; mat.cols(); x += tileWidth) {</b>
+<b class="nc"><i>1204</i>&nbsp;	    		Mat matTemp = applyTiled(fun, mat.colRange(x, Math.min(x+tileWidth, mat.cols())).clone(), tileWidth, tileHeight, borderType);</b>
+<b class="nc"><i>1205</i>&nbsp;	    		horizontal.add(matTemp);</b>
+<i>1206</i>&nbsp;			}
+<b class="nc"><i>1207</i>&nbsp;			Mat matResult = new Mat();</b>
+<b class="nc"><i>1208</i>&nbsp;			opencv_core.hconcat(new MatVector(horizontal.toArray(new Mat[0])), matResult);</b>
+<b class="nc"><i>1209</i>&nbsp;			return matResult;</b>
+<b class="nc"><i>1210</i>&nbsp;		} else if (mat.rows() &gt; tileHeight) {</b>
+<b class="nc"><i>1211</i>&nbsp;			List&lt;Mat&gt; vertical = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1212</i>&nbsp;			for (int y = 0; y &lt; mat.rows(); y += tileHeight) {</b>
+<b class="nc"><i>1213</i>&nbsp;	    		Mat matTemp = applyTiled(fun, mat.rowRange(y, Math.min(y+tileHeight, mat.rows())).clone(), tileWidth, tileHeight, borderType);</b>
+<b class="nc"><i>1214</i>&nbsp;	    		vertical.add(matTemp);</b>
+<i>1215</i>&nbsp;			}
+<b class="nc"><i>1216</i>&nbsp;			Mat matResult = new Mat();</b>
+<b class="nc"><i>1217</i>&nbsp;			opencv_core.vconcat(new MatVector(vertical.toArray(Mat[]::new)), matResult);</b>
+<b class="nc"><i>1218</i>&nbsp;			return matResult;</b>
+<b class="nc"><i>1219</i>&nbsp;		} else if (mat.cols() &lt; tileWidth || mat.rows() &lt; tileHeight) {</b>
+<i>1220</i>&nbsp;	        // If the image is smaller than we can handle, add padding
+<b class="nc"><i>1221</i>&nbsp;			top = (tileHeight - mat.rows()) / 2;</b>
+<b class="nc"><i>1222</i>&nbsp;			left = (tileWidth - mat.cols()) / 2;</b>
+<b class="nc"><i>1223</i>&nbsp;			bottom = tileHeight - mat.rows() - top;</b>
+<b class="nc"><i>1224</i>&nbsp;			right = tileWidth - mat.cols() - left;</b>
+<b class="nc"><i>1225</i>&nbsp;			Mat matPadded = new Mat();</b>
+<b class="nc"><i>1226</i>&nbsp;			opencv_core.copyMakeBorder(mat, matPadded, top, bottom, left, right, borderType);</b>
+<b class="nc"><i>1227</i>&nbsp;			mat = matPadded;</b>
+<b class="nc"><i>1228</i>&nbsp;			doPad = true;</b>
+<i>1229</i>&nbsp;		}
+<i>1230</i>&nbsp;		
+<i>1231</i>&nbsp;		// Do the actual requested function
+<b class="nc"><i>1232</i>&nbsp;		var matResult = fun.apply(mat);</b>
+<i>1233</i>&nbsp;		
+<i>1234</i>&nbsp;		// Handle padding
+<b class="nc"><i>1235</i>&nbsp;	    if (doPad) {</b>
+<b class="nc"><i>1236</i>&nbsp;	    	matResult.put(crop(matResult, left, top, tileWidth-right-left, tileHeight-top-bottom));</b>
+<i>1237</i>&nbsp;	    }
+<i>1238</i>&nbsp;	    
+<b class="nc"><i>1239</i>&nbsp;	    return matResult;</b>
+<i>1240</i>&nbsp;	}
+<i>1241</i>&nbsp;	
+<i>1242</i>&nbsp;
+<i>1243</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,196 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ViewerPlusDisplayOptions</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ViewerPlusDisplayOptions (qupath.lib.gui.viewer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ViewerPlusDisplayOptions</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70%
+  </span>
+  <span class="absValue">
+    (7/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (10/ 16)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import javafx.beans.property.BooleanProperty;
+<i>27</i>&nbsp;import javafx.beans.property.SimpleBooleanProperty;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;/**
+<i>30</i>&nbsp; * A group of properties determining what should be displayed for each viewer.
+<i>31</i>&nbsp; * 
+<i>32</i>&nbsp; * @author Pete Bankhead
+<i>33</i>&nbsp; *
+<i>34</i>&nbsp; */
+<b class="fc"><i>35</i>&nbsp;public class ViewerPlusDisplayOptions {</b>
+<i>36</i>&nbsp;	
+<b class="fc"><i>37</i>&nbsp;	private BooleanProperty showOverview = new SimpleBooleanProperty(true);</b>
+<b class="fc"><i>38</i>&nbsp;	private BooleanProperty showLocation = new SimpleBooleanProperty(true);</b>
+<b class="fc"><i>39</i>&nbsp;	private BooleanProperty showScalebar = new SimpleBooleanProperty(true);</b>
+<i>40</i>&nbsp;	
+<i>41</i>&nbsp;	/**
+<i>42</i>&nbsp;	 * Show the overview image.
+<i>43</i>&nbsp;	 * @return
+<i>44</i>&nbsp;	 */
+<i>45</i>&nbsp;	public BooleanProperty showOverviewProperty() {
+<b class="fc"><i>46</i>&nbsp;		return showOverview;</b>
+<i>47</i>&nbsp;	}
+<i>48</i>&nbsp;	
+<i>49</i>&nbsp;	/**
+<i>50</i>&nbsp;	 * Show the cursor location.
+<i>51</i>&nbsp;	 * @return
+<i>52</i>&nbsp;	 */
+<i>53</i>&nbsp;	public BooleanProperty showLocationProperty() {
+<b class="fc"><i>54</i>&nbsp;		return showLocation;</b>
+<i>55</i>&nbsp;	}
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	/**
+<i>58</i>&nbsp;	 * Show the scalebar.
+<i>59</i>&nbsp;	 * @return
+<i>60</i>&nbsp;	 */
+<i>61</i>&nbsp;	public BooleanProperty showScalebarProperty() {
+<b class="fc"><i>62</i>&nbsp;		return showScalebar;</b>
+<i>63</i>&nbsp;	}
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;	 * Get the value of {@link #showOverviewProperty()}.
+<i>67</i>&nbsp;	 * @return
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	public boolean getShowOverview() {
+<b class="fc"><i>70</i>&nbsp;		return showOverview.get();</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	/**
+<i>74</i>&nbsp;	 * Get the value of {@link #showLocationProperty()}.
+<i>75</i>&nbsp;	 * @return
+<i>76</i>&nbsp;	 */
+<i>77</i>&nbsp;	public boolean getShowLocation() {
+<b class="fc"><i>78</i>&nbsp;		return showLocation.get();</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	/**
+<i>82</i>&nbsp;	 * Get the value of {@link #showScalebarProperty()}.
+<i>83</i>&nbsp;	 * @return
+<i>84</i>&nbsp;	 */
+<i>85</i>&nbsp;	public boolean getShowScalebar() {
+<b class="fc"><i>86</i>&nbsp;		return showScalebar.get();</b>
+<i>87</i>&nbsp;	}
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Set the value of {@link #showOverviewProperty()}.
+<i>91</i>&nbsp;	 * @param show
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public void setShowOverview(final boolean show) {
+<b class="nc"><i>94</i>&nbsp;		showOverview.set(show);</b>
+<b class="nc"><i>95</i>&nbsp;	}</b>
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Set the value of {@link #showLocationProperty()}.
+<i>99</i>&nbsp;	 * @param show
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public void setShowLocation(final boolean show) {
+<b class="nc"><i>102</i>&nbsp;		showLocation.set(show);</b>
+<b class="nc"><i>103</i>&nbsp;	}</b>
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Set the value of {@link #showScalebarProperty()}.
+<i>107</i>&nbsp;	 * @param show
+<i>108</i>&nbsp;	 */
+<i>109</i>&nbsp;	public void setShowScalebar(final boolean show) {
+<b class="nc"><i>110</i>&nbsp;		showScalebar.set(show);</b>
+<b class="nc"><i>111</i>&nbsp;	}</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,292 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ChannelDisplayInfo</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.display</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ChannelDisplayInfo (qupath.lib.display)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">ChannelDisplayInfo$ModifiableChannelDisplayInfo</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.display;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * Interface used to control the display of single channels of image data, where
+<i>30</i>&nbsp; * &#39;single channel&#39; means one value per pixel (in Java&#39;s parlance, one band for the
+<i>31</i>&nbsp; * SampleModel).  This applies not only to the &#39;default&#39; channels in an image -
+<i>32</i>&nbsp; * e.g. red, green and blue for an RGB image - but also to &#39;derived&#39; channels computed
+<i>33</i>&nbsp; * by a transformation, e.g. color deconvolution.
+<i>34</i>&nbsp; * &lt;p&gt;
+<i>35</i>&nbsp; * The primary uses are:
+<i>36</i>&nbsp; * &lt;ul&gt;
+<i>37</i>&nbsp; * 	&lt;li&gt; to extract floating point pixel values for the channel from a BufferedImage
+<i>38</i>&nbsp; * 		(either directly, or via some color transformation that may involve
+<i>39</i>&nbsp; * 		 more than one channel/band from the BufferedImage)
+<i>40</i>&nbsp; * 	&lt;li&gt; to generate RGB pixel values suitable for visualizing the raw channel values
+<i>41</i>&nbsp; * 		extracted above, including the storage of any lookup tables required
+<i>42</i>&nbsp; * 	&lt;li&gt; to store min/max display values, which influence the lookup table mapping to RGB
+<i>43</i>&nbsp; * 		(i.e. to store brightness/contrast values)
+<i>44</i>&nbsp; * 	&lt;li&gt; to update an existing RGB value, to facilitate creating composite images that depict
+<i>45</i>&nbsp; *      the values of multiple channels in a single, merged visualization
+<i>46</i>&nbsp; * &lt;/ul&gt;
+<i>47</i>&nbsp; * 
+<i>48</i>&nbsp; * &lt;p&gt;
+<i>49</i>&nbsp; * As such, its uses lie somewhere between Java&#39;s SampleModel and ColorModel classes.
+<i>50</i>&nbsp; * &lt;p&gt;
+<i>51</i>&nbsp; * Its reason for existing is that sometimes we need to be able to adjust the display of channels
+<i>52</i>&nbsp; * individually and to create merges - particularly in the case of fluorescence images - but
+<i>53</i>&nbsp; * to simplify whole slide image support we need to be able to do this on-the-fly.
+<i>54</i>&nbsp; * Switching the ColorModel for an existing BufferedImage is somewhat awkward, and when caching
+<i>55</i>&nbsp; * image tiles we want to be able to keep the original ColorModels intact - otherwise ColorModels
+<i>56</i>&nbsp; * for recently-seen tiles might be different from the ColorModels of tiles that have been in the cache
+<i>57</i>&nbsp; * for longer, even though they were read from the same image servers.  Furthermore, &#39;unknown&#39; image types
+<i>58</i>&nbsp; * (i.e. not standard RGB/BGR/single-channel images) don&#39;t always behave nicely with Graphics objects
+<i>59</i>&nbsp; * if we want to paint or scale them.
+<i>60</i>&nbsp; * &lt;p&gt;
+<i>61</i>&nbsp; * Using the ChannelDisplayInfo approach means that during repainting an (A)RGB image can be produced on-the-fly
+<i>62</i>&nbsp; * without needing to create a new image with the desired ColorModel for painting.
+<i>63</i>&nbsp; * This potentially ends up requiring a bit more computation that is really necessary - and it may be optimized
+<i>64</i>&nbsp; * better in the future - but it was the simplest method I could come up with to provide the features I wanted...
+<i>65</i>&nbsp; * 
+<i>66</i>&nbsp; * 
+<i>67</i>&nbsp; * @author Pete Bankhead
+<i>68</i>&nbsp; *
+<i>69</i>&nbsp; */
+<i>70</i>&nbsp;public interface ChannelDisplayInfo {
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;	/**
+<i>73</i>&nbsp;	 * Get the channel name.  This may also be returned by the {@code toString()} method.
+<i>74</i>&nbsp;	 * 
+<i>75</i>&nbsp;	 * @return
+<i>76</i>&nbsp;	 */
+<i>77</i>&nbsp;	public abstract String getName();
+<i>78</i>&nbsp;
+<i>79</i>&nbsp;	/**
+<i>80</i>&nbsp;	 * Get the min display value.
+<i>81</i>&nbsp;	 * This is used to control the brightness/contrast when painting.
+<i>82</i>&nbsp;	 * 
+<i>83</i>&nbsp;	 * @return
+<i>84</i>&nbsp;	 */
+<i>85</i>&nbsp;	public abstract float getMinDisplay();
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Get the max display value.
+<i>89</i>&nbsp;	 * This is used to control the brightness/contrast when painting.
+<i>90</i>&nbsp;	 * 
+<i>91</i>&nbsp;	 * @return
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public abstract float getMaxDisplay();
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Get the min allowed display value.
+<i>97</i>&nbsp;	 * This is only a hint.
+<i>98</i>&nbsp;	 * 
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public abstract float getMinAllowed();
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;	/**
+<i>104</i>&nbsp;	 * Get the max allowed display value.
+<i>105</i>&nbsp;	 * This is only a hint.
+<i>106</i>&nbsp;	 * 
+<i>107</i>&nbsp;	 * @return
+<i>108</i>&nbsp;	 */
+<i>109</i>&nbsp;	public abstract float getMaxAllowed();
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;	/**
+<i>112</i>&nbsp;	 * Returns true if this channel can be used additively to create a composite image display;
+<i>113</i>&nbsp;	 * returns false if this channel wants all the color information to itself, so can&#39;t be displayed with others.
+<i>114</i>&nbsp;	 * 
+<i>115</i>&nbsp;	 * @return
+<i>116</i>&nbsp;	 */
+<i>117</i>&nbsp;	public abstract boolean isAdditive();
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	/**
+<i>120</i>&nbsp;	 * Returns true if rescaling according to min &amp;amp; max display levels is applied, false if the full display range is used.
+<i>121</i>&nbsp;	 * 
+<i>122</i>&nbsp;	 * @return
+<i>123</i>&nbsp;	 */
+<i>124</i>&nbsp;	public boolean isBrightnessContrastRescaled();
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	/**
+<i>127</i>&nbsp;	 * Get a string representation of a pixel&#39;s value.
+<i>128</i>&nbsp;	 * This might be a single number, or 3 numbers for an RGB image where the channel includes all values.
+<i>129</i>&nbsp;	 * 
+<i>130</i>&nbsp;	 * @param img
+<i>131</i>&nbsp;	 * @param x
+<i>132</i>&nbsp;	 * @param y
+<i>133</i>&nbsp;	 * @return
+<i>134</i>&nbsp;	 */
+<i>135</i>&nbsp;	public String getValueAsString(BufferedImage img, int x, int y);
+<i>136</i>&nbsp;
+<i>137</i>&nbsp;	/**
+<i>138</i>&nbsp;	 * Get the RGB value that would be used to display a particular pixel
+<i>139</i>&nbsp;	 * 
+<i>140</i>&nbsp;	 * @param img
+<i>141</i>&nbsp;	 * @param x
+<i>142</i>&nbsp;	 * @param y
+<i>143</i>&nbsp;	 * @param useColorLUT
+<i>144</i>&nbsp;	 * @return
+<i>145</i>&nbsp;	 */
+<i>146</i>&nbsp;	public abstract int getRGB(BufferedImage img, int x, int y, boolean useColorLUT);
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	/**
+<i>149</i>&nbsp;	 * Get the RGB values that would be used to display all the pixels of an image
+<i>150</i>&nbsp;	 * 
+<i>151</i>&nbsp;	 * @param img
+<i>152</i>&nbsp;	 * @param rgb
+<i>153</i>&nbsp;	 * @param useColorLUT
+<i>154</i>&nbsp;	 * @return
+<i>155</i>&nbsp;	 */
+<i>156</i>&nbsp;	public abstract int[] getRGB(BufferedImage img, int[] rgb, boolean useColorLUT);
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * Update an existing pixel (packed RGB) additively using the color used to display a specified one
+<i>160</i>&nbsp;	 * 
+<i>161</i>&nbsp;	 * @param img
+<i>162</i>&nbsp;	 * @param x
+<i>163</i>&nbsp;	 * @param y
+<i>164</i>&nbsp;	 * @param rgb
+<i>165</i>&nbsp;	 * @param useColorLUT 
+<i>166</i>&nbsp;	 * @return
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;	public abstract int updateRGBAdditive(BufferedImage img, int x, int y, int rgb, boolean useColorLUT);
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;	/**
+<i>171</i>&nbsp;	 * Update an array of existing pixels (packed RGB) additively using the colors to display a specified image.
+<i>172</i>&nbsp;	 * May throw an UnsupportedOperationException if isAdditive() returns false;
+<i>173</i>&nbsp;	 * 
+<i>174</i>&nbsp;	 * @param img
+<i>175</i>&nbsp;	 * @param rgb
+<i>176</i>&nbsp;	 * @param useColorLUT
+<i>177</i>&nbsp;	 */
+<i>178</i>&nbsp;	public void updateRGBAdditive(BufferedImage img, int[] rgb, boolean useColorLUT);
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;
+<i>181</i>&nbsp;	/**
+<i>182</i>&nbsp;	 * Returns true if this does something - anything - and false otherwise.
+<i>183</i>&nbsp;	 * For example, this will return false if we have an RGB image with no transformations of any kind applied (e.g. brightness/contrast)
+<i>184</i>&nbsp;	 * @return
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public boolean doesSomething();
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	
+<i>189</i>&nbsp;	/**
+<i>190</i>&nbsp;	 * Predominate color used when this ChannelDisplayInfo uses a Color LUT (e.g. Color.RED for a red channel).
+<i>191</i>&nbsp;	 * Returns null if there is no appropriate color choice, or the image is RGB.
+<i>192</i>&nbsp;	 * @return
+<i>193</i>&nbsp;	 */
+<i>194</i>&nbsp;	public Integer getColor();
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;	/**
+<i>198</i>&nbsp;	 * Helper interface to indicate that the display ranges can be modified.
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	static interface ModifiableChannelDisplayInfo extends ChannelDisplayInfo {
+<i>201</i>&nbsp;		
+<i>202</i>&nbsp;		/**
+<i>203</i>&nbsp;		 * Set the maximum permissible range for the image display.
+<i>204</i>&nbsp;		 * &lt;p&gt;
+<i>205</i>&nbsp;		 * For an 8-bit image, that should be 0 and 255.
+<i>206</i>&nbsp;		 * &lt;p&gt;
+<i>207</i>&nbsp;		 * For a 16-bit image, fewer bits might actually be used... therefore the full range of 0-2^16-1 may be too much.
+<i>208</i>&nbsp;		 * &lt;p&gt;
+<i>209</i>&nbsp;		 * Also, for a 32-bit floating point image the limits are rather harder to define in a general way.
+<i>210</i>&nbsp;		 * This method makes it possible to restrict the permissible range to something sensible.
+<i>211</i>&nbsp;		 * Brightness/contrast/min/max sliders may make use of this.
+<i>212</i>&nbsp;		 * 
+<i>213</i>&nbsp;		 * @param minAllowed
+<i>214</i>&nbsp;		 * @param maxAllowed
+<i>215</i>&nbsp;		 */
+<i>216</i>&nbsp;		public abstract void setMinMaxAllowed(float minAllowed, float maxAllowed);
+<i>217</i>&nbsp;		
+<i>218</i>&nbsp;		/**
+<i>219</i>&nbsp;		 * Set the min display value for this channel.
+<i>220</i>&nbsp;		 * Note that it is *strongly* advised to use &lt;code&gt;ImageDisplay.setMinMaxDisplay&lt;/code&gt; instead 
+<i>221</i>&nbsp;		 * since this helps ensure that the &lt;code&gt;ImageDisplay&lt;/code&gt; fires appropriate events etc.
+<i>222</i>&nbsp;		 * 
+<i>223</i>&nbsp;		 * @see ImageDisplay
+<i>224</i>&nbsp;		 * 
+<i>225</i>&nbsp;		 * @param minDisplay
+<i>226</i>&nbsp;		 */
+<i>227</i>&nbsp;		public abstract void setMinDisplay(float minDisplay);
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;		/**
+<i>230</i>&nbsp;		 * Set the max display value for this channel.
+<i>231</i>&nbsp;		 * Note that it is *strongly* advised to use &lt;code&gt;ImageDisplay.setMinMaxDisplay&lt;/code&gt; instead 
+<i>232</i>&nbsp;		 * since this helps ensure that the &lt;code&gt;ImageDisplay&lt;/code&gt; fires appropriate events etc.
+<i>233</i>&nbsp;		 * 
+<i>234</i>&nbsp;		 * @see ImageDisplay
+<i>235</i>&nbsp;		 * 
+<i>236</i>&nbsp;		 * @param maxDisplay
+<i>237</i>&nbsp;		 */
+<i>238</i>&nbsp;		public abstract void setMaxDisplay(float maxDisplay);
+<i>239</i>&nbsp;		
+<i>240</i>&nbsp;	}
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

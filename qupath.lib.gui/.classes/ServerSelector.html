@@ -1,0 +1,444 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ServerSelector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ServerSelector (qupath.lib.gui)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ServerSelector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 108)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ServerSelector$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ServerSelector$ImageAndNameListCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 30)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 143)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.HashMap;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;import java.util.Map;
+<i>31</i>&nbsp;import java.util.Optional;
+<i>32</i>&nbsp;import java.util.concurrent.ExecutorService;
+<i>33</i>&nbsp;import java.util.concurrent.Executors;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import javafx.application.Platform;
+<i>39</i>&nbsp;import javafx.beans.property.ReadOnlyObjectWrapper;
+<i>40</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>41</i>&nbsp;import javafx.collections.FXCollections;
+<i>42</i>&nbsp;import javafx.collections.ObservableList;
+<i>43</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>44</i>&nbsp;import javafx.event.EventHandler;
+<i>45</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>46</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>47</i>&nbsp;import javafx.scene.control.Button;
+<i>48</i>&nbsp;import javafx.scene.control.ButtonType;
+<i>49</i>&nbsp;import javafx.scene.control.Dialog;
+<i>50</i>&nbsp;import javafx.scene.control.ListCell;
+<i>51</i>&nbsp;import javafx.scene.control.ListView;
+<i>52</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>53</i>&nbsp;import javafx.scene.control.TableRow;
+<i>54</i>&nbsp;import javafx.scene.control.TableView;
+<i>55</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>56</i>&nbsp;import javafx.scene.control.ButtonBar.ButtonData;
+<i>57</i>&nbsp;import javafx.scene.image.Image;
+<i>58</i>&nbsp;import javafx.scene.image.ImageView;
+<i>59</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>60</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>61</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>62</i>&nbsp;import qupath.lib.common.ThreadTools;
+<i>63</i>&nbsp;import qupath.lib.gui.commands.ProjectCommands;
+<i>64</i>&nbsp;import qupath.lib.gui.tools.GuiTools;
+<i>65</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>66</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>67</i>&nbsp;
+<i>68</i>&nbsp;/**
+<i>69</i>&nbsp; * Helper class for selecting one image server out of a collection.
+<i>70</i>&nbsp; */
+<i>71</i>&nbsp;class ServerSelector {
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(ServerSelector.class);</b>
+<i>74</i>&nbsp;	
+<b class="nc"><i>75</i>&nbsp;	private List&lt;ImageServer&lt;BufferedImage&gt;&gt; serverList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>76</i>&nbsp;	private ImageServer&lt;BufferedImage&gt; selectedSeries = null;</b>
+<i>77</i>&nbsp;	
+<b class="nc"><i>78</i>&nbsp;	ServerSelector(Collection&lt;ServerBuilder&lt;BufferedImage&gt;&gt; builders) {</b>
+<i>79</i>&nbsp;		// TODO: Build servers on demand, rather than all at the start
+<b class="nc"><i>80</i>&nbsp;		for (var builder : builders) {</b>
+<i>81</i>&nbsp;			try {
+<b class="nc"><i>82</i>&nbsp;				serverList.add(builder.build());</b>
+<b class="nc"><i>83</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>84</i>&nbsp;				logger.warn(&quot;Unable to build series {}&quot;, builder);</b>
+<b class="nc"><i>85</i>&nbsp;			}</b>
+<b class="nc"><i>86</i>&nbsp;		}</b>
+<i>87</i>&nbsp;	}
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>90</i>&nbsp;	public ImageServer&lt;BufferedImage&gt; promptToSelectServer() {	
+<b class="nc"><i>91</i>&nbsp;		if (serverList.isEmpty()) {</b>
+<b class="nc"><i>92</i>&nbsp;			logger.warn(&quot;No series available!&quot;);</b>
+<b class="nc"><i>93</i>&nbsp;			return null;</b>
+<b class="nc"><i>94</i>&nbsp;		} else if (serverList.size() == 1) {</b>
+<b class="nc"><i>95</i>&nbsp;			logger.warn(&quot;Only one server available!&quot;);</b>
+<b class="nc"><i>96</i>&nbsp;			return serverList.get(0);</b>
+<i>97</i>&nbsp;		}
+<i>98</i>&nbsp;		// Get thumbnails in separate thread
+<b class="nc"><i>99</i>&nbsp;		ExecutorService executor = Executors.newSingleThreadExecutor(ThreadTools.createThreadFactory(&quot;thumbnail-loader&quot;, true));</b>
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;		ListView&lt;ImageServer&lt;BufferedImage&gt;&gt; listSeries = new ListView&lt;&gt;();</b>
+<b class="nc"><i>102</i>&nbsp;		listSeries.setPrefWidth(480);</b>
+<b class="nc"><i>103</i>&nbsp;		listSeries.setMinHeight(100);</b>
+<i>104</i>&nbsp;		
+<i>105</i>&nbsp;		// thumbnailBank is the map for storing thumbnails
+<b class="nc"><i>106</i>&nbsp;		Map&lt;String, BufferedImage&gt; thumbnailBank = new HashMap&lt;String, BufferedImage&gt;();</b>
+<b class="nc"><i>107</i>&nbsp;		for (ImageServer&lt;BufferedImage&gt; server: serverList) {</b>
+<b class="nc"><i>108</i>&nbsp;			executor.submit(() -&gt; {</b>
+<i>109</i>&nbsp;				try {
+<b class="nc"><i>110</i>&nbsp;					thumbnailBank.put(server.getMetadata().getName(), ProjectCommands.getThumbnailRGB(server));</b>
+<b class="nc"><i>111</i>&nbsp;					Platform.runLater( () -&gt; listSeries.refresh());</b>
+<b class="nc"><i>112</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>113</i>&nbsp;					logger.warn(&quot;Error loading thumbnail: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>114</i>&nbsp;				}</b>
+<i>115</i>&nbsp;			});
+<b class="nc"><i>116</i>&nbsp;		};</b>
+<i>117</i>&nbsp;		
+<b class="nc"><i>118</i>&nbsp;		double thumbnailSize = 80;</b>
+<b class="nc"><i>119</i>&nbsp;		listSeries.setCellFactory(v -&gt; new ImageAndNameListCell(thumbnailBank, thumbnailSize, thumbnailSize));</b>
+<b class="nc"><i>120</i>&nbsp;		listSeries.getItems().setAll(serverList);</b>
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;		
+<i>123</i>&nbsp;		// Info table - Changes according to selected series
+<b class="nc"><i>124</i>&nbsp;		String[] attributes = new String[] {&quot;Full Path&quot;, &quot;Server Type&quot;, &quot;Width&quot;, &quot;Height&quot;, &quot;Pixel Width&quot;, &quot;Pixel Height&quot;, &quot;Pixel Type&quot;, &quot;Number of Channels&quot;, &quot;Number of Resolutions&quot;};</b>
+<b class="nc"><i>125</i>&nbsp;		Integer[] indices = new Integer[9];</b>
+<b class="nc"><i>126</i>&nbsp;		for (int index = 0; index &lt; 9; index++) indices[index] = index;</b>
+<b class="nc"><i>127</i>&nbsp;		ObservableList&lt;Integer&gt; indexList = FXCollections.observableArrayList(indices);</b>
+<i>128</i>&nbsp;		
+<b class="nc"><i>129</i>&nbsp;		TableView&lt;Integer&gt; tableInfo = new TableView&lt;&gt;();</b>
+<b class="nc"><i>130</i>&nbsp;		tableInfo.setMinHeight(200);</b>
+<b class="nc"><i>131</i>&nbsp;		tableInfo.setMinWidth(500);</b>
+<i>132</i>&nbsp;		
+<i>133</i>&nbsp;		// First column (attribute names)
+<b class="nc"><i>134</i>&nbsp;		TableColumn&lt;Integer, String&gt; attributeCol = new TableColumn&lt;Integer, String&gt;(&quot;Attribute&quot;);</b>
+<b class="nc"><i>135</i>&nbsp;		attributeCol.setMinWidth(242);</b>
+<b class="nc"><i>136</i>&nbsp;		attributeCol.setResizable(false);</b>
+<b class="nc"><i>137</i>&nbsp;		attributeCol.setCellValueFactory(cellData -&gt; {</b>
+<b class="nc"><i>138</i>&nbsp;			return new ReadOnlyObjectWrapper&lt;String&gt;(attributes[cellData.getValue()]);</b>
+<i>139</i>&nbsp;		});
+<i>140</i>&nbsp;		
+<i>141</i>&nbsp;		// Second column (attribute values)
+<b class="nc"><i>142</i>&nbsp;		TableColumn&lt;Integer, String&gt; valueCol = new TableColumn&lt;Integer, String&gt;(&quot;Value&quot;);</b>
+<b class="nc"><i>143</i>&nbsp;		valueCol.setMinWidth(242);</b>
+<b class="nc"><i>144</i>&nbsp;		valueCol.setResizable(false);</b>
+<b class="nc"><i>145</i>&nbsp;		valueCol.setCellValueFactory(cellData -&gt; {</b>
+<b class="nc"><i>146</i>&nbsp;			if (selectedSeries != null) return getSeriesQuickInfo(selectedSeries, cellData.getValue());</b>
+<b class="nc"><i>147</i>&nbsp;			else return null;</b>
+<i>148</i>&nbsp;		});
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		
+<i>151</i>&nbsp;		// Adding the values on hover over the info table
+<b class="nc"><i>152</i>&nbsp;		tableInfo.setRowFactory(tableView -&gt; {</b>
+<b class="nc"><i>153</i>&nbsp;            final TableRow&lt;Integer&gt; row = new TableRow&lt;&gt;();</b>
+<b class="nc"><i>154</i>&nbsp;            row.hoverProperty().addListener((observable) -&gt; {</b>
+<b class="nc"><i>155</i>&nbsp;                final var element = row.getItem();</b>
+<b class="nc"><i>156</i>&nbsp;                if (row.isHover() &amp;&amp; selectedSeries != null) {</b>
+<b class="nc"><i>157</i>&nbsp;                	ObservableValue&lt;String&gt; value = getSeriesQuickInfo(selectedSeries, element);</b>
+<b class="nc"><i>158</i>&nbsp;                	Tooltip tooltip = new Tooltip(value.getValue());</b>
+<b class="nc"><i>159</i>&nbsp;                	Tooltip.install(row, tooltip);</b>
+<i>160</i>&nbsp;                }
+<i>161</i>&nbsp;            });
+<b class="nc"><i>162</i>&nbsp;            return row;</b>
+<i>163</i>&nbsp;		});
+<i>164</i>&nbsp;		
+<i>165</i>&nbsp;		// Set items to info table
+<b class="nc"><i>166</i>&nbsp;		tableInfo.setItems(indexList);</b>
+<b class="nc"><i>167</i>&nbsp;		tableInfo.getColumns().addAll(attributeCol, valueCol);</b>
+<i>168</i>&nbsp;		
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;		// Pane structure
+<b class="nc"><i>171</i>&nbsp;		BorderPane paneSelector = new BorderPane();</b>
+<b class="nc"><i>172</i>&nbsp;		BorderPane paneSeries = new BorderPane(listSeries);</b>
+<b class="nc"><i>173</i>&nbsp;		BorderPane paneInfo = new BorderPane(tableInfo);</b>
+<b class="nc"><i>174</i>&nbsp;		paneInfo.setMaxHeight(100);</b>
+<b class="nc"><i>175</i>&nbsp;		paneSelector.setCenter(paneSeries);</b>
+<b class="nc"><i>176</i>&nbsp;		paneSelector.setBottom(paneInfo);</b>
+<i>177</i>&nbsp;
+<b class="nc"><i>178</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>179</i>&nbsp;		pane.setCenter(paneSelector);</b>
+<i>180</i>&nbsp;		
+<i>181</i>&nbsp;		
+<b class="nc"><i>182</i>&nbsp;		Dialog&lt;ButtonType&gt; dialog = new Dialog&lt;&gt;();</b>
+<b class="nc"><i>183</i>&nbsp;		dialog.setTitle(&quot;Open image&quot;);</b>
+<b class="nc"><i>184</i>&nbsp;		ButtonType typeImport = new ButtonType(&quot;Open&quot;, ButtonData.OK_DONE);</b>
+<b class="nc"><i>185</i>&nbsp;		dialog.getDialogPane().getButtonTypes().addAll(typeImport, ButtonType.CANCEL);</b>
+<b class="nc"><i>186</i>&nbsp;		dialog.getDialogPane().setContent(pane);</b>
+<i>187</i>&nbsp;		
+<b class="nc"><i>188</i>&nbsp;		listSeries.getSelectionModel().selectedItemProperty().addListener((obs, previousSelectedRow, selectedRow) -&gt; {</b>
+<b class="nc"><i>189</i>&nbsp;		    if (selectedRow != null) {</b>
+<b class="nc"><i>190</i>&nbsp;		    	selectedSeries = selectedRow;</b>
+<b class="nc"><i>191</i>&nbsp;		    	indexList.removeAll(indexList);</b>
+<b class="nc"><i>192</i>&nbsp;		    	indexList.addAll(indices);</b>
+<i>193</i>&nbsp;		    }
+<i>194</i>&nbsp;		});
+<i>195</i>&nbsp;		
+<b class="nc"><i>196</i>&nbsp;		listSeries.setOnMouseClicked(new EventHandler&lt;MouseEvent&gt;() {</b>
+<i>197</i>&nbsp;
+<i>198</i>&nbsp;		    @Override
+<i>199</i>&nbsp;		    public void handle(MouseEvent click) {
+<b class="nc"><i>200</i>&nbsp;		    	ImageServer&lt;BufferedImage&gt; selectedItem = listSeries.getSelectionModel().getSelectedItem();</b>
+<i>201</i>&nbsp;
+<b class="nc"><i>202</i>&nbsp;		        if (click.getClickCount() == 2 &amp;&amp; selectedItem != null) {</b>
+<b class="nc"><i>203</i>&nbsp;		        	Button okButton = (Button) dialog.getDialogPane().lookupButton(typeImport);</b>
+<b class="nc"><i>204</i>&nbsp;		        	okButton.fire();</b>
+<i>205</i>&nbsp;		        }
+<i>206</i>&nbsp;		    }
+<i>207</i>&nbsp;		});
+<i>208</i>&nbsp;		
+<b class="nc"><i>209</i>&nbsp;		Optional&lt;ButtonType&gt; result = dialog.showAndWait();</b>
+<i>210</i>&nbsp;		
+<i>211</i>&nbsp;		try {
+<b class="nc"><i>212</i>&nbsp;			executor.shutdownNow();</b>
+<b class="nc"><i>213</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>214</i>&nbsp;			logger.warn(e.getLocalizedMessage(), e);</b>
+<i>215</i>&nbsp;		} finally {
+<b class="nc"><i>216</i>&nbsp;			selectedSeries = null;</b>
+<i>217</i>&nbsp;			try {
+<b class="nc"><i>218</i>&nbsp;				for (ImageServer&lt;BufferedImage&gt; server: serverList)</b>
+<b class="nc"><i>219</i>&nbsp;					server.close();</b>
+<b class="nc"><i>220</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>221</i>&nbsp;				logger.debug(e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>222</i>&nbsp;			}</b>
+<b class="nc"><i>223</i>&nbsp;		}		</b>
+<i>224</i>&nbsp;		
+<b class="nc"><i>225</i>&nbsp;		if (!result.isPresent() || result.get() != typeImport || result.get() == ButtonType.CANCEL)</b>
+<b class="nc"><i>226</i>&nbsp;			return null;</b>
+<i>227</i>&nbsp;		
+<b class="nc"><i>228</i>&nbsp;		return listSeries.getSelectionModel().getSelectedItem();</b>
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	private static ObservableValue&lt;String&gt; getSeriesQuickInfo(ImageServer&lt;BufferedImage&gt; imageServer, int index) {
+<b class="nc"><i>233</i>&nbsp;		String filePath = imageServer.getURIs().iterator().next().toString();</b>
+<b class="nc"><i>234</i>&nbsp;		String serverType = imageServer.getServerType();</b>
+<b class="nc"><i>235</i>&nbsp;		String width = &quot;&quot; + imageServer.getWidth() + &quot; px&quot;;</b>
+<b class="nc"><i>236</i>&nbsp;		String height = &quot;&quot; + imageServer.getHeight() + &quot; px&quot;;</b>
+<b class="nc"><i>237</i>&nbsp;		double pixelWidthTemp = imageServer.getPixelCalibration().getPixelWidth().doubleValue();</b>
+<b class="nc"><i>238</i>&nbsp;		String pixelWidth = GeneralTools.formatNumber(pixelWidthTemp, 4) + &quot; &quot; + imageServer.getPixelCalibration().getPixelWidthUnit();</b>
+<b class="nc"><i>239</i>&nbsp;		double pixelHeightTemp = imageServer.getPixelCalibration().getPixelHeight().doubleValue();</b>
+<b class="nc"><i>240</i>&nbsp;		String pixelHeight = GeneralTools.formatNumber(pixelHeightTemp, 4) + &quot; &quot; + imageServer.getPixelCalibration().getPixelHeightUnit();</b>
+<b class="nc"><i>241</i>&nbsp;		String pixelType = imageServer.getPixelType().toString();</b>
+<b class="nc"><i>242</i>&nbsp;		String nChannels = String.valueOf(imageServer.nChannels());</b>
+<b class="nc"><i>243</i>&nbsp;		String nResolutions = String.valueOf(imageServer.nResolutions());</b>
+<b class="nc"><i>244</i>&nbsp;		String[] outString = new String[] {filePath, serverType, width, height, pixelWidth, pixelHeight, pixelType, nChannels, nResolutions};</b>
+<b class="nc"><i>245</i>&nbsp;		ObservableValue&lt;String&gt; out = new ReadOnlyObjectWrapper&lt;String&gt;(outString[index]);</b>
+<b class="nc"><i>246</i>&nbsp;		return out;</b>
+<i>247</i>&nbsp;	}
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	
+<i>252</i>&nbsp;	/**
+<i>253</i>&nbsp;	 * A {@link ListCell} that displays an image and associated name.
+<i>254</i>&nbsp;	 * The image is retrieved from a cache rather than loaded directly, therefore it is assumed that 
+<i>255</i>&nbsp;	 * the cache is populated elsewhere.
+<i>256</i>&nbsp;	 */
+<i>257</i>&nbsp;	static class ImageAndNameListCell extends ListCell&lt;ImageServer&lt;BufferedImage&gt;&gt; {
+<i>258</i>&nbsp;		
+<i>259</i>&nbsp;		private Map&lt;String, BufferedImage&gt; imageCache;
+<b class="nc"><i>260</i>&nbsp;		final private Canvas canvas = new Canvas();</b>
+<i>261</i>&nbsp;		
+<i>262</i>&nbsp;		private Image img;
+<i>263</i>&nbsp;		
+<i>264</i>&nbsp;		public ImageAndNameListCell(final Map&lt;String, BufferedImage&gt; imageCache, double imgWidth, double imgHeight) {
+<b class="nc"><i>265</i>&nbsp;			super();</b>
+<b class="nc"><i>266</i>&nbsp;			this.imageCache = imageCache;</b>
+<b class="nc"><i>267</i>&nbsp;			canvas.setStyle(&quot;-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 4, 0, 1, 1);&quot;);</b>
+<b class="nc"><i>268</i>&nbsp;			canvas.setWidth(imgWidth);</b>
+<b class="nc"><i>269</i>&nbsp;			canvas.setHeight(imgHeight);</b>
+<b class="nc"><i>270</i>&nbsp;			canvas.heightProperty().bind(canvas.widthProperty());</b>
+<b class="nc"><i>271</i>&nbsp;			setGraphicTextGap(10);</b>
+<b class="nc"><i>272</i>&nbsp;			setGraphic(canvas);</b>
+<b class="nc"><i>273</i>&nbsp;			setText(null);</b>
+<i>274</i>&nbsp;		}
+<i>275</i>&nbsp;
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;		@Override
+<i>278</i>&nbsp;		protected void updateItem(ImageServer&lt;BufferedImage&gt; entry, boolean empty) {
+<b class="nc"><i>279</i>&nbsp;			super.updateItem(entry, empty);</b>
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;			GraphicsContext gc = canvas.getGraphicsContext2D();        </b>
+<b class="nc"><i>282</i>&nbsp;			gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());</b>
+<i>283</i>&nbsp;			
+<b class="nc"><i>284</i>&nbsp;			if (entry == null || empty) {</b>
+<b class="nc"><i>285</i>&nbsp;				setTooltip(null);</b>
+<b class="nc"><i>286</i>&nbsp;				setText(null);</b>
+<b class="nc"><i>287</i>&nbsp;				img = null;</b>
+<i>288</i>&nbsp;				return;
+<i>289</i>&nbsp;			}
+<i>290</i>&nbsp;			
+<b class="nc"><i>291</i>&nbsp;			String name = entry.getMetadata().getName();</b>
+<b class="nc"><i>292</i>&nbsp;			var thumbnail = imageCache.get(name);</b>
+<b class="nc"><i>293</i>&nbsp;			if (thumbnail != null)</b>
+<b class="nc"><i>294</i>&nbsp;				img =  SwingFXUtils.toFXImage(thumbnail, null);</b>
+<i>295</i>&nbsp;			
+<b class="nc"><i>296</i>&nbsp;			setText(name);</b>
+<i>297</i>&nbsp;			
+<b class="nc"><i>298</i>&nbsp;			if (img == null)</b>
+<i>299</i>&nbsp;				return;
+<i>300</i>&nbsp;			else
+<b class="nc"><i>301</i>&nbsp;				GuiTools.paintImage(canvas, img);</b>
+<i>302</i>&nbsp;
+<i>303</i>&nbsp;			// Setting tooltips on hover
+<b class="nc"><i>304</i>&nbsp;			Tooltip tooltip = new Tooltip();</b>
+<b class="nc"><i>305</i>&nbsp;			ImageView imageView = new ImageView(img);</b>
+<b class="nc"><i>306</i>&nbsp;			imageView.setFitHeight(250);</b>
+<b class="nc"><i>307</i>&nbsp;			imageView.setPreserveRatio(true);</b>
+<b class="nc"><i>308</i>&nbsp;			tooltip.setGraphic(imageView);</b>
+<i>309</i>&nbsp;
+<b class="nc"><i>310</i>&nbsp;			setTooltip(new Tooltip(name));</b>
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;		}
+<i>313</i>&nbsp;		
+<i>314</i>&nbsp;	}
+<i>315</i>&nbsp;	
+<i>316</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

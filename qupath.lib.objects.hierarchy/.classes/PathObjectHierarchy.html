@@ -1,0 +1,1035 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObjectHierarchy</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects.hierarchy</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObjectHierarchy (qupath.lib.objects.hierarchy)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObjectHierarchy</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    23.6%
+  </span>
+  <span class="absValue">
+    (13/ 55)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    12.9%
+  </span>
+  <span class="absValue">
+    (38/ 295)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects.hierarchy;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Serializable;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.Comparator;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import java.util.HashSet;
+<i>33</i>&nbsp;import java.util.Iterator;
+<i>34</i>&nbsp;import java.util.LinkedHashSet;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;import java.util.Map;
+<i>37</i>&nbsp;import java.util.Map.Entry;
+<i>38</i>&nbsp;import java.util.Set;
+<i>39</i>&nbsp;import java.util.stream.Collectors;
+<i>40</i>&nbsp;import org.slf4j.Logger;
+<i>41</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import qupath.lib.objects.DefaultPathObjectComparator;
+<i>44</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>45</i>&nbsp;import qupath.lib.objects.PathCellObject;
+<i>46</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>47</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>48</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>49</i>&nbsp;import qupath.lib.objects.PathRootObject;
+<i>50</i>&nbsp;import qupath.lib.objects.PathTileObject;
+<i>51</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>52</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>53</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>54</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectSelectionModel;
+<i>55</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent.HierarchyEventType;
+<i>56</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>57</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;/**
+<i>60</i>&nbsp; * A basic hierarchy in which to store PathObjects.
+<i>61</i>&nbsp; * &lt;p&gt;
+<i>62</i>&nbsp; * This essentially contains a single PathRootObject from which all other objects can be reached using the child object lists.
+<i>63</i>&nbsp; * However, by adding/removing objects via this hierarchy (rather than through the child lists directly), it is possible
+<i>64</i>&nbsp; * to maintain a more consistent structure (e.g. by automatically inserting objects as children of the objects whose ROI completely
+<i>65</i>&nbsp; * contains the object to be added), along with a spatial cache so that objects can be extracted if their ROIs overlap with a specified region.
+<i>66</i>&nbsp; * &lt;p&gt;
+<i>67</i>&nbsp; * Note: Be cautious when deserializing - it may not result in a hierarchy in a valid state.
+<i>68</i>&nbsp; * As a workaround, you can construct a new PathObjectHierarchy and call setHierarchy(deserializedHierarchy) to
+<i>69</i>&nbsp; * ensure that you have a properly-constructed hierarchy with the same data within it.
+<i>70</i>&nbsp; * 
+<i>71</i>&nbsp; * @author Pete Bankhead
+<i>72</i>&nbsp; *
+<i>73</i>&nbsp; */
+<i>74</i>&nbsp;public final class PathObjectHierarchy implements Serializable {
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>77</i>&nbsp;	
+<b class="fc"><i>78</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathObjectHierarchy.class);</b>
+<i>79</i>&nbsp;			
+<i>80</i>&nbsp;	// TODO: Make this a choice - currently a cell object is considered &#39;inside&#39; if its nucleus is fully contained (as cell boundaries themselves are a little more questionable)
+<i>81</i>&nbsp;	/*
+<i>82</i>&nbsp;	 * TODO: Consider how to explain this...
+<i>83</i>&nbsp;	 * The idea is that cell nuclei are used to determine whether an object is &#39;inside&#39; another object,
+<i>84</i>&nbsp;	 * which is important when adding annotations etc. to the object hierarchy.
+<i>85</i>&nbsp;	 * 
+<i>86</i>&nbsp;	 * @return
+<i>87</i>&nbsp;	 */
+<b class="fc"><i>88</i>&nbsp;	static boolean useCellNucleiForInsideTest = true;</b>
+<i>89</i>&nbsp;	/*
+<i>90</i>&nbsp;	 * TODO: Consider how to explain this...
+<i>91</i>&nbsp;	 * The idea is that tile centroids are used to determine whether an object is &#39;inside&#39; another object,
+<i>92</i>&nbsp;	 * which is important when adding annotations etc. to the object hierarchy.
+<i>93</i>&nbsp;	 * 
+<i>94</i>&nbsp;	 * @return
+<i>95</i>&nbsp;	 */
+<b class="fc"><i>96</i>&nbsp;	static boolean useTileCentroidsForInsideTest = true;</b>
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	
+<b class="fc"><i>100</i>&nbsp;	private TMAGrid tmaGrid = null;</b>
+<b class="fc"><i>101</i>&nbsp;	private PathObject rootObject = new PathRootObject();</b>
+<i>102</i>&nbsp;	
+<b class="fc"><i>103</i>&nbsp;	transient private PathObjectSelectionModel selectionModel = new PathObjectSelectionModel();</b>
+<b class="fc"><i>104</i>&nbsp;	transient private List&lt;PathObjectHierarchyListener&gt; listeners = new ArrayList&lt;&gt;();</b>
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;	// Cache enabling faster access of objects according to location
+<b class="fc"><i>107</i>&nbsp;	transient private PathObjectTileCache tileCache = new PathObjectTileCache(this);</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;	/**
+<i>110</i>&nbsp;	 * Default constructor, creates an empty hierarchy.
+<i>111</i>&nbsp;	 */
+<i>112</i>&nbsp;	public PathObjectHierarchy() {
+<b class="fc"><i>113</i>&nbsp;		super();</b>
+<b class="fc"><i>114</i>&nbsp;	}</b>
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;	
+<i>117</i>&nbsp;	/**
+<i>118</i>&nbsp;	 * Check if the hierarchy is empty (i.e. no objects apart from the root object, no feature maps)
+<i>119</i>&nbsp;	 * 
+<i>120</i>&nbsp;	 * @return
+<i>121</i>&nbsp;	 */
+<i>122</i>&nbsp;	public synchronized boolean isEmpty() {
+<b class="fc"><i>123</i>&nbsp;		return (tmaGrid == null || tmaGrid.nCores() == 0) &amp;&amp; !rootObject.hasChildren();// &amp;&amp; featureMaps.isEmpty();</b>
+<i>124</i>&nbsp;	}
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	/**
+<i>127</i>&nbsp;	 * Add a hierarchy change listener.
+<i>128</i>&nbsp;	 * @param listener
+<i>129</i>&nbsp;	 */
+<i>130</i>&nbsp;	public void addPathObjectListener(PathObjectHierarchyListener listener) {
+<b class="fc"><i>131</i>&nbsp;		synchronized(listeners) {</b>
+<b class="fc"><i>132</i>&nbsp;			listeners.add(listener);</b>
+<b class="fc"><i>133</i>&nbsp;		}</b>
+<b class="fc"><i>134</i>&nbsp;	}</b>
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	/**
+<i>137</i>&nbsp;	 * Remove a hierarchy change listener.
+<i>138</i>&nbsp;	 * @param listener
+<i>139</i>&nbsp;	 */
+<i>140</i>&nbsp;	public void removePathObjectListener(PathObjectHierarchyListener listener) {
+<b class="fc"><i>141</i>&nbsp;		synchronized(listeners) {</b>
+<b class="fc"><i>142</i>&nbsp;			listeners.remove(listener);</b>
+<b class="fc"><i>143</i>&nbsp;		}</b>
+<b class="fc"><i>144</i>&nbsp;	}</b>
+<i>145</i>&nbsp;	
+<i>146</i>&nbsp;	/**
+<i>147</i>&nbsp;	 * Get the root object. All other objects in the hierarchy are descendants of the root.
+<i>148</i>&nbsp;	 * @return
+<i>149</i>&nbsp;	 */
+<i>150</i>&nbsp;	public PathObject getRootObject() {
+<b class="fc"><i>151</i>&nbsp;		return rootObject;</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;		
+<i>154</i>&nbsp;	/**
+<i>155</i>&nbsp;	 * Get the TMAGrid, or null if there is no TMA grid associated with this hierarchy.
+<i>156</i>&nbsp;	 * @return
+<i>157</i>&nbsp;	 */
+<i>158</i>&nbsp;	public synchronized TMAGrid getTMAGrid() {
+<b class="fc"><i>159</i>&nbsp;		return tmaGrid;</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Get the selection model, which handles the selection status of objects.
+<i>164</i>&nbsp;	 * @return
+<i>165</i>&nbsp;	 */
+<i>166</i>&nbsp;	public PathObjectSelectionModel getSelectionModel() {
+<b class="fc"><i>167</i>&nbsp;		return selectionModel;</b>
+<i>168</i>&nbsp;	}
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;//	/**
+<i>171</i>&nbsp;//	 * Check if the hierarchy is changing.  This can occur, for example, if a plugin is running
+<i>172</i>&nbsp;//	 * that modifies the hierarchy frequently, and so listeners may want to avoid responding to
+<i>173</i>&nbsp;//	 * events for performance reasons.
+<i>174</i>&nbsp;//	 * @return
+<i>175</i>&nbsp;//	 */
+<i>176</i>&nbsp;//	public boolean isChanging() {
+<i>177</i>&nbsp;//		return changing;
+<i>178</i>&nbsp;//	}
+<i>179</i>&nbsp;//	
+<i>180</i>&nbsp;//	public void setChanging(boolean changing) {
+<i>181</i>&nbsp;//		this.changing = changing;
+<i>182</i>&nbsp;//	}
+<i>183</i>&nbsp;	
+<i>184</i>&nbsp;	/**
+<i>185</i>&nbsp;	 * Set the tma grid for this hierarchy.
+<i>186</i>&nbsp;	 * @param tmaGrid
+<i>187</i>&nbsp;	 */
+<i>188</i>&nbsp;	public synchronized void setTMAGrid(TMAGrid tmaGrid) {
+<b class="nc"><i>189</i>&nbsp;		clearTMAGrid();</b>
+<b class="nc"><i>190</i>&nbsp;		if (tmaGrid == null)</b>
+<b class="nc"><i>191</i>&nbsp;			return;</b>
+<b class="nc"><i>192</i>&nbsp;		this.tmaGrid = tmaGrid;</b>
+<b class="nc"><i>193</i>&nbsp;		updateTMAHierarchy();</b>
+<b class="nc"><i>194</i>&nbsp;	}</b>
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;	/**
+<i>198</i>&nbsp;	 * Comparator to use when looking for a parent annotation in the hierarchy.
+<i>199</i>&nbsp;	 * The logic is:
+<i>200</i>&nbsp;	 * &lt;ol&gt;
+<i>201</i>&nbsp;	 *   &lt;li&gt;Sort by area (smallest first)&lt;/li&gt;
+<i>202</i>&nbsp;	 *   &lt;li&gt;Sort by hierarchy level (deepest first)&lt;/li&gt;
+<i>203</i>&nbsp;	 *   &lt;li&gt;Sort by {@link DefaultPathObjectComparator}&lt;/li&gt;
+<i>204</i>&nbsp;	 * &lt;/ol&gt;
+<i>205</i>&nbsp;	 * In practice, one expects an object to be placed inside the smallest containing annotation - 
+<i>206</i>&nbsp;	 * identical areas are likely to be rare, unless obtained by duplication.
+<i>207</i>&nbsp;	 */
+<b class="fc"><i>208</i>&nbsp;	public static final Comparator&lt;PathObject&gt; HIERARCHY_COMPARATOR = </b>
+<b class="fc"><i>209</i>&nbsp;			Comparator.comparingDouble((PathObject p) -&gt; {</b>
+<b class="nc"><i>210</i>&nbsp;				if (!p.hasROI())</b>
+<b class="nc"><i>211</i>&nbsp;					return Double.POSITIVE_INFINITY;</b>
+<i>212</i>&nbsp;				else
+<b class="nc"><i>213</i>&nbsp;					return p.getROI().getArea();</b>
+<i>214</i>&nbsp;			})
+<b class="fc"><i>215</i>&nbsp;			.thenComparing(Comparator.comparingInt(PathObject::getLevel).reversed())</b>
+<b class="fc"><i>216</i>&nbsp;			.thenComparing(DefaultPathObjectComparator.getInstance());</b>
+<i>217</i>&nbsp;	
+<i>218</i>&nbsp;	/**
+<i>219</i>&nbsp;	 * Insert an object into the hierarchy. This differs from {@link #addPathObject(PathObject, boolean)} in that it will seek to 
+<i>220</i>&nbsp;	 * place the object in an appropriate location relative to existing objects, using the logic of {@link #HIERARCHY_COMPARATOR}.
+<i>221</i>&nbsp;	 * @param pathObject the object to add
+<i>222</i>&nbsp;	 * @param fireChangeEvents if true, an event will be added after adding the object. Choose false if a single event should be added after making multiple changes.
+<i>223</i>&nbsp;	 * @return true if the hierarchy changed as a result of this call, false otherwise
+<i>224</i>&nbsp;	 */
+<i>225</i>&nbsp;	public synchronized boolean insertPathObject(PathObject pathObject, boolean fireChangeEvents) {
+<b class="nc"><i>226</i>&nbsp;		return insertPathObject(getRootObject(), pathObject, fireChangeEvents, !fireChangeEvents);</b>
+<i>227</i>&nbsp;	}
+<i>228</i>&nbsp;	
+<i>229</i>&nbsp;	/**
+<i>230</i>&nbsp;	 * Insert a collection of objects into the hierarchy, firing a change event on completion.
+<i>231</i>&nbsp;	 * This differs from {@link #addPathObjects(Collection)} in that it will seek to 
+<i>232</i>&nbsp;	 * place the object in an appropriate location relative to existing objects, using the logic of {@link #HIERARCHY_COMPARATOR}.
+<i>233</i>&nbsp;	 * @param pathObjects the objects to add
+<i>234</i>&nbsp;	 * @return true if the hierarchy changed as a result of this call, false otherwise
+<i>235</i>&nbsp;	 */
+<i>236</i>&nbsp;	public synchronized boolean insertPathObjects(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>237</i>&nbsp;		var selectedObjects =  new ArrayList&lt;&gt;(pathObjects);</b>
+<b class="nc"><i>238</i>&nbsp;		int nObjects = selectedObjects.size();</b>
+<b class="nc"><i>239</i>&nbsp;		selectedObjects.removeIf(p -&gt; p.isTMACore());</b>
+<b class="nc"><i>240</i>&nbsp;		if (selectedObjects.size() &lt; nObjects)</b>
+<b class="nc"><i>241</i>&nbsp;			logger.warn(&quot;TMA core objects cannot be inserted - use resolveHierarchy() instead&quot;);</b>
+<i>242</i>&nbsp;		
+<b class="nc"><i>243</i>&nbsp;		if (selectedObjects.isEmpty())</b>
+<b class="nc"><i>244</i>&nbsp;			return false;</b>
+<b class="nc"><i>245</i>&nbsp;		removeObjects(selectedObjects, true);</b>
+<b class="nc"><i>246</i>&nbsp;		selectedObjects.sort(PathObjectHierarchy.HIERARCHY_COMPARATOR.reversed());</b>
+<b class="nc"><i>247</i>&nbsp;		boolean singleObject = selectedObjects.size() == 1;</b>
+<i>248</i>&nbsp;		// We don&#39;t want to reset caches for every object if we have only detections, since previously-inserted objects don&#39;t impact the potential parent
+<b class="nc"><i>249</i>&nbsp;		boolean allDetections = selectedObjects.stream().allMatch(p -&gt; p.isDetection());</b>
+<b class="nc"><i>250</i>&nbsp;		for (var pathObject : selectedObjects) {</b>
+<i>251</i>&nbsp;//			hierarchy.insertPathObject(pathObject, true);
+<b class="nc"><i>252</i>&nbsp;			insertPathObject(getRootObject(), pathObject, singleObject, !singleObject &amp;&amp; !allDetections);</b>
+<i>253</i>&nbsp;//			insertPathObject(pathObject, selectedObjects.size() == 1);
+<b class="nc"><i>254</i>&nbsp;		}</b>
+<b class="nc"><i>255</i>&nbsp;		if (!singleObject)</b>
+<b class="nc"><i>256</i>&nbsp;			fireHierarchyChangedEvent(this);</b>
+<b class="nc"><i>257</i>&nbsp;		return true;</b>
+<i>258</i>&nbsp;	}
+<i>259</i>&nbsp;	
+<i>260</i>&nbsp;	/**
+<i>261</i>&nbsp;	 * Attempt to resolve the parent-child relationships between all objects within the hierarchy.
+<i>262</i>&nbsp;	 */
+<i>263</i>&nbsp;	public synchronized void resolveHierarchy() {
+<b class="nc"><i>264</i>&nbsp;		List&lt;? extends PathObject&gt; tmaCores = tmaGrid == null ? Collections.emptyList() : tmaGrid.getTMACoreList();</b>
+<b class="nc"><i>265</i>&nbsp;		var annotations = getAnnotationObjects();</b>
+<b class="nc"><i>266</i>&nbsp;		if (annotations.isEmpty() &amp;&amp; tmaCores.isEmpty()) {</b>
+<b class="nc"><i>267</i>&nbsp;			logger.debug(&quot;resolveHierarchy() called with no annotations or TMA cores!&quot;);</b>
+<b class="nc"><i>268</i>&nbsp;			return;</b>
+<i>269</i>&nbsp;		}
+<b class="nc"><i>270</i>&nbsp;		var detections = getDetectionObjects();</b>
+<b class="nc"><i>271</i>&nbsp;		if (annotations.size() &gt; 1 &amp;&amp; detections.size() &gt; 1000) {</b>
+<b class="nc"><i>272</i>&nbsp;			logger.warn(&quot;Resolving hierarchy that contains {} annotations and {} detections - this may be slow!&quot;,</b>
+<b class="nc"><i>273</i>&nbsp;					annotations.size(), detections.size());</b>
+<b class="nc"><i>274</i>&nbsp;		} else if (annotations.size() &gt; 100) {</b>
+<b class="nc"><i>275</i>&nbsp;			logger.warn(&quot;Resolving hierarchy with {} annotations - this may be slow!&quot;, annotations.size());</b>
+<i>276</i>&nbsp;		}
+<b class="nc"><i>277</i>&nbsp;		if (!tmaCores.isEmpty()) {</b>
+<i>278</i>&nbsp;			// Need to remove annotations first (they will be re-inserted later) so we can resolve detections if needed
+<b class="nc"><i>279</i>&nbsp;			if (!annotations.isEmpty())</b>
+<b class="nc"><i>280</i>&nbsp;				removeObjects(annotations, true);</b>
+<b class="nc"><i>281</i>&nbsp;			var remainingDetections = detections.stream().filter(p -&gt; p.getParent() == rootObject).collect(Collectors.toList());</b>
+<b class="nc"><i>282</i>&nbsp;			if (!remainingDetections.isEmpty())</b>
+<b class="nc"><i>283</i>&nbsp;				insertPathObjects(remainingDetections);</b>
+<i>284</i>&nbsp;		}
+<b class="nc"><i>285</i>&nbsp;		insertPathObjects(annotations);</b>
+<b class="nc"><i>286</i>&nbsp;	}</b>
+<i>287</i>&nbsp;	
+<i>288</i>&nbsp;	/**
+<i>289</i>&nbsp;	 * Insert a path object at the appropriate place in the hierarchy, without making other changes.
+<i>290</i>&nbsp;	 * @param pathObjectParent the first potential parent; this can be used to help filter out &#39;impossible&#39; parents to aid performance
+<i>291</i>&nbsp;	 * @param pathObject the object to insert
+<i>292</i>&nbsp;	 * @param fireChangeEvents if true, fire hierarchy change events after inserting the object
+<i>293</i>&nbsp;	 * @param resetCache if true, reset the tile cache after adding the object; this is only used if fireChangeEvents is false
+<i>294</i>&nbsp;	 * @return
+<i>295</i>&nbsp;	 */
+<i>296</i>&nbsp;	private synchronized boolean insertPathObject(PathObject pathObjectParent, PathObject pathObject, boolean fireChangeEvents, boolean resetCache) {
+<i>297</i>&nbsp;		
+<b class="nc"><i>298</i>&nbsp;		if (pathObject.isTMACore()) {</b>
+<b class="nc"><i>299</i>&nbsp;			logger.warn(&quot;TMA core objects cannot be inserted - use resolveHierarchy() instead&quot;);</b>
+<b class="nc"><i>300</i>&nbsp;			return false;</b>
+<i>301</i>&nbsp;		}
+<i>302</i>&nbsp;		
+<i>303</i>&nbsp;		// Get all the annotations that might be a parent of this object
+<b class="nc"><i>304</i>&nbsp;		var region = ImageRegion.createInstance(pathObject.getROI());</b>
+<b class="nc"><i>305</i>&nbsp;		Collection&lt;PathObject&gt; tempSet = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>306</i>&nbsp;		tempSet.add(getRootObject());</b>
+<b class="nc"><i>307</i>&nbsp;		tileCache.getObjectsForRegion(PathAnnotationObject.class, region, tempSet, true);</b>
+<b class="nc"><i>308</i>&nbsp;		if (tmaGrid != null)</b>
+<b class="nc"><i>309</i>&nbsp;			tileCache.getObjectsForRegion(TMACoreObject.class, region, tempSet, true);</b>
+<i>310</i>&nbsp;		
+<b class="nc"><i>311</i>&nbsp;		if (pathObjectParent != null) {</b>
+<b class="nc"><i>312</i>&nbsp;			tempSet.removeIf(p -&gt; p != pathObjectParent &amp;&amp; !PathObjectTools.isAncestor(p, pathObjectParent));</b>
+<i>313</i>&nbsp;		}
+<i>314</i>&nbsp;
+<b class="nc"><i>315</i>&nbsp;		var possibleParentObjects = new ArrayList&lt;PathObject&gt;(tempSet);</b>
+<b class="nc"><i>316</i>&nbsp;		Collections.sort(possibleParentObjects, HIERARCHY_COMPARATOR);</b>
+<i>317</i>&nbsp;
+<b class="nc"><i>318</i>&nbsp;		for (PathObject possibleParent : possibleParentObjects) {</b>
+<b class="nc"><i>319</i>&nbsp;			if (possibleParent == pathObject || possibleParent.isDetection())</b>
+<b class="nc"><i>320</i>&nbsp;				continue;</b>
+<i>321</i>&nbsp;			
+<i>322</i>&nbsp;			boolean addObject;
+<b class="nc"><i>323</i>&nbsp;			if (possibleParent.isRootObject()) {</b>
+<i>324</i>&nbsp;				// If we&#39;ve reached the root, definitely add
+<b class="nc"><i>325</i>&nbsp;				addObject = true;</b>
+<i>326</i>&nbsp;			} else {
+<i>327</i>&nbsp;				// If we&#39;re adding a detection, check centroid; otherwise check covers
+<b class="nc"><i>328</i>&nbsp;				if (pathObject.isDetection())</b>
+<b class="nc"><i>329</i>&nbsp;					addObject = tileCache.containsCentroid(possibleParent, pathObject);</b>
+<i>330</i>&nbsp;				else
+<b class="nc"><i>331</i>&nbsp;					addObject = pathObjectParent != null &amp;&amp; possibleParent == pathObjectParent ||</b>
+<b class="nc"><i>332</i>&nbsp;								tileCache.covers(possibleParent, pathObject);</b>
+<i>333</i>&nbsp;			}
+<i>334</i>&nbsp;			
+<b class="nc"><i>335</i>&nbsp;			if (addObject) {</b>
+<i>336</i>&nbsp;				// Don&#39;t add if we&#39;re already where we should be
+<b class="nc"><i>337</i>&nbsp;				if (pathObject.getParent() == possibleParent)</b>
+<b class="nc"><i>338</i>&nbsp;					return false;</b>
+<i>339</i>&nbsp;				
+<i>340</i>&nbsp;				// Reassign child objects if we need to
+<b class="nc"><i>341</i>&nbsp;				Collection&lt;PathObject&gt; previousChildren = pathObject.isDetection() ? new ArrayList&lt;&gt;() : new ArrayList&lt;&gt;(possibleParent.getChildObjects());</b>
+<i>342</i>&nbsp;				// Can&#39;t reassign TMA core objects (these must be directly below the root object)
+<b class="nc"><i>343</i>&nbsp;				previousChildren.removeIf(p -&gt; p.isTMACore());</b>
+<i>344</i>&nbsp;				// Beware that we could have &#39;orphaned&#39; detections
+<b class="nc"><i>345</i>&nbsp;				if (possibleParent.isTMACore())</b>
+<b class="nc"><i>346</i>&nbsp;					possibleParent.getParent().getChildObjects().stream().filter(p -&gt; p.isDetection()).forEach(previousChildren::add);</b>
+<b class="nc"><i>347</i>&nbsp;				possibleParent.addPathObject(pathObject);</b>
+<b class="nc"><i>348</i>&nbsp;				if (!previousChildren.isEmpty()) {</b>
+<b class="nc"><i>349</i>&nbsp;					pathObject.addPathObjects(filterObjectsForROI(pathObject.getROI(), previousChildren));</b>
+<i>350</i>&nbsp;				}
+<i>351</i>&nbsp;				
+<i>352</i>&nbsp;				// Notify listeners of changes, if required
+<b class="nc"><i>353</i>&nbsp;				if (fireChangeEvents)</b>
+<b class="nc"><i>354</i>&nbsp;					fireObjectAddedEvent(this, pathObject);</b>
+<b class="nc"><i>355</i>&nbsp;				else if (resetCache)</b>
+<b class="nc"><i>356</i>&nbsp;					tileCache.resetCache();</b>
+<b class="nc"><i>357</i>&nbsp;				return true;</b>
+<i>358</i>&nbsp;			}
+<b class="nc"><i>359</i>&nbsp;		}</b>
+<b class="nc"><i>360</i>&nbsp;		return true;</b>
+<i>361</i>&nbsp;	}
+<i>362</i>&nbsp;	
+<i>363</i>&nbsp;	/**
+<i>364</i>&nbsp;	 * Remove the TMA grid for this hierarchy.
+<i>365</i>&nbsp;	 */
+<i>366</i>&nbsp;	// TODO: Improve TMA grid modification whenever many detection objects already exist
+<i>367</i>&nbsp;	synchronized void clearTMAGrid() {
+<b class="nc"><i>368</i>&nbsp;		if (tmaGrid == null)</b>
+<b class="nc"><i>369</i>&nbsp;			return;</b>
+<b class="nc"><i>370</i>&nbsp;		removeObjects(new ArrayList&lt;&gt;(tmaGrid.getTMACoreList()), true);</b>
+<i>371</i>&nbsp;//		for (TMACoreObject core : tmaGrid.getTMACoreList())
+<i>372</i>&nbsp;//			removeObject(core, true);
+<i>373</i>&nbsp;//		this.tmaGrid = null;
+<i>374</i>&nbsp;		// Notify listeners of changes
+<b class="nc"><i>375</i>&nbsp;		fireHierarchyChangedEvent(getRootObject());</b>
+<b class="nc"><i>376</i>&nbsp;	}</b>
+<i>377</i>&nbsp;	
+<i>378</i>&nbsp;	/**
+<i>379</i>&nbsp;	 * Remove a single object from the hierarchy, firing a remove event.
+<i>380</i>&nbsp;	 * @param pathObject the object to remove
+<i>381</i>&nbsp;	 * @param keepChildren if true, retain all children and descendants of the object being removed; if false, remove these also
+<i>382</i>&nbsp;	 * @return
+<i>383</i>&nbsp;	 */
+<i>384</i>&nbsp;	public synchronized boolean removeObject(PathObject pathObject, boolean keepChildren) {
+<b class="nc"><i>385</i>&nbsp;		return removeObject(pathObject, keepChildren, true);</b>
+<i>386</i>&nbsp;	}
+<i>387</i>&nbsp;	
+<i>388</i>&nbsp;	/**
+<i>389</i>&nbsp;	 * Remove a single object from the hierarchy, without firing a remove event.
+<i>390</i>&nbsp;	 * @param pathObject the object to remove
+<i>391</i>&nbsp;	 * @param keepChildren if true, retain all children and descendants of the object being removed; if false, remove these also
+<i>392</i>&nbsp;	 * @return
+<i>393</i>&nbsp;	 */
+<i>394</i>&nbsp;	public synchronized boolean removeObjectWithoutUpdate(PathObject pathObject, boolean keepChildren) {
+<b class="nc"><i>395</i>&nbsp;		return removeObject(pathObject, keepChildren, false);</b>
+<i>396</i>&nbsp;	}
+<i>397</i>&nbsp;	
+<i>398</i>&nbsp;	/**
+<i>399</i>&nbsp;	 * Remove a single object from the hierarchy, optionally firing a remove event.
+<i>400</i>&nbsp;	 * @param pathObject the object to remove
+<i>401</i>&nbsp;	 * @param keepChildren if true, retain all children and descendants of the object being removed; if false, remove these also
+<i>402</i>&nbsp;	 * @param fireEvent if true, fire a hierarchy event. May be false if one wishes to complete several changes before updating listeners later.
+<i>403</i>&nbsp;	 * @return
+<i>404</i>&nbsp;	 */
+<i>405</i>&nbsp;	private synchronized boolean removeObject(PathObject pathObject, boolean keepChildren, boolean fireEvent) {
+<i>406</i>&nbsp;		// Check the object is within the hierarchy &amp; has a valid parent (from which it can be removed)
+<b class="nc"><i>407</i>&nbsp;		PathObject pathObjectParent = pathObject.getParent();</b>
+<b class="nc"><i>408</i>&nbsp;		if (!inHierarchy(pathObject) || pathObjectParent == null) {</b>
+<b class="nc"><i>409</i>&nbsp;			logger.warn(pathObject + &quot; could not be removed from the hierarchy&quot;);</b>
+<b class="nc"><i>410</i>&nbsp;			return false;</b>
+<i>411</i>&nbsp;		}
+<i>412</i>&nbsp;
+<i>413</i>&nbsp;		// Can&#39;t keep children if there aren&#39;t any
+<b class="nc"><i>414</i>&nbsp;		boolean hasChildren = pathObject.hasChildren();</b>
+<i>415</i>&nbsp;		
+<b class="nc"><i>416</i>&nbsp;		pathObjectParent.removePathObject(pathObject);</b>
+<i>417</i>&nbsp;
+<i>418</i>&nbsp;		// Assign the children to the parent object, if necessary
+<b class="nc"><i>419</i>&nbsp;		if (keepChildren &amp;&amp; hasChildren) {</b>
+<i>420</i>&nbsp;			// We create a new array list because getPathObjectList returns an unmodifiable collection
+<i>421</i>&nbsp;//			List&lt;PathObject&gt; list = new ArrayList&lt;&gt;(pathObject.getPathObjectList());
+<b class="nc"><i>422</i>&nbsp;			pathObjectParent.addPathObjects(pathObject.getChildObjects());</b>
+<i>423</i>&nbsp;//			pathObject.clearPathObjects(); // Clear child objects, just in case
+<i>424</i>&nbsp;		}
+<b class="nc"><i>425</i>&nbsp;		if (fireEvent) {</b>
+<b class="nc"><i>426</i>&nbsp;			if (keepChildren || !hasChildren)</b>
+<b class="nc"><i>427</i>&nbsp;				fireObjectRemovedEvent(this, pathObject, pathObjectParent);</b>
+<i>428</i>&nbsp;			else
+<b class="nc"><i>429</i>&nbsp;				fireHierarchyChangedEvent(this, pathObjectParent);</b>
+<i>430</i>&nbsp;		}
+<b class="nc"><i>431</i>&nbsp;		return true;</b>
+<i>432</i>&nbsp;	}
+<i>433</i>&nbsp;	
+<i>434</i>&nbsp;	/**
+<i>435</i>&nbsp;	 * Remove a collection of objects, firing a single &#39;hierarchy changed&#39; event afterwards to notify listeners if anything happened
+<i>436</i>&nbsp;	 * (i.e. if any of the objects really were found within the hierarchy) &amp;amp; removed.
+<i>437</i>&nbsp;	 * 
+<i>438</i>&nbsp;	 * @param pathObjects the objects to remove
+<i>439</i>&nbsp;	 * @param keepChildren if true, retain children and descendants of the objects being removed
+<i>440</i>&nbsp;	 */
+<i>441</i>&nbsp;	public synchronized void removeObjects(Collection&lt;? extends PathObject&gt; pathObjects, boolean keepChildren) {
+<i>442</i>&nbsp;		
+<b class="nc"><i>443</i>&nbsp;		if (pathObjects.isEmpty())</b>
+<b class="nc"><i>444</i>&nbsp;			return;</b>
+<i>445</i>&nbsp;		
+<b class="nc"><i>446</i>&nbsp;		List&lt;PathObject&gt; pathObjectSet = new ArrayList&lt;&gt;(pathObjects);</b>
+<b class="nc"><i>447</i>&nbsp;		pathObjectSet.sort((o1, o2) -&gt; Integer.compare(o2.getLevel(), o1.getLevel()));</b>
+<i>448</i>&nbsp;		
+<i>449</i>&nbsp;		// Determine the parents for each object
+<b class="nc"><i>450</i>&nbsp;		Map&lt;PathObject, List&lt;PathObject&gt;&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>451</i>&nbsp;		for (PathObject pathObject : pathObjectSet) {</b>
+<b class="nc"><i>452</i>&nbsp;			PathObject parent = pathObject.getParent();</b>
+<b class="nc"><i>453</i>&nbsp;			if (parent == null)</b>
+<b class="nc"><i>454</i>&nbsp;				continue;</b>
+<b class="nc"><i>455</i>&nbsp;			List&lt;PathObject&gt; list = map.get(parent);</b>
+<b class="nc"><i>456</i>&nbsp;			if (list == null) {</b>
+<b class="nc"><i>457</i>&nbsp;				list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>458</i>&nbsp;				map.put(parent, list);</b>
+<i>459</i>&nbsp;			}
+<b class="nc"><i>460</i>&nbsp;			list.add(pathObject);</b>
+<b class="nc"><i>461</i>&nbsp;		}</b>
+<i>462</i>&nbsp;		
+<b class="nc"><i>463</i>&nbsp;		if (map.isEmpty())</b>
+<b class="nc"><i>464</i>&nbsp;			return;</b>
+<i>465</i>&nbsp;		
+<i>466</i>&nbsp;		// Loop through and remove objects, keeping children if necessary
+<b class="nc"><i>467</i>&nbsp;		Set&lt;PathObject&gt; childrenToKeep = new LinkedHashSet&lt;&gt;();</b>
+<b class="nc"><i>468</i>&nbsp;		for (Entry&lt;PathObject, List&lt;PathObject&gt;&gt; entry : map.entrySet()) {</b>
+<b class="nc"><i>469</i>&nbsp;			PathObject parent = entry.getKey();</b>
+<b class="nc"><i>470</i>&nbsp;			List&lt;PathObject&gt; children = entry.getValue();</b>
+<b class="nc"><i>471</i>&nbsp;			parent.removePathObjects(children);</b>
+<b class="nc"><i>472</i>&nbsp;			if (keepChildren) {</b>
+<b class="nc"><i>473</i>&nbsp;				for (PathObject child : children)</b>
+<b class="nc"><i>474</i>&nbsp;					childrenToKeep.addAll(child.getChildObjects());</b>
+<i>475</i>&nbsp;			}
+<b class="nc"><i>476</i>&nbsp;		}</b>
+<b class="nc"><i>477</i>&nbsp;		childrenToKeep.removeAll(pathObjects);</b>
+<i>478</i>&nbsp;		// Add children back if required (note: this can be quite slow!)
+<b class="nc"><i>479</i>&nbsp;		tileCache.resetCache();</b>
+<b class="nc"><i>480</i>&nbsp;		for (PathObject pathObject : childrenToKeep) {</b>
+<b class="nc"><i>481</i>&nbsp;			addPathObject(pathObject, false);</b>
+<b class="nc"><i>482</i>&nbsp;		}</b>
+<b class="nc"><i>483</i>&nbsp;		fireHierarchyChangedEvent(this);</b>
+<i>484</i>&nbsp;		
+<i>485</i>&nbsp;		// This previously could result in child objects being deleted even if keepChildren was 
+<i>486</i>&nbsp;		// true, depending upon the order in which objects were removed.
+<i>487</i>&nbsp;//		// Loop through and remove objects
+<i>488</i>&nbsp;//		for (Entry&lt;PathObject, List&lt;PathObject&gt;&gt; entry : map.entrySet()) {
+<i>489</i>&nbsp;//			PathObject parent = entry.getKey();
+<i>490</i>&nbsp;//			List&lt;PathObject&gt; children = entry.getValue();
+<i>491</i>&nbsp;//			parent.removePathObjects(children);
+<i>492</i>&nbsp;//			if (keepChildren) {
+<i>493</i>&nbsp;//				for (PathObject child : children) {
+<i>494</i>&nbsp;//					if (child.hasChildren()) {
+<i>495</i>&nbsp;//						List&lt;PathObject&gt; newChildList = new ArrayList&lt;&gt;(child.getChildObjects());
+<i>496</i>&nbsp;//						newChildList.removeAll(pathObjects);
+<i>497</i>&nbsp;//						parent.addPathObjects(newChildList);
+<i>498</i>&nbsp;//					}
+<i>499</i>&nbsp;//				}
+<i>500</i>&nbsp;//			}
+<i>501</i>&nbsp;//		}
+<i>502</i>&nbsp;//		fireHierarchyChangedEvent(this);
+<b class="nc"><i>503</i>&nbsp;	}</b>
+<i>504</i>&nbsp;	
+<i>505</i>&nbsp;	
+<i>506</i>&nbsp;	/**
+<i>507</i>&nbsp;	 * Determine if a PathObject is within this hierarchy.
+<i>508</i>&nbsp;	 * The actual test is to check the highest parent object of the PathObject is equal to the root object for this hierarchy.
+<i>509</i>&nbsp;	 * 
+<i>510</i>&nbsp;	 * @param pathObject
+<i>511</i>&nbsp;	 * @return
+<i>512</i>&nbsp;	 */
+<i>513</i>&nbsp;	private synchronized boolean inHierarchy(PathObject pathObject) { // made private as only called here
+<b class="nc"><i>514</i>&nbsp;		if (pathObject == null)</b>
+<b class="nc"><i>515</i>&nbsp;			return false;</b>
+<b class="nc"><i>516</i>&nbsp;		while (pathObject.getParent() != null)</b>
+<b class="nc"><i>517</i>&nbsp;			pathObject = pathObject.getParent();</b>
+<b class="nc"><i>518</i>&nbsp;		return pathObject.equals(getRootObject());</b>
+<i>519</i>&nbsp;	}
+<i>520</i>&nbsp;	
+<i>521</i>&nbsp;	
+<i>522</i>&nbsp;	private synchronized void updateTMAHierarchy() {
+<b class="nc"><i>523</i>&nbsp;		if (tmaGrid == null)</b>
+<b class="nc"><i>524</i>&nbsp;			return;</b>
+<i>525</i>&nbsp;
+<i>526</i>&nbsp;		// Assign annotations to cores
+<b class="nc"><i>527</i>&nbsp;		List&lt;PathObject&gt; pathObjectChildren = new ArrayList&lt;&gt;(rootObject.getChildObjects());</b>
+<b class="nc"><i>528</i>&nbsp;		rootObject.clearPathObjects();</b>
+<i>529</i>&nbsp;		// Add cores to the start of the object list
+<b class="nc"><i>530</i>&nbsp;		rootObject.addPathObjects(tmaGrid.getTMACoreList());</b>
+<i>531</i>&nbsp;		// Add back any other objects
+<b class="nc"><i>532</i>&nbsp;		for (PathObject pathObject : pathObjectChildren)</b>
+<b class="nc"><i>533</i>&nbsp;			addPathObject(pathObject, false);</b>
+<i>534</i>&nbsp;
+<i>535</i>&nbsp;		// Notify listeners of changes
+<b class="nc"><i>536</i>&nbsp;		fireHierarchyChangedEvent(getRootObject());</b>
+<b class="nc"><i>537</i>&nbsp;	}</b>
+<i>538</i>&nbsp;	
+<i>539</i>&nbsp;	
+<i>540</i>&nbsp;//J	synchronized boolean updateParent(final PathObject pathObject) {
+<i>541</i>&nbsp;		// Could check if parent needs to be changed... however consider that update parent doesn&#39;t check if it should be made a child of another object inside its current parent
+<i>542</i>&nbsp;//		// Check if the parent is still ok
+<i>543</i>&nbsp;//		if (containsObject(pathObject.getParent(), pathObject)) {
+<i>544</i>&nbsp;//			return false;
+<i>545</i>&nbsp;//		}
+<i>546</i>&nbsp;		
+<i>547</i>&nbsp;		// If we have a TMA core, the parent can&#39;t change
+<i>548</i>&nbsp;//J		if (pathObject.isTMACore())
+<i>549</i>&nbsp;//J			return false;
+<i>550</i>&nbsp;		
+<i>551</i>&nbsp;		// Otherwise, if parent isn&#39;t ok, remove and then re-add this object
+<i>552</i>&nbsp;//J		if (pathObject.getParent() != null) {
+<i>553</i>&nbsp;//J			pathObject.getParent().removePathObject(pathObject);
+<i>554</i>&nbsp;//J		}
+<i>555</i>&nbsp;//J		addPathObject(pathObject, false, false);
+<i>556</i>&nbsp;//J		fireHierarchyChangedEvent(this);
+<i>557</i>&nbsp;//		addPathObjectToList(getRootObject(), pathObject, false);
+<i>558</i>&nbsp;//J		return true;
+<i>559</i>&nbsp;//J	}
+<i>560</i>&nbsp;	
+<i>561</i>&nbsp;	// TODO: Be very cautious about this!!!!  Use of tileCache inside a synchronized method might lead to deadlocks?
+<i>562</i>&nbsp;	private synchronized boolean addPathObjectToList(PathObject pathObjectParent, PathObject pathObject, boolean fireChangeEvents) {
+<b class="nc"><i>563</i>&nbsp;		pathObjectParent.addPathObject(pathObject);</b>
+<i>564</i>&nbsp;		// Notify listeners of changes, if required
+<b class="nc"><i>565</i>&nbsp;		if (fireChangeEvents)</b>
+<b class="nc"><i>566</i>&nbsp;			fireObjectAddedEvent(this, pathObject);</b>
+<b class="nc"><i>567</i>&nbsp;		return true;</b>
+<i>568</i>&nbsp;	}
+<i>569</i>&nbsp;	
+<i>570</i>&nbsp;	
+<i>571</i>&nbsp;	/**
+<i>572</i>&nbsp;	 * Add an object to the hierarchy, firing an event.
+<i>573</i>&nbsp;	 * @param pathObject
+<i>574</i>&nbsp;	 * @return
+<i>575</i>&nbsp;	 */
+<i>576</i>&nbsp;	public boolean addPathObject(PathObject pathObject) {
+<b class="nc"><i>577</i>&nbsp;		return addPathObject(pathObject, true);</b>
+<i>578</i>&nbsp;	}
+<i>579</i>&nbsp;	
+<i>580</i>&nbsp;	/**
+<i>581</i>&nbsp;	 * Add an object to the hierarchy, without firing an event.
+<i>582</i>&nbsp;	 * @param pathObject
+<i>583</i>&nbsp;	 * @return
+<i>584</i>&nbsp;	 */
+<i>585</i>&nbsp;	public boolean addPathObjectWithoutUpdate(PathObject pathObject) {
+<b class="nc"><i>586</i>&nbsp;		return addPathObject(pathObject, false);</b>
+<i>587</i>&nbsp;	}
+<i>588</i>&nbsp;	
+<i>589</i>&nbsp;	/**
+<i>590</i>&nbsp;	 * Add path object as descendant of the requested parent.
+<i>591</i>&nbsp;	 * 
+<i>592</i>&nbsp;	 * @param pathObjectParent
+<i>593</i>&nbsp;	 * @param pathObject
+<i>594</i>&nbsp;	 * @param fireUpdate
+<i>595</i>&nbsp;	 * @return
+<i>596</i>&nbsp;	 */
+<i>597</i>&nbsp;	public synchronized boolean addPathObjectBelowParent(PathObject pathObjectParent, PathObject pathObject, boolean fireUpdate) {
+<b class="nc"><i>598</i>&nbsp;		if (pathObjectParent == null)</b>
+<b class="nc"><i>599</i>&nbsp;			return addPathObject(pathObject, fireUpdate);</b>
+<i>600</i>&nbsp;		else
+<b class="nc"><i>601</i>&nbsp;			return addPathObjectToList(pathObjectParent, pathObject, fireUpdate);</b>
+<i>602</i>&nbsp;	}
+<i>603</i>&nbsp;	
+<i>604</i>&nbsp;	
+<i>605</i>&nbsp;	/**
+<i>606</i>&nbsp;	 * Add an object to the hierarchy.
+<i>607</i>&nbsp;	 * @param pathObject the object to add
+<i>608</i>&nbsp;	 * @param fireUpdate if true, fire an update event after the object is added
+<i>609</i>&nbsp;	 * @return
+<i>610</i>&nbsp;	 */
+<i>611</i>&nbsp;	private synchronized boolean addPathObject(PathObject pathObject, boolean fireUpdate) {
+<b class="nc"><i>612</i>&nbsp;		if (pathObject == getRootObject() || !pathObject.hasROI())</b>
+<b class="nc"><i>613</i>&nbsp;			return false;</b>
+<b class="nc"><i>614</i>&nbsp;		return addPathObjectToList(getRootObject(), pathObject, fireUpdate);</b>
+<i>615</i>&nbsp;	}
+<i>616</i>&nbsp;	
+<i>617</i>&nbsp;	/**
+<i>618</i>&nbsp;	 * Add multiple objects to the hierarchy.
+<i>619</i>&nbsp;	 * @param pathObjects
+<i>620</i>&nbsp;	 * @return
+<i>621</i>&nbsp;	 */
+<i>622</i>&nbsp;	public synchronized boolean addPathObjects(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>623</i>&nbsp;		boolean changes = false;</b>
+<b class="nc"><i>624</i>&nbsp;		int n = pathObjects.size();</b>
+<b class="nc"><i>625</i>&nbsp;		int counter = 0;</b>
+<b class="nc"><i>626</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>627</i>&nbsp;			if (n &gt; 10000) {</b>
+<b class="nc"><i>628</i>&nbsp;				if (counter % 1000 == 0)</b>
+<b class="nc"><i>629</i>&nbsp;					logger.debug(&quot;Adding {} of {}&quot;, counter, n);</b>
+<b class="nc"><i>630</i>&nbsp;			} else if (n &gt; 1000 &amp;&amp; counter % 100 == 0)</b>
+<b class="nc"><i>631</i>&nbsp;				logger.debug(&quot;Adding {} of {}&quot;, counter, n);</b>
+<b class="nc"><i>632</i>&nbsp;			changes = addPathObjectToList(getRootObject(), pathObject, false) || changes;</b>
+<b class="nc"><i>633</i>&nbsp;			counter++;</b>
+<b class="nc"><i>634</i>&nbsp;		}</b>
+<b class="nc"><i>635</i>&nbsp;		if (changes)</b>
+<b class="nc"><i>636</i>&nbsp;			fireHierarchyChangedEvent(getRootObject());</b>
+<i>637</i>&nbsp;//			fireChangeEvent(getRootObject());
+<b class="nc"><i>638</i>&nbsp;		return changes;</b>
+<i>639</i>&nbsp;	}
+<i>640</i>&nbsp;	
+<i>641</i>&nbsp;	/**
+<i>642</i>&nbsp;	 * Remove all objects from the hierarchy.
+<i>643</i>&nbsp;	 */
+<i>644</i>&nbsp;	public synchronized void clearAll() {
+<b class="nc"><i>645</i>&nbsp;		getRootObject().clearPathObjects();</b>
+<b class="nc"><i>646</i>&nbsp;		tmaGrid = null;</b>
+<b class="nc"><i>647</i>&nbsp;		fireHierarchyChangedEvent(getRootObject());</b>
+<b class="nc"><i>648</i>&nbsp;	}</b>
+<i>649</i>&nbsp;	
+<i>650</i>&nbsp;
+<i>651</i>&nbsp;	/**
+<i>652</i>&nbsp;	 * Get objects that contain Point ROIs.
+<i>653</i>&nbsp;	 * @param cls
+<i>654</i>&nbsp;	 * @return
+<i>655</i>&nbsp;	 */
+<i>656</i>&nbsp;	public synchronized Collection&lt;PathObject&gt; getPointObjects(Class&lt;? extends PathObject&gt; cls) {
+<b class="nc"><i>657</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = getObjects(null, cls);</b>
+<b class="nc"><i>658</i>&nbsp;		if (!pathObjects.isEmpty()) {</b>
+<b class="nc"><i>659</i>&nbsp;			Iterator&lt;PathObject&gt; iter = pathObjects.iterator();</b>
+<b class="nc"><i>660</i>&nbsp;			while (iter.hasNext()) {</b>
+<b class="nc"><i>661</i>&nbsp;				if (!PathObjectTools.hasPointROI(iter.next())) {</b>
+<b class="nc"><i>662</i>&nbsp;					iter.remove();</b>
+<i>663</i>&nbsp;				}
+<i>664</i>&nbsp;			}
+<i>665</i>&nbsp;		}
+<b class="nc"><i>666</i>&nbsp;		return pathObjects;</b>
+<i>667</i>&nbsp;	}
+<i>668</i>&nbsp;	
+<i>669</i>&nbsp;	/**
+<i>670</i>&nbsp;	 * Get all cell objects in the hierarchy.
+<i>671</i>&nbsp;	 * @return
+<i>672</i>&nbsp;	 */
+<i>673</i>&nbsp;	public Collection&lt;PathObject&gt; getCellObjects() {
+<b class="nc"><i>674</i>&nbsp;		return getObjects(null, PathCellObject.class);</b>
+<i>675</i>&nbsp;	}
+<i>676</i>&nbsp;	
+<i>677</i>&nbsp;	/**
+<i>678</i>&nbsp;	 * Get all tile objects in the hierarchy.
+<i>679</i>&nbsp;	 * @return
+<i>680</i>&nbsp;	 */
+<i>681</i>&nbsp;	public Collection&lt;PathObject&gt; getTileObjects() {
+<b class="nc"><i>682</i>&nbsp;		return getObjects(null, PathTileObject.class);</b>
+<i>683</i>&nbsp;	}
+<i>684</i>&nbsp;	
+<i>685</i>&nbsp;	/**
+<i>686</i>&nbsp;	 * Get all detection objects in the hierarchy (including sub-classes of detections).
+<i>687</i>&nbsp;	 * @return
+<i>688</i>&nbsp;	 */
+<i>689</i>&nbsp;	public Collection&lt;PathObject&gt; getDetectionObjects() {
+<b class="fc"><i>690</i>&nbsp;		return getObjects(null, PathDetectionObject.class);</b>
+<i>691</i>&nbsp;	}
+<i>692</i>&nbsp;	
+<i>693</i>&nbsp;	/**
+<i>694</i>&nbsp;	 * Get all annotation objects in the hierarchy.
+<i>695</i>&nbsp;	 * @return
+<i>696</i>&nbsp;	 */
+<i>697</i>&nbsp;	public Collection&lt;PathObject&gt; getAnnotationObjects() {
+<b class="fc"><i>698</i>&nbsp;		return getObjects(null, PathAnnotationObject.class);</b>
+<i>699</i>&nbsp;	}
+<i>700</i>&nbsp;
+<i>701</i>&nbsp;	/**
+<i>702</i>&nbsp;	 * Get all objects in the hierarchy, optionally filtering to return only objects that are instances of a specific class.
+<i>703</i>&nbsp;	 * Note that this method returns the root object, unless it has been filtered out.
+<i>704</i>&nbsp;	 * @param pathObjects
+<i>705</i>&nbsp;	 * @param cls
+<i>706</i>&nbsp;	 * @return
+<i>707</i>&nbsp;	 */
+<i>708</i>&nbsp;	public Collection&lt;PathObject&gt; getObjects(Collection&lt;PathObject&gt; pathObjects, Class&lt;? extends PathObject&gt; cls) {
+<b class="fc"><i>709</i>&nbsp;		if (pathObjects == null)</b>
+<b class="fc"><i>710</i>&nbsp;			pathObjects = new ArrayList&lt;&gt;();</b>
+<i>711</i>&nbsp;		
+<i>712</i>&nbsp;		// If we want annotations, it can be much faster to get them from the tile cache than to sift through a potentially large number of detections
+<b class="fc"><i>713</i>&nbsp;		if (PathAnnotationObject.class == cls &amp;&amp; tileCache != null &amp;&amp; tileCache.isActive()) {</b>
+<b class="fc"><i>714</i>&nbsp;			pathObjects.addAll(tileCache.getObjectsForRegion(cls, null, null, true));</b>
+<b class="fc"><i>715</i>&nbsp;			return pathObjects;</b>
+<i>716</i>&nbsp;		}
+<b class="fc"><i>717</i>&nbsp;		if (cls == null || cls.isAssignableFrom(PathRootObject.class))</b>
+<b class="nc"><i>718</i>&nbsp;			pathObjects.add(getRootObject());</b>
+<i>719</i>&nbsp;		
+<b class="fc"><i>720</i>&nbsp;		return PathObjectTools.getDescendantObjects(getRootObject(), pathObjects, cls);</b>
+<i>721</i>&nbsp;	}
+<i>722</i>&nbsp;	
+<i>723</i>&nbsp;	/**
+<i>724</i>&nbsp;	 * Update an object that is already in the hierarchy (e.g. because its ROI has changed).
+<i>725</i>&nbsp;	 * 
+<i>726</i>&nbsp;	 * @param pathObject the object to update
+<i>727</i>&nbsp;	 * @param isChanging if true, indicate that the object is still being changed.
+<i>728</i>&nbsp;	 *                   Some listeners may delay processing in expectation of an update event where isChanging is false.
+<i>729</i>&nbsp;	 */
+<i>730</i>&nbsp;	public void updateObject(PathObject pathObject, boolean isChanging) {
+<b class="nc"><i>731</i>&nbsp;		if (inHierarchy(pathObject))</b>
+<b class="nc"><i>732</i>&nbsp;			removeObject(pathObject, true, false);</b>
+<b class="nc"><i>733</i>&nbsp;		addPathObject(pathObject, false);</b>
+<b class="nc"><i>734</i>&nbsp;		fireObjectsChangedEvent(this, Collections.singletonList(pathObject), isChanging);</b>
+<i>735</i>&nbsp;//		fireHierarchyChangedEvent(this, pathObject);
+<b class="nc"><i>736</i>&nbsp;	}</b>
+<i>737</i>&nbsp;	
+<i>738</i>&nbsp;	
+<i>739</i>&nbsp;	/**
+<i>740</i>&nbsp;	 * Get a flattened list containing all PathObjects in the hierarchy (apart from the root object).
+<i>741</i>&nbsp;	 * 
+<i>742</i>&nbsp;	 * @param list optional list into which the objects should be added (may be null)
+<i>743</i>&nbsp;	 * @return
+<i>744</i>&nbsp;	 */
+<i>745</i>&nbsp;	public synchronized List&lt;PathObject&gt; getFlattenedObjectList(List&lt;PathObject&gt; list) {
+<b class="nc"><i>746</i>&nbsp;		if (list == null)</b>
+<b class="nc"><i>747</i>&nbsp;			list = new ArrayList&lt;&gt;(nObjects());</b>
+<b class="nc"><i>748</i>&nbsp;		getObjects(list, PathObject.class);</b>
+<b class="nc"><i>749</i>&nbsp;		return list;</b>
+<i>750</i>&nbsp;	}
+<i>751</i>&nbsp;	
+<i>752</i>&nbsp;	/**
+<i>753</i>&nbsp;	 * Number of objects in the hierarchy, excluding the root.
+<i>754</i>&nbsp;	 * @return
+<i>755</i>&nbsp;	 */
+<i>756</i>&nbsp;	public synchronized int nObjects() {
+<b class="fc"><i>757</i>&nbsp;		int count = PathObjectTools.countDescendants(getRootObject());</b>
+<b class="fc"><i>758</i>&nbsp;		return count;</b>
+<i>759</i>&nbsp;	}
+<i>760</i>&nbsp;	
+<i>761</i>&nbsp;	/**
+<i>762</i>&nbsp;	 * Set the contents of this hierarchy to be the same as that of another hierarchy.
+<i>763</i>&nbsp;	 * In practice, this means copying the root and TMA grid of the second hierarchy.
+<i>764</i>&nbsp;	 * @param hierarchy
+<i>765</i>&nbsp;	 */
+<i>766</i>&nbsp;	public synchronized void setHierarchy(PathObjectHierarchy hierarchy) {
+<b class="nc"><i>767</i>&nbsp;		if (this == hierarchy)</b>
+<b class="nc"><i>768</i>&nbsp;			return;</b>
+<b class="nc"><i>769</i>&nbsp;		rootObject = hierarchy.getRootObject();</b>
+<b class="nc"><i>770</i>&nbsp;		tmaGrid = hierarchy.tmaGrid;</b>
+<b class="nc"><i>771</i>&nbsp;		fireHierarchyChangedEvent(rootObject);</b>
+<b class="nc"><i>772</i>&nbsp;	}</b>
+<i>773</i>&nbsp;	
+<i>774</i>&nbsp;	/**
+<i>775</i>&nbsp;	 * Get the objects within a specified ROI, as defined by the general rules for resolving the hierarchy. 
+<i>776</i>&nbsp;	 * This relies on centroids for detections, and a &#39;covers&#39; rule for others.
+<i>777</i>&nbsp;	 * 
+<i>778</i>&nbsp;	 * @param cls class of PathObjects (e.g. PathDetectionObject), or null to accept all
+<i>779</i>&nbsp;	 * @param roi
+<i>780</i>&nbsp;	 * @return
+<i>781</i>&nbsp;	 */
+<i>782</i>&nbsp;	public Collection&lt;PathObject&gt; getObjectsForROI(Class&lt;? extends PathObject&gt; cls, ROI roi) {
+<b class="nc"><i>783</i>&nbsp;		if (roi.isEmpty() || !roi.isArea())</b>
+<b class="nc"><i>784</i>&nbsp;			return Collections.emptyList();</b>
+<i>785</i>&nbsp;		
+<b class="nc"><i>786</i>&nbsp;		Collection&lt;PathObject&gt; pathObjects = tileCache.getObjectsForRegion(cls, ImageRegion.createInstance(roi), new HashSet&lt;&gt;(), true);</b>
+<b class="nc"><i>787</i>&nbsp;		return filterObjectsForROI(roi, pathObjects);</b>
+<i>788</i>&nbsp;	}
+<i>789</i>&nbsp;	
+<i>790</i>&nbsp;	/**
+<i>791</i>&nbsp;	 * Filter the objects in a specified collection, returning only those contained &#39;inside&#39; a ROI 
+<i>792</i>&nbsp;	 * as defined by the general rules for resolving the hierarchy 
+<i>793</i>&nbsp;	 * (i.e. centroids for detections, &#39;covers&#39; rule for others).
+<i>794</i>&nbsp;	 * 
+<i>795</i>&nbsp;	 * @param roi
+<i>796</i>&nbsp;	 * @return
+<i>797</i>&nbsp;	 */
+<i>798</i>&nbsp;	Collection&lt;PathObject&gt; filterObjectsForROI(ROI roi, Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>799</i>&nbsp;		if (pathObjects.isEmpty() || !roi.isArea() || roi.isEmpty())</b>
+<b class="nc"><i>800</i>&nbsp;			return Collections.emptyList();</b>
+<i>801</i>&nbsp;		
+<b class="nc"><i>802</i>&nbsp;		var locator = tileCache.getLocator(roi, false);</b>
+<b class="nc"><i>803</i>&nbsp;		var preparedGeometry = tileCache.getPreparedGeometry(tileCache.getGeometry(roi));</b>
+<b class="nc"><i>804</i>&nbsp;		return pathObjects.parallelStream().filter(child -&gt; {</b>
+<i>805</i>&nbsp;			// Test plane first
+<b class="nc"><i>806</i>&nbsp;			if (!samePlane(roi, child.getROI(), false))</b>
+<b class="nc"><i>807</i>&nbsp;				return false;</b>
+<i>808</i>&nbsp;			
+<b class="nc"><i>809</i>&nbsp;			if (child.isDetection())</b>
+<b class="nc"><i>810</i>&nbsp;				return tileCache.containsCentroid(locator, child);</b>
+<i>811</i>&nbsp;			else {
+<b class="nc"><i>812</i>&nbsp;				return tileCache.covers(preparedGeometry, tileCache.getGeometry(child));</b>
+<i>813</i>&nbsp;			}
+<b class="nc"><i>814</i>&nbsp;		}).collect(Collectors.toList());</b>
+<i>815</i>&nbsp;	}
+<i>816</i>&nbsp;	
+<i>817</i>&nbsp;	
+<i>818</i>&nbsp;	/**
+<i>819</i>&nbsp;	 * Check if two ROIs fall in the same plane, optionally testing the channel as well.
+<i>820</i>&nbsp;	 * @param roi1
+<i>821</i>&nbsp;	 * @param roi2
+<i>822</i>&nbsp;	 * @param checkChannel
+<i>823</i>&nbsp;	 * @return
+<i>824</i>&nbsp;	 */
+<i>825</i>&nbsp;	static boolean samePlane(ROI roi1, ROI roi2, boolean checkChannel) {
+<b class="nc"><i>826</i>&nbsp;		if (checkChannel)</b>
+<b class="nc"><i>827</i>&nbsp;			return roi1.getImagePlane().equals(roi2.getImagePlane());</b>
+<i>828</i>&nbsp;		else
+<b class="nc"><i>829</i>&nbsp;			return roi1.getZ() == roi2.getZ() &amp;&amp; roi1.getT() == roi2.getT();</b>
+<i>830</i>&nbsp;	}
+<i>831</i>&nbsp;	
+<i>832</i>&nbsp;	
+<i>833</i>&nbsp;	/**
+<i>834</i>&nbsp;	 * Get the objects overlapping or close to a specified region.
+<i>835</i>&nbsp;	 * Note that this performs a quick check; the results typically should be filtered if a more strict test for overlapping is applied.
+<i>836</i>&nbsp;	 * 
+<i>837</i>&nbsp;	 * @param cls class of object to return (subclasses are included)
+<i>838</i>&nbsp;	 * @param region requested region overlapping the objects ROI
+<i>839</i>&nbsp;	 * @param pathObjects optionally collection to which objects will be added
+<i>840</i>&nbsp;	 * @return collection containing identified objects (same as the input collection, if provided)
+<i>841</i>&nbsp;	 */
+<i>842</i>&nbsp;	public Collection&lt;PathObject&gt; getObjectsForRegion(Class&lt;? extends PathObject&gt; cls, ImageRegion region, Collection&lt;PathObject&gt; pathObjects) {
+<b class="fc"><i>843</i>&nbsp;		return tileCache.getObjectsForRegion(cls, region, pathObjects, true);</b>
+<i>844</i>&nbsp;	}
+<i>845</i>&nbsp;	
+<i>846</i>&nbsp;	/**
+<i>847</i>&nbsp;	 * Returns true if the hierarchy contains objects overlapping a specific region, optionally filtering to identify only 
+<i>848</i>&nbsp;	 * objects of a specific class.
+<i>849</i>&nbsp;	 * @param cls
+<i>850</i>&nbsp;	 * @param region
+<i>851</i>&nbsp;	 * @return
+<i>852</i>&nbsp;	 */
+<i>853</i>&nbsp;	public boolean hasObjectsForRegion(Class&lt;? extends PathObject&gt; cls, ImageRegion region) {
+<b class="nc"><i>854</i>&nbsp;		return tileCache.hasObjectsForRegion(cls, region, true);</b>
+<i>855</i>&nbsp;	}
+<i>856</i>&nbsp;	
+<i>857</i>&nbsp;	
+<i>858</i>&nbsp;	void fireObjectRemovedEvent(Object source, PathObject pathObject, PathObject previousParent) {
+<b class="nc"><i>859</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createObjectRemovedEvent(source, this, previousParent, pathObject);</b>
+<b class="nc"><i>860</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>861</i>&nbsp;	}</b>
+<i>862</i>&nbsp;
+<i>863</i>&nbsp;	void fireObjectAddedEvent(Object source, PathObject pathObject) {
+<b class="nc"><i>864</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createObjectAddedEvent(source, this, pathObject.getParent(), pathObject);</b>
+<b class="nc"><i>865</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>866</i>&nbsp;	}</b>
+<i>867</i>&nbsp;	
+<i>868</i>&nbsp;	/**
+<i>869</i>&nbsp;	 * Fire a hierarchy update indicating object measurements have changed.
+<i>870</i>&nbsp;	 * @param source
+<i>871</i>&nbsp;	 * @param pathObjects
+<i>872</i>&nbsp;	 */
+<i>873</i>&nbsp;	public void fireObjectMeasurementsChangedEvent(Object source, Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>874</i>&nbsp;		fireObjectMeasurementsChangedEvent(source, pathObjects, false);</b>
+<b class="nc"><i>875</i>&nbsp;	}</b>
+<i>876</i>&nbsp;	
+<i>877</i>&nbsp;	/**
+<i>878</i>&nbsp;	 * Fire a hierarchy update indicating object measurements have changed.
+<i>879</i>&nbsp;	 * @param source
+<i>880</i>&nbsp;	 * @param pathObjects
+<i>881</i>&nbsp;	 * @param isChanging
+<i>882</i>&nbsp;	 */
+<i>883</i>&nbsp;	public void fireObjectMeasurementsChangedEvent(Object source, Collection&lt;? extends PathObject&gt; pathObjects, boolean isChanging) {
+<b class="nc"><i>884</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createObjectsChangedEvent(source, this, HierarchyEventType.CHANGE_MEASUREMENTS, pathObjects, isChanging);</b>
+<b class="nc"><i>885</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>886</i>&nbsp;	}</b>
+<i>887</i>&nbsp;	
+<i>888</i>&nbsp;	/**
+<i>889</i>&nbsp;	 * Fire a hierarchy update indicating object classifications have changed.
+<i>890</i>&nbsp;	 * @param source
+<i>891</i>&nbsp;	 * @param pathObjects
+<i>892</i>&nbsp;	 */
+<i>893</i>&nbsp;	public void fireObjectClassificationsChangedEvent(Object source, Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>894</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createObjectsChangedEvent(source, this, HierarchyEventType.CHANGE_CLASSIFICATION, pathObjects, false);</b>
+<b class="nc"><i>895</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>896</i>&nbsp;	}</b>
+<i>897</i>&nbsp;	
+<i>898</i>&nbsp;	/**
+<i>899</i>&nbsp;	 * Fire a hierarchy update indicating objects have changed.
+<i>900</i>&nbsp;	 * @param source
+<i>901</i>&nbsp;	 * @param pathObjects
+<i>902</i>&nbsp;	 */
+<i>903</i>&nbsp;	public void fireObjectsChangedEvent(Object source, Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>904</i>&nbsp;		fireObjectsChangedEvent(source, pathObjects, false);</b>
+<b class="nc"><i>905</i>&nbsp;	}</b>
+<i>906</i>&nbsp;
+<i>907</i>&nbsp;	/**
+<i>908</i>&nbsp;	 * Fire a hierarchy update indicating objects have changed, and may still be changing.
+<i>909</i>&nbsp;	 * @param source
+<i>910</i>&nbsp;	 * @param pathObjects
+<i>911</i>&nbsp;	 * @param isChanging is true, listeners may choose not to respond until an event is fired with isChanging false
+<i>912</i>&nbsp;	 */
+<i>913</i>&nbsp;	public void fireObjectsChangedEvent(Object source, Collection&lt;? extends PathObject&gt; pathObjects, boolean isChanging) {
+<b class="nc"><i>914</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createObjectsChangedEvent(source, this, HierarchyEventType.CHANGE_OTHER, pathObjects, isChanging);</b>
+<b class="nc"><i>915</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>916</i>&nbsp;	}</b>
+<i>917</i>&nbsp;	
+<i>918</i>&nbsp;	/**
+<i>919</i>&nbsp;	 * Fire a hierarchy update indicating the hierarchy structure has changed, impacting descendants of a specified object.
+<i>920</i>&nbsp;	 * @param source
+<i>921</i>&nbsp;	 * @param pathObject
+<i>922</i>&nbsp;	 */
+<i>923</i>&nbsp;	public void fireHierarchyChangedEvent(Object source, PathObject pathObject) {
+<b class="nc"><i>924</i>&nbsp;		PathObjectHierarchyEvent event = PathObjectHierarchyEvent.createStructureChangeEvent(source, this, pathObject);</b>
+<b class="nc"><i>925</i>&nbsp;		fireEvent(event);</b>
+<b class="nc"><i>926</i>&nbsp;	}</b>
+<i>927</i>&nbsp;
+<i>928</i>&nbsp;	/**
+<i>929</i>&nbsp;	 * Fire a hierarchy update indicating the hierarchy structure has changed.
+<i>930</i>&nbsp;	 * This is often a good choice of event if multiple changes may have occurred, of if one is unsure what exactly 
+<i>931</i>&nbsp;	 * has changed.
+<i>932</i>&nbsp;	 * @param source
+<i>933</i>&nbsp;	 */
+<i>934</i>&nbsp;	public void fireHierarchyChangedEvent(Object source) {
+<b class="nc"><i>935</i>&nbsp;		fireHierarchyChangedEvent(source, getRootObject());</b>
+<b class="nc"><i>936</i>&nbsp;	}</b>
+<i>937</i>&nbsp;	
+<i>938</i>&nbsp;	
+<i>939</i>&nbsp;	synchronized void fireEvent(PathObjectHierarchyEvent event) {
+<b class="nc"><i>940</i>&nbsp;		synchronized(listeners) {</b>
+<b class="nc"><i>941</i>&nbsp;			for (PathObjectHierarchyListener listener : listeners)</b>
+<b class="nc"><i>942</i>&nbsp;				listener.hierarchyChanged(event);</b>
+<b class="nc"><i>943</i>&nbsp;		}</b>
+<b class="nc"><i>944</i>&nbsp;	}</b>
+<i>945</i>&nbsp;	
+<i>946</i>&nbsp;	
+<i>947</i>&nbsp;	@Override
+<i>948</i>&nbsp;	public String toString() {
+<b class="nc"><i>949</i>&nbsp;		return &quot;Hierarchy: &quot; + nObjects() + &quot; objects&quot;;</b>
+<i>950</i>&nbsp;	}
+<i>951</i>&nbsp;	
+<i>952</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

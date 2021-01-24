@@ -1,0 +1,185 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ConfusionMatrix</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.ml.legacy</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ConfusionMatrix (qupath.process.gui.ml.legacy)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ConfusionMatrix</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 31)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.process.gui.ml.legacy;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;import java.util.function.Function;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Helper class for creating a confusion matrix.
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; *
+<i>36</i>&nbsp; */
+<i>37</i>&nbsp;class ConfusionMatrix&lt;T&gt; {
+<i>38</i>&nbsp;
+<b class="nc"><i>39</i>&nbsp;	private List&lt;T&gt; classes = new ArrayList&lt;&gt;();</b>
+<i>40</i>&nbsp;	private int[][] matrix;
+<b class="nc"><i>41</i>&nbsp;	private int errors = 0;</b>
+<i>42</i>&nbsp;	private Function&lt;T, String&gt; stringFun;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;	/**
+<i>45</i>&nbsp;	 * Set up confusion matrix considering the specific classes.
+<i>46</i>&nbsp;	 * 
+<i>47</i>&nbsp;	 * @param classes a collection of classes, whatever they may be
+<i>48</i>&nbsp;	 * @param stringFun a function that can convert a class into a string representation
+<i>49</i>&nbsp;	 */
+<b class="nc"><i>50</i>&nbsp;	ConfusionMatrix(final Collection&lt;T&gt; classes, Function&lt;T, String&gt; stringFun) {</b>
+<b class="nc"><i>51</i>&nbsp;		this.classes.addAll(classes);</b>
+<b class="nc"><i>52</i>&nbsp;		int n = classes.size();</b>
+<b class="nc"><i>53</i>&nbsp;		this.matrix = new int[n][n];</b>
+<b class="nc"><i>54</i>&nbsp;		this.stringFun = stringFun;</b>
+<i>55</i>&nbsp;	}
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	ConfusionMatrix(final Collection&lt;T&gt; classes) {
+<b class="nc"><i>58</i>&nbsp;		this(classes, t -&gt; t.toString());</b>
+<i>59</i>&nbsp;	}
+<i>60</i>&nbsp;	
+<i>61</i>&nbsp;	/**
+<i>62</i>&nbsp;	 * Register a classification, and update the confusion matrix accordingly.
+<i>63</i>&nbsp;	 * 
+<i>64</i>&nbsp;	 * @param trueClass
+<i>65</i>&nbsp;	 * @param assignedClass
+<i>66</i>&nbsp;	 */
+<i>67</i>&nbsp;	void registerClassification(final T trueClass, final T assignedClass) {
+<b class="nc"><i>68</i>&nbsp;		int indTrue = classes.indexOf(trueClass);</b>
+<b class="nc"><i>69</i>&nbsp;		int indAssigned = trueClass == assignedClass ? indTrue : classes.indexOf(assignedClass);</b>
+<b class="nc"><i>70</i>&nbsp;		if (indTrue &lt; 0 || indAssigned &lt; 0) {</b>
+<b class="nc"><i>71</i>&nbsp;			errors++;</b>
+<i>72</i>&nbsp;			return;
+<i>73</i>&nbsp;		}
+<b class="nc"><i>74</i>&nbsp;		matrix[indTrue][indAssigned]++;</b>
+<i>75</i>&nbsp;	}
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;	@Override
+<i>78</i>&nbsp;	public String toString() {
+<b class="nc"><i>79</i>&nbsp;		int nChars = 5;</b>
+<b class="nc"><i>80</i>&nbsp;		for (T pc : classes) {</b>
+<b class="nc"><i>81</i>&nbsp;			nChars = Math.max(nChars, stringFun.apply(pc).length());</b>
+<b class="nc"><i>82</i>&nbsp;		}</b>
+<b class="nc"><i>83</i>&nbsp;		String fString = &quot;%1$&quot; + nChars + &quot;s&quot;;</b>
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>86</i>&nbsp;		for (int i = 0; i &lt; nChars; i++)</b>
+<b class="nc"><i>87</i>&nbsp;			sb.append(&quot; &quot;);</b>
+<b class="nc"><i>88</i>&nbsp;		for (T pc : classes) {</b>
+<b class="nc"><i>89</i>&nbsp;			sb.append(&quot;\t&quot;).append(String.format(fString, stringFun.apply(pc)));</b>
+<b class="nc"><i>90</i>&nbsp;		}</b>
+<b class="nc"><i>91</i>&nbsp;		sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>92</i>&nbsp;		for (int i = 0; i &lt; classes.size(); i++) {</b>
+<b class="nc"><i>93</i>&nbsp;			sb.append(String.format(fString, stringFun.apply(classes.get(i))));</b>
+<b class="nc"><i>94</i>&nbsp;			for (int j = 0; j &lt; classes.size(); j++) {</b>
+<b class="nc"><i>95</i>&nbsp;				sb.append(&quot;\t&quot;).append(String.format(fString, matrix[i][j]));</b>
+<i>96</i>&nbsp;			}
+<b class="nc"><i>97</i>&nbsp;			sb.append(&quot;\n&quot;);</b>
+<i>98</i>&nbsp;		}
+<b class="nc"><i>99</i>&nbsp;		return sb.toString();</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;
+<i>102</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

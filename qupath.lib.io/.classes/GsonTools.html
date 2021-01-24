@@ -1,0 +1,470 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: GsonTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.io</a> ]
+</div>
+
+<h1>Coverage Summary for Class: GsonTools (qupath.lib.io)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GsonTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    64.7%
+  </span>
+  <span class="absValue">
+    (11/ 17)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">GsonTools$AffineTransformTypeAdapter</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (3/ 9)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GsonTools$AffineTransformTypeAdapter$AffineTransformProxy</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GsonTools$ImagePlaneTypeAdapter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 26)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GsonTools$PathClassTypeAdapter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">GsonTools$QuPathTypeAdapterFactory</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (1/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.9%
+  </span>
+  <span class="absValue">
+    (1/ 17)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    21.7%
+  </span>
+  <span class="absValue">
+    (5/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    17.4%
+  </span>
+  <span class="absValue">
+    (15/ 86)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.io;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>25</i>&nbsp;import java.io.IOException;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>29</i>&nbsp;import org.slf4j.Logger;
+<i>30</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import com.google.gson.Gson;
+<i>33</i>&nbsp;import com.google.gson.GsonBuilder;
+<i>34</i>&nbsp;import com.google.gson.TypeAdapter;
+<i>35</i>&nbsp;import com.google.gson.TypeAdapterFactory;
+<i>36</i>&nbsp;import com.google.gson.reflect.TypeToken;
+<i>37</i>&nbsp;import com.google.gson.stream.JsonReader;
+<i>38</i>&nbsp;import com.google.gson.stream.JsonWriter;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import qupath.lib.images.servers.ImageServers;
+<i>41</i>&nbsp;import qupath.lib.io.PathObjectTypeAdapters.FeatureCollection;
+<i>42</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>43</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>44</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>45</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>46</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>47</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;/**
+<i>50</i>&nbsp; * Helper class providing Gson instances with type adapters registered to serialize 
+<i>51</i>&nbsp; * several key classes.
+<i>52</i>&nbsp; * &lt;p&gt;
+<i>53</i>&nbsp; * These include:
+<i>54</i>&nbsp; * &lt;ul&gt;
+<i>55</i>&nbsp; * &lt;li&gt;{@link PathObject}&lt;/li&gt;
+<i>56</i>&nbsp; * &lt;li&gt;{@link PathClass}&lt;/li&gt;
+<i>57</i>&nbsp; * &lt;li&gt;{@link ROI}&lt;/li&gt;
+<i>58</i>&nbsp; * &lt;li&gt;{@link ImagePlane}&lt;/li&gt;
+<i>59</i>&nbsp; * &lt;li&gt;Java Topology Suite Geometry objects&lt;/li&gt;
+<i>60</i>&nbsp; * &lt;/ul&gt;
+<i>61</i>&nbsp; * 
+<i>62</i>&nbsp; * @author Pete Bankhead
+<i>63</i>&nbsp; *
+<i>64</i>&nbsp; */
+<b class="nc"><i>65</i>&nbsp;public class GsonTools {</b>
+<i>66</i>&nbsp;	
+<b class="fc"><i>67</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(GsonTools.class);</b>
+<i>68</i>&nbsp;	
+<b class="fc"><i>69</i>&nbsp;	private static GsonBuilder builder = new GsonBuilder()</b>
+<b class="fc"><i>70</i>&nbsp;			.serializeSpecialFloatingPointValues()</b>
+<b class="fc"><i>71</i>&nbsp;			.setLenient()</b>
+<b class="fc"><i>72</i>&nbsp;			.registerTypeAdapterFactory(new QuPathTypeAdapterFactory())</b>
+<b class="fc"><i>73</i>&nbsp;			.registerTypeAdapterFactory(OpenCVTypeAdapters.getOpenCVTypeAdaptorFactory())</b>
+<b class="fc"><i>74</i>&nbsp;			.registerTypeAdapterFactory(ImageServers.getImageServerTypeAdapterFactory(true))</b>
+<b class="fc"><i>75</i>&nbsp;			.registerTypeAdapterFactory(ImageServers.getServerBuilderFactory())</b>
+<b class="fc"><i>76</i>&nbsp;			.registerTypeAdapter(AffineTransform.class, AffineTransformTypeAdapter.INSTANCE);</b>
+<i>77</i>&nbsp;			//.create();
+<i>78</i>&nbsp;	
+<i>79</i>&nbsp;	/**
+<i>80</i>&nbsp;	 * Access the builder used with {@link #getInstance()}.
+<i>81</i>&nbsp;	 * This makes it possible to register new type adapters if required, which will be used by future Gson instances 
+<i>82</i>&nbsp;	 * returned by this class.
+<i>83</i>&nbsp;	 * &lt;p&gt;
+<i>84</i>&nbsp;	 * &lt;b&gt;Use this with caution!&lt;/b&gt; Changes made here impact JSON serialization/deserialization throughout 
+<i>85</i>&nbsp;	 * the software. Access by be removed or restricted in the future for this reason.
+<i>86</i>&nbsp;	 * &lt;p&gt;
+<i>87</i>&nbsp;	 * To create a derived builder that inherits from the default but does not change it, use {@code GsonBuilder.getInstance().newBuilder()}.
+<i>88</i>&nbsp;	 * 
+<i>89</i>&nbsp;	 * @return
+<i>90</i>&nbsp;	 */
+<i>91</i>&nbsp;	public static GsonBuilder getDefaultBuilder() {
+<b class="fc"><i>92</i>&nbsp;		logger.debug(&quot;Requesting GsonBuilder from &quot; + Thread.currentThread().getStackTrace()[0]);</b>
+<b class="fc"><i>93</i>&nbsp;		return builder;</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	
+<b class="fc"><i>97</i>&nbsp;	static class QuPathTypeAdapterFactory implements TypeAdapterFactory {</b>
+<i>98</i>&nbsp;
+<i>99</i>&nbsp;		@Override
+<i>100</i>&nbsp;		public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+<b class="nc"><i>101</i>&nbsp;			return getTypeAdaptor((Class&lt;T&gt;)type.getRawType());</b>
+<i>102</i>&nbsp;		}
+<i>103</i>&nbsp;		
+<i>104</i>&nbsp;		@SuppressWarnings(&quot;unchecked&quot;)
+<i>105</i>&nbsp;		static &lt;T&gt; TypeAdapter&lt;T&gt; getTypeAdaptor(Class&lt;T&gt; cls) {
+<b class="nc"><i>106</i>&nbsp;			if (PathObject.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>107</i>&nbsp;				return (TypeAdapter&lt;T&gt;)PathObjectTypeAdapters.PathObjectTypeAdapter.INSTANCE;</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;			if (MeasurementList.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>110</i>&nbsp;				return (TypeAdapter&lt;T&gt;)PathObjectTypeAdapters.MeasurementListTypeAdapter.INSTANCE;</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;			if (FeatureCollection.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>113</i>&nbsp;				return (TypeAdapter&lt;T&gt;)PathObjectTypeAdapters.PathObjectCollectionTypeAdapter.INSTANCE;</b>
+<i>114</i>&nbsp;			
+<b class="nc"><i>115</i>&nbsp;			if (ROI.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>116</i>&nbsp;				return (TypeAdapter&lt;T&gt;)ROITypeAdapters.ROI_ADAPTER_INSTANCE;</b>
+<i>117</i>&nbsp;						
+<b class="nc"><i>118</i>&nbsp;			if (Geometry.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>119</i>&nbsp;				return (TypeAdapter&lt;T&gt;)ROITypeAdapters.GEOMETRY_ADAPTER_INSTANCE;</b>
+<i>120</i>&nbsp;			
+<b class="nc"><i>121</i>&nbsp;			if (PathClass.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>122</i>&nbsp;				return (TypeAdapter&lt;T&gt;)PathClassTypeAdapter.INSTANCE;</b>
+<i>123</i>&nbsp;
+<b class="nc"><i>124</i>&nbsp;			if (ImagePlane.class.isAssignableFrom(cls))</b>
+<b class="nc"><i>125</i>&nbsp;				return (TypeAdapter&lt;T&gt;)ImagePlaneTypeAdapter.INSTANCE;</b>
+<i>126</i>&nbsp;
+<b class="nc"><i>127</i>&nbsp;			return null;</b>
+<i>128</i>&nbsp;		}
+<i>129</i>&nbsp;		
+<i>130</i>&nbsp;	}
+<i>131</i>&nbsp;	
+<i>132</i>&nbsp;	
+<i>133</i>&nbsp;	/**
+<i>134</i>&nbsp;	 * Wrap a collection of PathObjects as a FeatureCollection. The purpose of this is to enable 
+<i>135</i>&nbsp;	 * exporting a GeoJSON FeatureCollection that may be reused in other software.
+<i>136</i>&nbsp;	 * @param pathObjects
+<i>137</i>&nbsp;	 * @return
+<i>138</i>&nbsp;	 */
+<i>139</i>&nbsp;	public static FeatureCollection wrapFeatureCollection(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>140</i>&nbsp;		return new FeatureCollection(pathObjects);</b>
+<i>141</i>&nbsp;	}
+<i>142</i>&nbsp;	
+<i>143</i>&nbsp;	/**
+<i>144</i>&nbsp;	 * Get default Gson, capable of serializing/deserializing some key QuPath classes.
+<i>145</i>&nbsp;	 * @return
+<i>146</i>&nbsp;	 * 
+<i>147</i>&nbsp;	 * @see #getInstance(boolean)
+<i>148</i>&nbsp;	 */
+<i>149</i>&nbsp;	public static Gson getInstance() {
+<b class="nc"><i>150</i>&nbsp;		return builder.create();</b>
+<i>151</i>&nbsp;	}
+<i>152</i>&nbsp;	
+<i>153</i>&nbsp;	/**
+<i>154</i>&nbsp;	 * Get default Gson, optionally with pretty printing enabled.
+<i>155</i>&nbsp;	 * 
+<i>156</i>&nbsp;	 * @param pretty if true, write using pretty-printing (i.e. more whitespace for formatting)
+<i>157</i>&nbsp;	 * @return
+<i>158</i>&nbsp;	 * 
+<i>159</i>&nbsp;	 * @see #getInstance()
+<i>160</i>&nbsp;	 */
+<i>161</i>&nbsp;	public static Gson getInstance(boolean pretty) {
+<b class="nc"><i>162</i>&nbsp;		if (pretty)</b>
+<b class="nc"><i>163</i>&nbsp;			return getInstance().newBuilder().setPrettyPrinting().create();</b>
+<b class="nc"><i>164</i>&nbsp;		return getInstance();</b>
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;	
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * TypeAdapter for PathClass objects, ensuring each is a singleton.
+<i>169</i>&nbsp;	 */
+<b class="nc"><i>170</i>&nbsp;	static class PathClassTypeAdapter extends TypeAdapter&lt;PathClass&gt; {</b>
+<i>171</i>&nbsp;		
+<b class="nc"><i>172</i>&nbsp;		static PathClassTypeAdapter INSTANCE = new PathClassTypeAdapter();</b>
+<i>173</i>&nbsp;		
+<b class="nc"><i>174</i>&nbsp;		private static Gson gson = new Gson();</b>
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;		// TODO: Consider writing just the toString() representation &amp; ensure recreate-able from that (but lacking color?)
+<i>177</i>&nbsp;		@Override
+<i>178</i>&nbsp;		public void write(JsonWriter out, PathClass value) throws IOException {
+<i>179</i>&nbsp;			// Write in the default way
+<b class="nc"><i>180</i>&nbsp;			gson.toJson(value, PathClass.class, out);</b>
+<i>181</i>&nbsp;//			Streams.write(gson.toJsonTree(value), out);
+<b class="nc"><i>182</i>&nbsp;		}</b>
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;		@Override
+<i>185</i>&nbsp;		public PathClass read(JsonReader in) throws IOException {
+<i>186</i>&nbsp;			// Read in the default way, then replace with a singleton instance
+<b class="nc"><i>187</i>&nbsp;			PathClass pathClass = gson.fromJson(in, PathClass.class);</b>
+<b class="nc"><i>188</i>&nbsp;			return PathClassFactory.getSingletonPathClass(pathClass);</b>
+<i>189</i>&nbsp;		}
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;	}
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<b class="fc"><i>195</i>&nbsp;	static class AffineTransformTypeAdapter extends TypeAdapter&lt;AffineTransform&gt; {</b>
+<i>196</i>&nbsp;		
+<b class="fc"><i>197</i>&nbsp;		static AffineTransformTypeAdapter INSTANCE = new AffineTransformTypeAdapter();</b>
+<i>198</i>&nbsp;		
+<b class="fc"><i>199</i>&nbsp;		private static Gson gson = new Gson();</b>
+<i>200</i>&nbsp;
+<i>201</i>&nbsp;		@Override
+<i>202</i>&nbsp;		public void write(JsonWriter out, AffineTransform value) throws IOException {
+<b class="nc"><i>203</i>&nbsp;			gson.toJson(new AffineTransformProxy(value), AffineTransformProxy.class, out);</b>
+<b class="nc"><i>204</i>&nbsp;		}</b>
+<i>205</i>&nbsp;
+<i>206</i>&nbsp;		@Override
+<i>207</i>&nbsp;		public AffineTransform read(JsonReader in) throws IOException {
+<b class="nc"><i>208</i>&nbsp;			AffineTransformProxy proxy = gson.fromJson(in, AffineTransformProxy.class);</b>
+<b class="nc"><i>209</i>&nbsp;			var transform = new AffineTransform();</b>
+<b class="nc"><i>210</i>&nbsp;			proxy.fill(transform);</b>
+<b class="nc"><i>211</i>&nbsp;			return transform;</b>
+<i>212</i>&nbsp;		}
+<i>213</i>&nbsp;		
+<i>214</i>&nbsp;		static class AffineTransformProxy {
+<i>215</i>&nbsp;			
+<i>216</i>&nbsp;			public final double m00, m10, m01, m11, m02, m12;
+<i>217</i>&nbsp;			
+<b class="nc"><i>218</i>&nbsp;			AffineTransformProxy(AffineTransform transform) {</b>
+<b class="nc"><i>219</i>&nbsp;				double[] flatmatrix = new double[6];</b>
+<b class="nc"><i>220</i>&nbsp;				transform.getMatrix(flatmatrix);</b>
+<b class="nc"><i>221</i>&nbsp;		        m00 = flatmatrix[0];</b>
+<b class="nc"><i>222</i>&nbsp;		        m10 = flatmatrix[1];</b>
+<b class="nc"><i>223</i>&nbsp;		        m01 = flatmatrix[2];</b>
+<b class="nc"><i>224</i>&nbsp;		        m11 = flatmatrix[3];</b>
+<b class="nc"><i>225</i>&nbsp;	            m02 = flatmatrix[4];</b>
+<b class="nc"><i>226</i>&nbsp;	            m12 = flatmatrix[5];</b>
+<i>227</i>&nbsp;			}
+<i>228</i>&nbsp;			
+<i>229</i>&nbsp;			void fill(AffineTransform transform) {
+<b class="nc"><i>230</i>&nbsp;				transform.setTransform(m00, m10, m01, m11, m02, m12);</b>
+<i>231</i>&nbsp;			}
+<i>232</i>&nbsp;			
+<i>233</i>&nbsp;		}
+<i>234</i>&nbsp;
+<i>235</i>&nbsp;	}
+<i>236</i>&nbsp;	
+<i>237</i>&nbsp;	
+<i>238</i>&nbsp;	/**
+<i>239</i>&nbsp;	 * TypeAdapter for ImagePlane objects, ensuring each is a singleton.
+<i>240</i>&nbsp;	 */
+<b class="nc"><i>241</i>&nbsp;	static class ImagePlaneTypeAdapter extends TypeAdapter&lt;ImagePlane&gt; {</b>
+<i>242</i>&nbsp;		
+<b class="nc"><i>243</i>&nbsp;		static ImagePlaneTypeAdapter INSTANCE = new ImagePlaneTypeAdapter();</b>
+<i>244</i>&nbsp;
+<i>245</i>&nbsp;		@Override
+<i>246</i>&nbsp;		public void write(JsonWriter out, ImagePlane plane) throws IOException {
+<b class="nc"><i>247</i>&nbsp;			out.beginObject();</b>
+<b class="nc"><i>248</i>&nbsp;			out.name(&quot;c&quot;);</b>
+<b class="nc"><i>249</i>&nbsp;			out.value(plane.getC());</b>
+<b class="nc"><i>250</i>&nbsp;			out.name(&quot;z&quot;);</b>
+<b class="nc"><i>251</i>&nbsp;			out.value(plane.getZ());</b>
+<b class="nc"><i>252</i>&nbsp;			out.name(&quot;t&quot;);</b>
+<b class="nc"><i>253</i>&nbsp;			out.value(plane.getT());</b>
+<b class="nc"><i>254</i>&nbsp;			out.endObject();</b>
+<b class="nc"><i>255</i>&nbsp;		}</b>
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;		@Override
+<i>258</i>&nbsp;		public ImagePlane read(JsonReader in) throws IOException {
+<b class="nc"><i>259</i>&nbsp;			in.beginObject();</b>
+<i>260</i>&nbsp;			
+<b class="nc"><i>261</i>&nbsp;			ImagePlane plane = ImagePlane.getDefaultPlane();</b>
+<b class="nc"><i>262</i>&nbsp;			int c = plane.getC();</b>
+<b class="nc"><i>263</i>&nbsp;			int z = plane.getZ();</b>
+<b class="nc"><i>264</i>&nbsp;			int t = plane.getT();</b>
+<i>265</i>&nbsp;			
+<b class="nc"><i>266</i>&nbsp;			while (in.hasNext()) {</b>
+<b class="nc"><i>267</i>&nbsp;				switch (in.nextName()) {</b>
+<i>268</i>&nbsp;				case &quot;c&quot;:
+<b class="nc"><i>269</i>&nbsp;					c = in.nextInt();</b>
+<b class="nc"><i>270</i>&nbsp;					break;</b>
+<i>271</i>&nbsp;				case &quot;z&quot;:
+<b class="nc"><i>272</i>&nbsp;					z = in.nextInt();</b>
+<b class="nc"><i>273</i>&nbsp;					break;</b>
+<i>274</i>&nbsp;				case &quot;t&quot;:
+<b class="nc"><i>275</i>&nbsp;					t = in.nextInt();</b>
+<b class="nc"><i>276</i>&nbsp;					break;</b>
+<i>277</i>&nbsp;				}
+<i>278</i>&nbsp;			}
+<b class="nc"><i>279</i>&nbsp;			in.endObject();</b>
+<b class="nc"><i>280</i>&nbsp;			return ImagePlane.getPlaneWithChannel(c, z, t);</b>
+<i>281</i>&nbsp;		}
+<i>282</i>&nbsp;		
+<i>283</i>&nbsp;	}
+<i>284</i>&nbsp;	
+<i>285</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

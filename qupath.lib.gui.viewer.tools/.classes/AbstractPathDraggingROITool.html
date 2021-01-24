@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: AbstractPathDraggingROITool</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: AbstractPathDraggingROITool (qupath.lib.gui.viewer.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">AbstractPathDraggingROITool</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (1/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    3%
+  </span>
+  <span class="absValue">
+    (1/ 33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.geom.Point2D;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import javafx.scene.input.MouseButton;
+<i>30</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>31</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>32</i>&nbsp;import qupath.lib.objects.PathROIObject;
+<i>33</i>&nbsp;import qupath.lib.roi.RoiEditor;
+<i>34</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;/**
+<i>37</i>&nbsp; * Abstract {@link PathTool} for drawing ROIs that require clicking and dragging to create 
+<i>38</i>&nbsp; * two end points (either for a bounding box or end points of a line).
+<i>39</i>&nbsp; * 
+<i>40</i>&nbsp; * @author Pete Bankhead
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; */
+<b class="fc"><i>43</i>&nbsp;abstract class AbstractPathDraggingROITool extends AbstractPathROITool {</b>
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;	@Override
+<i>46</i>&nbsp;	public void mouseDragged(MouseEvent e) {
+<b class="nc"><i>47</i>&nbsp;		super.mouseDragged(e);</b>
+<i>48</i>&nbsp;		
+<b class="nc"><i>49</i>&nbsp;		if (!e.isPrimaryButtonDown()) {</b>
+<b class="nc"><i>50</i>&nbsp;            return;</b>
+<i>51</i>&nbsp;        }
+<i>52</i>&nbsp;		
+<b class="nc"><i>53</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>54</i>&nbsp;		ROI currentROI = viewer.getCurrentROI() instanceof ROI ? (ROI)viewer.getCurrentROI() : null;</b>
+<b class="nc"><i>55</i>&nbsp;		RoiEditor editor = viewer.getROIEditor();</b>
+<i>56</i>&nbsp;		
+<b class="nc"><i>57</i>&nbsp;		if (currentROI != null &amp;&amp; editor.getROI() == currentROI &amp;&amp; editor.hasActiveHandle()) {</b>
+<b class="nc"><i>58</i>&nbsp;			PathObject pathObject = viewer.getSelectedObject();</b>
+<b class="nc"><i>59</i>&nbsp;			Point2D p = mouseLocationToImage(e, true, requestPixelSnapping());</b>
+<b class="nc"><i>60</i>&nbsp;			ROI roiUpdated = editor.setActiveHandlePosition(p.getX(), p.getY(), 0.25, e.isShiftDown());</b>
+<b class="nc"><i>61</i>&nbsp;			if (roiUpdated != currentROI) {</b>
+<b class="nc"><i>62</i>&nbsp;				((PathROIObject)pathObject).setROI(roiUpdated);</b>
+<b class="nc"><i>63</i>&nbsp;				viewer.repaint();</b>
+<i>64</i>&nbsp;			}
+<i>65</i>&nbsp;			
+<b class="nc"><i>66</i>&nbsp;			viewer.getHierarchy().fireObjectsChangedEvent(this, Collections.singleton(pathObject), true);</b>
+<i>67</i>&nbsp;//			editor.setActiveHandlePosition(x, y, minDisplacement, shiftDown)
+<i>68</i>&nbsp;//			currentROI.updateAdjustment(p.getX(), p.getY(), e.isShiftDown());
+<b class="nc"><i>69</i>&nbsp;			viewer.repaint();</b>
+<i>70</i>&nbsp;		}
+<b class="nc"><i>71</i>&nbsp;	}</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	@Override
+<i>75</i>&nbsp;	public void mouseReleased(MouseEvent e) {
+<b class="nc"><i>76</i>&nbsp;		if (e.getButton() != MouseButton.PRIMARY) {</b>
+<b class="nc"><i>77</i>&nbsp;            return;</b>
+<i>78</i>&nbsp;        }
+<i>79</i>&nbsp;		
+<b class="nc"><i>80</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>81</i>&nbsp;		PathObject selectedObject = viewer.getSelectedObject();</b>
+<b class="nc"><i>82</i>&nbsp;		if (selectedObject == null)</b>
+<b class="nc"><i>83</i>&nbsp;			return;</b>
+<i>84</i>&nbsp;		
+<b class="nc"><i>85</i>&nbsp;		RoiEditor editor = viewer.getROIEditor();</b>
+<i>86</i>&nbsp;		
+<b class="nc"><i>87</i>&nbsp;		ROI currentROI = selectedObject.getROI();</b>
+<b class="nc"><i>88</i>&nbsp;		if (currentROI != null &amp;&amp; editor.getROI() == currentROI &amp;&amp; editor.hasActiveHandle()) {</b>
+<b class="nc"><i>89</i>&nbsp;			editor.setROI(null);</b>
+<i>90</i>&nbsp;			// Remove empty ROIs
+<b class="nc"><i>91</i>&nbsp;			if (currentROI.isEmpty()) {</b>
+<b class="nc"><i>92</i>&nbsp;				if (selectedObject.getParent() != null)</b>
+<b class="nc"><i>93</i>&nbsp;					viewer.getHierarchy().removeObject(selectedObject, true);</b>
+<b class="nc"><i>94</i>&nbsp;				viewer.setSelectedObject(null);</b>
+<i>95</i>&nbsp;			} else {
+<b class="nc"><i>96</i>&nbsp;				commitObjectToHierarchy(e, selectedObject);</b>
+<i>97</i>&nbsp;			}
+<i>98</i>&nbsp;//			editor.ensureHandlesUpdated();
+<i>99</i>&nbsp;//			editor.resetActiveHandle();
+<i>100</i>&nbsp;//			if (PathPrefs.getReturnToMoveMode())
+<i>101</i>&nbsp;//				modes.setMode(Modes.MOVE);
+<i>102</i>&nbsp;		}
+<b class="nc"><i>103</i>&nbsp;	}</b>
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

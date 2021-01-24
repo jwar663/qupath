@@ -1,0 +1,151 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathTableData</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.measure</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathTableData (qupath.lib.gui.measure)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PathTableData</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.measure;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.List;
+<i>27</i>&nbsp;import java.util.Locale;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Interface defining a table model that enables measurement names to be mapped to string or numeric values (as appropriate).
+<i>33</i>&nbsp; * &lt;p&gt;
+<i>34</i>&nbsp; * This can be thought of a table, where items (often {@link PathObject} correspond to rows and named columns either return 
+<i>35</i>&nbsp; * numeric or {@link String} data.
+<i>36</i>&nbsp; * &lt;p&gt;
+<i>37</i>&nbsp; * This provides a useful method of wrapping one or more objects, and providing access to metadata, stored measurements and dynamically computed values 
+<i>38</i>&nbsp; * in a way that is amenable to display within a table.
+<i>39</i>&nbsp; * 
+<i>40</i>&nbsp; * @author Pete Bankhead
+<i>41</i>&nbsp; * @param &lt;T&gt; 
+<i>42</i>&nbsp; *
+<i>43</i>&nbsp; */
+<i>44</i>&nbsp;public interface PathTableData&lt;T&gt; {
+<i>45</i>&nbsp;	
+<i>46</i>&nbsp;	/**
+<i>47</i>&nbsp;	 * Return an ordered list of all names, including both numeric measurements and {@link String} values.
+<i>48</i>&nbsp;	 * 
+<i>49</i>&nbsp;	 * @return
+<i>50</i>&nbsp;	 */
+<i>51</i>&nbsp;	public List&lt;String&gt; getAllNames();
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;	/**
+<i>54</i>&nbsp;	 * Get a string representation of the value.
+<i>55</i>&nbsp;	 * 
+<i>56</i>&nbsp;	 * For this method, numbers should be formatted according to the {@link Locale}.
+<i>57</i>&nbsp;	 * 
+<i>58</i>&nbsp;	 * @param item
+<i>59</i>&nbsp;	 * @param name
+<i>60</i>&nbsp;	 * @return
+<i>61</i>&nbsp;	 */
+<i>62</i>&nbsp;	public String getStringValue(final T item, final String name);
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;	/**
+<i>65</i>&nbsp;	 * Get a string value, converting to a fixed number of decimal places if the column is numeric.
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param item
+<i>68</i>&nbsp;	 * @param name
+<i>69</i>&nbsp;	 * @param decimalPlaces
+<i>70</i>&nbsp;	 * @return
+<i>71</i>&nbsp;	 */
+<i>72</i>&nbsp;	public String getStringValue(final T item, final String name, final int decimalPlaces);
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;	/**
+<i>75</i>&nbsp;	 * Get the names of all numeric measurements.
+<i>76</i>&nbsp;	 * @return
+<i>77</i>&nbsp;	 */
+<i>78</i>&nbsp;	public List&lt;String&gt; getMeasurementNames();
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * Get the numeric value from an object for the specific measurement.
+<i>82</i>&nbsp;	 * @param pathObject
+<i>83</i>&nbsp;	 * @param column
+<i>84</i>&nbsp;	 * @return
+<i>85</i>&nbsp;	 */
+<i>86</i>&nbsp;	public double getNumericValue(final T pathObject, final String column);
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;	/**
+<i>89</i>&nbsp;	 * Get all double values for all items.
+<i>90</i>&nbsp;	 * 
+<i>91</i>&nbsp;	 * @param column
+<i>92</i>&nbsp;	 * @return
+<i>93</i>&nbsp;	 */
+<i>94</i>&nbsp;	public double[] getDoubleValues(final String column);
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Get internal list of the items used to provide measurements.
+<i>98</i>&nbsp;	 * 
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public List&lt;T&gt; getItems();
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

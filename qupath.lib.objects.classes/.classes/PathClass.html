@@ -1,0 +1,321 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathClass</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects.classes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathClass (qupath.lib.objects.classes)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathClass</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    62.5%
+  </span>
+  <span class="absValue">
+    (10/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.4%
+  </span>
+  <span class="absValue">
+    (31/ 54)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects.classes;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Serializable;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;/**
+<i>31</i>&nbsp; * Representation of an object&#39;s classification - which can be defined using any unique string identifier (e.g. tumour, lymphocyte, gland, benign, malignant).
+<i>32</i>&nbsp; * &lt;p&gt;
+<i>33</i>&nbsp; * In order to keep the construction of PathClasses under control, they should be generated using the static methods within PathClassFactory.
+<i>34</i>&nbsp; * 
+<i>35</i>&nbsp; * @see PathClassFactory
+<i>36</i>&nbsp; * 
+<i>37</i>&nbsp; * @author Pete Bankhead
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;public class PathClass implements Comparable&lt;PathClass&gt;, Serializable {
+<i>41</i>&nbsp;	
+<i>42</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;	private static String defaultName = &quot;Unclassified&quot;;</b>
+<b class="fc"><i>45</i>&nbsp;	private static Integer DEFAULT_COLOR = ColorTools.makeRGB(64, 64, 64);</b>
+<i>46</i>&nbsp;	
+<i>47</i>&nbsp;	private final PathClass parentClass;
+<i>48</i>&nbsp;	private final String name;
+<i>49</i>&nbsp;	private Integer colorRGB;
+<i>50</i>&nbsp;	
+<i>51</i>&nbsp;	/**
+<i>52</i>&nbsp;	 * Cached String representation
+<i>53</i>&nbsp;	 */
+<b class="fc"><i>54</i>&nbsp;	private transient String stringRep = null;</b>
+<i>55</i>&nbsp;
+<b class="fc"><i>56</i>&nbsp;	PathClass() {</b>
+<b class="fc"><i>57</i>&nbsp;		parentClass = null;</b>
+<b class="fc"><i>58</i>&nbsp;		name = null;</b>
+<b class="fc"><i>59</i>&nbsp;		colorRGB = null;</b>
+<b class="fc"><i>60</i>&nbsp;	}</b>
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * This constructor should &lt;i&gt;not&lt;i&gt; be called explicitly; rather, use {@link PathClassFactory}. 
+<i>64</i>&nbsp;	 * &lt;p&gt;
+<i>65</i>&nbsp;	 * Only one instance of a PathClass should exist for any given name and list of ancestors.
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param parent
+<i>68</i>&nbsp;	 * @param name
+<i>69</i>&nbsp;	 * @param colorRGB
+<i>70</i>&nbsp;	 */
+<b class="fc"><i>71</i>&nbsp;	PathClass(PathClass parent, String name, Integer colorRGB) {</b>
+<b class="fc"><i>72</i>&nbsp;		if (parent != null &amp;&amp; name == null)</b>
+<b class="nc"><i>73</i>&nbsp;			throw new IllegalArgumentException(&quot;Cannot create a derived PathClass with name == null&quot;);</b>
+<b class="fc"><i>74</i>&nbsp;		this.parentClass = parent;</b>
+<b class="fc"><i>75</i>&nbsp;		this.name = name;</b>
+<b class="fc"><i>76</i>&nbsp;		if (colorRGB == null)</b>
+<b class="nc"><i>77</i>&nbsp;			this.colorRGB = DEFAULT_COLOR;</b>
+<i>78</i>&nbsp;		else
+<b class="fc"><i>79</i>&nbsp;			this.colorRGB = colorRGB;</b>
+<i>80</i>&nbsp;		
+<b class="fc"><i>81</i>&nbsp;		if (PathClassFactory.classExists(toString()))</b>
+<b class="nc"><i>82</i>&nbsp;			throw new UnsupportedOperationException(&quot;PathClass &#39;&quot; + toString() + &quot;&#39; already exists! Use PathClassFactory.getPathClass() instead of calling the the PathClass constructor directly.&quot;);</b>
+<b class="fc"><i>83</i>&nbsp;	}</b>
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	PathClass(String name, Integer colorRGB) {
+<b class="nc"><i>86</i>&nbsp;		this(null, name, colorRGB);</b>
+<b class="nc"><i>87</i>&nbsp;	}</b>
+<i>88</i>&nbsp;	
+<i>89</i>&nbsp;	/**
+<i>90</i>&nbsp;	 * Get the parent classification, or null if this classification has no parent.
+<i>91</i>&nbsp;	 * @return
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public PathClass getParentClass() {
+<b class="fc"><i>94</i>&nbsp;		return parentClass;</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Returns {@code true} if {@code #getParentClass() != null}.
+<i>99</i>&nbsp;	 * @return
+<i>100</i>&nbsp;	 */
+<i>101</i>&nbsp;	public boolean isDerivedClass() {
+<b class="fc"><i>102</i>&nbsp;		return parentClass != null;</b>
+<i>103</i>&nbsp;	}
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Returns {@code true} if this class, or any ancestor class, is equal to the specified parent class.
+<i>107</i>&nbsp;	 * 
+<i>108</i>&nbsp;	 * @param parentClass
+<i>109</i>&nbsp;	 * @return
+<i>110</i>&nbsp;	 */
+<i>111</i>&nbsp;	public boolean isDerivedFrom(PathClass parentClass) {
+<b class="nc"><i>112</i>&nbsp;		PathClass pathClass = this;</b>
+<b class="nc"><i>113</i>&nbsp;		while (pathClass != null) {</b>
+<b class="nc"><i>114</i>&nbsp;			if (pathClass.equals(parentClass))</b>
+<b class="nc"><i>115</i>&nbsp;				return true;</b>
+<b class="nc"><i>116</i>&nbsp;			pathClass = pathClass.parentClass;</b>
+<i>117</i>&nbsp;		}
+<b class="nc"><i>118</i>&nbsp;		return false;</b>
+<i>119</i>&nbsp;	}
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Returns {@code true} if this class is equal to the specified child class, 
+<i>124</i>&nbsp;	 * or an ancestor of that class.
+<i>125</i>&nbsp;	 * 
+<i>126</i>&nbsp;	 * @param childClass
+<i>127</i>&nbsp;	 * @return
+<i>128</i>&nbsp;	 */
+<i>129</i>&nbsp;	public boolean isAncestorOf(PathClass childClass) {
+<b class="nc"><i>130</i>&nbsp;		PathClass pathClass = childClass;</b>
+<b class="nc"><i>131</i>&nbsp;		while (pathClass != null) {</b>
+<b class="nc"><i>132</i>&nbsp;			if (this.equals(pathClass))</b>
+<b class="nc"><i>133</i>&nbsp;				return true;</b>
+<b class="nc"><i>134</i>&nbsp;			pathClass = pathClass.parentClass;</b>
+<i>135</i>&nbsp;		}
+<b class="nc"><i>136</i>&nbsp;		return false;</b>
+<i>137</i>&nbsp;	}
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	/**
+<i>141</i>&nbsp;	 * Get the &#39;base&#39; class, i.e. trace back through {@link #getParentClass()} until no parent is available.
+<i>142</i>&nbsp;	 * &lt;p&gt;
+<i>143</i>&nbsp;	 * For a PathClass with no parent, this just returns itself.
+<i>144</i>&nbsp;	 * 
+<i>145</i>&nbsp;	 * @return
+<i>146</i>&nbsp;	 */
+<i>147</i>&nbsp;	public PathClass getBaseClass() {
+<b class="fc"><i>148</i>&nbsp;		PathClass temp = this;</b>
+<b class="fc"><i>149</i>&nbsp;		while (temp.getParentClass() != null)</b>
+<b class="nc"><i>150</i>&nbsp;			temp = temp.getParentClass();</b>
+<b class="fc"><i>151</i>&nbsp;		return temp;</b>
+<i>152</i>&nbsp;	}
+<i>153</i>&nbsp;	
+<i>154</i>&nbsp;	/**
+<i>155</i>&nbsp;	 * Set the color that should be used to display objects with this classification.
+<i>156</i>&nbsp;	 * @param colorRGB color, as a packed (A)RGB value
+<i>157</i>&nbsp;	 */
+<i>158</i>&nbsp;	public void setColor(Integer colorRGB) {
+<b class="fc"><i>159</i>&nbsp;		if (colorRGB == null || !colorRGB.equals(this.colorRGB))</b>
+<b class="nc"><i>160</i>&nbsp;			this.colorRGB = colorRGB;</b>
+<b class="fc"><i>161</i>&nbsp;	}</b>
+<i>162</i>&nbsp;	
+<i>163</i>&nbsp;	/**
+<i>164</i>&nbsp;	 * Get the color that should be used to display objects with this classification.
+<i>165</i>&nbsp;	 * @return packed (A)RGB value representing the classification color.
+<i>166</i>&nbsp;	 */
+<i>167</i>&nbsp;	public Integer getColor() {
+<b class="fc"><i>168</i>&nbsp;		return colorRGB;</b>
+<i>169</i>&nbsp;	}
+<i>170</i>&nbsp;	
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;	 * Get the name of this classification. 
+<i>173</i>&nbsp;	 * Note that this does not incorporate information from any parent classifications; to access this, 
+<i>174</i>&nbsp;	 * use {@link #toString()} instead.
+<i>175</i>&nbsp;	 * @return
+<i>176</i>&nbsp;	 */
+<i>177</i>&nbsp;	public String getName() {
+<b class="fc"><i>178</i>&nbsp;		return name;</b>
+<i>179</i>&nbsp;	}
+<i>180</i>&nbsp;	
+<i>181</i>&nbsp;	static String derivedClassToString(PathClass parent, String name) {
+<b class="nc"><i>182</i>&nbsp;		return parent == null ? name : parent.toString() + &quot;: &quot; + name;</b>
+<i>183</i>&nbsp;	}
+<i>184</i>&nbsp;	
+<i>185</i>&nbsp;	@Override
+<i>186</i>&nbsp;	public String toString() {
+<b class="fc"><i>187</i>&nbsp;		if (stringRep == null) {</b>
+<b class="fc"><i>188</i>&nbsp;			if (name == null)</b>
+<b class="fc"><i>189</i>&nbsp;				stringRep = defaultName;</b>
+<b class="fc"><i>190</i>&nbsp;			else if (isDerivedClass())</b>
+<b class="nc"><i>191</i>&nbsp;				stringRep = derivedClassToString(parentClass, name);</b>
+<i>192</i>&nbsp;			else
+<b class="fc"><i>193</i>&nbsp;				stringRep = name;</b>
+<i>194</i>&nbsp;		}
+<b class="fc"><i>195</i>&nbsp;		return stringRep;</b>
+<i>196</i>&nbsp;	}
+<i>197</i>&nbsp;	
+<i>198</i>&nbsp;	/**
+<i>199</i>&nbsp;	 * A PathClass is valid if its name is not null.
+<i>200</i>&nbsp;	 * &lt;p&gt;
+<i>201</i>&nbsp;	 * This should generally the case, but a single (invalid) PathClass with a null name 
+<i>202</i>&nbsp;	 * can be used to indicate the absence of a classification; however, it should &lt;i&gt;not&lt;/i&gt; be assigned 
+<i>203</i>&nbsp;	 * to any object.  Rather, objects should be assigned either a valid PathClass or null to indicate 
+<i>204</i>&nbsp;	 * that they have no classification.
+<i>205</i>&nbsp;	 * 
+<i>206</i>&nbsp;	 * @return
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	public boolean isValid() {
+<b class="nc"><i>209</i>&nbsp;		return name != null;</b>
+<i>210</i>&nbsp;	}
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;	/**
+<i>213</i>&nbsp;	 * This is now equivalent to {@code this.toString().compareTo(o.toString())}.
+<i>214</i>&nbsp;	 * &lt;p&gt;
+<i>215</i>&nbsp;	 * Note that in previous versions (&amp;lt; 0.1.2), the comparison was made based on the name only.
+<i>216</i>&nbsp;	 * &lt;p&gt;
+<i>217</i>&nbsp;	 * This could result in unexpected behavior whenever comparing with equality and using 
+<i>218</i>&nbsp;	 * derived {@code PathClass} objects, because only the (final) name part was being compared 
+<i>219</i>&nbsp;	 * and this could potentially result in classifications (wrongly) being considered equal 
+<i>220</i>&nbsp;	 * (e.g. &quot;Tumor: Positive&quot; and &quot;Stroma: Positive&quot;).
+<i>221</i>&nbsp;	 * &lt;p&gt;
+<i>222</i>&nbsp;	 * This was most significant when working with Groovy, where {@code == } is replaced by {@code compareTo}.
+<i>223</i>&nbsp;	 */
+<i>224</i>&nbsp;	@Override
+<i>225</i>&nbsp;	public int compareTo(PathClass o) {
+<b class="nc"><i>226</i>&nbsp;		return toString().compareTo(o.toString());</b>
+<i>227</i>&nbsp;		// Old behavior (v0.1.2) - can give unexpected results with Groovy == comparisons
+<i>228</i>&nbsp;//		if (name == null) {
+<i>229</i>&nbsp;//			if (o.getName() == null)
+<i>230</i>&nbsp;//				return 0;
+<i>231</i>&nbsp;//			else
+<i>232</i>&nbsp;//				return -1;
+<i>233</i>&nbsp;//		} else if (o.getName() == null)
+<i>234</i>&nbsp;//			return 1;
+<i>235</i>&nbsp;//		return name.compareTo(o.getName());
+<i>236</i>&nbsp;	}
+<i>237</i>&nbsp;	
+<i>238</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

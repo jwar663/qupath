@@ -1,0 +1,963 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObject</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObject (qupath.lib.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObject</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    21.3%
+  </span>
+  <span class="absValue">
+    (10/ 47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    13.3%
+  </span>
+  <span class="absValue">
+    (29/ 218)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Externalizable;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.ObjectInput;
+<i>29</i>&nbsp;import java.io.ObjectOutput;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Collection;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.HashSet;
+<i>34</i>&nbsp;import java.util.Iterator;
+<i>35</i>&nbsp;import java.util.LinkedHashSet;
+<i>36</i>&nbsp;import java.util.List;
+<i>37</i>&nbsp;import java.util.Map;
+<i>38</i>&nbsp;import java.util.Set;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>41</i>&nbsp;import qupath.lib.measurements.MeasurementListFactory;
+<i>42</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>43</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>44</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;/**
+<i>47</i>&nbsp; * Fundamental object of interest in QuPath.
+<i>48</i>&nbsp; * &lt;p&gt;
+<i>49</i>&nbsp; * Used as a base class for annotations, detections, cells, TMA cores, tiles...
+<i>50</i>&nbsp; * 
+<i>51</i>&nbsp; * @author Pete Bankhead
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; */
+<i>54</i>&nbsp;public abstract class PathObject implements Externalizable {
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>57</i>&nbsp;	
+<b class="fc"><i>58</i>&nbsp;	private PathObject parent = null;</b>
+<b class="fc"><i>59</i>&nbsp;	private Collection&lt;PathObject&gt; childList = null; // Collections.synchronizedList(new ArrayList&lt;&gt;(0));</b>
+<b class="fc"><i>60</i>&nbsp;	private MeasurementList measurements = null;</b>
+<i>61</i>&nbsp;	
+<b class="fc"><i>62</i>&nbsp;	private MetadataMap metadata = null;</b>
+<i>63</i>&nbsp;	
+<b class="fc"><i>64</i>&nbsp;	private String name = null;</b>
+<i>65</i>&nbsp;	private Integer color;
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;	transient private Collection&lt;PathObject&gt; cachedUnmodifiableChildren = null;</b>
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Create a PathObject with a specific measurement list.
+<i>72</i>&nbsp;	 * &lt;p&gt;
+<i>73</i>&nbsp;	 * This can be used e.g. to create an object with a more memory-efficient list,
+<i>74</i>&nbsp;	 * at the cost of generality/mutability.
+<i>75</i>&nbsp;	 * 
+<i>76</i>&nbsp;	 * @param measurements
+<i>77</i>&nbsp;	 */
+<b class="nc"><i>78</i>&nbsp;	public PathObject(MeasurementList measurements) {</b>
+<b class="nc"><i>79</i>&nbsp;		this.measurements = measurements;</b>
+<b class="nc"><i>80</i>&nbsp;	}</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Default constructor. Used for Externalizable support, not intended to be used by other consumers.
+<i>84</i>&nbsp;	 */
+<b class="fc"><i>85</i>&nbsp;	public PathObject() {}</b>
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Request the parent object. Each PathObject may have only one parent.
+<i>89</i>&nbsp;	 * 
+<i>90</i>&nbsp;	 * @return
+<i>91</i>&nbsp;	 */
+<i>92</i>&nbsp;	public PathObject getParent() {
+<b class="fc"><i>93</i>&nbsp;		return parent;</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Set locked status, if possible.
+<i>98</i>&nbsp;	 * &lt;p&gt;
+<i>99</i>&nbsp;	 * Subclasses should override this method to support locking or unlocking. 
+<i>100</i>&nbsp;	 * Default implementation throws an {@link UnsupportedOperationException}.
+<i>101</i>&nbsp;	 * 
+<i>102</i>&nbsp;	 * @param locked
+<i>103</i>&nbsp;	 */
+<i>104</i>&nbsp;	public void setLocked(boolean locked) {
+<b class="nc"><i>105</i>&nbsp;		throw new UnsupportedOperationException(&quot;Locked status cannot be set!&quot;);</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;	/**
+<i>109</i>&nbsp;	 * Query the locked status.
+<i>110</i>&nbsp;	 * &lt;p&gt;
+<i>111</i>&nbsp;	 * Subclasses should override this method to support locking or unlocking. 
+<i>112</i>&nbsp;	 * Default implementation always returns true.
+<i>113</i>&nbsp;	 * 
+<i>114</i>&nbsp;	 * @return true if the object is locked and should not be modified.
+<i>115</i>&nbsp;	 */
+<i>116</i>&nbsp;	public boolean isLocked() {
+<b class="nc"><i>117</i>&nbsp;		return true;</b>
+<i>118</i>&nbsp;	}
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;//	public abstract String getType();
+<i>122</i>&nbsp;	
+<i>123</i>&nbsp;	/**
+<i>124</i>&nbsp;	 * The level of the object in a hierarchy.
+<i>125</i>&nbsp;	 * &lt;p&gt;
+<i>126</i>&nbsp;	 * If the object has no parent, this is 0. Otherwise, it is equal to parent.getLevel() + 1.
+<i>127</i>&nbsp;	 * 
+<i>128</i>&nbsp;	 * @return
+<i>129</i>&nbsp;	 */
+<i>130</i>&nbsp;	public int getLevel() {
+<b class="nc"><i>131</i>&nbsp;		if (parent == null)</b>
+<b class="nc"><i>132</i>&nbsp;			return 0;</b>
+<b class="nc"><i>133</i>&nbsp;		return parent.getLevel() + 1;</b>
+<i>134</i>&nbsp;	}
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;//	public void setParent(PathObject pathObject) {
+<i>137</i>&nbsp;//		if (parent != null &amp;&amp; parent != pathObject &amp;&amp; parent.getPathObjectList().contains(this))
+<i>138</i>&nbsp;//			parent.getPathObjectList().remove(this);
+<i>139</i>&nbsp;//		this.parent = pathObject;
+<i>140</i>&nbsp;//	}	
+<i>141</i>&nbsp;	
+<i>142</i>&nbsp;	/**
+<i>143</i>&nbsp;	 * Returns true if the object is the &#39;root&#39; of an object hierarchy.
+<i>144</i>&nbsp;	 * @return
+<i>145</i>&nbsp;	 * 
+<i>146</i>&nbsp;	 * @see PathObjectHierarchy
+<i>147</i>&nbsp;	 */
+<i>148</i>&nbsp;	public boolean isRootObject() {
+<b class="nc"><i>149</i>&nbsp;		return this instanceof PathRootObject;</b>
+<i>150</i>&nbsp;	}
+<i>151</i>&nbsp;	
+<i>152</i>&nbsp;	/**
+<i>153</i>&nbsp;	 * Retrieve the list stored measurements for the object.
+<i>154</i>&nbsp;	 * &lt;p&gt;
+<i>155</i>&nbsp;	 * This can be used to query or add specific numeric measurements.
+<i>156</i>&nbsp;	 * @return
+<i>157</i>&nbsp;	 */
+<i>158</i>&nbsp;	public synchronized MeasurementList getMeasurementList() {
+<b class="nc"><i>159</i>&nbsp;		if (measurements == null)</b>
+<b class="nc"><i>160</i>&nbsp;			measurements = createEmptyMeasurementList();</b>
+<b class="nc"><i>161</i>&nbsp;		return measurements;</b>
+<i>162</i>&nbsp;	}
+<i>163</i>&nbsp;	
+<i>164</i>&nbsp;	/**
+<i>165</i>&nbsp;	 * Create a new MeasurementList of the preferred type for this object.
+<i>166</i>&nbsp;	 * &lt;p&gt;
+<i>167</i>&nbsp;	 * This will be called whenever a MeasurementList is requested, if one is not already stored.
+<i>168</i>&nbsp;	 * &lt;p&gt;
+<i>169</i>&nbsp;	 * Subclasses can use this method to create more efficient MeasurementList implementations if required.
+<i>170</i>&nbsp;	 * 
+<i>171</i>&nbsp;	 * @return
+<i>172</i>&nbsp;	 */
+<i>173</i>&nbsp;	protected MeasurementList createEmptyMeasurementList() {
+<b class="nc"><i>174</i>&nbsp;		MeasurementList list = MeasurementListFactory.createMeasurementList(16, MeasurementList.MeasurementListType.GENERAL);</b>
+<b class="nc"><i>175</i>&nbsp;		return list;</b>
+<i>176</i>&nbsp;	}
+<i>177</i>&nbsp;	
+<i>178</i>&nbsp;	protected synchronized String objectCountPostfix() {
+<b class="nc"><i>179</i>&nbsp;		ROI pathROI = getROI();</b>
+<b class="nc"><i>180</i>&nbsp;		if (pathROI != null &amp;&amp; pathROI.isPoint()) {</b>
+<b class="nc"><i>181</i>&nbsp;			int nPoints = pathROI.getNumPoints();</b>
+<b class="nc"><i>182</i>&nbsp;			if (nPoints == 1)</b>
+<b class="nc"><i>183</i>&nbsp;				return &quot; (1 point)&quot;;</b>
+<i>184</i>&nbsp;			else
+<b class="nc"><i>185</i>&nbsp;				return String.format(&quot; (%d points)&quot;, nPoints);</b>
+<i>186</i>&nbsp;		}
+<b class="nc"><i>187</i>&nbsp;		if (!hasChildren())</b>
+<b class="nc"><i>188</i>&nbsp;			return &quot;&quot;;</b>
+<b class="nc"><i>189</i>&nbsp;		int nChildren = nChildObjects();</b>
+<b class="nc"><i>190</i>&nbsp;		int nDescendants = PathObjectTools.countDescendants(this);</b>
+<b class="nc"><i>191</i>&nbsp;		if (nChildren == nDescendants)</b>
+<b class="nc"><i>192</i>&nbsp;			return &quot; (&quot; + nChildren + &quot; objects)&quot;;</b>
+<b class="nc"><i>193</i>&nbsp;		return &quot; (&quot; + (nChildren) + &quot;/&quot; + nDescendants + &quot; objects)&quot;;</b>
+<i>194</i>&nbsp;//		if (nDescendants == 1)
+<i>195</i>&nbsp;//			return &quot; - 1 descendant&quot;;
+<i>196</i>&nbsp;//		else
+<i>197</i>&nbsp;//			return &quot; - &quot; + nDescendants + &quot; descendant&quot;;
+<i>198</i>&nbsp;//		
+<i>199</i>&nbsp;//		if (childList.size() == 1)
+<i>200</i>&nbsp;//			return &quot; - 1 object&quot;;
+<i>201</i>&nbsp;//		else
+<i>202</i>&nbsp;//			return &quot; - &quot; + childList.size() + &quot; objects&quot;;
+<i>203</i>&nbsp;	}
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;	@Override
+<i>206</i>&nbsp;	public String toString() {
+<b class="nc"><i>207</i>&nbsp;		var sb = new StringBuilder();</b>
+<i>208</i>&nbsp;		
+<i>209</i>&nbsp;		// Name or class
+<b class="nc"><i>210</i>&nbsp;		if (getName() != null)</b>
+<b class="nc"><i>211</i>&nbsp;			sb.append(getName());</b>
+<i>212</i>&nbsp;		else
+<b class="nc"><i>213</i>&nbsp;			sb.append(PathObjectTools.getSuitableName(getClass(), false));</b>
+<i>214</i>&nbsp;			
+<i>215</i>&nbsp;		// ROI
+<b class="nc"><i>216</i>&nbsp;		if (!isCell() &amp;&amp; hasROI())</b>
+<b class="nc"><i>217</i>&nbsp;			sb.append(&quot; (&quot;).append(getROI().getRoiName()).append(&quot;)&quot;);</b>
+<i>218</i>&nbsp;		
+<i>219</i>&nbsp;		// Classification
+<b class="nc"><i>220</i>&nbsp;		if (getPathClass() != null)</b>
+<b class="nc"><i>221</i>&nbsp;			sb.append(&quot; (&quot;).append(getPathClass().toString()).append(&quot;)&quot;);</b>
+<i>222</i>&nbsp;		
+<i>223</i>&nbsp;		// Number of descendants
+<b class="nc"><i>224</i>&nbsp;		sb.append(objectCountPostfix());</b>
+<b class="nc"><i>225</i>&nbsp;		return sb.toString();</b>
+<i>226</i>&nbsp;		
+<i>227</i>&nbsp;//		String postfix;
+<i>228</i>&nbsp;//		if (getPathClass() == null)
+<i>229</i>&nbsp;//			postfix = objectCountPostfix();
+<i>230</i>&nbsp;//		else
+<i>231</i>&nbsp;//			postfix = &quot; (&quot; + getPathClass().toString() + &quot;)&quot;;
+<i>232</i>&nbsp;//		if (getName() != null)
+<i>233</i>&nbsp;//			return getName() + postfix;
+<i>234</i>&nbsp;//		var roi = getROI();
+<i>235</i>&nbsp;//		if (!isCell() &amp;&amp; roi != null)
+<i>236</i>&nbsp;//			return roi + postfix;
+<i>237</i>&nbsp;//		String prefix = PathObjectTools.getSuitableName(getClass(), false);
+<i>238</i>&nbsp;//		return prefix + postfix; // Entire image
+<i>239</i>&nbsp;	}
+<i>240</i>&nbsp;	
+<i>241</i>&nbsp;	/**
+<i>242</i>&nbsp;	 * Add an object to the child list of this object.
+<i>243</i>&nbsp;	 * @param pathObject
+<i>244</i>&nbsp;	 */
+<i>245</i>&nbsp;	public synchronized void addPathObject(PathObject pathObject) {
+<b class="nc"><i>246</i>&nbsp;		if (pathObject instanceof PathRootObject) //J</b>
+<b class="nc"><i>247</i>&nbsp;			throw new IllegalArgumentException(&quot;PathRootObject cannot be added as child to another PathObject&quot;); //J </b>
+<b class="nc"><i>248</i>&nbsp;		addPathObjectImpl(pathObject);</b>
+<b class="nc"><i>249</i>&nbsp;	}</b>
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	private synchronized void addPathObjectImpl(PathObject pathObject) {
+<b class="nc"><i>252</i>&nbsp;		ensureChildList(nChildObjects() + 1);</b>
+<i>253</i>&nbsp;		// Make sure the object is removed from any other parent
+<b class="nc"><i>254</i>&nbsp;		if (pathObject.parent != this) {</b>
+<b class="nc"><i>255</i>&nbsp;			if (pathObject.parent != null &amp;&amp; pathObject.parent.childList != null)</b>
+<b class="nc"><i>256</i>&nbsp;				pathObject.parent.childList.remove(pathObject);</b>
+<b class="nc"><i>257</i>&nbsp;			pathObject.parent = this;</b>
+<i>258</i>&nbsp;		}
+<b class="nc"><i>259</i>&nbsp;		childList.add(pathObject);</b>
+<i>260</i>&nbsp;		
+<i>261</i>&nbsp;//		if (!isRootObject())
+<i>262</i>&nbsp;//			Collections.sort(childList, DefaultPathObjectComparator.getInstance());
+<b class="nc"><i>263</i>&nbsp;	}</b>
+<i>264</i>&nbsp;
+<i>265</i>&nbsp;	
+<i>266</i>&nbsp;	private synchronized void addPathObjectsImpl(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>267</i>&nbsp;		if (pathObjects == null || pathObjects.isEmpty())</b>
+<b class="nc"><i>268</i>&nbsp;			return;</b>
+<b class="nc"><i>269</i>&nbsp;		ensureChildList(nChildObjects() + pathObjects.size());</b>
+<i>270</i>&nbsp;		// Make sure the object is removed from any other parent
+<b class="nc"><i>271</i>&nbsp;		Iterator&lt;? extends PathObject&gt; iter = pathObjects.iterator();</b>
+<b class="nc"><i>272</i>&nbsp;		PathObject lastBatchRemoveParent = null;</b>
+<b class="nc"><i>273</i>&nbsp;		List&lt;PathObject&gt; batchRemove = new ArrayList&lt;&gt;(pathObjects.size());</b>
+<b class="nc"><i>274</i>&nbsp;		boolean isChildList = false;</b>
+<b class="nc"><i>275</i>&nbsp;		while (iter.hasNext()) {</b>
+<b class="nc"><i>276</i>&nbsp;			PathObject pathObject = iter.next();</b>
+<b class="nc"><i>277</i>&nbsp;			PathObject previousParent = pathObject.parent;</b>
+<b class="nc"><i>278</i>&nbsp;			if (previousParent == this)</b>
+<b class="nc"><i>279</i>&nbsp;				continue;</b>
+<i>280</i>&nbsp;			// Remove objects from previous parent
+<b class="nc"><i>281</i>&nbsp;			if (previousParent != null &amp;&amp; previousParent.childList != null) {</b>
+<i>282</i>&nbsp;				// Check if we were provided with the full child list directly - if so, no need to keep iterating
+<i>283</i>&nbsp;				// Warning! It&#39;s crucial to check both for the Collection returned from getChildObjects(), since this may be 
+<i>284</i>&nbsp;				// an unmodifiable collection backed by something else.  It&#39;s troublesome to predict how equals/hashCode will deal with this
+<i>285</i>&nbsp;				// (e.g. passing through or not... Collections.unmodifiableList behaves differently from Collections.unmodifiableCollection)
+<b class="nc"><i>286</i>&nbsp;				if (previousParent.getChildObjects().equals(pathObjects) || previousParent.childList.equals(pathObjects)) {</b>
+<b class="nc"><i>287</i>&nbsp;					isChildList = true;</b>
+<b class="nc"><i>288</i>&nbsp;					lastBatchRemoveParent = previousParent;</b>
+<b class="nc"><i>289</i>&nbsp;					break;</b>
+<i>290</i>&nbsp;				}
+<i>291</i>&nbsp;				// Keep a record of the object to remove
+<b class="nc"><i>292</i>&nbsp;				if (lastBatchRemoveParent != previousParent) {</b>
+<b class="nc"><i>293</i>&nbsp;					if (lastBatchRemoveParent != null &amp;&amp; !batchRemove.isEmpty()) {</b>
+<b class="nc"><i>294</i>&nbsp;						removeAllQuickly(lastBatchRemoveParent.childList, batchRemove);</b>
+<b class="nc"><i>295</i>&nbsp;						batchRemove.clear();</b>
+<i>296</i>&nbsp;					}
+<i>297</i>&nbsp;				}
+<b class="nc"><i>298</i>&nbsp;				lastBatchRemoveParent = previousParent;</b>
+<b class="nc"><i>299</i>&nbsp;				batchRemove.add(pathObject);</b>
+<i>300</i>&nbsp;			}
+<i>301</i>&nbsp;			// Set the parent for the new object
+<b class="nc"><i>302</i>&nbsp;			pathObject.parent = this;</b>
+<b class="nc"><i>303</i>&nbsp;		}</b>
+<i>304</i>&nbsp;		// Perform any final batch removal that are necessary
+<b class="nc"><i>305</i>&nbsp;		if (isChildList) {</b>
+<b class="nc"><i>306</i>&nbsp;			for (PathObject child : pathObjects)</b>
+<b class="nc"><i>307</i>&nbsp;				child.parent = this;</b>
+<b class="nc"><i>308</i>&nbsp;		} else if (lastBatchRemoveParent != null &amp;&amp; !batchRemove.isEmpty())</b>
+<b class="nc"><i>309</i>&nbsp;			removeAllQuickly(lastBatchRemoveParent.childList, batchRemove);</b>
+<i>310</i>&nbsp;		// Add to the current child list
+<b class="nc"><i>311</i>&nbsp;		childList.addAll(pathObjects);</b>
+<b class="nc"><i>312</i>&nbsp;		if (isChildList)</b>
+<b class="nc"><i>313</i>&nbsp;			lastBatchRemoveParent.childList.clear();</b>
+<i>314</i>&nbsp;		
+<i>315</i>&nbsp;//		// Don&#39;t sort TMA cores!
+<i>316</i>&nbsp;//		for (PathObject pathObject : childList) {
+<i>317</i>&nbsp;//			if (pathObject instanceof TMACoreObject) {
+<i>318</i>&nbsp;//				return;
+<i>319</i>&nbsp;//			}
+<i>320</i>&nbsp;//		}
+<i>321</i>&nbsp;//		// Sort if we aren&#39;t the root object
+<i>322</i>&nbsp;//		if (!this.isRootObject())
+<i>323</i>&nbsp;//			Collections.sort(childList, DefaultPathObjectComparator.getInstance());
+<b class="nc"><i>324</i>&nbsp;	}</b>
+<i>325</i>&nbsp;	
+<i>326</i>&nbsp;	
+<i>327</i>&nbsp;	/**
+<i>328</i>&nbsp;	 * When using an ArrayList previously, this method could (somewhat) improve object removal performance.
+<i>329</i>&nbsp;	 * 
+<i>330</i>&nbsp;	 * @param list
+<i>331</i>&nbsp;	 * @param toRemove
+<i>332</i>&nbsp;	 */
+<i>333</i>&nbsp;	private static &lt;T&gt; void removeAllQuickly(Collection&lt;T&gt; list, Collection&lt;T&gt; toRemove) {
+<b class="nc"><i>334</i>&nbsp;		int size = 10;</b>
+<b class="nc"><i>335</i>&nbsp;		if (!(toRemove instanceof Set)  &amp;&amp; toRemove.size() &gt; size) {</b>
+<b class="nc"><i>336</i>&nbsp;			toRemove = new HashSet&lt;&gt;(toRemove);</b>
+<i>337</i>&nbsp;		}
+<b class="nc"><i>338</i>&nbsp;		list.removeAll(toRemove);</b>
+<b class="nc"><i>339</i>&nbsp;	}</b>
+<i>340</i>&nbsp;	
+<i>341</i>&nbsp;//	/**
+<i>342</i>&nbsp;//	 * Remove all items from a list, but optionally using a (temporary) set 
+<i>343</i>&nbsp;//	 * to improve performance.
+<i>344</i>&nbsp;//	 * 
+<i>345</i>&nbsp;//	 * @param list
+<i>346</i>&nbsp;//	 * @param toRemove
+<i>347</i>&nbsp;//	 */
+<i>348</i>&nbsp;//	private static &lt;T&gt; void removeAllQuickly(List&lt;T&gt; list, Collection&lt;T&gt; toRemove) {
+<i>349</i>&nbsp;//		// This is rather implementation-specific, based on how ArrayLists do their object removal.
+<i>350</i>&nbsp;//		// In some implementations it might be better to switch the list to a set temporarily?
+<i>351</i>&nbsp;//		int size = 10;
+<i>352</i>&nbsp;//		if (list.size() &gt; size || toRemove.size() &gt; size) {
+<i>353</i>&nbsp;//			var tempSet = new LinkedHashSet&lt;&gt;(list);
+<i>354</i>&nbsp;//			tempSet.removeAll(toRemove);
+<i>355</i>&nbsp;//			list.clear();
+<i>356</i>&nbsp;//			list.addAll(tempSet);
+<i>357</i>&nbsp;//		} else {
+<i>358</i>&nbsp;//			if (!(toRemove instanceof Set)  &amp;&amp; toRemove.size() &gt; size) {
+<i>359</i>&nbsp;//				toRemove = new HashSet&lt;&gt;(toRemove);
+<i>360</i>&nbsp;//			}
+<i>361</i>&nbsp;//			list.removeAll(toRemove);
+<i>362</i>&nbsp;//		}
+<i>363</i>&nbsp;////		list.removeAll(toRemove);
+<i>364</i>&nbsp;//	}
+<i>365</i>&nbsp;	
+<i>366</i>&nbsp;	
+<i>367</i>&nbsp;//	public void addPathObjects(int index, Collection&lt;? extends PathObject&gt; pathObjects) {
+<i>368</i>&nbsp;//		if (pathObjects == null || pathObjects.isEmpty())
+<i>369</i>&nbsp;//			return;
+<i>370</i>&nbsp;//		ensureChildList(pathObjects.size());
+<i>371</i>&nbsp;//		// Make sure the object is removed from any other parent
+<i>372</i>&nbsp;//		Iterator&lt;? extends PathObject&gt; iter = pathObjects.iterator();
+<i>373</i>&nbsp;//		boolean isChildList = false;
+<i>374</i>&nbsp;//		PathObject previousParent = null;
+<i>375</i>&nbsp;//		while (iter.hasNext()) {
+<i>376</i>&nbsp;//			PathObject pathObject = iter.next();
+<i>377</i>&nbsp;//			previousParent = pathObject.parent;
+<i>378</i>&nbsp;//			if (pathObject.parent != this) {
+<i>379</i>&nbsp;//				// Remove objects from previous parent
+<i>380</i>&nbsp;//				if (previousParent != null &amp;&amp; previousParent.childList != null) {
+<i>381</i>&nbsp;//					// Check if we were given the list directly... if so, remove using the iterator
+<i>382</i>&nbsp;////					if (pathObjects == previousParent.childList)
+<i>383</i>&nbsp;//					isChildList = pathObjects.equals(previousParent.childList);
+<i>384</i>&nbsp;//					if (!isChildList) {
+<i>385</i>&nbsp;//						// Should be able to remove from previous parent without a concurrent exception
+<i>386</i>&nbsp;////						logger.info(&quot;Calling remove &quot; + pathObject);
+<i>387</i>&nbsp;//						previousParent.childList.remove(pathObject);
+<i>388</i>&nbsp;//					}
+<i>389</i>&nbsp;//				}
+<i>390</i>&nbsp;//				// Set the parent
+<i>391</i>&nbsp;//				pathObject.parent = this;
+<i>392</i>&nbsp;//			}
+<i>393</i>&nbsp;//		}
+<i>394</i>&nbsp;////		logger.info(&quot;Adding all &quot; + pathObjects.size());
+<i>395</i>&nbsp;//		childList.addAll(index, pathObjects);
+<i>396</i>&nbsp;//		// If we have all the children of a pathObject, clear that objects children
+<i>397</i>&nbsp;//		if (isChildList)
+<i>398</i>&nbsp;//			previousParent.childList.clear();
+<i>399</i>&nbsp;//		
+<i>400</i>&nbsp;////		for (PathObject pathObject : pathObjects)
+<i>401</i>&nbsp;////			addPathObject(index++, pathObject);
+<i>402</i>&nbsp;//	}
+<i>403</i>&nbsp;	
+<i>404</i>&nbsp;	/**
+<i>405</i>&nbsp;	 * Add a collection of objects to the child list of this object.
+<i>406</i>&nbsp;	 * @param pathObjects
+<i>407</i>&nbsp;	 */
+<i>408</i>&nbsp;	public synchronized void addPathObjects(Collection&lt;? extends PathObject&gt; pathObjects) {
+<b class="nc"><i>409</i>&nbsp;		addPathObjectsImpl(pathObjects);</b>
+<b class="nc"><i>410</i>&nbsp;	}</b>
+<i>411</i>&nbsp;
+<i>412</i>&nbsp;	/**
+<i>413</i>&nbsp;	 * Remove a single object from the child list of this object.
+<i>414</i>&nbsp;	 * @param pathObject
+<i>415</i>&nbsp;	 */
+<i>416</i>&nbsp;	public synchronized void removePathObject(PathObject pathObject) {
+<b class="nc"><i>417</i>&nbsp;		if (!hasChildren())</b>
+<b class="nc"><i>418</i>&nbsp;			return;</b>
+<b class="nc"><i>419</i>&nbsp;		if (pathObject.parent == this)</b>
+<b class="nc"><i>420</i>&nbsp;			pathObject.parent = null; //.setParent(null);</b>
+<b class="nc"><i>421</i>&nbsp;		childList.remove(pathObject);</b>
+<b class="nc"><i>422</i>&nbsp;	}</b>
+<i>423</i>&nbsp;	
+<i>424</i>&nbsp;	/**
+<i>425</i>&nbsp;	 * Remove multiple objects from the child list of this object.
+<i>426</i>&nbsp;	 * @param pathObjects
+<i>427</i>&nbsp;	 */
+<i>428</i>&nbsp;	public synchronized void removePathObjects(Collection&lt;PathObject&gt; pathObjects) {
+<b class="nc"><i>429</i>&nbsp;		if (!hasChildren())</b>
+<b class="nc"><i>430</i>&nbsp;			return;</b>
+<b class="nc"><i>431</i>&nbsp;		for (PathObject pathObject : pathObjects) {</b>
+<b class="nc"><i>432</i>&nbsp;			if (pathObject.parent == this)</b>
+<b class="nc"><i>433</i>&nbsp;				pathObject.parent = null;</b>
+<b class="nc"><i>434</i>&nbsp;		}</b>
+<b class="nc"><i>435</i>&nbsp;		removeAllQuickly(childList, pathObjects);</b>
+<b class="nc"><i>436</i>&nbsp;	}</b>
+<i>437</i>&nbsp;	
+<i>438</i>&nbsp;	/**
+<i>439</i>&nbsp;	 * Remove all child objects.
+<i>440</i>&nbsp;	 */
+<i>441</i>&nbsp;	public synchronized void clearPathObjects() {
+<b class="nc"><i>442</i>&nbsp;		if (!hasChildren())</b>
+<b class="nc"><i>443</i>&nbsp;			return;</b>
+<b class="nc"><i>444</i>&nbsp;		for (PathObject pathObject : childList) {</b>
+<b class="nc"><i>445</i>&nbsp;			if (pathObject.parent == this)</b>
+<b class="nc"><i>446</i>&nbsp;				pathObject.parent = null;</b>
+<b class="nc"><i>447</i>&nbsp;		}</b>
+<b class="nc"><i>448</i>&nbsp;		childList.clear();</b>
+<b class="nc"><i>449</i>&nbsp;	}</b>
+<i>450</i>&nbsp;	
+<i>451</i>&nbsp;	/**
+<i>452</i>&nbsp;	 * Total number of child objects.
+<i>453</i>&nbsp;	 * Note that this is the size of the child object list - it does not check descendants recursively.
+<i>454</i>&nbsp;	 * 
+<i>455</i>&nbsp;	 * @return the number of direct child objects
+<i>456</i>&nbsp;	 * @see #nDescendants()
+<i>457</i>&nbsp;	 */
+<i>458</i>&nbsp;	public int nChildObjects() {
+<b class="fc"><i>459</i>&nbsp;		return childList == null ? 0 : childList.size();</b>
+<i>460</i>&nbsp;	}
+<i>461</i>&nbsp;	
+<i>462</i>&nbsp;	/**
+<i>463</i>&nbsp;	 * Total number of descendant objects.
+<i>464</i>&nbsp;	 * This involves counting objects recursively; to get the number of direct child object only 
+<i>465</i>&nbsp;	 * see {@link #nChildObjects()}.
+<i>466</i>&nbsp;	 * 
+<i>467</i>&nbsp;	 * @return the number of child objects, plus the number of each child object&#39;s descendants
+<i>468</i>&nbsp;	 * @see #nChildObjects()
+<i>469</i>&nbsp;	 */
+<i>470</i>&nbsp;	public int nDescendants() {
+<b class="fc"><i>471</i>&nbsp;		if (childList == null || childList.isEmpty())</b>
+<b class="fc"><i>472</i>&nbsp;			return 0;</b>
+<b class="nc"><i>473</i>&nbsp;		synchronized (this) {</b>
+<b class="nc"><i>474</i>&nbsp;			int total = 0;</b>
+<b class="nc"><i>475</i>&nbsp;			for (var child : childList)</b>
+<b class="nc"><i>476</i>&nbsp;				total += 1 + child.nDescendants();</b>
+<b class="nc"><i>477</i>&nbsp;			return total;</b>
+<b class="nc"><i>478</i>&nbsp;		}</b>
+<i>479</i>&nbsp;	}
+<i>480</i>&nbsp;	
+<i>481</i>&nbsp;	/**
+<i>482</i>&nbsp;	 * Check if this object has children, or if its child object list is empty.
+<i>483</i>&nbsp;	 * @return
+<i>484</i>&nbsp;	 */
+<i>485</i>&nbsp;	public boolean hasChildren() {
+<b class="fc"><i>486</i>&nbsp;		return childList != null &amp;&amp; !childList.isEmpty();</b>
+<i>487</i>&nbsp;	}
+<i>488</i>&nbsp;	
+<i>489</i>&nbsp;	/**
+<i>490</i>&nbsp;	 * Returns true if this object has a ROI.
+<i>491</i>&nbsp;	 * &lt;p&gt;
+<i>492</i>&nbsp;	 * In general, objects are expected to have ROIs unless they are root objects.
+<i>493</i>&nbsp;	 * @return
+<i>494</i>&nbsp;	 */
+<i>495</i>&nbsp;	public boolean hasROI() {
+<b class="fc"><i>496</i>&nbsp;		return getROI() != null;</b>
+<i>497</i>&nbsp;	}
+<i>498</i>&nbsp;	
+<i>499</i>&nbsp;	/**
+<i>500</i>&nbsp;	 * Returns true if the object is an annotation.
+<i>501</i>&nbsp;	 * @return
+<i>502</i>&nbsp;	 * @see PathAnnotationObject
+<i>503</i>&nbsp;	 */
+<i>504</i>&nbsp;	public boolean isAnnotation() {
+<b class="nc"><i>505</i>&nbsp;		return this instanceof PathAnnotationObject;</b>
+<i>506</i>&nbsp;	}
+<i>507</i>&nbsp;	
+<i>508</i>&nbsp;	/**
+<i>509</i>&nbsp;	 * Returns true if the object is a detection.
+<i>510</i>&nbsp;	 * &lt;p&gt;
+<i>511</i>&nbsp;	 * Note that this returns true also if the object is a subclass of a detection, 
+<i>512</i>&nbsp;	 * e.g. a tile or cell.
+<i>513</i>&nbsp;	 * 
+<i>514</i>&nbsp;	 * @return
+<i>515</i>&nbsp;	 * @see #isCell()
+<i>516</i>&nbsp;	 * @see PathDetectionObject
+<i>517</i>&nbsp;	 * @see PathCellObject
+<i>518</i>&nbsp;	 * @see PathTileObject
+<i>519</i>&nbsp;	 */
+<i>520</i>&nbsp;	public boolean isDetection() {
+<b class="nc"><i>521</i>&nbsp;		return this instanceof PathDetectionObject;</b>
+<i>522</i>&nbsp;	}
+<i>523</i>&nbsp;	
+<i>524</i>&nbsp;	/**
+<i>525</i>&nbsp;	 * Returns true if the object is a cell object (a special type of detection, which can contain second ROI for the nucleus).
+<i>526</i>&nbsp;	 * 
+<i>527</i>&nbsp;	 * @return
+<i>528</i>&nbsp;	 * @see #isDetection()
+<i>529</i>&nbsp;	 * @see PathDetectionObject
+<i>530</i>&nbsp;	 * @see PathCellObject
+<i>531</i>&nbsp;	 * @see PathTileObject
+<i>532</i>&nbsp;	 */
+<i>533</i>&nbsp;	public boolean isCell() {
+<b class="nc"><i>534</i>&nbsp;		return this instanceof PathCellObject;</b>
+<i>535</i>&nbsp;	}
+<i>536</i>&nbsp;	
+<i>537</i>&nbsp;	/**
+<i>538</i>&nbsp;	 * Returns true if the measurement list for this object is not empty.
+<i>539</i>&nbsp;	 * @return
+<i>540</i>&nbsp;	 */
+<i>541</i>&nbsp;	public boolean hasMeasurements() {
+<b class="fc"><i>542</i>&nbsp;		return measurements != null &amp;&amp; !measurements.isEmpty();</b>
+<i>543</i>&nbsp;	}
+<i>544</i>&nbsp;	
+<i>545</i>&nbsp;//	public boolean containsAllMeasurements(Collection&lt;String&gt; measurementNames) {
+<i>546</i>&nbsp;//		if (measurements == null &amp;&amp; !measurementNames.isEmpty())
+<i>547</i>&nbsp;//			return false;
+<i>548</i>&nbsp;//		return measurements.containsAllMeasurements(measurementNames);
+<i>549</i>&nbsp;//	}
+<i>550</i>&nbsp;	
+<i>551</i>&nbsp;	/**
+<i>552</i>&nbsp;	 * Returns true if this object represents a TMA core.
+<i>553</i>&nbsp;	 * @return
+<i>554</i>&nbsp;	 * @see TMACoreObject
+<i>555</i>&nbsp;	 */
+<i>556</i>&nbsp;	public boolean isTMACore() {
+<b class="nc"><i>557</i>&nbsp;		return this instanceof TMACoreObject;</b>
+<i>558</i>&nbsp;	}
+<i>559</i>&nbsp;	
+<i>560</i>&nbsp;	/**
+<i>561</i>&nbsp;	 * Returns true if this object represents an image tile.
+<i>562</i>&nbsp;	 * 
+<i>563</i>&nbsp;	 * @return
+<i>564</i>&nbsp;	 * @see PathTileObject
+<i>565</i>&nbsp;	 */
+<i>566</i>&nbsp;	public boolean isTile() {
+<b class="nc"><i>567</i>&nbsp;		return this instanceof PathTileObject;</b>
+<i>568</i>&nbsp;	}
+<i>569</i>&nbsp;	
+<i>570</i>&nbsp;	/**
+<i>571</i>&nbsp;	 * Flag indicating that the object is editable.
+<i>572</i>&nbsp;	 * &lt;p&gt;
+<i>573</i>&nbsp;	 * If this returns false, this indicates the object has a ROI this should not be moved or resized 
+<i>574</i>&nbsp;	 * (e.g. because child objects depend upon it).
+<i>575</i>&nbsp;	 * @return
+<i>576</i>&nbsp;	 */
+<i>577</i>&nbsp;	public abstract boolean isEditable();
+<i>578</i>&nbsp;	
+<i>579</i>&nbsp;	/**
+<i>580</i>&nbsp;	 * Get a collection of child objects.
+<i>581</i>&nbsp;	 * &lt;p&gt;
+<i>582</i>&nbsp;	 * In the current implementation, this is immutable - it cannot be modified directly.
+<i>583</i>&nbsp;	 * @return
+<i>584</i>&nbsp;	 */
+<i>585</i>&nbsp;	public synchronized Collection&lt;PathObject&gt; getChildObjects() {
+<b class="nc"><i>586</i>&nbsp;		if (childList == null)</b>
+<b class="nc"><i>587</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>588</i>&nbsp;		if (cachedUnmodifiableChildren == null)</b>
+<b class="nc"><i>589</i>&nbsp;			cachedUnmodifiableChildren = Collections.unmodifiableCollection(childList); // Could use collection (but be careful about hashcode &amp; equals!)</b>
+<b class="nc"><i>590</i>&nbsp;		return cachedUnmodifiableChildren;</b>
+<i>591</i>&nbsp;	}
+<i>592</i>&nbsp;	
+<i>593</i>&nbsp;	/**
+<i>594</i>&nbsp;	 * Get a collection containing all child objects.
+<i>595</i>&nbsp;	 * 
+<i>596</i>&nbsp;	 * @param children optional collection to which the children should be added
+<i>597</i>&nbsp;	 * @return collection containing all child object (the same as {@code children} if provided)
+<i>598</i>&nbsp;	 */
+<i>599</i>&nbsp;	public synchronized Collection&lt;PathObject&gt; getChildObjects(Collection&lt;PathObject&gt; children) {
+<b class="nc"><i>600</i>&nbsp;		if (children == null)</b>
+<b class="nc"><i>601</i>&nbsp;			return getChildObjects();</b>
+<b class="nc"><i>602</i>&nbsp;		if (childList == null || childList.isEmpty())</b>
+<b class="nc"><i>603</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>604</i>&nbsp;		children.addAll(childList);</b>
+<b class="nc"><i>605</i>&nbsp;		return children;</b>
+<i>606</i>&nbsp;	}
+<i>607</i>&nbsp;	
+<i>608</i>&nbsp;	/**
+<i>609</i>&nbsp;	 * Get a collection containing all descendant objects.
+<i>610</i>&nbsp;	 * 
+<i>611</i>&nbsp;	 * @param descendants optional collection to which the descendants should be added
+<i>612</i>&nbsp;	 * @return collection containing all descendant object (the same as {@code descendants} if provided)
+<i>613</i>&nbsp;	 */
+<i>614</i>&nbsp;	public synchronized Collection&lt;PathObject&gt; getDescendantObjects(Collection&lt;PathObject&gt; descendants) {
+<b class="nc"><i>615</i>&nbsp;		if (childList == null || childList.isEmpty())</b>
+<b class="nc"><i>616</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>617</i>&nbsp;		if (descendants == null)</b>
+<b class="nc"><i>618</i>&nbsp;			descendants = new ArrayList&lt;&gt;();</b>
+<i>619</i>&nbsp;//		descendants.addAll(childList);
+<b class="nc"><i>620</i>&nbsp;		for (var child : childList) {</b>
+<b class="nc"><i>621</i>&nbsp;			descendants.add(child);</b>
+<b class="nc"><i>622</i>&nbsp;			if (child.hasChildren())</b>
+<b class="nc"><i>623</i>&nbsp;				child.getDescendantObjects(descendants);</b>
+<b class="nc"><i>624</i>&nbsp;		}</b>
+<b class="nc"><i>625</i>&nbsp;		return descendants;</b>
+<i>626</i>&nbsp;	}
+<i>627</i>&nbsp;	
+<i>628</i>&nbsp;	/**
+<i>629</i>&nbsp;	 * Get a defensive copy of child objects as an array.
+<i>630</i>&nbsp;	 * Why? Well perhaps you want to iterate through it and {@link #getChildObjects()} may result in synchronization problems if 
+<i>631</i>&nbsp;	 * the list is modified by another thread. In such a case a defensive copy may already be required, and it is more efficient to request 
+<i>632</i>&nbsp;	 * it here.
+<i>633</i>&nbsp;	 * @return
+<i>634</i>&nbsp;	 */
+<i>635</i>&nbsp;	public synchronized PathObject[] getChildObjectsAsArray() {
+<b class="nc"><i>636</i>&nbsp;		return childList == null ? new PathObject[0] : childList.toArray(PathObject[]::new);</b>
+<i>637</i>&nbsp;	}
+<i>638</i>&nbsp;	
+<i>639</i>&nbsp;	/**
+<i>640</i>&nbsp;	 * Get the classification of the object.
+<i>641</i>&nbsp;	 * @return
+<i>642</i>&nbsp;	 */
+<i>643</i>&nbsp;	public abstract PathClass getPathClass();
+<i>644</i>&nbsp;		
+<i>645</i>&nbsp;	/**
+<i>646</i>&nbsp;	 * Set the classification of the object, without specifying any classification probability.
+<i>647</i>&nbsp;	 * @param pc
+<i>648</i>&nbsp;	 */
+<i>649</i>&nbsp;	public void setPathClass(PathClass pc) {
+<b class="nc"><i>650</i>&nbsp;		setPathClass(pc, Double.NaN);</b>
+<b class="nc"><i>651</i>&nbsp;	}</b>
+<i>652</i>&nbsp;
+<i>653</i>&nbsp;	/**
+<i>654</i>&nbsp;	 * Set the classification of the object, specifying a classification probability.
+<i>655</i>&nbsp;	 * &lt;p&gt;
+<i>656</i>&nbsp;	 * The probability is expected to be between 0 and 1, or Double.NaN if no probability should be set.
+<i>657</i>&nbsp;	 * @param pathClass
+<i>658</i>&nbsp;	 * @param classProbability
+<i>659</i>&nbsp;	 */
+<i>660</i>&nbsp;	public abstract void setPathClass(PathClass pathClass, double classProbability);
+<i>661</i>&nbsp;	
+<i>662</i>&nbsp;	/**
+<i>663</i>&nbsp;	 * Request the classification probability, or Double.NaN if no probability is available.
+<i>664</i>&nbsp;	 * @return
+<i>665</i>&nbsp;	 */
+<i>666</i>&nbsp;	public abstract double getClassProbability();
+<i>667</i>&nbsp;	
+<i>668</i>&nbsp;	/**
+<i>669</i>&nbsp;	 * Request an object name in a form suitable for displaying.
+<i>670</i>&nbsp;	 * &lt;p&gt;
+<i>671</i>&nbsp;	 * This may combine various properties of the object.
+<i>672</i>&nbsp;	 * @return
+<i>673</i>&nbsp;	 */
+<i>674</i>&nbsp;	public String getDisplayedName() {
+<b class="fc"><i>675</i>&nbsp;		String nameDisplayed = name;</b>
+<b class="fc"><i>676</i>&nbsp;		if (nameDisplayed == null) {</b>
+<b class="fc"><i>677</i>&nbsp;			PathClass pathClass = getPathClass();</b>
+<b class="fc"><i>678</i>&nbsp;			if (pathClass != null)</b>
+<b class="fc"><i>679</i>&nbsp;				nameDisplayed = pathClass.toString();</b>
+<i>680</i>&nbsp;			else
+<b class="nc"><i>681</i>&nbsp;				nameDisplayed = getClass().getSimpleName();</b>
+<i>682</i>&nbsp;		}
+<b class="fc"><i>683</i>&nbsp;		if (getParent() != null &amp;&amp; getParent().isTMACore())</b>
+<b class="nc"><i>684</i>&nbsp;			nameDisplayed = getParent().getDisplayedName() + &quot; - &quot; + nameDisplayed;</b>
+<b class="fc"><i>685</i>&nbsp;		return nameDisplayed;</b>
+<i>686</i>&nbsp;	}
+<i>687</i>&nbsp;	
+<i>688</i>&nbsp;//	public String getDisplayedName() {
+<i>689</i>&nbsp;//		if (name == null) {
+<i>690</i>&nbsp;//			PathClass pathClass = getPathClass();
+<i>691</i>&nbsp;//			if (pathClass != null)
+<i>692</i>&nbsp;//				return pathClass.getName();
+<i>693</i>&nbsp;//			else
+<i>694</i>&nbsp;//				return getType();
+<i>695</i>&nbsp;//		}
+<i>696</i>&nbsp;//		return name;
+<i>697</i>&nbsp;//	}
+<i>698</i>&nbsp;	
+<i>699</i>&nbsp;	/**
+<i>700</i>&nbsp;	 * Request the stored object name.
+<i>701</i>&nbsp;	 * @return
+<i>702</i>&nbsp;	 */
+<i>703</i>&nbsp;	public String getName() {
+<b class="nc"><i>704</i>&nbsp;		return name;</b>
+<i>705</i>&nbsp;	}
+<i>706</i>&nbsp;	
+<i>707</i>&nbsp;	/**
+<i>708</i>&nbsp;	 * Set the stored object name.
+<i>709</i>&nbsp;	 * @param name
+<i>710</i>&nbsp;	 */
+<i>711</i>&nbsp;	public void setName(String name) {
+<b class="nc"><i>712</i>&nbsp;		this.name = name;</b>
+<b class="nc"><i>713</i>&nbsp;	}</b>
+<i>714</i>&nbsp;
+<i>715</i>&nbsp;	/**
+<i>716</i>&nbsp;	 * Get the region of interest (ROI) for the object.
+<i>717</i>&nbsp;	 * @return
+<i>718</i>&nbsp;	 */
+<i>719</i>&nbsp;	public abstract ROI getROI();
+<i>720</i>&nbsp;	
+<i>721</i>&nbsp;	/**
+<i>722</i>&nbsp;	 * Return any stored color as a packed RGB value.
+<i>723</i>&nbsp;	 * &lt;p&gt;
+<i>724</i>&nbsp;	 * This may be null if no color has been set
+<i>725</i>&nbsp;	 * @return
+<i>726</i>&nbsp;	 */
+<i>727</i>&nbsp;	public Integer getColorRGB() {
+<b class="nc"><i>728</i>&nbsp;		return color;</b>
+<i>729</i>&nbsp;	}
+<i>730</i>&nbsp;	
+<i>731</i>&nbsp;	/**
+<i>732</i>&nbsp;	 * Set the display color.
+<i>733</i>&nbsp;	 * @param color
+<i>734</i>&nbsp;	 */
+<i>735</i>&nbsp;	public void setColorRGB(Integer color) {
+<b class="nc"><i>736</i>&nbsp;		this.color = color;</b>
+<b class="nc"><i>737</i>&nbsp;	}</b>
+<i>738</i>&nbsp;	
+<i>739</i>&nbsp;	
+<i>740</i>&nbsp;	/**
+<i>741</i>&nbsp;	 * Ensure that we have a child list with a minimum capacity.
+<i>742</i>&nbsp;	 * 
+<i>743</i>&nbsp;	 * @param capacity
+<i>744</i>&nbsp;	 */
+<i>745</i>&nbsp;	void ensureChildList(int capacity) {
+<b class="nc"><i>746</i>&nbsp;		if (childList == null)</b>
+<b class="nc"><i>747</i>&nbsp;			childList = new LinkedHashSet&lt;PathObject&gt;(8, 0.75f);</b>
+<i>748</i>&nbsp;//			childList = new TreeSet&lt;PathObject&gt;(DefaultPathObjectComparator.getInstance());
+<i>749</i>&nbsp;//			childList = new ArrayList&lt;PathObject&gt;();
+<b class="nc"><i>750</i>&nbsp;	}</b>
+<i>751</i>&nbsp;	
+<i>752</i>&nbsp;	/**
+<i>753</i>&nbsp;	 * Store a metadata value.
+<i>754</i>&nbsp;	 * &lt;p&gt;
+<i>755</i>&nbsp;	 * Note: This should be used with caution; for objects that could be plentiful (e.g. detections) it is likely
+<i>756</i>&nbsp;	 * to be unwise to store any metadata values, since these can&#39;t be stored particularly efficiently - and
+<i>757</i>&nbsp;	 * therefore this could lead to far too high memory requirements.
+<i>758</i>&nbsp;	 * &lt;p&gt;
+<i>759</i>&nbsp;	 * If metadata is never stored for an object, no storage object is created - only a null reference.
+<i>760</i>&nbsp;	 * &lt;p&gt;
+<i>761</i>&nbsp;	 * Therefore the intention is that some newly-defined PathObject classes may take advantage of this mechanism and expose their
+<i>762</i>&nbsp;	 * own API for getting/setting values, backed-up by this store (which takes care of serialization/deserialization).
+<i>763</i>&nbsp;	 * However class definitions can also avoid making any use of this whatsoever if it&#39;s expected that it could lead to too much 
+<i>764</i>&nbsp;	 * memory being required.
+<i>765</i>&nbsp;	 * 
+<i>766</i>&nbsp;	 * @param key
+<i>767</i>&nbsp;	 * @param value
+<i>768</i>&nbsp;	 * @return 
+<i>769</i>&nbsp;	 * 
+<i>770</i>&nbsp;	 * @see #retrieveMetadataValue
+<i>771</i>&nbsp;	 */
+<i>772</i>&nbsp;	protected Object storeMetadataValue(final String key, final String value) {
+<b class="nc"><i>773</i>&nbsp;		if (metadata == null)</b>
+<b class="nc"><i>774</i>&nbsp;			metadata = new MetadataMap();</b>
+<b class="nc"><i>775</i>&nbsp;		return metadata.put(key, value);</b>
+<i>776</i>&nbsp;	}
+<i>777</i>&nbsp;	
+<i>778</i>&nbsp;	/**
+<i>779</i>&nbsp;	 * Get a metadata value.
+<i>780</i>&nbsp;	 * 
+<i>781</i>&nbsp;	 * @param key
+<i>782</i>&nbsp;	 * @return the metadata value if set, or null if not
+<i>783</i>&nbsp;	 * 
+<i>784</i>&nbsp;	 * @see #storeMetadataValue
+<i>785</i>&nbsp;	 */
+<i>786</i>&nbsp;	protected Object retrieveMetadataValue(final String key) {
+<b class="nc"><i>787</i>&nbsp;		return metadata == null ? null : metadata.get(key);</b>
+<i>788</i>&nbsp;	}
+<i>789</i>&nbsp;	
+<i>790</i>&nbsp;	/**
+<i>791</i>&nbsp;	 * Get the set of metadata keys.
+<i>792</i>&nbsp;	 * 
+<i>793</i>&nbsp;	 * @return
+<i>794</i>&nbsp;	 */
+<i>795</i>&nbsp;	protected Set&lt;String&gt; retrieveMetadataKeys() {
+<b class="nc"><i>796</i>&nbsp;		return metadata == null ? Collections.emptySet() : metadata.keySet();</b>
+<i>797</i>&nbsp;	}
+<i>798</i>&nbsp;	
+<i>799</i>&nbsp;	/**
+<i>800</i>&nbsp;	 * Get an unmodifiable map of the metadata.
+<i>801</i>&nbsp;	 * 
+<i>802</i>&nbsp;	 * @return
+<i>803</i>&nbsp;	 */
+<i>804</i>&nbsp;	protected Map&lt;String, String&gt; getUnmodifiableMetadataMap() {
+<b class="nc"><i>805</i>&nbsp;		return metadata == null ? Collections.emptyMap() : Collections.unmodifiableMap(metadata);</b>
+<i>806</i>&nbsp;	}
+<i>807</i>&nbsp;	
+<i>808</i>&nbsp;	/**
+<i>809</i>&nbsp;	 * Remove all stored metadata values.
+<i>810</i>&nbsp;	 */
+<i>811</i>&nbsp;	protected void clearMetadataMap() {
+<b class="nc"><i>812</i>&nbsp;		if (metadata != null)</b>
+<b class="nc"><i>813</i>&nbsp;			metadata.clear();</b>
+<b class="nc"><i>814</i>&nbsp;	}</b>
+<i>815</i>&nbsp;	
+<i>816</i>&nbsp;	
+<i>817</i>&nbsp;	@Override
+<i>818</i>&nbsp;	public void writeExternal(ObjectOutput out) throws IOException {
+<i>819</i>&nbsp;
+<b class="fc"><i>820</i>&nbsp;		out.writeObject(name);</b>
+<b class="fc"><i>821</i>&nbsp;		out.writeObject(color);</b>
+<i>822</i>&nbsp;		
+<b class="fc"><i>823</i>&nbsp;		if (metadata != null)</b>
+<b class="nc"><i>824</i>&nbsp;			out.writeObject(metadata);</b>
+<i>825</i>&nbsp;
+<b class="fc"><i>826</i>&nbsp;		out.writeObject(measurements);</b>
+<b class="fc"><i>827</i>&nbsp;		int n = nChildObjects();</b>
+<b class="fc"><i>828</i>&nbsp;		out.writeInt(n);</b>
+<b class="fc"><i>829</i>&nbsp;		if (n &gt; 0) {</b>
+<b class="nc"><i>830</i>&nbsp;			for (PathObject pathObject : childList) {</b>
+<b class="nc"><i>831</i>&nbsp;				out.writeObject(pathObject);</b>
+<b class="nc"><i>832</i>&nbsp;			}</b>
+<i>833</i>&nbsp;		}
+<i>834</i>&nbsp;		
+<b class="fc"><i>835</i>&nbsp;	}</b>
+<i>836</i>&nbsp;
+<i>837</i>&nbsp;
+<i>838</i>&nbsp;	@Override
+<i>839</i>&nbsp;	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+<i>840</i>&nbsp;		
+<b class="nc"><i>841</i>&nbsp;		name = (String)in.readObject();</b>
+<i>842</i>&nbsp;		
+<i>843</i>&nbsp;		// Integer check so that legacy (pre-release) data that use Java&#39;s AWT Color objects doesn&#39;t immediately break
+<i>844</i>&nbsp;		// (Could try parsing from Java&#39;s AWT Color... but shouldn&#39;t need to - it hasn&#39;t been used for a long time)
+<b class="nc"><i>845</i>&nbsp;		Object colorObject = in.readObject();</b>
+<b class="nc"><i>846</i>&nbsp;		if (colorObject instanceof Integer)</b>
+<b class="nc"><i>847</i>&nbsp;			color = (Integer)colorObject;</b>
+<i>848</i>&nbsp;		
+<i>849</i>&nbsp;		// Read the next object carefully, to help deal with changes in object specifications
+<b class="nc"><i>850</i>&nbsp;		Object nextObject = in.readObject();</b>
+<i>851</i>&nbsp;		
+<i>852</i>&nbsp;		// Read metadata, if we have it
+<b class="nc"><i>853</i>&nbsp;		if (nextObject instanceof MetadataMap) {</b>
+<b class="nc"><i>854</i>&nbsp;			metadata = (MetadataMap)nextObject;</b>
+<b class="nc"><i>855</i>&nbsp;			nextObject = in.readObject();</b>
+<i>856</i>&nbsp;		}
+<i>857</i>&nbsp;		
+<i>858</i>&nbsp;		// Read a measurement list, if we have one
+<i>859</i>&nbsp;		// This is rather hack-ish... but re-closing a list can prompt it to be stored more efficiently
+<b class="nc"><i>860</i>&nbsp;		if (nextObject instanceof MeasurementList) {</b>
+<b class="nc"><i>861</i>&nbsp;			measurements = (MeasurementList)nextObject;</b>
+<b class="nc"><i>862</i>&nbsp;			measurements.close();</b>
+<i>863</i>&nbsp;		}
+<i>864</i>&nbsp;		
+<i>865</i>&nbsp;		// Read child objects
+<b class="nc"><i>866</i>&nbsp;		int nChildObjects = in.readInt();</b>
+<b class="nc"><i>867</i>&nbsp;		if (nChildObjects &gt; 0) {</b>
+<b class="nc"><i>868</i>&nbsp;			ensureChildList(nChildObjects);</b>
+<b class="nc"><i>869</i>&nbsp;			for (int i = 0; i &lt; nChildObjects; i++) {</b>
+<b class="nc"><i>870</i>&nbsp;				PathObject child = (PathObject)in.readObject();</b>
+<b class="nc"><i>871</i>&nbsp;				child.parent = this;</b>
+<b class="nc"><i>872</i>&nbsp;				this.childList.add(child);</b>
+<i>873</i>&nbsp;//				addPathObject((PathObject)in.readObject());
+<i>874</i>&nbsp;			}
+<i>875</i>&nbsp;//			Collections.sort(childList, DefaultPathObjectComparator.getInstance());
+<i>876</i>&nbsp;		}
+<i>877</i>&nbsp;		
+<b class="nc"><i>878</i>&nbsp;	}</b>
+<i>879</i>&nbsp;	
+<i>880</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

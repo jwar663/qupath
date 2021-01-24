@@ -1,0 +1,403 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageOverview</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageOverview (qupath.lib.gui.viewer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageOverview</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    78.9%
+  </span>
+  <span class="absValue">
+    (15/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.2%
+  </span>
+  <span class="absValue">
+    (104/ 125)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Graphics2D;
+<i>27</i>&nbsp;import java.awt.RenderingHints;
+<i>28</i>&nbsp;import java.awt.Shape;
+<i>29</i>&nbsp;import java.awt.Transparency;
+<i>30</i>&nbsp;import java.awt.geom.AffineTransform;
+<i>31</i>&nbsp;import java.awt.geom.PathIterator;
+<i>32</i>&nbsp;import java.awt.image.BufferedImage;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import javafx.application.Platform;
+<i>38</i>&nbsp;import javafx.embed.swing.SwingFXUtils;
+<i>39</i>&nbsp;import javafx.scene.Node;
+<i>40</i>&nbsp;import javafx.scene.canvas.Canvas;
+<i>41</i>&nbsp;import javafx.scene.canvas.GraphicsContext;
+<i>42</i>&nbsp;import javafx.scene.image.WritableImage;
+<i>43</i>&nbsp;import javafx.scene.paint.Color;
+<i>44</i>&nbsp;import qupath.lib.images.ImageData;
+<i>45</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>46</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;/**
+<i>49</i>&nbsp; * A small preview panel to be associated with a viewer, which shows the currently-visible
+<i>50</i>&nbsp; * region &amp;amp; can be clicked on to navigate to other regions.
+<i>51</i>&nbsp; * 
+<i>52</i>&nbsp; * @author Pete Bankhead
+<i>53</i>&nbsp; *
+<i>54</i>&nbsp; */
+<i>55</i>&nbsp;class ImageOverview implements QuPathViewerListener {
+<i>56</i>&nbsp;
+<b class="fc"><i>57</i>&nbsp;	final static private Logger logger = LoggerFactory.getLogger(ImageOverview.class);</b>
+<i>58</i>&nbsp;
+<i>59</i>&nbsp;	private QuPathViewer viewer;
+<i>60</i>&nbsp;	
+<b class="fc"><i>61</i>&nbsp;	private Canvas canvas = new Canvas();</b>
+<i>62</i>&nbsp;		
+<b class="fc"><i>63</i>&nbsp;	private boolean repaintRequested = false;</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;	/*
+<i>66</i>&nbsp;	 * There are two reasons for the following variables...
+<i>67</i>&nbsp;	 * 	1 - The viewer&#39;s thumbnail is not guaranteed to remain constant, even if the image server does -
+<i>68</i>&nbsp;	 * 		this is because it can be modified by color transforms, brightness/contrast settings
+<i>69</i>&nbsp;	 * 	2 - Simply drawing the image directly &amp; rescaling on-the-fly produces a very low-quality image -
+<i>70</i>&nbsp;	 * 		getScaledInstance() provides something smoother
+<i>71</i>&nbsp;	 * Therefore to assist repainting, we need to have:
+<i>72</i>&nbsp;	 * 	- a nicely-rescaled thumbnail to draw
+<i>73</i>&nbsp;	 * 	- the original thumbnail image used to produce the scaled version
+<i>74</i>&nbsp;	 * The latter means we can compare it with the viewer&#39;s thumbnail &amp; we know if it needs to be updated
+<i>75</i>&nbsp;	 */
+<i>76</i>&nbsp;	private BufferedImage imgLastThumbnail; // The last thumbnail the viewer gave us
+<i>77</i>&nbsp;	private WritableImage imgPreview;       // The (probably downsampled) preview version
+<i>78</i>&nbsp;
+<b class="fc"><i>79</i>&nbsp;	private int preferredWidth = 150; // Preferred component/image width - used for thumbnail scaling</b>
+<i>80</i>&nbsp;
+<b class="fc"><i>81</i>&nbsp;	private Shape shapeVisible = null; // The visible shape (transformed already)</b>
+<i>82</i>&nbsp;	private AffineTransform transform;
+<i>83</i>&nbsp;	
+<b class="fc"><i>84</i>&nbsp;	private static Color color = Color.rgb(200, 0, 0, .8);</b>
+<b class="fc"><i>85</i>&nbsp;	private static Color colorBorder = Color.rgb(64, 64, 64);</b>
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;	protected void mouseViewerToLocation(double x, double y) {
+<b class="nc"><i>88</i>&nbsp;		ImageServer&lt;BufferedImage&gt; server = viewer.getServer();</b>
+<b class="nc"><i>89</i>&nbsp;		if (server == null || viewer.getZoomToFit())</b>
+<b class="nc"><i>90</i>&nbsp;			return;</b>
+<b class="nc"><i>91</i>&nbsp;		double cx = x / getWidth() * server.getWidth();</b>
+<b class="nc"><i>92</i>&nbsp;		double cy = y / getHeight() * server.getHeight();</b>
+<b class="nc"><i>93</i>&nbsp;		viewer.setCenterPixelLocation(cx, cy);</b>
+<b class="nc"><i>94</i>&nbsp;	}</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;	public ImageOverview(final QuPathViewer viewer) {</b>
+<b class="fc"><i>97</i>&nbsp;		this.viewer = viewer;</b>
+<b class="fc"><i>98</i>&nbsp;		setImage(viewer.getRGBThumbnail());</b>
+<i>99</i>&nbsp;		
+<b class="fc"><i>100</i>&nbsp;		canvas.setOnMouseClicked(e -&gt; {</b>
+<i>101</i>&nbsp;			// TODO: Check focus situation
+<i>102</i>&nbsp;//			// Pass focus to viewer if required - use first click for focus, not moving yet
+<i>103</i>&nbsp;//			if (viewer != null &amp;&amp; viewer.isAncestorOf(ImageOverview.this) &amp;&amp; !viewer.hasFocus())
+<i>104</i>&nbsp;//				viewer.requestFocus();
+<i>105</i>&nbsp;//			else
+<b class="nc"><i>106</i>&nbsp;			mouseViewerToLocation(e.getX(), e.getY());</b>
+<b class="nc"><i>107</i>&nbsp;		});</b>
+<i>108</i>&nbsp;		
+<b class="fc"><i>109</i>&nbsp;		canvas.setOnMouseDragged(e -&gt; {</b>
+<b class="nc"><i>110</i>&nbsp;			mouseViewerToLocation(e.getX(), e.getY());</b>
+<b class="nc"><i>111</i>&nbsp;			e.consume();</b>
+<b class="nc"><i>112</i>&nbsp;		});</b>
+<i>113</i>&nbsp;		
+<b class="fc"><i>114</i>&nbsp;		viewer.zPositionProperty().addListener(v -&gt; repaint());</b>
+<b class="fc"><i>115</i>&nbsp;		viewer.tPositionProperty().addListener(v -&gt; repaint());</b>
+<i>116</i>&nbsp;			
+<b class="fc"><i>117</i>&nbsp;		viewer.addViewerListener(this);</b>
+<b class="fc"><i>118</i>&nbsp;	}</b>
+<i>119</i>&nbsp;
+<i>120</i>&nbsp;	private void updateTransform() {
+<b class="fc"><i>121</i>&nbsp;		if (imgPreview != null &amp;&amp; viewer != null &amp;&amp; viewer.getServer() != null) {</b>
+<b class="fc"><i>122</i>&nbsp;			double scale = (double)preferredWidth / viewer.getServer().getWidth();</b>
+<b class="fc"><i>123</i>&nbsp;			if (scale &gt; 0) {</b>
+<i>124</i>&nbsp;				// Reuse an existing transform if we have one
+<b class="fc"><i>125</i>&nbsp;				if (transform == null)</b>
+<b class="fc"><i>126</i>&nbsp;					transform = AffineTransform.getScaleInstance(scale, scale);</b>
+<i>127</i>&nbsp;				else
+<b class="fc"><i>128</i>&nbsp;					transform.setToScale(scale, scale);</b>
+<i>129</i>&nbsp;			}
+<i>130</i>&nbsp;			else
+<b class="nc"><i>131</i>&nbsp;				transform = null;</b>
+<i>132</i>&nbsp;		}
+<b class="fc"><i>133</i>&nbsp;	}</b>
+<i>134</i>&nbsp;
+<i>135</i>&nbsp;	void paintCanvas() {
+<i>136</i>&nbsp;		
+<b class="fc"><i>137</i>&nbsp;		GraphicsContext g = canvas.getGraphicsContext2D();</b>
+<b class="fc"><i>138</i>&nbsp;		double w = getWidth();</b>
+<b class="fc"><i>139</i>&nbsp;		double h = getHeight();</b>
+<b class="fc"><i>140</i>&nbsp;		g.clearRect(0, 0, w, h);</b>
+<i>141</i>&nbsp;		
+<b class="fc"><i>142</i>&nbsp;		if (viewer == null || !viewer.hasServer()) {</b>
+<b class="fc"><i>143</i>&nbsp;			return;</b>
+<i>144</i>&nbsp;		}
+<i>145</i>&nbsp;		
+<i>146</i>&nbsp;		// Ensure the image has been set
+<b class="fc"><i>147</i>&nbsp;		setImage(viewer.getRGBThumbnail());</b>
+<i>148</i>&nbsp;
+<b class="fc"><i>149</i>&nbsp;		g.drawImage(imgPreview, 0, 0);</b>
+<i>150</i>&nbsp;		
+<i>151</i>&nbsp;		
+<i>152</i>&nbsp;		// Draw the currently-visible region, if we have a viewer and it isn&#39;t &#39;zoom to fit&#39; (in which case everything is visible)
+<b class="fc"><i>153</i>&nbsp;		if (!viewer.getZoomToFit() &amp;&amp; shapeVisible != null) {</b>
+<b class="fc"><i>154</i>&nbsp;			g.setStroke(color);</b>
+<b class="fc"><i>155</i>&nbsp;			g.setLineWidth(1);</b>
+<i>156</i>&nbsp;			
+<i>157</i>&nbsp;			// TODO: Try to avoid PathIterator, and do something more JavaFX-like
+<b class="fc"><i>158</i>&nbsp;			PathIterator iterator = shapeVisible.getPathIterator(null);</b>
+<b class="fc"><i>159</i>&nbsp;			double[] coords = new double[6];</b>
+<b class="fc"><i>160</i>&nbsp;			g.beginPath();</b>
+<b class="fc"><i>161</i>&nbsp;			while (!iterator.isDone()) {</b>
+<b class="fc"><i>162</i>&nbsp;				int type = iterator.currentSegment(coords);</b>
+<b class="fc"><i>163</i>&nbsp;				if (type == PathIterator.SEG_MOVETO)</b>
+<b class="fc"><i>164</i>&nbsp;					g.moveTo(coords[0], coords[1]);</b>
+<b class="fc"><i>165</i>&nbsp;				else if (type == PathIterator.SEG_LINETO)</b>
+<b class="fc"><i>166</i>&nbsp;					g.lineTo(coords[0], coords[1]);</b>
+<b class="fc"><i>167</i>&nbsp;				else if (type == PathIterator.SEG_CLOSE) {</b>
+<b class="fc"><i>168</i>&nbsp;					g.closePath();</b>
+<b class="fc"><i>169</i>&nbsp;					g.stroke();</b>
+<i>170</i>&nbsp;				}
+<i>171</i>&nbsp;				else
+<b class="nc"><i>172</i>&nbsp;					logger.debug(&quot;Unknown PathIterator type: {}&quot;, type);</b>
+<b class="fc"><i>173</i>&nbsp;				iterator.next();</b>
+<b class="fc"><i>174</i>&nbsp;			}</b>
+<i>175</i>&nbsp;			
+<i>176</i>&nbsp;//			g2d.draw(shapeVisible);
+<i>177</i>&nbsp;		}
+<i>178</i>&nbsp;		
+<i>179</i>&nbsp;		// Draw border
+<b class="fc"><i>180</i>&nbsp;		g.setLineWidth(2);</b>
+<b class="fc"><i>181</i>&nbsp;		g.setStroke(colorBorder);</b>
+<b class="fc"><i>182</i>&nbsp;		g.strokeRect(0, 0, w, h);</b>
+<i>183</i>&nbsp;		
+<b class="fc"><i>184</i>&nbsp;		repaintRequested = false;</b>
+<b class="fc"><i>185</i>&nbsp;	}</b>
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;	
+<i>188</i>&nbsp;	public boolean isVisible() {
+<b class="fc"><i>189</i>&nbsp;		return canvas.isVisible();</b>
+<i>190</i>&nbsp;	}
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;	public void setVisible(final boolean visible) {
+<b class="fc"><i>193</i>&nbsp;		canvas.setVisible(visible);</b>
+<b class="fc"><i>194</i>&nbsp;	}</b>
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;	private double getWidth() {
+<b class="fc"><i>197</i>&nbsp;		return canvas.getWidth();</b>
+<i>198</i>&nbsp;	}
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;	private double getHeight() {
+<b class="fc"><i>201</i>&nbsp;		return canvas.getHeight();</b>
+<i>202</i>&nbsp;	}
+<i>203</i>&nbsp;
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;	private void setImage(BufferedImage img) {
+<b class="fc"><i>206</i>&nbsp;		if (img == imgLastThumbnail)</b>
+<b class="fc"><i>207</i>&nbsp;			return;</b>
+<b class="fc"><i>208</i>&nbsp;		if (img == null) {</b>
+<b class="nc"><i>209</i>&nbsp;			imgLastThumbnail = null;</b>
+<i>210</i>&nbsp;		} else {
+<b class="fc"><i>211</i>&nbsp;			int preferredHeight = (int)(img.getHeight() * (double)(preferredWidth / (double)img.getWidth()));</b>
+<i>212</i>&nbsp;			
+<b class="fc"><i>213</i>&nbsp;			imgPreview = getScaledRGBInstance(img, preferredWidth, preferredHeight);</b>
+<i>214</i>&nbsp;
+<b class="fc"><i>215</i>&nbsp;			canvas.setWidth(imgPreview.getWidth());</b>
+<b class="fc"><i>216</i>&nbsp;			canvas.setHeight(imgPreview.getHeight());</b>
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;//			if (imgPreview == null || imgPreview.getWidth() != preferredWidth || imgPreview.getHeight() != preferredHeight) {
+<i>219</i>&nbsp;//				//				imgPreview = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(preferredWidth, preferredHeight, Transparency.OPAQUE);
+<i>220</i>&nbsp;//				imgPreview = new BufferedImage(preferredWidth, preferredHeight, BufferedImage.TYPE_INT_RGB);
+<i>221</i>&nbsp;//			}
+<i>222</i>&nbsp;//			Graphics2D g2d = imgPreview.createGraphics();
+<i>223</i>&nbsp;//			g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+<i>224</i>&nbsp;//			g2d.drawImage(img, 0, 0, preferredWidth, preferredHeight, this);
+<i>225</i>&nbsp;//			g2d.dispose();
+<i>226</i>&nbsp;//			//			imgPreview = img.getScaledInstance(preferredWidth, preferredHeight, BufferedImage.SCALE_SMOOTH);
+<b class="fc"><i>227</i>&nbsp;			imgLastThumbnail = img;</b>
+<i>228</i>&nbsp;//			System.out.println(&quot;I resized from &quot; + img.getWidth() + &quot; to &quot; + imgPreview.getWidth());
+<i>229</i>&nbsp;		}
+<b class="fc"><i>230</i>&nbsp;		updateTransform();</b>
+<b class="fc"><i>231</i>&nbsp;	}</b>
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;	@Override
+<i>235</i>&nbsp;	public void imageDataChanged(QuPathViewer viewer, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="fc"><i>236</i>&nbsp;		setImage(viewer.getRGBThumbnail());</b>
+<b class="fc"><i>237</i>&nbsp;		repaint();</b>
+<b class="fc"><i>238</i>&nbsp;	}</b>
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;	@Override
+<i>241</i>&nbsp;	public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {
+<i>242</i>&nbsp;		// Get the shape &amp; apply a transform, if we have one
+<b class="fc"><i>243</i>&nbsp;		if (shape != null) {</b>
+<b class="fc"><i>244</i>&nbsp;			if (transform == null)</b>
+<b class="nc"><i>245</i>&nbsp;				updateTransform();</b>
+<b class="fc"><i>246</i>&nbsp;			if (transform != null)</b>
+<b class="fc"><i>247</i>&nbsp;				shapeVisible = transform.createTransformedShape(shape);</b>
+<i>248</i>&nbsp;			else
+<b class="nc"><i>249</i>&nbsp;				shapeVisible = shape;</b>
+<i>250</i>&nbsp;		} else
+<b class="nc"><i>251</i>&nbsp;			shapeVisible = null;</b>
+<i>252</i>&nbsp;		// Repaint
+<b class="fc"><i>253</i>&nbsp;		repaint();</b>
+<b class="fc"><i>254</i>&nbsp;	}</b>
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;
+<i>257</i>&nbsp;	
+<i>258</i>&nbsp;	void repaint() {
+<b class="fc"><i>259</i>&nbsp;		if (Platform.isFxApplicationThread()) {</b>
+<b class="fc"><i>260</i>&nbsp;			repaintRequested = true;</b>
+<b class="fc"><i>261</i>&nbsp;			paintCanvas();</b>
+<b class="fc"><i>262</i>&nbsp;			return;</b>
+<i>263</i>&nbsp;		}
+<b class="fc"><i>264</i>&nbsp;		if (repaintRequested)</b>
+<b class="nc"><i>265</i>&nbsp;			return;</b>
+<b class="fc"><i>266</i>&nbsp;		logger.trace(&quot;Overview repaint requested!&quot;);</b>
+<b class="fc"><i>267</i>&nbsp;		repaintRequested = true;</b>
+<b class="fc"><i>268</i>&nbsp;		Platform.runLater(() -&gt; repaint());</b>
+<b class="fc"><i>269</i>&nbsp;	}</b>
+<i>270</i>&nbsp;	
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;	public Node getNode() {
+<b class="fc"><i>273</i>&nbsp;		return canvas;</b>
+<i>274</i>&nbsp;	}
+<i>275</i>&nbsp;	
+<i>276</i>&nbsp;
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;	/**
+<i>279</i>&nbsp;	 * Get a scaled (RGB or ARGB) image, achieving reasonable quality even when scaling down by a considerably amount.
+<i>280</i>&nbsp;	 * 
+<i>281</i>&nbsp;	 * Code is based on https://today.java.net/article/2007/03/30/perils-imagegetscaledinstance
+<i>282</i>&nbsp;	 * 
+<i>283</i>&nbsp;	 * @param img
+<i>284</i>&nbsp;	 * @param targetWidth
+<i>285</i>&nbsp;	 * @param targetHeight
+<i>286</i>&nbsp;	 * @return
+<i>287</i>&nbsp;	 */
+<i>288</i>&nbsp;	static WritableImage getScaledRGBInstance(BufferedImage img, int targetWidth, int targetHeight) {
+<b class="fc"><i>289</i>&nbsp;		int type = (img.getTransparency() == Transparency.OPAQUE) ?</b>
+<b class="fc"><i>290</i>&nbsp;				BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;</b>
+<i>291</i>&nbsp;		
+<b class="fc"><i>292</i>&nbsp;		BufferedImage imgResult = (BufferedImage)img;</b>
+<b class="fc"><i>293</i>&nbsp;		int w = img.getWidth();</b>
+<b class="fc"><i>294</i>&nbsp;		int h = img.getHeight();</b>
+<i>295</i>&nbsp;
+<b class="fc"><i>296</i>&nbsp;		while (w &gt; targetWidth || h &gt; targetHeight) {</b>
+<i>297</i>&nbsp;			
+<b class="fc"><i>298</i>&nbsp;			w = Math.max(w / 2, targetWidth);</b>
+<b class="fc"><i>299</i>&nbsp;			h = Math.max(h / 2, targetHeight);</b>
+<i>300</i>&nbsp;
+<b class="fc"><i>301</i>&nbsp;			BufferedImage imgTemp = new BufferedImage(w, h, type);</b>
+<b class="fc"><i>302</i>&nbsp;			Graphics2D g2 = imgTemp.createGraphics();</b>
+<b class="fc"><i>303</i>&nbsp;			g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);</b>
+<b class="fc"><i>304</i>&nbsp;			g2.drawImage(imgResult, 0, 0, w, h, null);</b>
+<b class="fc"><i>305</i>&nbsp;			g2.dispose();</b>
+<i>306</i>&nbsp;
+<b class="fc"><i>307</i>&nbsp;			imgResult = imgTemp;			</b>
+<b class="fc"><i>308</i>&nbsp;		}</b>
+<b class="fc"><i>309</i>&nbsp;		return SwingFXUtils.toFXImage(imgResult, null);</b>
+<i>310</i>&nbsp;	}
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;	@Override
+<b class="fc"><i>313</i>&nbsp;	public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {}</b>
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;	@Override
+<i>316</i>&nbsp;	public void viewerClosed(QuPathViewer viewer) {
+<b class="nc"><i>317</i>&nbsp;		this.viewer = null;</b>
+<b class="nc"><i>318</i>&nbsp;	}</b>
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

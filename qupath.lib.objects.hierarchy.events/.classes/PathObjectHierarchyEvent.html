@@ -1,0 +1,373 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObjectHierarchyEvent</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects.hierarchy.events</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObjectHierarchyEvent (qupath.lib.objects.hierarchy.events)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObjectHierarchyEvent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 25)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">PathObjectHierarchyEvent$HierarchyEventType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects.hierarchy.events;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.Collections;
+<i>29</i>&nbsp;import java.util.List;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>32</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;/**
+<i>35</i>&nbsp; * An event class for passing on information about modifications to a PathObjectHierarchy.
+<i>36</i>&nbsp; * 
+<i>37</i>&nbsp; * @author Pete Bankhead
+<i>38</i>&nbsp; *
+<i>39</i>&nbsp; */
+<i>40</i>&nbsp;public class PathObjectHierarchyEvent {
+<i>41</i>&nbsp;	
+<i>42</i>&nbsp;	/**
+<i>43</i>&nbsp;	 * Enum representing different ways in which the hierarchy may have been updated.
+<i>44</i>&nbsp;	 */
+<b class="nc"><i>45</i>&nbsp;	public static enum HierarchyEventType {</b>
+<i>46</i>&nbsp;		/**
+<i>47</i>&nbsp;		 * An object has been added
+<i>48</i>&nbsp;		 */
+<b class="nc"><i>49</i>&nbsp;		ADDED,</b>
+<i>50</i>&nbsp;		
+<i>51</i>&nbsp;		/**
+<i>52</i>&nbsp;		 * An object has been removed
+<i>53</i>&nbsp;		 */
+<b class="nc"><i>54</i>&nbsp;		REMOVED,</b>
+<i>55</i>&nbsp;		
+<i>56</i>&nbsp;		/**
+<i>57</i>&nbsp;		 * A more complex structural change was made than simply either adding or removing objects
+<i>58</i>&nbsp;		 */
+<b class="nc"><i>59</i>&nbsp;		OTHER_STRUCTURE_CHANGE,</b>
+<i>60</i>&nbsp;		
+<i>61</i>&nbsp;		/**
+<i>62</i>&nbsp;		 * A change was made to one or more object classifications
+<i>63</i>&nbsp;		 */
+<b class="nc"><i>64</i>&nbsp;		CHANGE_CLASSIFICATION,</b>
+<i>65</i>&nbsp;		
+<i>66</i>&nbsp;		/**
+<i>67</i>&nbsp;		 * A change was made to one or more object measurements
+<i>68</i>&nbsp;		 */
+<b class="nc"><i>69</i>&nbsp;		CHANGE_MEASUREMENTS,</b>
+<i>70</i>&nbsp;//		CHANGE_ROI, // A change was made to one or more object ROIs
+<i>71</i>&nbsp;		
+<i>72</i>&nbsp;		/**
+<i>73</i>&nbsp;		 * A change was made to one or more objects that is more complex than the other changes allow for
+<i>74</i>&nbsp;		 */
+<b class="nc"><i>75</i>&nbsp;		CHANGE_OTHER</b>
+<i>76</i>&nbsp;		};
+<i>77</i>&nbsp;	
+<i>78</i>&nbsp;	private Object source;
+<i>79</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<i>80</i>&nbsp;	private PathObject parentObject;
+<i>81</i>&nbsp;	private HierarchyEventType type;
+<i>82</i>&nbsp;	private List&lt;PathObject&gt; pathObjects;
+<i>83</i>&nbsp;	private boolean isChanging;
+<i>84</i>&nbsp;
+<b class="nc"><i>85</i>&nbsp;	PathObjectHierarchyEvent(final Object source, final PathObjectHierarchy hierarchy, final HierarchyEventType type, final PathObject parentObject, final List&lt;PathObject&gt; pathObjects, final boolean isChanging) {</b>
+<b class="nc"><i>86</i>&nbsp;		this.source = source;</b>
+<b class="nc"><i>87</i>&nbsp;		this.hierarchy = hierarchy;</b>
+<b class="nc"><i>88</i>&nbsp;		this.type = type;</b>
+<b class="nc"><i>89</i>&nbsp;		this.parentObject = parentObject;</b>
+<b class="nc"><i>90</i>&nbsp;		this.pathObjects = Collections.unmodifiableList(pathObjects);</b>
+<b class="nc"><i>91</i>&nbsp;		this.isChanging = isChanging;</b>
+<b class="nc"><i>92</i>&nbsp;	}</b>
+<i>93</i>&nbsp;	
+<i>94</i>&nbsp;	@Override
+<i>95</i>&nbsp;	public String toString() {
+<b class="nc"><i>96</i>&nbsp;		return &quot;Hierarchy change event: Source=&quot; + source + &quot;, Type=&quot;+type + &quot;, Parent=&quot;+parentObject;</b>
+<i>97</i>&nbsp;	}
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	/**
+<i>100</i>&nbsp;	 * Create a hierarchy event indicating that the hierarchy structure has been changed.
+<i>101</i>&nbsp;	 * @param source
+<i>102</i>&nbsp;	 * @param hierarchy
+<i>103</i>&nbsp;	 * @param parentObject
+<i>104</i>&nbsp;	 * @return
+<i>105</i>&nbsp;	 */
+<i>106</i>&nbsp;	public static PathObjectHierarchyEvent createStructureChangeEvent(Object source, PathObjectHierarchy hierarchy, PathObject parentObject) {
+<b class="nc"><i>107</i>&nbsp;		return new PathObjectHierarchyEvent(source, hierarchy, HierarchyEventType.OTHER_STRUCTURE_CHANGE, parentObject, new ArrayList&lt;&gt;(0), false);						</b>
+<i>108</i>&nbsp;	}
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;	/**
+<i>111</i>&nbsp;	 * Create a hierarchy event indicated objects were added.
+<i>112</i>&nbsp;	 * @param source
+<i>113</i>&nbsp;	 * @param hierarchy
+<i>114</i>&nbsp;	 * @param parentObject
+<i>115</i>&nbsp;	 * @param pathObjectAdded
+<i>116</i>&nbsp;	 * @return
+<i>117</i>&nbsp;	 */
+<i>118</i>&nbsp;	public static PathObjectHierarchyEvent createObjectAddedEvent(Object source, PathObjectHierarchy hierarchy, PathObject parentObject, PathObject pathObjectAdded) {
+<b class="nc"><i>119</i>&nbsp;		return new PathObjectHierarchyEvent(source, hierarchy, HierarchyEventType.ADDED, parentObject, Collections.singletonList(pathObjectAdded), false);				</b>
+<i>120</i>&nbsp;	}
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Create a hierarchy event indicating objects were removed.
+<i>124</i>&nbsp;	 * @param source
+<i>125</i>&nbsp;	 * @param hierarchy
+<i>126</i>&nbsp;	 * @param parentObject
+<i>127</i>&nbsp;	 * @param pathObjectRemoved
+<i>128</i>&nbsp;	 * @return
+<i>129</i>&nbsp;	 */
+<i>130</i>&nbsp;	public static PathObjectHierarchyEvent createObjectRemovedEvent(Object source, PathObjectHierarchy hierarchy, PathObject parentObject, PathObject pathObjectRemoved) {
+<b class="nc"><i>131</i>&nbsp;		return new PathObjectHierarchyEvent(source, hierarchy, HierarchyEventType.REMOVED, parentObject, Collections.singletonList(pathObjectRemoved), false);		</b>
+<i>132</i>&nbsp;	}
+<i>133</i>&nbsp;	
+<i>134</i>&nbsp;	/**
+<i>135</i>&nbsp;	 * Create a hierarchy event indicating objects have changed in a way consistent with the specified event type.
+<i>136</i>&nbsp;	 * @param source
+<i>137</i>&nbsp;	 * @param hierarchy
+<i>138</i>&nbsp;	 * @param type
+<i>139</i>&nbsp;	 * @param pathObjects
+<i>140</i>&nbsp;	 * @param isChanging
+<i>141</i>&nbsp;	 * @return
+<i>142</i>&nbsp;	 */
+<i>143</i>&nbsp;	public static PathObjectHierarchyEvent createObjectsChangedEvent(Object source, PathObjectHierarchy hierarchy, HierarchyEventType type, Collection&lt;? extends PathObject&gt; pathObjects, boolean isChanging) {
+<b class="nc"><i>144</i>&nbsp;		return new PathObjectHierarchyEvent(source, hierarchy, type, null, new ArrayList&lt;&gt;(pathObjects), isChanging);</b>
+<i>145</i>&nbsp;	}
+<i>146</i>&nbsp;
+<i>147</i>&nbsp;	/**
+<i>148</i>&nbsp;	 * Returns true if changes are still being made, so more events will be fired.
+<i>149</i>&nbsp;	 * This enables listeners to postpone expensive operations that could be called often until 
+<i>150</i>&nbsp;	 * this flag is false.
+<i>151</i>&nbsp;	 * 
+<i>152</i>&nbsp;	 * @return
+<i>153</i>&nbsp;	 */
+<i>154</i>&nbsp;	public boolean isChanging() {
+<b class="nc"><i>155</i>&nbsp;		return isChanging;</b>
+<i>156</i>&nbsp;	}
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * The hierarchy to which this event refers.
+<i>160</i>&nbsp;	 * @return
+<i>161</i>&nbsp;	 */
+<i>162</i>&nbsp;	public PathObjectHierarchy getHierarchy() {
+<b class="nc"><i>163</i>&nbsp;		return hierarchy;</b>
+<i>164</i>&nbsp;	}
+<i>165</i>&nbsp;	
+<i>166</i>&nbsp;	/**
+<i>167</i>&nbsp;	 * The objects that were affected by whichever changes were made.
+<i>168</i>&nbsp;	 * @return
+<i>169</i>&nbsp;	 */
+<i>170</i>&nbsp;	public List&lt;PathObject&gt; getChangedObjects() {
+<b class="nc"><i>171</i>&nbsp;		return pathObjects;</b>
+<i>172</i>&nbsp;	}
+<i>173</i>&nbsp;	
+<i>174</i>&nbsp;	/**
+<i>175</i>&nbsp;	 * Get the hierarchy event type.
+<i>176</i>&nbsp;	 * @return
+<i>177</i>&nbsp;	 */
+<i>178</i>&nbsp;	public HierarchyEventType getEventType() {
+<b class="nc"><i>179</i>&nbsp;		return type;</b>
+<i>180</i>&nbsp;	}
+<i>181</i>&nbsp;	
+<i>182</i>&nbsp;	/**
+<i>183</i>&nbsp;	 * Get the source that triggered the event.
+<i>184</i>&nbsp;	 * @return
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public Object getSource() {
+<b class="nc"><i>187</i>&nbsp;		return source;</b>
+<i>188</i>&nbsp;	}
+<i>189</i>&nbsp;	
+<i>190</i>&nbsp;	/**
+<i>191</i>&nbsp;	 * Returns true if the hierarchy structure has changed, e.g. with objects added or removed
+<i>192</i>&nbsp;	 * @return
+<i>193</i>&nbsp;	 */
+<i>194</i>&nbsp;	public boolean isStructureChangeEvent() {
+<b class="nc"><i>195</i>&nbsp;		return isAddedOrRemovedEvent() || type == HierarchyEventType.OTHER_STRUCTURE_CHANGE;</b>
+<i>196</i>&nbsp;	}
+<i>197</i>&nbsp;	
+<i>198</i>&nbsp;	/**
+<i>199</i>&nbsp;	 * Returns true if objects have been added or removed from the hierarchy.
+<i>200</i>&nbsp;	 * @return
+<i>201</i>&nbsp;	 */
+<i>202</i>&nbsp;	public boolean isAddedOrRemovedEvent() {
+<b class="nc"><i>203</i>&nbsp;		return type == HierarchyEventType.ADDED || type == HierarchyEventType.REMOVED;</b>
+<i>204</i>&nbsp;	}
+<i>205</i>&nbsp;	
+<i>206</i>&nbsp;	/**
+<i>207</i>&nbsp;	 * Returns true if the event indicates that object classifications have changed.
+<i>208</i>&nbsp;	 * @return
+<i>209</i>&nbsp;	 */
+<i>210</i>&nbsp;	public boolean isObjectClassificationEvent() {
+<b class="nc"><i>211</i>&nbsp;		return type == HierarchyEventType.CHANGE_CLASSIFICATION;</b>
+<i>212</i>&nbsp;	}
+<i>213</i>&nbsp;
+<i>214</i>&nbsp;	/**
+<i>215</i>&nbsp;	 * Returns true if the event indicates that object measurements have changed.
+<i>216</i>&nbsp;	 * @return
+<i>217</i>&nbsp;	 */
+<i>218</i>&nbsp;	public boolean isObjectMeasurementEvent() {
+<b class="nc"><i>219</i>&nbsp;		return type == HierarchyEventType.CHANGE_MEASUREMENTS;</b>
+<i>220</i>&nbsp;	}
+<i>221</i>&nbsp;	
+<i>222</i>&nbsp;	/**
+<i>223</i>&nbsp;	 * If this is a structure change event, return the base object, i.e. below which the structure differs from previously.
+<i>224</i>&nbsp;	 * In the case that an object was added or removed, this will return the parent of the added/removed object.  For more
+<i>225</i>&nbsp;	 * thorough changes, the root object is returned.
+<i>226</i>&nbsp;	 * &lt;p&gt;
+<i>227</i>&nbsp;	 * For events that do not correspond to structural changes, this returns null.
+<i>228</i>&nbsp;	 * @return
+<i>229</i>&nbsp;	 */
+<i>230</i>&nbsp;	public PathObject getStructureChangeBase() {
+<b class="nc"><i>231</i>&nbsp;		if (isStructureChangeEvent())</b>
+<b class="nc"><i>232</i>&nbsp;			return parentObject;</b>
+<b class="nc"><i>233</i>&nbsp;		return null;</b>
+<i>234</i>&nbsp;	}
+<i>235</i>&nbsp;	
+<i>236</i>&nbsp;	
+<i>237</i>&nbsp;	
+<i>238</i>&nbsp;//	/**
+<i>239</i>&nbsp;//	 * Returns true if none of the changed objects are within the hierarchy.
+<i>240</i>&nbsp;//	 * @return
+<i>241</i>&nbsp;//	 */
+<i>242</i>&nbsp;//	public boolean changedObjectsWithinHierarchy() {
+<i>243</i>&nbsp;//		for (PathObject temp : getChangedObjects())
+<i>244</i>&nbsp;//			if (temp.getParent() != null)
+<i>245</i>&nbsp;//				return false;
+<i>246</i>&nbsp;//		return true;
+<i>247</i>&nbsp;//	}
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	
+<i>250</i>&nbsp;//	/**
+<i>251</i>&nbsp;//	 * Returns true if the base object of the event is the root of the hierarchy.
+<i>252</i>&nbsp;//	 * @return
+<i>253</i>&nbsp;//	 */
+<i>254</i>&nbsp;//	public boolean isBaseRootObject() {
+<i>255</i>&nbsp;//		return pathObjectBase == hierarchy.getRootObject();
+<i>256</i>&nbsp;//	}
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;//	public boolean singleObjectChanged() {
+<i>259</i>&nbsp;//		return !areDescendantObjectsChanged() &amp;&amp; (pathObjects == null || pathObjects.isEmpty())
+<i>260</i>&nbsp;////		return type == HierarchyEventType.OBJECT_CHANGE &amp;&amp; !areDescendantObjectsChanged() &amp;&amp; !(pathObjectBase instanceof PathRootObject) &amp;&amp;
+<i>261</i>&nbsp;////				(pathObjects == null || pathObjects.isEmpty() || pathObjects.equals(Collections.singletonList(pathObjectBase)));
+<i>262</i>&nbsp;//	}
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

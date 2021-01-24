@@ -1,0 +1,740 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RigidObjectEditorCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RigidObjectEditorCommand (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RigidObjectEditorCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 80)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RigidObjectEditorCommand$AffineEditOverlay</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 14)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RigidObjectEditorCommand$RigidMouseListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 44)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RigidObjectEditorCommand$RoiAffineTransformer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 57)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 32)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 195)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Color;
+<i>27</i>&nbsp;import java.awt.Graphics2D;
+<i>28</i>&nbsp;import java.awt.Shape;
+<i>29</i>&nbsp;import java.awt.Stroke;
+<i>30</i>&nbsp;import java.awt.geom.Ellipse2D;
+<i>31</i>&nbsp;import java.awt.geom.Line2D;
+<i>32</i>&nbsp;import java.awt.geom.Point2D;
+<i>33</i>&nbsp;import java.awt.image.BufferedImage;
+<i>34</i>&nbsp;import java.util.HashMap;
+<i>35</i>&nbsp;import java.util.Map;
+<i>36</i>&nbsp;import java.util.Map.Entry;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
+<i>39</i>&nbsp;import org.locationtech.jts.geom.Coordinate;
+<i>40</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>41</i>&nbsp;import org.locationtech.jts.geom.util.AffineTransformation;
+<i>42</i>&nbsp;import org.slf4j.Logger;
+<i>43</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;import javafx.beans.value.ChangeListener;
+<i>46</i>&nbsp;import javafx.beans.value.ObservableValue;
+<i>47</i>&nbsp;import javafx.event.EventHandler;
+<i>48</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>49</i>&nbsp;import qupath.lib.color.ColorToolsAwt;
+<i>50</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>51</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>52</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs.DialogButton;
+<i>53</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>54</i>&nbsp;import qupath.lib.gui.viewer.OverlayOptions;
+<i>55</i>&nbsp;import qupath.lib.gui.viewer.PathHierarchyPaintingHelper;
+<i>56</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>57</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewerListener;
+<i>58</i>&nbsp;import qupath.lib.gui.viewer.overlays.AbstractOverlay;
+<i>59</i>&nbsp;import qupath.lib.gui.viewer.overlays.PathOverlay;
+<i>60</i>&nbsp;import qupath.lib.images.ImageData;
+<i>61</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>62</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>63</i>&nbsp;import qupath.lib.objects.PathAnnotationObject;
+<i>64</i>&nbsp;import qupath.lib.objects.PathROIObject;
+<i>65</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>66</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>67</i>&nbsp;import qupath.lib.roi.GeometryTools;
+<i>68</i>&nbsp;import qupath.lib.roi.PolylineROI;
+<i>69</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>70</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;/**
+<i>73</i>&nbsp; * Action enabling a selected annotation object to be modified interactively by a rigid transformation,
+<i>74</i>&nbsp; * i.e. through rotation and translation.
+<i>75</i>&nbsp; * 
+<i>76</i>&nbsp; * @author Pete Bankhead
+<i>77</i>&nbsp; *
+<i>78</i>&nbsp; */
+<i>79</i>&nbsp;class RigidObjectEditorCommand implements Runnable, ChangeListener&lt;ImageData&lt;BufferedImage&gt;&gt;, QuPathViewerListener {
+<i>80</i>&nbsp;
+<b class="nc"><i>81</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(RigidObjectEditorCommand.class);</b>
+<i>82</i>&nbsp;	
+<i>83</i>&nbsp;	private QuPathGUI qupath;
+<i>84</i>&nbsp;	
+<b class="nc"><i>85</i>&nbsp;	private QuPathViewer viewer = null;</b>
+<b class="nc"><i>86</i>&nbsp;	private PathOverlay overlay = null;</b>
+<i>87</i>&nbsp;	
+<b class="nc"><i>88</i>&nbsp;	private PathObject originalObject = null;</b>
+<b class="nc"><i>89</i>&nbsp;	private Map&lt;PathObject, ROI&gt; originalObjectROIs = new HashMap&lt;&gt;();</b>
+<i>90</i>&nbsp;	
+<b class="nc"><i>91</i>&nbsp;	private RoiAffineTransformer transformer = null;</b>
+<i>92</i>&nbsp;	
+<b class="nc"><i>93</i>&nbsp;	private RigidMouseListener mouseListener = new RigidMouseListener();</b>
+<i>94</i>&nbsp;
+<b class="nc"><i>95</i>&nbsp;	public RigidObjectEditorCommand(final QuPathGUI qupath) {</b>
+<b class="nc"><i>96</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>97</i>&nbsp;		this.qupath.imageDataProperty().addListener(this);</b>
+<i>98</i>&nbsp;	}
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Get the currently-selected object if it is compatible, or null if there is no compatible object selected
+<i>103</i>&nbsp;	 * @return
+<i>104</i>&nbsp;	 */
+<i>105</i>&nbsp;	PathObject getSelectedObject(final QuPathViewer viewer) {
+<b class="nc"><i>106</i>&nbsp;		return viewer.getSelectedObject();</b>
+<i>107</i>&nbsp;	}
+<i>108</i>&nbsp;	
+<i>109</i>&nbsp;	
+<i>110</i>&nbsp;	private boolean isSuitableAnnotation(PathObject pathObject) {
+<b class="nc"><i>111</i>&nbsp;		return pathObject  instanceof PathAnnotationObject</b>
+<i>112</i>&nbsp;//				&amp;&amp; pathObject.isEditable()
+<b class="nc"><i>113</i>&nbsp;				&amp;&amp; (pathObject.hasROI() &amp;&amp; pathObject.getROI().isArea() || pathObject.getROI() instanceof PolylineROI);</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;	@Override
+<i>118</i>&nbsp;	public void run() {
+<i>119</i>&nbsp;		// Object is already being edited
+<b class="nc"><i>120</i>&nbsp;		if (this.originalObject != null) {</b>
+<i>121</i>&nbsp;//			transformer.rotate(Math.PI / 10);
+<i>122</i>&nbsp;////			viewer.repaint();
+<i>123</i>&nbsp;//			tempObject = createTransformedObject();
+<i>124</i>&nbsp;//			((PathAnnotationObject)tempObject).setLocked(true);
+<i>125</i>&nbsp;//			viewer.setSelectedObject(tempObject);
+<i>126</i>&nbsp;			return;
+<i>127</i>&nbsp;		}
+<i>128</i>&nbsp;		
+<i>129</i>&nbsp;		// Get the selected object
+<b class="nc"><i>130</i>&nbsp;		viewer = qupath.getViewer();</b>
+<b class="nc"><i>131</i>&nbsp;		PathObject pathObject = getSelectedObject(viewer);</b>
+<b class="nc"><i>132</i>&nbsp;		if (pathObject == null || !(pathObject.isAnnotation() || pathObject.isTMACore())) {</b>
+<b class="nc"><i>133</i>&nbsp;			Dialogs.showErrorNotification(&quot;Rotate annotation&quot;, &quot;No annotation selected!&quot;);</b>
+<i>134</i>&nbsp;			return;
+<i>135</i>&nbsp;		}
+<b class="nc"><i>136</i>&nbsp;		if (pathObject.isLocked()) {</b>
+<b class="nc"><i>137</i>&nbsp;			Dialogs.showErrorNotification(&quot;Rotate annotation&quot;, &quot;Selected annotation is locked!&quot;);</b>
+<i>138</i>&nbsp;			return;
+<i>139</i>&nbsp;		}
+<b class="nc"><i>140</i>&nbsp;		if (pathObject.getROI().isPoint()) {</b>
+<b class="nc"><i>141</i>&nbsp;			Dialogs.showErrorNotification(&quot;Rotate annotation&quot;, &quot;Point annotations cannot be rotated, sorry!&quot;);</b>
+<i>142</i>&nbsp;			return;
+<i>143</i>&nbsp;		}
+<b class="nc"><i>144</i>&nbsp;		ImageRegion bounds = viewer.getServerBounds();</b>
+<i>145</i>&nbsp;		
+<b class="nc"><i>146</i>&nbsp;		if (pathObject.isTMACore()) {</b>
+<b class="nc"><i>147</i>&nbsp;			for (PathObject child : pathObject.getChildObjectsAsArray()) {</b>
+<b class="nc"><i>148</i>&nbsp;				if (isSuitableAnnotation(child)) {</b>
+<b class="nc"><i>149</i>&nbsp;					originalObjectROIs.put(child, child.getROI());</b>
+<i>150</i>&nbsp;				}
+<i>151</i>&nbsp;			}
+<b class="nc"><i>152</i>&nbsp;			if (originalObjectROIs.isEmpty()) {</b>
+<b class="nc"><i>153</i>&nbsp;				Dialogs.showErrorMessage(&quot;Rigid refinement problem&quot;, &quot;TMA core must contain empty annotations objects for rigid refinement&quot;);</b>
+<i>154</i>&nbsp;				return;
+<i>155</i>&nbsp;			}
+<i>156</i>&nbsp;		}
+<b class="nc"><i>157</i>&nbsp;		originalObjectROIs.put(pathObject, pathObject.getROI());</b>
+<i>158</i>&nbsp;		
+<b class="nc"><i>159</i>&nbsp;		this.originalObject = pathObject;</b>
+<i>160</i>&nbsp;		
+<i>161</i>&nbsp;		
+<b class="nc"><i>162</i>&nbsp;		viewer.setActiveTool(null);</b>
+<b class="nc"><i>163</i>&nbsp;		qupath.setToolSwitchingEnabled(false);</b>
+<b class="nc"><i>164</i>&nbsp;		viewer.addViewerListener(this);</b>
+<b class="nc"><i>165</i>&nbsp;		viewer.getView().addEventHandler(MouseEvent.ANY, mouseListener);</b>
+<i>166</i>&nbsp;		
+<i>167</i>&nbsp;//		// Remove selected object &amp; create an overlay showing the currently-being-edited version
+<i>168</i>&nbsp;//		viewer.getHierarchy().removeObject(originalObject, true, true);
+<i>169</i>&nbsp;		
+<b class="nc"><i>170</i>&nbsp;		transformer = new RoiAffineTransformer(bounds, originalObject.getROI());</b>
+<i>171</i>&nbsp;//		editingROI = new RotatedROI((PathArea)originalObject.getROI());
+<i>172</i>&nbsp;//		editingROI.setAngle(Math.PI/3);
+<i>173</i>&nbsp;		
+<b class="nc"><i>174</i>&nbsp;		overlay = new AffineEditOverlay(viewer.getOverlayOptions());</b>
+<b class="nc"><i>175</i>&nbsp;		viewer.getCustomOverlayLayers().add(overlay);</b>
+<i>176</i>&nbsp;		
+<b class="nc"><i>177</i>&nbsp;		PathPrefs.paintSelectedBoundsProperty().set(false);</b>
+<i>178</i>&nbsp;		// Create &amp; show temporary object
+<b class="nc"><i>179</i>&nbsp;		for (Entry&lt;PathObject, ROI&gt; entry : originalObjectROIs.entrySet())</b>
+<b class="nc"><i>180</i>&nbsp;			((PathROIObject)entry.getKey()).setROI(transformer.getTransformedROI(entry.getValue(), false));</b>
+<i>181</i>&nbsp;		
+<i>182</i>&nbsp;		// Reset any existing editor (and its visible handles)
+<b class="nc"><i>183</i>&nbsp;		viewer.getROIEditor().setROI(null);</b>
+<i>184</i>&nbsp;		
+<b class="nc"><i>185</i>&nbsp;		viewer.repaint();</b>
+<i>186</i>&nbsp;//		tempObject = createTransformedObject();
+<i>187</i>&nbsp;//		((PathAnnotationObject)tempObject).setLocked(true);
+<i>188</i>&nbsp;//		viewer.setSelectedObject(tempObject);
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;	}
+<i>191</i>&nbsp;
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	private void commitChanges(final boolean ignoreChanges) {
+<b class="nc"><i>195</i>&nbsp;		if (this.originalObject == null)</b>
+<i>196</i>&nbsp;			return;
+<i>197</i>&nbsp;		
+<i>198</i>&nbsp;//		PathObject pathObject = null;
+<b class="nc"><i>199</i>&nbsp;		if (!ignoreChanges) {</b>
+<i>200</i>&nbsp;		
+<b class="nc"><i>201</i>&nbsp;			DialogButton option = Dialogs.showYesNoCancelDialog(</b>
+<i>202</i>&nbsp;					&quot;Affine object editing&quot;, &quot;Confirm object changes?&quot;);
+<i>203</i>&nbsp;			
+<b class="nc"><i>204</i>&nbsp;			if (option == DialogButton.CANCEL)</b>
+<i>205</i>&nbsp;				return;
+<i>206</i>&nbsp;			
+<b class="nc"><i>207</i>&nbsp;			if (option == DialogButton.NO) {</b>
+<b class="nc"><i>208</i>&nbsp;				for (Entry&lt;PathObject, ROI&gt; entry : originalObjectROIs.entrySet())</b>
+<b class="nc"><i>209</i>&nbsp;					((PathROIObject)entry.getKey()).setROI(entry.getValue());</b>
+<i>210</i>&nbsp;			} else {
+<b class="nc"><i>211</i>&nbsp;				var transform = transformer.transform;</b>
+<b class="nc"><i>212</i>&nbsp;				var values = transform.getMatrixEntries();</b>
+<b class="nc"><i>213</i>&nbsp;				logger.info(&quot;Applied ROI transform: {}&quot;,</b>
+<b class="nc"><i>214</i>&nbsp;						String.format(&quot;\n %f, %f, %f,\n%f, %f, %f&quot;,</b>
+<b class="nc"><i>215</i>&nbsp;								values[0], values[1], values[2],</b>
+<b class="nc"><i>216</i>&nbsp;								values[3], values[4], values[5]));</b>
+<i>217</i>&nbsp;				// Apply clipping now
+<b class="nc"><i>218</i>&nbsp;				for (Entry&lt;PathObject, ROI&gt; entry : originalObjectROIs.entrySet()) {</b>
+<b class="nc"><i>219</i>&nbsp;					ROI roiTransformed = transformer.getTransformedROI(entry.getValue(), true);</b>
+<b class="nc"><i>220</i>&nbsp;					((PathROIObject)entry.getKey()).setROI(roiTransformed);</b>
+<b class="nc"><i>221</i>&nbsp;				}</b>
+<b class="nc"><i>222</i>&nbsp;				viewer.getHierarchy().fireHierarchyChangedEvent(this, originalObject);</b>
+<i>223</i>&nbsp;			}
+<i>224</i>&nbsp;		}
+<i>225</i>&nbsp;
+<i>226</i>&nbsp;		// Update the mode if the viewer is still active
+<b class="nc"><i>227</i>&nbsp;		qupath.setToolSwitchingEnabled(true);</b>
+<b class="nc"><i>228</i>&nbsp;		if (viewer == qupath.getViewer())</b>
+<b class="nc"><i>229</i>&nbsp;			viewer.setActiveTool(qupath.getSelectedTool());</b>
+<i>230</i>&nbsp;		
+<b class="nc"><i>231</i>&nbsp;		viewer.getView().removeEventHandler(MouseEvent.ANY, mouseListener);</b>
+<b class="nc"><i>232</i>&nbsp;		viewer.getCustomOverlayLayers().remove(overlay);</b>
+<b class="nc"><i>233</i>&nbsp;		viewer.removeViewerListener(this);</b>
+<i>234</i>&nbsp;		
+<i>235</i>&nbsp;//		if (pathObject != null)
+<i>236</i>&nbsp;//			viewer.getHierarchy().addPathObject(pathObject, true);
+<i>237</i>&nbsp;		
+<i>238</i>&nbsp;//		// Ensure the object is selected
+<i>239</i>&nbsp;//		viewer.setSelectedObject(pathObject);
+<i>240</i>&nbsp;
+<b class="nc"><i>241</i>&nbsp;		viewer = null;</b>
+<b class="nc"><i>242</i>&nbsp;		overlay = null;</b>
+<b class="nc"><i>243</i>&nbsp;		originalObjectROIs.clear();</b>
+<b class="nc"><i>244</i>&nbsp;		originalObject = null;</b>
+<b class="nc"><i>245</i>&nbsp;		transformer = null;</b>
+<i>246</i>&nbsp;	}
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	PathObject createTransformedObject() {
+<b class="nc"><i>250</i>&nbsp;		ROI roi = originalObject.getROI();</b>
+<b class="nc"><i>251</i>&nbsp;		ROI shape = GeometryTools.geometryToROI(transformer.getTransformedShape(), roi.getImagePlane());</b>
+<b class="nc"><i>252</i>&nbsp;		return PathObjects.createAnnotationObject(shape, originalObject.getPathClass());</b>
+<i>253</i>&nbsp;	}
+<i>254</i>&nbsp;	
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;	@Override
+<i>257</i>&nbsp;	public void changed(ObservableValue&lt;? extends ImageData&lt;BufferedImage&gt;&gt; source, ImageData&lt;BufferedImage&gt; imageDataOld, ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="nc"><i>258</i>&nbsp;		commitChanges(false);</b>
+<i>259</i>&nbsp;	}
+<i>260</i>&nbsp;	
+<i>261</i>&nbsp;	
+<i>262</i>&nbsp;	
+<i>263</i>&nbsp;	class AffineEditOverlay extends AbstractOverlay {
+<i>264</i>&nbsp;
+<b class="nc"><i>265</i>&nbsp;		AffineEditOverlay(final OverlayOptions overlayOptions) {</b>
+<b class="nc"><i>266</i>&nbsp;			super(overlayOptions);</b>
+<i>267</i>&nbsp;		}
+<i>268</i>&nbsp;		
+<i>269</i>&nbsp;		@Override
+<i>270</i>&nbsp;		public void paintOverlay(Graphics2D g2d, ImageRegion imageRegion, double downsampleFactor,
+<i>271</i>&nbsp;				ImageData&lt;BufferedImage&gt; imageData, boolean paintCompletely) {
+<i>272</i>&nbsp;			
+<b class="nc"><i>273</i>&nbsp;			if (transformer == null)</b>
+<i>274</i>&nbsp;				return;
+<i>275</i>&nbsp;			
+<b class="nc"><i>276</i>&nbsp;			Stroke stroke = PathHierarchyPaintingHelper.getCachedStroke(PathPrefs.annotationStrokeThicknessProperty().get() * downsampleFactor);</b>
+<i>277</i>&nbsp;			
+<i>278</i>&nbsp;			// Paint bounding box to show rotation
+<b class="nc"><i>279</i>&nbsp;			Color color = ColorToolsAwt.getCachedColor(0, 0, 0, 96);</b>
+<b class="nc"><i>280</i>&nbsp;			PathHierarchyPaintingHelper.paintShape(GeometryTools.geometryToShape(transformer.getTransformedBounds()), g2d, color, stroke, null);</b>
+<i>281</i>&nbsp;			
+<i>282</i>&nbsp;			// Paint line to rotation handle
+<b class="nc"><i>283</i>&nbsp;			Line2D line = transformer.getRotationHandleLine(downsampleFactor);</b>
+<b class="nc"><i>284</i>&nbsp;			PathHierarchyPaintingHelper.paintShape(line, g2d, color, stroke, null);</b>
+<i>285</i>&nbsp;			
+<i>286</i>&nbsp;			// Paint rotation handle
+<b class="nc"><i>287</i>&nbsp;			Shape ellipse = transformer.getRotationHandle(downsampleFactor);</b>
+<b class="nc"><i>288</i>&nbsp;			Color color2 = ColorToolsAwt.getCachedColor(255, 255, 255, 96);</b>
+<b class="nc"><i>289</i>&nbsp;			PathHierarchyPaintingHelper.paintShape(ellipse, g2d, color, stroke, color2);</b>
+<i>290</i>&nbsp;			
+<i>291</i>&nbsp;			// Ensure objects are all painted
+<b class="nc"><i>292</i>&nbsp;			for (PathObject pathObject : originalObjectROIs.keySet()) {</b>
+<b class="nc"><i>293</i>&nbsp;				PathHierarchyPaintingHelper.paintObject(pathObject, false, g2d, null, getOverlayOptions(), viewer.getHierarchy().getSelectionModel(), downsampleFactor);</b>
+<b class="nc"><i>294</i>&nbsp;			}</b>
+<i>295</i>&nbsp;			
+<i>296</i>&nbsp;//			// Replicate painting of the object so it doesn&#39;t disappear immediately when unselected
+<i>297</i>&nbsp;//			color = ColorToolsAwt.getCachedColor(PathPrefs.getSelectedObjectColor());
+<i>298</i>&nbsp;//			Color colorFill = ColorToolsAwt.getCachedColor(color.getRed(), color.getGreen(), color.getBlue(), 50);
+<i>299</i>&nbsp;//			PathHierarchyPaintingHelper.paintShape(transformer.getTransformedShape(), g2d, color, stroke, colorFill, downsampleFactor);
+<i>300</i>&nbsp;		}
+<i>301</i>&nbsp;		
+<i>302</i>&nbsp;	}
+<i>303</i>&nbsp;	
+<i>304</i>&nbsp;	
+<b class="nc"><i>305</i>&nbsp;	class RigidMouseListener implements EventHandler&lt;MouseEvent&gt; {</b>
+<i>306</i>&nbsp;		
+<i>307</i>&nbsp;		private Point2D lastPoint;
+<b class="nc"><i>308</i>&nbsp;		private boolean isRotating = false;</b>
+<b class="nc"><i>309</i>&nbsp;		private boolean isTranslating = false;</b>
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;		public void mouseClicked(MouseEvent e) {
+<b class="nc"><i>312</i>&nbsp;			if (e.getClickCount() &lt;= 1)</b>
+<i>313</i>&nbsp;				return;
+<i>314</i>&nbsp;			
+<b class="nc"><i>315</i>&nbsp;			Point2D p = viewer.componentPointToImagePoint(e.getX(), e.getY(), new Point2D.Double(), false);</b>
+<b class="nc"><i>316</i>&nbsp;			if (!contains(transformer.getTransformedBounds(), p.getX(), p.getY()))</b>
+<b class="nc"><i>317</i>&nbsp;				commitChanges(false);</b>
+<i>318</i>&nbsp;		}
+<i>319</i>&nbsp;
+<i>320</i>&nbsp;		public void mousePressed(MouseEvent e) {
+<b class="nc"><i>321</i>&nbsp;			if (transformer == null)</b>
+<i>322</i>&nbsp;				return;
+<b class="nc"><i>323</i>&nbsp;			Point2D p = viewer.componentPointToImagePoint(e.getX(), e.getY(), new Point2D.Double(), false);</b>
+<b class="nc"><i>324</i>&nbsp;			if (transformer.getRotationHandle(viewer.getDownsampleFactor()).contains(p)) {</b>
+<b class="nc"><i>325</i>&nbsp;				isRotating = true;</b>
+<b class="nc"><i>326</i>&nbsp;				lastPoint = p;</b>
+<b class="nc"><i>327</i>&nbsp;			} else if (contains(transformer.getTransformedBounds(), p.getX(), p.getY())) {</b>
+<b class="nc"><i>328</i>&nbsp;				isTranslating = true;</b>
+<b class="nc"><i>329</i>&nbsp;				lastPoint = p;				</b>
+<i>330</i>&nbsp;			}
+<b class="nc"><i>331</i>&nbsp;			e.consume();</b>
+<i>332</i>&nbsp;		}
+<i>333</i>&nbsp;		
+<i>334</i>&nbsp;		
+<i>335</i>&nbsp;		boolean contains(Geometry geometry, double x, double y) {
+<b class="nc"><i>336</i>&nbsp;			return SimplePointInAreaLocator.isContained(new Coordinate(x, y), geometry);</b>
+<i>337</i>&nbsp;		}
+<i>338</i>&nbsp;		
+<i>339</i>&nbsp;
+<i>340</i>&nbsp;		public void mouseReleased(MouseEvent e) {
+<b class="nc"><i>341</i>&nbsp;			isRotating = false;</b>
+<b class="nc"><i>342</i>&nbsp;			isTranslating = false;</b>
+<b class="nc"><i>343</i>&nbsp;			lastPoint = null;</b>
+<b class="nc"><i>344</i>&nbsp;			e.consume();</b>
+<i>345</i>&nbsp;		}
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;		public void mouseDragged(MouseEvent e) {
+<b class="nc"><i>348</i>&nbsp;			if (lastPoint == null)</b>
+<i>349</i>&nbsp;				return;
+<b class="nc"><i>350</i>&nbsp;			Point2D p = viewer.componentPointToImagePoint(e.getX(), e.getY(), new Point2D.Double(), false);</b>
+<b class="nc"><i>351</i>&nbsp;			if (isTranslating) {</b>
+<b class="nc"><i>352</i>&nbsp;				double dx = p.getX() - lastPoint.getX();</b>
+<b class="nc"><i>353</i>&nbsp;				double dy = p.getY() - lastPoint.getY();</b>
+<b class="nc"><i>354</i>&nbsp;				transformer.translate(dx, dy);</b>
+<i>355</i>&nbsp;			}
+<b class="nc"><i>356</i>&nbsp;			if (isRotating) {</b>
+<b class="nc"><i>357</i>&nbsp;				transformer.setRotationByVector(p.getX(), p.getY());</b>
+<i>358</i>&nbsp;			}
+<b class="nc"><i>359</i>&nbsp;			lastPoint = p;</b>
+<i>360</i>&nbsp;			
+<b class="nc"><i>361</i>&nbsp;			for (Entry&lt;PathObject, ROI&gt; entry : originalObjectROIs.entrySet()) {</b>
+<b class="nc"><i>362</i>&nbsp;				ROI roiTransformed = transformer.getTransformedROI(entry.getValue(), false);</b>
+<b class="nc"><i>363</i>&nbsp;				((PathROIObject)entry.getKey()).setROI(roiTransformed);</b>
+<b class="nc"><i>364</i>&nbsp;			}</b>
+<b class="nc"><i>365</i>&nbsp;			viewer.repaint();</b>
+<b class="nc"><i>366</i>&nbsp;			e.consume();</b>
+<i>367</i>&nbsp;		}
+<i>368</i>&nbsp;		
+<i>369</i>&nbsp;		
+<i>370</i>&nbsp;		
+<i>371</i>&nbsp;		@Override
+<i>372</i>&nbsp;		public void handle(MouseEvent e) {
+<b class="nc"><i>373</i>&nbsp;			if (e.getEventType() == MouseEvent.MOUSE_DRAGGED)</b>
+<b class="nc"><i>374</i>&nbsp;				mouseDragged(e);</b>
+<b class="nc"><i>375</i>&nbsp;			else if (e.getEventType() == MouseEvent.MOUSE_CLICKED)</b>
+<b class="nc"><i>376</i>&nbsp;				mouseClicked(e);</b>
+<b class="nc"><i>377</i>&nbsp;			else if (e.getEventType() == MouseEvent.MOUSE_PRESSED)</b>
+<b class="nc"><i>378</i>&nbsp;				mousePressed(e);</b>
+<b class="nc"><i>379</i>&nbsp;			else if (e.getEventType() == MouseEvent.MOUSE_RELEASED)</b>
+<b class="nc"><i>380</i>&nbsp;				mouseReleased(e);</b>
+<i>381</i>&nbsp;		}
+<i>382</i>&nbsp;		
+<i>383</i>&nbsp;		
+<i>384</i>&nbsp;	}
+<i>385</i>&nbsp;	
+<i>386</i>&nbsp;	
+<i>387</i>&nbsp;	
+<i>388</i>&nbsp;	
+<i>389</i>&nbsp;	static class RoiAffineTransformer {
+<i>390</i>&nbsp;		
+<i>391</i>&nbsp;//		private PathArea roi;
+<i>392</i>&nbsp;		// Starting anchors
+<i>393</i>&nbsp;		private ROI roiBounds;
+<i>394</i>&nbsp;		private double anchorX;
+<i>395</i>&nbsp;		private double anchorY;
+<i>396</i>&nbsp;		
+<i>397</i>&nbsp;		private Geometry shapeOrig;
+<i>398</i>&nbsp;		private Geometry boundsOrig;
+<i>399</i>&nbsp;		private Geometry shapeTransformed;
+<i>400</i>&nbsp;		private Geometry boundsTransformed;
+<i>401</i>&nbsp;		
+<b class="nc"><i>402</i>&nbsp;		private double dx = 0;</b>
+<b class="nc"><i>403</i>&nbsp;		private double dy = 0;</b>
+<b class="nc"><i>404</i>&nbsp;		private double theta = 0;</b>
+<i>405</i>&nbsp;		private AffineTransformation transform;
+<i>406</i>&nbsp;		
+<b class="nc"><i>407</i>&nbsp;		RoiAffineTransformer(final ImageRegion bounds, final ROI roi) {</b>
+<b class="nc"><i>408</i>&nbsp;			if (bounds != null)</b>
+<b class="nc"><i>409</i>&nbsp;				roiBounds = ROIs.createRectangleROI(bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), ImagePlane.getPlane(bounds));</b>
+<i>410</i>&nbsp;//			this.roi = roi;
+<b class="nc"><i>411</i>&nbsp;			this.shapeOrig = roi.getGeometry();</b>
+<b class="nc"><i>412</i>&nbsp;			this.boundsOrig = shapeOrig.getEnvelope();</b>
+<b class="nc"><i>413</i>&nbsp;			this.transform = new AffineTransformation();</b>
+<i>414</i>&nbsp;			
+<b class="nc"><i>415</i>&nbsp;			var centroid = boundsOrig.getCentroid();</b>
+<b class="nc"><i>416</i>&nbsp;			this.anchorX = centroid.getX();</b>
+<b class="nc"><i>417</i>&nbsp;			this.anchorY = centroid.getY();</b>
+<i>418</i>&nbsp;		}
+<i>419</i>&nbsp;		
+<i>420</i>&nbsp;		void resetCachedShapes() {
+<b class="nc"><i>421</i>&nbsp;			this.shapeTransformed = null;</b>
+<b class="nc"><i>422</i>&nbsp;			this.boundsTransformed = null;</b>
+<i>423</i>&nbsp;		}
+<i>424</i>&nbsp;		
+<i>425</i>&nbsp;		/**
+<i>426</i>&nbsp;		 * Get an updated ROI, applying the current transformation.
+<i>427</i>&nbsp;		 * @param roi
+<i>428</i>&nbsp;		 * @param clipToBounds if true, clip the resulting ROI to the image bounds.
+<i>429</i>&nbsp;		 * 						This can be slow to compute, so may prefer to set to false for performance.
+<i>430</i>&nbsp;		 * @return
+<i>431</i>&nbsp;		 */
+<i>432</i>&nbsp;		public ROI getTransformedROI(final ROI roi, boolean clipToBounds) {
+<b class="nc"><i>433</i>&nbsp;			Geometry geom = roi.getGeometry();</b>
+<b class="nc"><i>434</i>&nbsp;			updateTransform();</b>
+<b class="nc"><i>435</i>&nbsp;			geom = transform.transform(geom);</b>
+<b class="nc"><i>436</i>&nbsp;			if (clipToBounds &amp;&amp; roiBounds != null)</b>
+<b class="nc"><i>437</i>&nbsp;				geom = geom.intersection(roiBounds.getGeometry());</b>
+<b class="nc"><i>438</i>&nbsp;			return GeometryTools.geometryToROI(geom, roi.getImagePlane());</b>
+<i>439</i>&nbsp;			
+<i>440</i>&nbsp;			
+<i>441</i>&nbsp;//			ROI transformedROI = getUnclippedTransformedROI(roi);
+<i>442</i>&nbsp;//			if (roiBounds == null) // Should this work for points? || !(transformedROI instanceof PathShape))
+<i>443</i>&nbsp;//				return transformedROI;
+<i>444</i>&nbsp;//			return RoiTools.combineROIs(transformedROI, roiBounds, CombineOp.INTERSECT);
+<i>445</i>&nbsp;		}
+<i>446</i>&nbsp;		
+<i>447</i>&nbsp;		public ROI getUnclippedTransformedROI(final ROI roi) {
+<b class="nc"><i>448</i>&nbsp;			Geometry shape = roi.getGeometry();</b>
+<i>449</i>&nbsp;			
+<i>450</i>&nbsp;//			double flatness = 0.5;
+<i>451</i>&nbsp;//			// Try to return an ellipse, if appropriate
+<i>452</i>&nbsp;//			if (shape instanceof Ellipse2D) {
+<i>453</i>&nbsp;//				Rectangle2D bounds = shape.getBounds2D();
+<i>454</i>&nbsp;//				if (theta == 0 || GeneralTools.almostTheSame(bounds.getWidth(), bounds.getHeight(), 0.01)) {
+<i>455</i>&nbsp;//					return ROIs.createEllipseROI(bounds.getX()+dx, bounds.getY()+dy, bounds.getWidth(), bounds.getHeight(), ImagePlane.getPlaneWithChannel(roi));
+<i>456</i>&nbsp;//				}
+<i>457</i>&nbsp;////				// Don&#39;t flatten an ellipse
+<i>458</i>&nbsp;////				flatness = 0.5;
+<i>459</i>&nbsp;//			}
+<i>460</i>&nbsp;			
+<b class="nc"><i>461</i>&nbsp;			updateTransform();</b>
+<b class="nc"><i>462</i>&nbsp;			shape = transform.transform(shape);</b>
+<b class="nc"><i>463</i>&nbsp;			return GeometryTools.geometryToROI(shape, roi.getImagePlane());</b>
+<i>464</i>&nbsp;		}
+<i>465</i>&nbsp;		
+<i>466</i>&nbsp;		
+<i>467</i>&nbsp;		public Geometry getTransformedShape() {
+<b class="nc"><i>468</i>&nbsp;			if (shapeTransformed == null) {</b>
+<b class="nc"><i>469</i>&nbsp;				updateTransform();</b>
+<b class="nc"><i>470</i>&nbsp;				shapeTransformed = transform.transform(shapeOrig);</b>
+<i>471</i>&nbsp;			}
+<b class="nc"><i>472</i>&nbsp;			return shapeTransformed;</b>
+<i>473</i>&nbsp;		}
+<i>474</i>&nbsp;
+<i>475</i>&nbsp;		public Geometry getTransformedBounds() {
+<b class="nc"><i>476</i>&nbsp;			if (boundsTransformed == null) {</b>
+<b class="nc"><i>477</i>&nbsp;				updateTransform();</b>
+<b class="nc"><i>478</i>&nbsp;				boundsTransformed = transform.transform(boundsOrig);</b>
+<i>479</i>&nbsp;			}
+<b class="nc"><i>480</i>&nbsp;			return boundsTransformed;</b>
+<i>481</i>&nbsp;		}
+<i>482</i>&nbsp;		
+<i>483</i>&nbsp;//		public void rotate(final double theta) {
+<i>484</i>&nbsp;//			transform.rotate(theta, anchorX, anchorY);
+<i>485</i>&nbsp;//			resetCachedShapes();
+<i>486</i>&nbsp;//		}
+<i>487</i>&nbsp;		
+<i>488</i>&nbsp;//		public void setRotation(final double theta) {
+<i>489</i>&nbsp;//			transform.setToTranslation(
+<i>490</i>&nbsp;//					anchorX - boundsOrig.getCenterX(),
+<i>491</i>&nbsp;//					anchorY - boundsOrig.getCenterY());
+<i>492</i>&nbsp;//			transform.rotate(theta, anchorX, anchorY);
+<i>493</i>&nbsp;//			resetCachedShapes();
+<i>494</i>&nbsp;//		}
+<i>495</i>&nbsp;		
+<i>496</i>&nbsp;		/**
+<i>497</i>&nbsp;		 * Set the rotation by using the angle between x,y and the current anchor
+<i>498</i>&nbsp;		 * @param x
+<i>499</i>&nbsp;		 * @param y
+<i>500</i>&nbsp;		 */
+<i>501</i>&nbsp;		public void setRotationByVector(final double x, final double y) {
+<b class="nc"><i>502</i>&nbsp;			double vecY = (anchorY + dy) - y;</b>
+<b class="nc"><i>503</i>&nbsp;			double vecX = x - (anchorX + dx);</b>
+<b class="nc"><i>504</i>&nbsp;			theta = Math.atan2(vecX, vecY);// + Math.PI/2;</b>
+<i>505</i>&nbsp;//			System.err.println(String.format(&quot;Theta: %.2f (%.2f, %.2f)&quot;, theta, vecX, vecY));
+<b class="nc"><i>506</i>&nbsp;			resetCachedShapes();</b>
+<i>507</i>&nbsp;		}
+<i>508</i>&nbsp;		
+<i>509</i>&nbsp;		public void translate(final double dx, final double dy) {
+<b class="nc"><i>510</i>&nbsp;			this.dx += dx;</b>
+<b class="nc"><i>511</i>&nbsp;			this.dy += dy;</b>
+<b class="nc"><i>512</i>&nbsp;			resetCachedShapes();</b>
+<i>513</i>&nbsp;		}
+<i>514</i>&nbsp;		
+<i>515</i>&nbsp;		
+<i>516</i>&nbsp;		void updateTransform() {
+<b class="nc"><i>517</i>&nbsp;			transform.setToRotation(theta, anchorX, anchorY);</b>
+<b class="nc"><i>518</i>&nbsp;			transform.translate(dx, dy);</b>
+<i>519</i>&nbsp;			
+<i>520</i>&nbsp;//			transform.setToTranslation(dx, dy);
+<i>521</i>&nbsp;//			transform.rotate(theta, anchorX+dx, anchorY+dy);
+<i>522</i>&nbsp;		}
+<i>523</i>&nbsp;		
+<i>524</i>&nbsp;		
+<i>525</i>&nbsp;		double getDisplacement(final double downsampleFactor) {
+<i>526</i>&nbsp;//			double displacement = 10 * Math.max(downsampleFactor, 200);
+<b class="nc"><i>527</i>&nbsp;			return downsampleFactor * 10;</b>
+<i>528</i>&nbsp;		}
+<i>529</i>&nbsp;		
+<i>530</i>&nbsp;		
+<i>531</i>&nbsp;		Line2D getRotationHandleLine(final double downsampleFactor) {
+<b class="nc"><i>532</i>&nbsp;			double displacement = getDisplacement(downsampleFactor);</b>
+<b class="nc"><i>533</i>&nbsp;			var env = boundsOrig.getEnvelopeInternal();</b>
+<b class="nc"><i>534</i>&nbsp;			Coordinate p1 = new Coordinate((env.getMinX() + env.getMaxX()) / 2.0, env.getMinY());</b>
+<b class="nc"><i>535</i>&nbsp;			Coordinate p2 = new Coordinate((env.getMinX() + env.getMaxX()) / 2.0, env.getMinY()-displacement);</b>
+<b class="nc"><i>536</i>&nbsp;			transform.transform(p1, p1);</b>
+<b class="nc"><i>537</i>&nbsp;			transform.transform(p2, p2);</b>
+<b class="nc"><i>538</i>&nbsp;			return new Line2D.Double(p1.getX(), p1.getY(), p2.getX(), p2.getY());</b>
+<i>539</i>&nbsp;		}
+<i>540</i>&nbsp;		
+<i>541</i>&nbsp;		Shape getRotationHandle(final double downsampleFactor) {
+<i>542</i>&nbsp;//			double radius = 10 * Math.min(downsampleFactor, 50);
+<b class="nc"><i>543</i>&nbsp;			double radius = 5 * downsampleFactor;</b>
+<b class="nc"><i>544</i>&nbsp;			double displacement = getDisplacement(downsampleFactor);</b>
+<b class="nc"><i>545</i>&nbsp;			var env = boundsOrig.getEnvelopeInternal();</b>
+<i>546</i>&nbsp;			
+<b class="nc"><i>547</i>&nbsp;			Coordinate c = new Coordinate((env.getMinX() + env.getMaxX()) / 2.0, env.getMinY()-displacement-radius);</b>
+<b class="nc"><i>548</i>&nbsp;			transform.transform(c, c);</b>
+<b class="nc"><i>549</i>&nbsp;			return new Ellipse2D.Double(</b>
+<b class="nc"><i>550</i>&nbsp;					c.getX() - radius,</b>
+<b class="nc"><i>551</i>&nbsp;					c.getY() - radius,</b>
+<i>552</i>&nbsp;					radius*2,
+<i>553</i>&nbsp;					radius*2
+<i>554</i>&nbsp;					);
+<i>555</i>&nbsp;			
+<i>556</i>&nbsp;//			transform.transform(src, dest)
+<i>557</i>&nbsp;//			Ellipse2D ellipse = new Ellipse2D.Double(
+<i>558</i>&nbsp;//					(env.getMinX() + env.getMaxX()) / 2.0-radius,
+<i>559</i>&nbsp;//					env.getMinY()-displacement-radius*2,
+<i>560</i>&nbsp;//					radius*2,
+<i>561</i>&nbsp;//					radius*2);
+<i>562</i>&nbsp;//			
+<i>563</i>&nbsp;//			return transform.createTransformedShape(ellipse);
+<i>564</i>&nbsp;		}
+<i>565</i>&nbsp;		
+<i>566</i>&nbsp;		
+<i>567</i>&nbsp;	}
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;	@Override
+<i>571</i>&nbsp;	public void imageDataChanged(QuPathViewer viewer, ImageData&lt;BufferedImage&gt; imageDataOld,
+<i>572</i>&nbsp;			ImageData&lt;BufferedImage&gt; imageDataNew) {
+<b class="nc"><i>573</i>&nbsp;		commitChanges(true);</b>
+<i>574</i>&nbsp;	}
+<i>575</i>&nbsp;
+<i>576</i>&nbsp;
+<i>577</i>&nbsp;	@Override
+<i>578</i>&nbsp;	public void visibleRegionChanged(QuPathViewer viewer, Shape shape) {}
+<i>579</i>&nbsp;
+<i>580</i>&nbsp;
+<i>581</i>&nbsp;	@Override
+<i>582</i>&nbsp;	public void selectedObjectChanged(QuPathViewer viewer, PathObject pathObjectSelected) {
+<b class="nc"><i>583</i>&nbsp;		if (originalObject != pathObjectSelected)</b>
+<b class="nc"><i>584</i>&nbsp;			commitChanges(false);</b>
+<i>585</i>&nbsp;	}
+<i>586</i>&nbsp;
+<i>587</i>&nbsp;
+<i>588</i>&nbsp;	@Override
+<i>589</i>&nbsp;	public void viewerClosed(QuPathViewer viewer) {
+<b class="nc"><i>590</i>&nbsp;		commitChanges(true);</b>
+<i>591</i>&nbsp;	}
+<i>592</i>&nbsp;	
+<i>593</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,833 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SLICSuperpixelsPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.superpixels</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SLICSuperpixelsPlugin (qupath.imagej.superpixels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SLICSuperpixelsPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 37)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">SLICSuperpixelsPlugin$ClusterCenter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 67)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">SLICSuperpixelsPlugin$SLICSuperpixelDetector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 195)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 27)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 299)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.superpixels;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import ij.ImagePlus;
+<i>27</i>&nbsp;import ij.ImageStack;
+<i>28</i>&nbsp;import ij.gui.PolygonRoi;
+<i>29</i>&nbsp;import ij.gui.Roi;
+<i>30</i>&nbsp;import ij.process.ColorProcessor;
+<i>31</i>&nbsp;import ij.process.ColorSpaceConverter;
+<i>32</i>&nbsp;import ij.process.ImageProcessor;
+<i>33</i>&nbsp;import ij.process.ShortProcessor;
+<i>34</i>&nbsp;import java.awt.image.BufferedImage;
+<i>35</i>&nbsp;import java.io.IOException;
+<i>36</i>&nbsp;import java.util.ArrayList;
+<i>37</i>&nbsp;import java.util.Arrays;
+<i>38</i>&nbsp;import java.util.Collection;
+<i>39</i>&nbsp;import java.util.Collections;
+<i>40</i>&nbsp;import java.util.List;
+<i>41</i>&nbsp;import java.util.stream.Collectors;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;import org.slf4j.Logger;
+<i>44</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;import qupath.imagej.processing.RoiLabeling;
+<i>47</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>48</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>49</i>&nbsp;import qupath.lib.images.ImageData;
+<i>50</i>&nbsp;import qupath.lib.images.PathImage;
+<i>51</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>52</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>53</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>54</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>55</i>&nbsp;import qupath.lib.plugins.AbstractTileableDetectionPlugin;
+<i>56</i>&nbsp;import qupath.lib.plugins.ObjectDetector;
+<i>57</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>58</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>59</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>60</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>61</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;/**
+<i>64</i>&nbsp; * An implementation of SLIC superpixels, as described at http://ivrl.epfl.ch/research/superpixels
+<i>65</i>&nbsp; * &lt;p&gt;
+<i>66</i>&nbsp; * This largely follows the description at:
+<i>67</i>&nbsp; * &lt;blockquote&gt;
+<i>68</i>&nbsp; *   Radhakrishna Achanta, Appu Shaji, Kevin Smith, Aurelien Lucchi, Pascal Fua, and Sabine Süsstrunk &lt;br&gt;
+<i>69</i>&nbsp; *   SLIC Superpixels Compared to State-of-the-art Superpixel Methods &lt;br&gt;
+<i>70</i>&nbsp; *   IEEE Transactions on Pattern Analysis and Machine Intelligence, vol. 34, num. 11, p. 2274 - 2282, May 2012.
+<i>71</i>&nbsp; * &lt;/blockquote&gt;
+<i>72</i>&nbsp; *   
+<i>73</i>&nbsp; * It doesn&#39;t follow the code made available by the authors, and differs in some details. 
+<i>74</i>&nbsp; * &lt;p&gt;
+<i>75</i>&nbsp; * For example, the &#39;spacing&#39; parameter is also used to determine the resolution at which the superpixel computation 
+<i>76</i>&nbsp; * is performed, and a Gaussian filter is used to help reduce textures in advance.
+<i>77</i>&nbsp; * It is also possible to use color deconvolved images, rather than transforming RGB to CIELAB.
+<i>78</i>&nbsp; * 
+<i>79</i>&nbsp; * @author Pete Bankhead
+<i>80</i>&nbsp; *
+<i>81</i>&nbsp; */
+<b class="nc"><i>82</i>&nbsp;public class SLICSuperpixelsPlugin extends AbstractTileableDetectionPlugin&lt;BufferedImage&gt; {</b>
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;	/**
+<i>85</i>&nbsp;	 * The requested spacing is combined with the &#39;preferred&#39; spacing to determine what 
+<i>86</i>&nbsp;	 * downsampling to apply to the image prior to computation of the superpixels.
+<i>87</i>&nbsp;	 */
+<b class="nc"><i>88</i>&nbsp;	private static int PREFERRED_PIXEL_SPACING = 20;</b>
+<i>89</i>&nbsp;	
+<b class="nc"><i>90</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(SLICSuperpixelsPlugin.class);</b>
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	@Override
+<i>93</i>&nbsp;	public String getName() {
+<b class="nc"><i>94</i>&nbsp;		return &quot;SLIC superpixel plugin&quot;;</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;
+<i>97</i>&nbsp;	@Override
+<i>98</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>99</i>&nbsp;		return null;</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	
+<i>103</i>&nbsp;	private static double getPreferredDownsample(final ImageData&lt;BufferedImage&gt; imageData, final ParameterList params) {
+<i>104</i>&nbsp;		
+<b class="nc"><i>105</i>&nbsp;		PixelCalibration cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>106</i>&nbsp;		boolean hasPixelSizeMicrons = cal.hasPixelSizeMicrons();</b>
+<b class="nc"><i>107</i>&nbsp;		double spacingPixels = hasPixelSizeMicrons ? params.getDoubleParameterValue(&quot;spacingMicrons&quot;) / cal.getAveragedPixelSizeMicrons() : params.getDoubleParameterValue(&quot;spacingPixels&quot;);</b>
+<i>108</i>&nbsp;		
+<i>109</i>&nbsp;		// We aim to have about PREFERRED_PIXEL_SPACING spacing, so need to downsample the image accordingly
+<b class="nc"><i>110</i>&nbsp;		double downsample = Math.max(1, Math.round(spacingPixels / PREFERRED_PIXEL_SPACING));</b>
+<b class="nc"><i>111</i>&nbsp;		return downsample;</b>
+<i>112</i>&nbsp;	}
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;	@Override
+<i>116</i>&nbsp;	protected double getPreferredPixelSizeMicrons(final ImageData&lt;BufferedImage&gt; imageData, final ParameterList params) {
+<b class="nc"><i>117</i>&nbsp;		PixelCalibration cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>118</i>&nbsp;		if (cal.hasPixelSizeMicrons())</b>
+<b class="nc"><i>119</i>&nbsp;			return cal.getAveragedPixelSizeMicrons() * getPreferredDownsample(imageData, params);</b>
+<b class="nc"><i>120</i>&nbsp;		return getPreferredDownsample(imageData, params);</b>
+<i>121</i>&nbsp;	}
+<i>122</i>&nbsp;
+<i>123</i>&nbsp;	@Override
+<i>124</i>&nbsp;	protected ObjectDetector&lt;BufferedImage&gt; createDetector(final ImageData&lt;BufferedImage&gt; imageData, final ParameterList params) {
+<b class="nc"><i>125</i>&nbsp;		return new SLICSuperpixelDetector();</b>
+<i>126</i>&nbsp;	}
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;	@Override
+<i>129</i>&nbsp;	protected int getTileOverlap(ImageData&lt;BufferedImage&gt; imageData, ParameterList params) {
+<b class="nc"><i>130</i>&nbsp;		return 0;</b>
+<i>131</i>&nbsp;	}
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;	@Override
+<i>134</i>&nbsp;	public ParameterList getDefaultParameterList(ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>135</i>&nbsp;		ParameterList params = new ParameterList()</b>
+<b class="nc"><i>136</i>&nbsp;				.addTitleParameter(&quot;Size parameters&quot;)</b>
+<b class="nc"><i>137</i>&nbsp;				.addDoubleParameter(&quot;sigmaPixels&quot;, &quot;Gaussian sigma&quot;, 5, &quot;px&quot;, &quot;Adjust the Gaussian smoothing applied to the image, to reduce textures and give a smoother result&quot;)</b>
+<b class="nc"><i>138</i>&nbsp;				.addDoubleParameter(&quot;sigmaMicrons&quot;, &quot;Gaussian sigma&quot;, 5, GeneralTools.micrometerSymbol(), &quot;Adjust the Gaussian smoothing applied to the image, to reduce textures and give a smoother result&quot;)</b>
+<b class="nc"><i>139</i>&nbsp;				.addDoubleParameter(&quot;spacingPixels&quot;, &quot;Superpixel spacing&quot;, 50, &quot;px&quot;, &quot;Control the (approximate) size of individual superpixels&quot;)</b>
+<b class="nc"><i>140</i>&nbsp;				.addDoubleParameter(&quot;spacingMicrons&quot;, &quot;Superpixel spacing&quot;, 50, GeneralTools.micrometerSymbol(), &quot;Control the (approximate) size of individual superpixels&quot;)</b>
+<b class="nc"><i>141</i>&nbsp;				.addTitleParameter(&quot;Algorithm parameters&quot;)</b>
+<b class="nc"><i>142</i>&nbsp;				.addIntParameter(&quot;maxIterations&quot;, &quot;Number of iterations&quot;, 10, null, &quot;Maximum number of iterations to use for superpixel generation&quot;)</b>
+<b class="nc"><i>143</i>&nbsp;				.addDoubleParameter(&quot;regularization&quot;, &quot;Regularization&quot;, 0.25, null, &quot;Control the &#39;squareness&#39; of superpixels - higher values are more square&quot;)</b>
+<b class="nc"><i>144</i>&nbsp;				.addBooleanParameter(&quot;adaptRegularization&quot;, &quot;Auto-adapt regularization&quot;, false, &quot;Automatically adapt regularization parameter for different superpixels&quot;)</b>
+<b class="nc"><i>145</i>&nbsp;				.addBooleanParameter(&quot;useDeconvolved&quot;, &quot;Use color deconvolved channels&quot;, false, &quot;Use color-deconvolved values, rather than (standard) RGB-&gt;LAB colorspace transform&quot;)</b>
+<i>146</i>&nbsp;//				.addBooleanParameter(&quot;doMerge&quot;, &quot;Merge similar&quot;, false, &quot;Merge neighboring superpixels if they are similar to one another&quot;)
+<i>147</i>&nbsp;				;
+<i>148</i>&nbsp;		
+<b class="nc"><i>149</i>&nbsp;		boolean hasMicrons = imageData != null &amp;&amp; imageData.getServer().getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>150</i>&nbsp;		params.getParameters().get(&quot;sigmaPixels&quot;).setHidden(hasMicrons);</b>
+<b class="nc"><i>151</i>&nbsp;		params.getParameters().get(&quot;sigmaMicrons&quot;).setHidden(!hasMicrons);</b>
+<b class="nc"><i>152</i>&nbsp;		params.getParameters().get(&quot;spacingPixels&quot;).setHidden(hasMicrons);</b>
+<b class="nc"><i>153</i>&nbsp;		params.getParameters().get(&quot;spacingMicrons&quot;).setHidden(!hasMicrons);</b>
+<b class="nc"><i>154</i>&nbsp;		params.getParameters().get(&quot;useDeconvolved&quot;).setHidden(!(imageData.isBrightfield() &amp;&amp; imageData.getColorDeconvolutionStains() != null &amp;&amp; imageData.getServer().isRGB()));</b>
+<i>155</i>&nbsp;		
+<b class="nc"><i>156</i>&nbsp;		return params;</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	
+<b class="nc"><i>161</i>&nbsp;	static class SLICSuperpixelDetector implements ObjectDetector&lt;BufferedImage&gt; {</b>
+<i>162</i>&nbsp;		
+<b class="nc"><i>163</i>&nbsp;		private PathImage&lt;ImagePlus&gt; pathImage = null;</b>
+<b class="nc"><i>164</i>&nbsp;		private ROI pathROI = null;</b>
+<i>165</i>&nbsp;		
+<b class="nc"><i>166</i>&nbsp;		private String lastResultSummary = null;</b>
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;		@Override
+<i>169</i>&nbsp;		public Collection&lt;PathObject&gt; runDetection(final ImageData&lt;BufferedImage&gt; imageData, final ParameterList params, final ROI pathROI) throws IOException {
+<i>170</i>&nbsp;			
+<i>171</i>&nbsp;			// TODO: Give a sensible error
+<b class="nc"><i>172</i>&nbsp;			if (pathROI == null) {</b>
+<b class="nc"><i>173</i>&nbsp;				lastResultSummary = &quot;No ROI selected!&quot;;</b>
+<b class="nc"><i>174</i>&nbsp;				return null;</b>
+<i>175</i>&nbsp;			}
+<i>176</i>&nbsp;			// Get a PathImage if we have a new ROI
+<b class="nc"><i>177</i>&nbsp;			if (!pathROI.equals(this.pathROI)) {</b>
+<b class="nc"><i>178</i>&nbsp;				ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<i>179</i>&nbsp;				
+<b class="nc"><i>180</i>&nbsp;				double downsample = getPreferredDownsample(imageData, params);</b>
+<i>181</i>&nbsp;				
+<i>182</i>&nbsp;				// Create an expanded request (we will clip to the actual ROI later)
+<b class="nc"><i>183</i>&nbsp;				var request = RegionRequest.createInstance(server.getPath(), downsample, pathROI)</b>
+<b class="nc"><i>184</i>&nbsp;						.pad2D((int)Math.ceil(downsample * 2), (int)Math.ceil(downsample * 2))</b>
+<b class="nc"><i>185</i>&nbsp;						.intersect2D(0, 0, server.getWidth(), server.getHeight());</b>
+<i>186</i>&nbsp;				
+<b class="nc"><i>187</i>&nbsp;				this.pathImage = IJTools.convertToImagePlus(server, request);</b>
+<b class="nc"><i>188</i>&nbsp;				this.pathROI = pathROI;</b>
+<i>189</i>&nbsp;			}
+<i>190</i>&nbsp;			
+<i>191</i>&nbsp;			// Define maximum iterations
+<b class="nc"><i>192</i>&nbsp;			int maxIterations = params.getIntParameterValue(&quot;maxIterations&quot;);</b>
+<b class="nc"><i>193</i>&nbsp;			double m = params.getDoubleParameterValue(&quot;regularization&quot;);</b>
+<b class="nc"><i>194</i>&nbsp;			boolean adaptRegularization = params.getBooleanParameterValue(&quot;adaptRegularization&quot;);</b>
+<b class="nc"><i>195</i>&nbsp;			boolean doDeconvolve = params.getBooleanParameterValue(&quot;useDeconvolved&quot;);</b>
+<b class="nc"><i>196</i>&nbsp;			double mergeThreshold = 0.05;</b>
+<i>197</i>&nbsp;			
+<i>198</i>&nbsp;			// Get a float processor
+<b class="nc"><i>199</i>&nbsp;			ImagePlus imp = pathImage.getImage();</b>
+<i>200</i>&nbsp;			
+<i>201</i>&nbsp;			ImageProcessor[] ipColor;
+<b class="nc"><i>202</i>&nbsp;			if (imp.getType() == ImagePlus.COLOR_RGB) {</b>
+<b class="nc"><i>203</i>&nbsp;				ColorProcessor cp = (ColorProcessor)imp.getProcessor();</b>
+<b class="nc"><i>204</i>&nbsp;				if (doDeconvolve &amp;&amp; imageData.isBrightfield() &amp;&amp; imageData.getColorDeconvolutionStains() != null) {</b>
+<b class="nc"><i>205</i>&nbsp;					ipColor = IJTools.colorDeconvolve(cp, imageData.getColorDeconvolutionStains());</b>
+<i>206</i>&nbsp;//					fpDeconvolved = Arrays.copyOf(fpDeconvolved, 1);
+<i>207</i>&nbsp;//					for (ImageProcessor fp : fpDeconvolved)
+<i>208</i>&nbsp;//						System.err.println(fp.getStatistics().stdDev);
+<b class="nc"><i>209</i>&nbsp;					m = m / 2;</b>
+<b class="nc"><i>210</i>&nbsp;					mergeThreshold = mergeThreshold / 2;</b>
+<i>211</i>&nbsp;				} else {
+<b class="nc"><i>212</i>&nbsp;					imp = new ColorSpaceConverter().RGBToLab(imp);</b>
+<b class="nc"><i>213</i>&nbsp;					ImageStack stack = imp.getStack();</b>
+<b class="nc"><i>214</i>&nbsp;					ipColor = new ImageProcessor[stack.getSize()];</b>
+<b class="nc"><i>215</i>&nbsp;					for (int i = 0; i &lt; stack.getSize(); i++)</b>
+<b class="nc"><i>216</i>&nbsp;						ipColor[i] = stack.getProcessor(i+1).convertToFloatProcessor();</b>
+<i>217</i>&nbsp;					// Rescale; original paper describes sensible values in range 1-40
+<b class="nc"><i>218</i>&nbsp;					m = m * 40;</b>
+<b class="nc"><i>219</i>&nbsp;					mergeThreshold = mergeThreshold * 40;</b>
+<i>220</i>&nbsp;				}
+<b class="nc"><i>221</i>&nbsp;			} else {</b>
+<b class="nc"><i>222</i>&nbsp;				ImageStack stack = imp.getStack();</b>
+<b class="nc"><i>223</i>&nbsp;				ipColor = new ImageProcessor[stack.getSize()];</b>
+<b class="nc"><i>224</i>&nbsp;				for (int i = 0; i &lt; stack.getSize(); i++)</b>
+<b class="nc"><i>225</i>&nbsp;					ipColor[i] = stack.getProcessor(i+1).convertToFloatProcessor();</b>
+<i>226</i>&nbsp;				// Sensible fluorescence values are a bit harder to guess...
+<b class="nc"><i>227</i>&nbsp;				double regularizationSuggestion = 0;</b>
+<b class="nc"><i>228</i>&nbsp;				for (ImageProcessor fp : ipColor)</b>
+<b class="nc"><i>229</i>&nbsp;					regularizationSuggestion += fp.getStatistics().stdDev;</b>
+<b class="nc"><i>230</i>&nbsp;				logger.info(&quot;Possible regularization value: {}&quot;, regularizationSuggestion/ipColor.length/100);</b>
+<i>231</i>&nbsp;				// Scale by 100 for &#39;arbitary&#39; fluorescence
+<b class="nc"><i>232</i>&nbsp;				m = m * 100;</b>
+<b class="nc"><i>233</i>&nbsp;				mergeThreshold = mergeThreshold * 100;</b>
+<i>234</i>&nbsp;			}
+<i>235</i>&nbsp;			
+<b class="nc"><i>236</i>&nbsp;			double sigma = getSigma(pathImage, params);</b>
+<i>237</i>&nbsp;			
+<i>238</i>&nbsp;			// Apply smoothing
+<b class="nc"><i>239</i>&nbsp;			if (sigma &gt; 0) {</b>
+<b class="nc"><i>240</i>&nbsp;				for (ImageProcessor fp : ipColor)</b>
+<b class="nc"><i>241</i>&nbsp;					fp.blurGaussian(sigma);</b>
+<i>242</i>&nbsp;			}
+<i>243</i>&nbsp;			
+<i>244</i>&nbsp;			// Initialize centres and distances
+<i>245</i>&nbsp;			// TODO: Consider that the use of short here places a limit upon the maximum number of labels
+<i>246</i>&nbsp;			// (In practice should be ok because of enforced tiling for large regions?)
+<b class="nc"><i>247</i>&nbsp;			int w = imp.getWidth();</b>
+<b class="nc"><i>248</i>&nbsp;			int h = imp.getHeight();</b>
+<b class="nc"><i>249</i>&nbsp;			short[] labels = new short[w*h];</b>
+<b class="nc"><i>250</i>&nbsp;			Arrays.fill(labels, (short)-1);</b>
+<b class="nc"><i>251</i>&nbsp;			double[] distances = new double[w*h];</b>
+<b class="nc"><i>252</i>&nbsp;			Arrays.fill(distances, Double.POSITIVE_INFINITY);</b>
+<i>253</i>&nbsp;			
+<b class="nc"><i>254</i>&nbsp;			int s = PREFERRED_PIXEL_SPACING;</b>
+<b class="nc"><i>255</i>&nbsp;			List&lt;ClusterCenter&gt; centers = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>256</i>&nbsp;			int widthClusters = 0; // Used to help figure out which clusters are side by side</b>
+<b class="nc"><i>257</i>&nbsp;			for (int y = s/2; y &lt; h; y += s) {</b>
+<b class="nc"><i>258</i>&nbsp;				widthClusters = 0;</b>
+<b class="nc"><i>259</i>&nbsp;			    for (int x = s/2; x &lt; w; x += s) {</b>
+<b class="nc"><i>260</i>&nbsp;			    	short label = (short)centers.size();</b>
+<b class="nc"><i>261</i>&nbsp;			    	ClusterCenter center = new ClusterCenter(ipColor, label, s, m, adaptRegularization, w, h);</b>
+<b class="nc"><i>262</i>&nbsp;			    	center.addLabel(y*w+x);</b>
+<b class="nc"><i>263</i>&nbsp;			        labels[y*w+x] = label;	</b>
+<b class="nc"><i>264</i>&nbsp;			        centers.add(center);</b>
+<b class="nc"><i>265</i>&nbsp;			        widthClusters++;</b>
+<i>266</i>&nbsp;			    }
+<i>267</i>&nbsp;			}
+<i>268</i>&nbsp;			
+<b class="nc"><i>269</i>&nbsp;			if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>270</i>&nbsp;				return Collections.emptyList();</b>
+<i>271</i>&nbsp;
+<i>272</i>&nbsp;			
+<i>273</i>&nbsp;			// Loop through and perform local k-means clustering
+<b class="nc"><i>274</i>&nbsp;			for (int i = 0; i &lt; maxIterations; i++) {</b>
+<b class="nc"><i>275</i>&nbsp;			    int centerLabel = 0;</b>
+<b class="nc"><i>276</i>&nbsp;				if (Thread.currentThread().isInterrupted())</b>
+<b class="nc"><i>277</i>&nbsp;					return Collections.emptyList();</b>
+<b class="nc"><i>278</i>&nbsp;			    for (ClusterCenter center : centers) {</b>
+<b class="nc"><i>279</i>&nbsp;			        center.updateFeatures();</b>
+<b class="nc"><i>280</i>&nbsp;			        for (int label : center.getNearbyClusters()) {</b>
+<b class="nc"><i>281</i>&nbsp;			            double distance = center.distanceSquared(label);</b>
+<b class="nc"><i>282</i>&nbsp;			            if (distance &lt; distances[label]) {</b>
+<b class="nc"><i>283</i>&nbsp;			            	int currentLabel = labels[label];</b>
+<b class="nc"><i>284</i>&nbsp;			            	if (currentLabel == centerLabel)</b>
+<b class="nc"><i>285</i>&nbsp;			            		continue;</b>
+<b class="nc"><i>286</i>&nbsp;			            	if (currentLabel != (short)-1)</b>
+<b class="nc"><i>287</i>&nbsp;			            		centers.get(currentLabel).removeLabel(label);</b>
+<b class="nc"><i>288</i>&nbsp;			            	center.addLabel(label);</b>
+<b class="nc"><i>289</i>&nbsp;			            	distances[label] = distance;</b>
+<b class="nc"><i>290</i>&nbsp;			            	labels[label] = (short)centerLabel;</b>
+<i>291</i>&nbsp;			            }
+<b class="nc"><i>292</i>&nbsp;			        }</b>
+<b class="nc"><i>293</i>&nbsp;			        centerLabel++;</b>
+<b class="nc"><i>294</i>&nbsp;			    }</b>
+<i>295</i>&nbsp;			}
+<i>296</i>&nbsp;			
+<i>297</i>&nbsp;			// Merge clusters if required
+<b class="nc"><i>298</i>&nbsp;			if (params.containsKey(&quot;doMerge&quot;) &amp;&amp; Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;doMerge&quot;))) {</b>
+<b class="nc"><i>299</i>&nbsp;				for (int i = 0; i &lt; centers.size(); i++) {</b>
+<b class="nc"><i>300</i>&nbsp;					ClusterCenter center = centers.get(i);</b>
+<b class="nc"><i>301</i>&nbsp;					center.updateFeatures();</b>
+<i>302</i>&nbsp;					
+<b class="nc"><i>303</i>&nbsp;					int xc = i % widthClusters;</b>
+<i>304</i>&nbsp;					// Check for horizontal link
+<b class="nc"><i>305</i>&nbsp;					if (xc &lt; widthClusters - 1) {</b>
+<b class="nc"><i>306</i>&nbsp;						ClusterCenter center2 = centers.get(i+1);</b>
+<b class="nc"><i>307</i>&nbsp;						maybeMergeClusters(center, center2, labels, mergeThreshold);</b>
+<i>308</i>&nbsp;					}
+<i>309</i>&nbsp;					// Check for vertical link
+<b class="nc"><i>310</i>&nbsp;					if (i &lt; centers.size() - widthClusters) {</b>
+<b class="nc"><i>311</i>&nbsp;						ClusterCenter center2 = centers.get(i+widthClusters);</b>
+<b class="nc"><i>312</i>&nbsp;						maybeMergeClusters(center, center2, labels, mergeThreshold);</b>
+<i>313</i>&nbsp;						
+<i>314</i>&nbsp;						// Check for diagonal forward link
+<b class="nc"><i>315</i>&nbsp;						if (xc &lt; widthClusters - 1) {</b>
+<b class="nc"><i>316</i>&nbsp;							center2 = centers.get(i+widthClusters+1);</b>
+<b class="nc"><i>317</i>&nbsp;							maybeMergeClusters(center, center2, labels, mergeThreshold);</b>
+<i>318</i>&nbsp;						}
+<i>319</i>&nbsp;						
+<i>320</i>&nbsp;						// Check for backwards forward link
+<b class="nc"><i>321</i>&nbsp;						if (xc &gt; 0) {</b>
+<b class="nc"><i>322</i>&nbsp;							center2 = centers.get(i+widthClusters-1);</b>
+<b class="nc"><i>323</i>&nbsp;							maybeMergeClusters(center, center2, labels, mergeThreshold);</b>
+<i>324</i>&nbsp;						}
+<i>325</i>&nbsp;					}
+<i>326</i>&nbsp;				}
+<i>327</i>&nbsp;			}
+<i>328</i>&nbsp;			
+<i>329</i>&nbsp;			
+<i>330</i>&nbsp;			// Enforce connectivity and merge small objects
+<b class="nc"><i>331</i>&nbsp;			short[] newLabels = new short[labels.length];</b>
+<b class="nc"><i>332</i>&nbsp;			int[] xyCurrent = new int[w*h];</b>
+<b class="nc"><i>333</i>&nbsp;			short label = 1;</b>
+<b class="nc"><i>334</i>&nbsp;			int minSize = s*s/4;</b>
+<b class="nc"><i>335</i>&nbsp;			for (int y = 0; y &lt; h; y++) {</b>
+<i>336</i>&nbsp;				// Maintain a reference to the previous label
+<b class="nc"><i>337</i>&nbsp;				short lastNewLabel = y &gt; 0 ? labels[(y-1)*w] : 1;</b>
+<b class="nc"><i>338</i>&nbsp;				for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>339</i>&nbsp;					int i = y*w+x;</b>
+<i>340</i>&nbsp;					// Check if we&#39;ve already labelled this
+<b class="nc"><i>341</i>&nbsp;					short currentNewLabel = newLabels[i];</b>
+<b class="nc"><i>342</i>&nbsp;					if (currentNewLabel != 0) {</b>
+<b class="nc"><i>343</i>&nbsp;						lastNewLabel = currentNewLabel;</b>
+<b class="nc"><i>344</i>&nbsp;						continue;</b>
+<i>345</i>&nbsp;					}
+<i>346</i>&nbsp;					
+<i>347</i>&nbsp;					// Determine pixels for the current region
+<b class="nc"><i>348</i>&nbsp;					short currentOldLabel = labels[i];</b>
+<b class="nc"><i>349</i>&nbsp;					int count = 1;</b>
+<b class="nc"><i>350</i>&nbsp;					xyCurrent[0] = i;</b>
+<b class="nc"><i>351</i>&nbsp;					newLabels[i] = label;</b>
+<b class="nc"><i>352</i>&nbsp;					int c = 0;</b>
+<b class="nc"><i>353</i>&nbsp;					while (c &lt; count) {</b>
+<b class="nc"><i>354</i>&nbsp;						int ii = xyCurrent[c];</b>
+<b class="nc"><i>355</i>&nbsp;						int xx = ii % w;</b>
+<b class="nc"><i>356</i>&nbsp;						int yy = ii / w;</b>
+<b class="nc"><i>357</i>&nbsp;						c++;</b>
+<i>358</i>&nbsp;						// Check 4-connected neighbors
+<b class="nc"><i>359</i>&nbsp;						if (xx &gt; 0) {</b>
+<b class="nc"><i>360</i>&nbsp;							int ind = ii-1;</b>
+<b class="nc"><i>361</i>&nbsp;							if (newLabels[ind] == 0 &amp;&amp; labels[ind] == currentOldLabel) {</b>
+<b class="nc"><i>362</i>&nbsp;								xyCurrent[count] = ind;</b>
+<b class="nc"><i>363</i>&nbsp;								newLabels[ind] = label;</b>
+<b class="nc"><i>364</i>&nbsp;								count++;</b>
+<i>365</i>&nbsp;							}
+<i>366</i>&nbsp;						}
+<b class="nc"><i>367</i>&nbsp;						if (yy &gt; 0) {</b>
+<b class="nc"><i>368</i>&nbsp;							int ind = ii-w;</b>
+<b class="nc"><i>369</i>&nbsp;							if (newLabels[ind] == 0 &amp;&amp; labels[ind] == currentOldLabel) {</b>
+<b class="nc"><i>370</i>&nbsp;								xyCurrent[count] = ind;</b>
+<b class="nc"><i>371</i>&nbsp;								newLabels[ind] = label;</b>
+<b class="nc"><i>372</i>&nbsp;								count++;</b>
+<i>373</i>&nbsp;							}
+<i>374</i>&nbsp;						}
+<i>375</i>&nbsp;						
+<b class="nc"><i>376</i>&nbsp;						if (xx &lt; w-1) {</b>
+<b class="nc"><i>377</i>&nbsp;							int ind = ii+1;</b>
+<b class="nc"><i>378</i>&nbsp;							if (newLabels[ind] == 0 &amp;&amp; labels[ind] == currentOldLabel) {</b>
+<b class="nc"><i>379</i>&nbsp;								xyCurrent[count] = ind;</b>
+<b class="nc"><i>380</i>&nbsp;								newLabels[ind] = label;</b>
+<b class="nc"><i>381</i>&nbsp;								count++;</b>
+<i>382</i>&nbsp;							}
+<i>383</i>&nbsp;						}
+<i>384</i>&nbsp;						
+<b class="nc"><i>385</i>&nbsp;						if (yy &lt; h-1) {</b>
+<b class="nc"><i>386</i>&nbsp;							int ind = ii+w;</b>
+<b class="nc"><i>387</i>&nbsp;							if (newLabels[ind] == 0 &amp;&amp; labels[ind] == currentOldLabel) {</b>
+<b class="nc"><i>388</i>&nbsp;								xyCurrent[count] = ind;</b>
+<b class="nc"><i>389</i>&nbsp;								newLabels[ind] = label;</b>
+<b class="nc"><i>390</i>&nbsp;								count++;</b>
+<i>391</i>&nbsp;							}
+<i>392</i>&nbsp;						}
+<b class="nc"><i>393</i>&nbsp;					}</b>
+<i>394</i>&nbsp;					// Check if small, relabelling if required
+<b class="nc"><i>395</i>&nbsp;					if (count &lt;= minSize) {</b>
+<b class="nc"><i>396</i>&nbsp;						for (c = 0; c &lt; count; c++)</b>
+<b class="nc"><i>397</i>&nbsp;							newLabels[xyCurrent[c]] = lastNewLabel;</b>
+<i>398</i>&nbsp;					} else {
+<b class="nc"><i>399</i>&nbsp;						lastNewLabel = label;</b>
+<b class="nc"><i>400</i>&nbsp;						label++;</b>
+<i>401</i>&nbsp;					}
+<i>402</i>&nbsp;				}
+<i>403</i>&nbsp;				
+<i>404</i>&nbsp;			}
+<i>405</i>&nbsp;			
+<i>406</i>&nbsp;			
+<i>407</i>&nbsp;			// Convert to tilez
+<b class="nc"><i>408</i>&nbsp;			ShortProcessor ipLabels = new ShortProcessor(w, h, newLabels, null);</b>
+<b class="nc"><i>409</i>&nbsp;			List&lt;PolygonRoi&gt; polygons = RoiLabeling.labelsToFilledRoiList(ipLabels, true);</b>
+<i>410</i>&nbsp;			List&lt;PathObject&gt; pathObjects;
+<b class="nc"><i>411</i>&nbsp;			List&lt;ROI&gt; superpixelROIs = new ArrayList&lt;&gt;();</b>
+<i>412</i>&nbsp;			try {
+<b class="nc"><i>413</i>&nbsp;				for (Roi roi : polygons) {</b>
+<b class="nc"><i>414</i>&nbsp;					if (roi == null)</b>
+<b class="nc"><i>415</i>&nbsp;						continue;</b>
+<b class="nc"><i>416</i>&nbsp;					superpixelROIs.add(IJTools.convertToROI(roi, pathImage));</b>
+<b class="nc"><i>417</i>&nbsp;				}</b>
+<i>418</i>&nbsp;				
+<b class="nc"><i>419</i>&nbsp;				superpixelROIs = RoiTools.clipToROI(pathROI, superpixelROIs);</b>
+<i>420</i>&nbsp;				
+<b class="nc"><i>421</i>&nbsp;				pathObjects = superpixelROIs.stream()</b>
+<b class="nc"><i>422</i>&nbsp;						.map(r -&gt; PathObjects.createTileObject(r))</b>
+<b class="nc"><i>423</i>&nbsp;						.collect(Collectors.toList());</b>
+<b class="nc"><i>424</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>425</i>&nbsp;				logger.error(&quot;Error created tiled ROIs&quot;, e);</b>
+<b class="nc"><i>426</i>&nbsp;				pathObjects = Collections.emptyList();</b>
+<b class="nc"><i>427</i>&nbsp;			}</b>
+<i>428</i>&nbsp;			
+<b class="nc"><i>429</i>&nbsp;			lastResultSummary = pathObjects.size() + &quot; tiles created&quot;;</b>
+<b class="nc"><i>430</i>&nbsp;			return pathObjects;</b>
+<i>431</i>&nbsp;		}
+<i>432</i>&nbsp;		
+<i>433</i>&nbsp;		
+<i>434</i>&nbsp;		
+<i>435</i>&nbsp;		static boolean maybeMergeClusters(final ClusterCenter center, final ClusterCenter center2, final short[] labels, final double mergeThreshold) {
+<i>436</i>&nbsp;			// Check merge based on euclidean distance
+<b class="nc"><i>437</i>&nbsp;			double distanceThreshold = mergeThreshold;//0.02;</b>
+<b class="nc"><i>438</i>&nbsp;			double dist = 0;</b>
+<b class="nc"><i>439</i>&nbsp;			for (int i = 0; i &lt; center.features.length; i++) {</b>
+<b class="nc"><i>440</i>&nbsp;				double f1 = center.features[i];</b>
+<b class="nc"><i>441</i>&nbsp;				double f2 = center2.features[i];</b>
+<b class="nc"><i>442</i>&nbsp;				dist += (f1-f2)*(f1-f2);</b>
+<i>443</i>&nbsp;			}
+<b class="nc"><i>444</i>&nbsp;			dist = Math.sqrt(dist);</b>
+<i>445</i>&nbsp;//			System.err.println(dist);
+<b class="nc"><i>446</i>&nbsp;			boolean doMerge = dist &lt;= distanceThreshold;</b>
+<i>447</i>&nbsp;						
+<i>448</i>&nbsp;						
+<i>449</i>&nbsp;//			// Check merge based on cosine distance
+<i>450</i>&nbsp;//			double distanceThreshold = 0.9999;
+<i>451</i>&nbsp;//			double dist = 0;
+<i>452</i>&nbsp;//			double mag1 = 0;
+<i>453</i>&nbsp;//			double mag2 = 0;
+<i>454</i>&nbsp;//			for (int i = 0; i &lt; center.features.length; i++) {
+<i>455</i>&nbsp;//				double f1 = center.features[i];
+<i>456</i>&nbsp;//				mag1 += f1*f1;
+<i>457</i>&nbsp;//				double f2 = center2.features[i];
+<i>458</i>&nbsp;//				mag2 += f2*f2;				
+<i>459</i>&nbsp;//				dist += f1*f2;
+<i>460</i>&nbsp;//			}
+<i>461</i>&nbsp;//			dist = dist / (Math.sqrt(mag1) * Math.sqrt(mag2));
+<i>462</i>&nbsp;////			dist = 1-2*Math.acos(dist)/Math.PI;
+<i>463</i>&nbsp;//			boolean doMerge = dist &gt;= distanceThreshold;
+<i>464</i>&nbsp;						
+<i>465</i>&nbsp;//			// Check merge based on distance standard deviations within each cluster
+<i>466</i>&nbsp;//			double distanceThreshold = Math.min(center.getColorDistanceStdDev(), center2.getColorDistanceStdDev());
+<i>467</i>&nbsp;//			double dist = center.colorDistance(center2.features);
+<i>468</i>&nbsp;//			boolean doMerge = dist &lt; distanceThreshold;
+<i>469</i>&nbsp;			
+<i>470</i>&nbsp;			// Perform the merge
+<b class="nc"><i>471</i>&nbsp;			if (doMerge) {</b>
+<b class="nc"><i>472</i>&nbsp;				for (int label : center2.getLabels())</b>
+<b class="nc"><i>473</i>&nbsp;					labels[label] = center.primaryLabel;</b>
+<b class="nc"><i>474</i>&nbsp;				center2.primaryLabel = center.primaryLabel;</b>
+<i>475</i>&nbsp;//				center2.labels.addAll(center.labels);
+<b class="nc"><i>476</i>&nbsp;				return true;</b>
+<i>477</i>&nbsp;			}
+<b class="nc"><i>478</i>&nbsp;			return false;</b>
+<i>479</i>&nbsp;		}
+<i>480</i>&nbsp;		
+<i>481</i>&nbsp;		
+<i>482</i>&nbsp;		
+<i>483</i>&nbsp;		
+<i>484</i>&nbsp;		static double getSigma(final PathImage&lt;?&gt; pathImage, final ParameterList params) {
+<b class="nc"><i>485</i>&nbsp;			double pixelSizeMicrons = pathImage.getPixelCalibration().getAveragedPixelSizeMicrons();</b>
+<b class="nc"><i>486</i>&nbsp;			if (Double.isNaN(pixelSizeMicrons)) {</b>
+<b class="nc"><i>487</i>&nbsp;				return params.getDoubleParameterValue(&quot;sigmaPixels&quot;) * pathImage.getDownsampleFactor();				</b>
+<i>488</i>&nbsp;			} else
+<b class="nc"><i>489</i>&nbsp;				return params.getDoubleParameterValue(&quot;sigmaMicrons&quot;) / pixelSizeMicrons;</b>
+<i>490</i>&nbsp;		}
+<i>491</i>&nbsp;		
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;		@Override
+<i>494</i>&nbsp;		public String getLastResultsDescription() {
+<b class="nc"><i>495</i>&nbsp;			return lastResultSummary;</b>
+<i>496</i>&nbsp;		}
+<i>497</i>&nbsp;		
+<i>498</i>&nbsp;	}
+<i>499</i>&nbsp;	
+<i>500</i>&nbsp;	
+<i>501</i>&nbsp;//	// This is somewhat complete... but fails to take sRGB into consideration
+<i>502</i>&nbsp;//	private static ImageProcessor[] convertToLAB(final ColorProcessor cp) {
+<i>503</i>&nbsp;//		
+<i>504</i>&nbsp;//		// Extract channels and FloatProcessors
+<i>505</i>&nbsp;//		// (These will be reused for the output)
+<i>506</i>&nbsp;//		FloatProcessor fpRed = cp.toFloat(0, null);
+<i>507</i>&nbsp;//		FloatProcessor fpGreen = cp.toFloat(1, null);
+<i>508</i>&nbsp;//		FloatProcessor fpBlue = cp.toFloat(2, null);
+<i>509</i>&nbsp;//
+<i>510</i>&nbsp;//		// Conversion values taken from http://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html
+<i>511</i>&nbsp;//
+<i>512</i>&nbsp;//		double epsilon = 0.008856;
+<i>513</i>&nbsp;//		for (int i = 0; i &lt; cp.getWidth() * cp.getHeight(); i++) {
+<i>514</i>&nbsp;//			// Extract pixels
+<i>515</i>&nbsp;//			double r = fpRed.getf(i)   / 255.0;
+<i>516</i>&nbsp;//			double g = fpGreen.getf(i) / 255.0;
+<i>517</i>&nbsp;//			double b = fpBlue.getf(i)  / 255.0;
+<i>518</i>&nbsp;//			
+<i>519</i>&nbsp;//			// Convert to X, Y, Z
+<i>520</i>&nbsp;//			double X = r*0.412453 + g*0.357580 + b*0.180423;
+<i>521</i>&nbsp;//			double Y = r*0.212671 + g*0.715160 + b*0.072169;
+<i>522</i>&nbsp;//			double Z = r*0.019334 + g*0.119193 + b*0.950227;
+<i>523</i>&nbsp;//			
+<i>524</i>&nbsp;//			X /= 0.950456;
+<i>525</i>&nbsp;//			Z /= 1.088754;
+<i>526</i>&nbsp;//			
+<i>527</i>&nbsp;//			// Convert to LAB
+<i>528</i>&nbsp;//			double L = Y &gt; epsilon ? 116*Math.cbrt(Y)-16 : 903.3*Y;
+<i>529</i>&nbsp;//		
+<i>530</i>&nbsp;//			double fx = X &gt; epsilon ? Math.cbrt(X) : 7.787*X + 16.0/116.0;
+<i>531</i>&nbsp;//			double fy = Y &gt; epsilon ? Math.cbrt(Y) : 7.787*Y + 16.0/116.0;
+<i>532</i>&nbsp;//			double fz = Z &gt; epsilon ? Math.cbrt(Z) : 7.787*Z + 16.0/116.0;
+<i>533</i>&nbsp;//
+<i>534</i>&nbsp;//			double A = 500 * (fx - fy);
+<i>535</i>&nbsp;//			double B = 200 * (fy - fz);
+<i>536</i>&nbsp;//			
+<i>537</i>&nbsp;//			fpRed.setf(i, (float)L);
+<i>538</i>&nbsp;//			fpGreen.setf(i, (float)A);
+<i>539</i>&nbsp;//			fpBlue.setf(i, (float)B);
+<i>540</i>&nbsp;//		}
+<i>541</i>&nbsp;//		
+<i>542</i>&nbsp;//		return new ImageProcessor[]{fpRed, fpGreen, fpBlue};
+<i>543</i>&nbsp;//	}
+<i>544</i>&nbsp;	
+<i>545</i>&nbsp;	
+<i>546</i>&nbsp;	
+<i>547</i>&nbsp;	@Override
+<i>548</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>549</i>&nbsp;		return &quot;Partition image into tiled regions of irregular shapes, using intensity &amp; boundary information&quot;;</b>
+<i>550</i>&nbsp;	}
+<i>551</i>&nbsp;	
+<i>552</i>&nbsp;	
+<i>553</i>&nbsp;	@Override
+<i>554</i>&nbsp;	protected synchronized Collection&lt;? extends PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<b class="nc"><i>555</i>&nbsp;		Collection&lt;? extends PathObject&gt; parents = super.getParentObjects(runner);</b>
+<b class="nc"><i>556</i>&nbsp;		return parents;</b>
+<i>557</i>&nbsp;	}
+<i>558</i>&nbsp;	
+<i>559</i>&nbsp;
+<i>560</i>&nbsp;	static class ClusterCenter {
+<i>561</i>&nbsp;		
+<i>562</i>&nbsp;		private ImageProcessor[] featuresImages;
+<i>563</i>&nbsp;
+<b class="nc"><i>564</i>&nbsp;	    private List&lt;Integer&gt; labels = new ArrayList&lt;&gt;();</b>
+<i>565</i>&nbsp;	    private short primaryLabel;
+<b class="nc"><i>566</i>&nbsp;	    private double[] features = null;</b>
+<i>567</i>&nbsp;	    private double x;
+<i>568</i>&nbsp;	    private double y;
+<i>569</i>&nbsp;	    
+<i>570</i>&nbsp;	    private boolean adaptRegularization;
+<i>571</i>&nbsp;	    private double s, mSquared;
+<i>572</i>&nbsp;	    
+<i>573</i>&nbsp;	    private int width;
+<i>574</i>&nbsp;	    private int height;
+<i>575</i>&nbsp;	    
+<b class="nc"><i>576</i>&nbsp;	    ClusterCenter(final ImageProcessor[] featuresImages, final short primaryLabel, final double s, final double m, final boolean adaptRegularization, final int width, final int height) {</b>
+<b class="nc"><i>577</i>&nbsp;	    	this.featuresImages = featuresImages;</b>
+<b class="nc"><i>578</i>&nbsp;	    	this.primaryLabel = primaryLabel;</b>
+<b class="nc"><i>579</i>&nbsp;	    	this.s = s;</b>
+<b class="nc"><i>580</i>&nbsp;	    	this.adaptRegularization = adaptRegularization;</b>
+<b class="nc"><i>581</i>&nbsp;	    	this.mSquared = m*m;</b>
+<b class="nc"><i>582</i>&nbsp;	    	this.width = width;</b>
+<b class="nc"><i>583</i>&nbsp;	    	this.height = height;</b>
+<i>584</i>&nbsp;	    }
+<i>585</i>&nbsp;
+<i>586</i>&nbsp;	    public List&lt;Integer&gt; getLabels() {
+<b class="nc"><i>587</i>&nbsp;	        return Collections.unmodifiableList(labels);</b>
+<i>588</i>&nbsp;	    }
+<i>589</i>&nbsp;
+<i>590</i>&nbsp;	    public void addLabel(final Integer label) {
+<b class="nc"><i>591</i>&nbsp;	        this.labels.add(label);</b>
+<i>592</i>&nbsp;	    }
+<i>593</i>&nbsp;
+<i>594</i>&nbsp;
+<i>595</i>&nbsp;	    public void removeLabel(final Integer label) {
+<b class="nc"><i>596</i>&nbsp;	        this.labels.remove(label);</b>
+<i>597</i>&nbsp;	    }
+<i>598</i>&nbsp;
+<i>599</i>&nbsp;
+<i>600</i>&nbsp;	    public List&lt;Integer&gt; getNearbyClusters() {
+<b class="nc"><i>601</i>&nbsp;	        if (labels.isEmpty())</b>
+<b class="nc"><i>602</i>&nbsp;	            return Collections.emptyList();</b>
+<i>603</i>&nbsp;
+<b class="nc"><i>604</i>&nbsp;	        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>605</i>&nbsp;	        for (int yy = (int)Math.max(0, y-s); yy &lt; (int)Math.min(height, y+s); yy++) {</b>
+<b class="nc"><i>606</i>&nbsp;	            for (int xx = (int)Math.max(0, x-s); xx &lt; (int)Math.min(width, x+s); xx++) {</b>
+<b class="nc"><i>607</i>&nbsp;	                list.add(yy*width + xx);</b>
+<i>608</i>&nbsp;	            }
+<i>609</i>&nbsp;	        }
+<b class="nc"><i>610</i>&nbsp;	        return list;</b>
+<i>611</i>&nbsp;	    }
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;
+<i>614</i>&nbsp;	    public void updateFeatures() {
+<b class="nc"><i>615</i>&nbsp;	        if (labels.isEmpty()) {</b>
+<b class="nc"><i>616</i>&nbsp;	            x = Double.NaN;</b>
+<b class="nc"><i>617</i>&nbsp;	            y = Double.NaN;</b>
+<b class="nc"><i>618</i>&nbsp;	            features = null;</b>
+<i>619</i>&nbsp;	        }
+<b class="nc"><i>620</i>&nbsp;	        int n = labels.size();</b>
+<b class="nc"><i>621</i>&nbsp;	        x = 0;</b>
+<b class="nc"><i>622</i>&nbsp;	        y = 0;</b>
+<b class="nc"><i>623</i>&nbsp;	        features = new double[featuresImages.length];</b>
+<b class="nc"><i>624</i>&nbsp;	        for (int label : labels) {</b>
+<b class="nc"><i>625</i>&nbsp;	        	double xx = label % width;</b>
+<b class="nc"><i>626</i>&nbsp;	        	double yy = label / width;</b>
+<b class="nc"><i>627</i>&nbsp;	            x += xx/n;</b>
+<b class="nc"><i>628</i>&nbsp;	            y += yy/n;</b>
+<b class="nc"><i>629</i>&nbsp;	            for (int i = 0; i &lt; features.length; i++)</b>
+<b class="nc"><i>630</i>&nbsp;	                features[i] += featuresImages[i].getf(label)/n;</b>
+<b class="nc"><i>631</i>&nbsp;	        }</b>
+<b class="nc"><i>632</i>&nbsp;	        updateM();</b>
+<i>633</i>&nbsp;	    }
+<i>634</i>&nbsp;	    
+<i>635</i>&nbsp;	    private void updateM() {
+<b class="nc"><i>636</i>&nbsp;	    	if (!adaptRegularization)</b>
+<i>637</i>&nbsp;	    		return;
+<b class="nc"><i>638</i>&nbsp;	    	double maxDistanceSquared = 0;</b>
+<b class="nc"><i>639</i>&nbsp;	    	for (int label : labels) {</b>
+<b class="nc"><i>640</i>&nbsp;	    		double dist = colorDistanceSquared(label);</b>
+<b class="nc"><i>641</i>&nbsp;	    		if (dist &gt; maxDistanceSquared)</b>
+<b class="nc"><i>642</i>&nbsp;	    			maxDistanceSquared = dist;</b>
+<b class="nc"><i>643</i>&nbsp;	    	}</b>
+<b class="nc"><i>644</i>&nbsp;	    	if (maxDistanceSquared &gt; 0)</b>
+<b class="nc"><i>645</i>&nbsp;	    		this.mSquared = maxDistanceSquared;</b>
+<i>646</i>&nbsp;	    }
+<i>647</i>&nbsp;	    
+<i>648</i>&nbsp;	    
+<i>649</i>&nbsp;//	    private double getColorDistanceStdDev() {
+<i>650</i>&nbsp;//	    	RunningStatistics stats = new RunningStatistics();
+<i>651</i>&nbsp;//	    	for (int label : getLabels()) {
+<i>652</i>&nbsp;//	    		stats.addValue(Math.sqrt(colorDistanceSquared(label)));
+<i>653</i>&nbsp;//	    	}
+<i>654</i>&nbsp;//	    	return stats.getStdDev();
+<i>655</i>&nbsp;//	    }
+<i>656</i>&nbsp;	    
+<i>657</i>&nbsp;	    
+<i>658</i>&nbsp;	    private double colorDistanceSquared(final int ind) {
+<b class="nc"><i>659</i>&nbsp;	    	double DC2 = 0;</b>
+<b class="nc"><i>660</i>&nbsp;	        for (int i = 0; i &lt; featuresImages.length; i++) {</b>
+<b class="nc"><i>661</i>&nbsp;	            double d = featuresImages[i].getf(ind) - features[i];</b>
+<b class="nc"><i>662</i>&nbsp;	            if (Double.isFinite(d))</b>
+<b class="nc"><i>663</i>&nbsp;	                DC2 += d*d;</b>
+<i>664</i>&nbsp;	        }
+<b class="nc"><i>665</i>&nbsp;	        return DC2;</b>
+<i>666</i>&nbsp;	    }
+<i>667</i>&nbsp;	    
+<i>668</i>&nbsp;	    
+<i>669</i>&nbsp;	    public double colorDistance(final double[] features) {
+<b class="nc"><i>670</i>&nbsp;	    	double distanceSquared = 0;</b>
+<b class="nc"><i>671</i>&nbsp;	    	for (int i = 0; i &lt; features.length; i++) {</b>
+<b class="nc"><i>672</i>&nbsp;	    		double d = features[i] - this.features[i];</b>
+<b class="nc"><i>673</i>&nbsp;	    		distanceSquared += d*d;</b>
+<i>674</i>&nbsp;	    	}
+<b class="nc"><i>675</i>&nbsp;	    	return Math.sqrt(distanceSquared);</b>
+<i>676</i>&nbsp;	    }
+<i>677</i>&nbsp;	    
+<i>678</i>&nbsp;
+<i>679</i>&nbsp;	    public double distanceSquared(final int ind) {
+<b class="nc"><i>680</i>&nbsp;	        if (features == null)</b>
+<b class="nc"><i>681</i>&nbsp;	            return Double.POSITIVE_INFINITY;</b>
+<i>682</i>&nbsp;
+<i>683</i>&nbsp;	        // Get coordinates from label
+<b class="nc"><i>684</i>&nbsp;	        double xx = ind % width;</b>
+<b class="nc"><i>685</i>&nbsp;        	double yy = ind / width;</b>
+<i>686</i>&nbsp;        	
+<i>687</i>&nbsp;	        // Calculate spatial distance squared
+<b class="nc"><i>688</i>&nbsp;	        double dx = x - xx;</b>
+<b class="nc"><i>689</i>&nbsp;	        double dy = y - yy;</b>
+<i>690</i>&nbsp;
+<b class="nc"><i>691</i>&nbsp;	        double DS2 = dx*dx + dy*dy;</b>
+<i>692</i>&nbsp;
+<i>693</i>&nbsp;	        // Calculate feature distance squared
+<b class="nc"><i>694</i>&nbsp;	        double DC2 = colorDistanceSquared(ind);</b>
+<i>695</i>&nbsp;	        
+<i>696</i>&nbsp;	        // Compute distance
+<b class="nc"><i>697</i>&nbsp;	        double distanceSquared = DC2/mSquared + DS2/(s*s);</b>
+<i>698</i>&nbsp;	        
+<b class="nc"><i>699</i>&nbsp;	        return distanceSquared;</b>
+<i>700</i>&nbsp;	    }
+<i>701</i>&nbsp;
+<i>702</i>&nbsp;	}
+<i>703</i>&nbsp;	
+<i>704</i>&nbsp;	
+<i>705</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

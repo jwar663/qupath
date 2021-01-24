@@ -1,0 +1,287 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ShapeFeaturesPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.plugins.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ShapeFeaturesPlugin (qupath.lib.plugins.objects)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ShapeFeaturesPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 35)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ShapeFeaturesPlugin$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 17)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 52)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.plugins.objects;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Arrays;
+<i>27</i>&nbsp;import java.util.Collection;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import org.slf4j.Logger;
+<i>31</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>34</i>&nbsp;import qupath.lib.images.ImageData;
+<i>35</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>36</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>37</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>38</i>&nbsp;import qupath.lib.objects.PathCellObject;
+<i>39</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>40</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>41</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>42</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>43</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>44</i>&nbsp;import qupath.lib.roi.RoiTools;
+<i>45</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * Add shape measurements
+<i>49</i>&nbsp; * 
+<i>50</i>&nbsp; * @author Pete Bankhead
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; * @param &lt;T&gt;
+<i>53</i>&nbsp; */
+<i>54</i>&nbsp;public class ShapeFeaturesPlugin&lt;T&gt; extends AbstractInteractivePlugin&lt;T&gt; {
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	private ParameterList params;
+<i>57</i>&nbsp;	
+<b class="nc"><i>58</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ShapeFeaturesPlugin.class);</b>
+<i>59</i>&nbsp;	
+<i>60</i>&nbsp;	/**
+<i>61</i>&nbsp;	 * Constructor.
+<i>62</i>&nbsp;	 */
+<b class="nc"><i>63</i>&nbsp;	public ShapeFeaturesPlugin() {</b>
+<i>64</i>&nbsp;		
+<b class="nc"><i>65</i>&nbsp;		params = new ParameterList()</b>
+<b class="nc"><i>66</i>&nbsp;				.addTitleParameter(&quot;Measurements&quot;)</b>
+<b class="nc"><i>67</i>&nbsp;				.addBooleanParameter(&quot;area&quot;, &quot;Area&quot;, true, &quot;Compute area of ROI&quot;)</b>
+<b class="nc"><i>68</i>&nbsp;				.addBooleanParameter(&quot;perimeter&quot;, &quot;Perimeter&quot;, false, &quot;Compute perimeter of ROI&quot;)</b>
+<b class="nc"><i>69</i>&nbsp;				.addBooleanParameter(&quot;circularity&quot;, &quot;Circularity&quot;, false, &quot;Compute circularity of ROI, between 0 (a line) and 1 (a circle)&quot;)</b>
+<b class="nc"><i>70</i>&nbsp;				.addTitleParameter(&quot;Units&quot;)</b>
+<b class="nc"><i>71</i>&nbsp;				.addBooleanParameter(&quot;useMicrons&quot;, &quot;Use microns&quot;, true, &quot;Compute measurements using &quot; + GeneralTools.micrometerSymbol() + &quot;, where possible&quot;);</b>
+<i>72</i>&nbsp;	}
+<i>73</i>&nbsp;	
+<i>74</i>&nbsp;	
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;	@Override
+<i>77</i>&nbsp;	public String getName() {
+<b class="nc"><i>78</i>&nbsp;		return &quot;Add shape measurements&quot;;</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;	@Override
+<i>82</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>83</i>&nbsp;		return &quot;Add shape measurements to the measurement lists for objects&quot;;</b>
+<i>84</i>&nbsp;	}
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;	@Override
+<i>87</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>88</i>&nbsp;		return &quot;&quot;;</b>
+<i>89</i>&nbsp;	}
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;	@Override
+<i>92</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>93</i>&nbsp;		return Arrays.asList(PathCellObject.class, PathDetectionObject.class);</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;	
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	@Override
+<i>99</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;T&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;		PixelCalibration cal = imageData == null ? null : imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>102</i>&nbsp;		boolean useMicrons = params.getBooleanParameterValue(&quot;useMicrons&quot;) &amp;&amp; cal != null &amp;&amp; cal.hasPixelSizeMicrons();</b>
+<i>103</i>&nbsp;		
+<b class="nc"><i>104</i>&nbsp;		double pixelWidth = useMicrons ? cal.getPixelWidthMicrons() : 1;</b>
+<b class="nc"><i>105</i>&nbsp;		double pixelHeight = useMicrons ? cal.getPixelHeightMicrons() : 1;</b>
+<b class="nc"><i>106</i>&nbsp;		String unit = useMicrons ? GeneralTools.micrometerSymbol() : &quot;px&quot;;</b>
+<i>107</i>&nbsp;		
+<b class="nc"><i>108</i>&nbsp;		boolean doArea = params.getBooleanParameterValue(&quot;area&quot;);</b>
+<b class="nc"><i>109</i>&nbsp;		boolean doPerimeter = params.getBooleanParameterValue(&quot;perimeter&quot;);</b>
+<b class="nc"><i>110</i>&nbsp;		boolean doCircularity = params.getBooleanParameterValue(&quot;circularity&quot;);</b>
+<i>111</i>&nbsp;		
+<b class="nc"><i>112</i>&nbsp;		ROI roi = (parentObject.hasROI() &amp;&amp; parentObject.getROI().isArea()) ? parentObject.getROI() : null;</b>
+<b class="nc"><i>113</i>&nbsp;		if (roi != null) {</b>
+<b class="nc"><i>114</i>&nbsp;			tasks.add(new Runnable() {</b>
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;				@Override
+<i>117</i>&nbsp;				public void run() {
+<i>118</i>&nbsp;					try {
+<b class="nc"><i>119</i>&nbsp;						MeasurementList measurementList = parentObject.getMeasurementList();</b>
+<i>120</i>&nbsp;						
+<i>121</i>&nbsp;						ROI roi;
+<b class="nc"><i>122</i>&nbsp;						if (parentObject instanceof PathCellObject) {</b>
+<i>123</i>&nbsp;							
+<b class="nc"><i>124</i>&nbsp;							roi = ((PathCellObject)parentObject).getNucleusROI();</b>
+<b class="nc"><i>125</i>&nbsp;							if (roi != null &amp;&amp; roi.isArea())</b>
+<b class="nc"><i>126</i>&nbsp;								addMeasurements(measurementList, roi, &quot;Nucleus Shape: &quot;, pixelWidth, pixelHeight, unit, doArea, doPerimeter, doCircularity);</b>
+<i>127</i>&nbsp;							
+<b class="nc"><i>128</i>&nbsp;							roi = parentObject.getROI();</b>
+<b class="nc"><i>129</i>&nbsp;							if (roi != null &amp;&amp; roi.isArea())</b>
+<b class="nc"><i>130</i>&nbsp;								addMeasurements(measurementList, roi, &quot;Cell Shape: &quot;, pixelWidth, pixelHeight, unit, doArea, doPerimeter, doCircularity);</b>
+<i>131</i>&nbsp;							
+<i>132</i>&nbsp;						} else {
+<b class="nc"><i>133</i>&nbsp;							roi = parentObject.getROI();</b>
+<b class="nc"><i>134</i>&nbsp;							if (roi != null &amp;&amp; roi.isArea())</b>
+<b class="nc"><i>135</i>&nbsp;								addMeasurements(measurementList, roi, &quot;ROI Shape: &quot;, pixelWidth, pixelHeight, unit, doArea, doPerimeter, doCircularity);</b>
+<i>136</i>&nbsp;						}
+<i>137</i>&nbsp;						
+<b class="nc"><i>138</i>&nbsp;						measurementList.close();</b>
+<b class="nc"><i>139</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>140</i>&nbsp;						e.printStackTrace();</b>
+<b class="nc"><i>141</i>&nbsp;						throw(e);</b>
+<b class="nc"><i>142</i>&nbsp;					}</b>
+<i>143</i>&nbsp;				}
+<i>144</i>&nbsp;			});
+<i>145</i>&nbsp;		}
+<i>146</i>&nbsp;	}
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;	private static void addMeasurements(final MeasurementList measurementList, final ROI roi, final String prefix, final double pixelWidth, final double pixelHeight, final String unit,
+<i>150</i>&nbsp;			final boolean doArea, final boolean doPerimeter, final boolean doCircularity) {
+<b class="nc"><i>151</i>&nbsp;		if (doArea)</b>
+<b class="nc"><i>152</i>&nbsp;			measurementList.putMeasurement(prefix + &quot;Area &quot; + unit + &quot;^2&quot;, roi.getScaledArea(pixelWidth, pixelHeight));</b>
+<b class="nc"><i>153</i>&nbsp;		if (doPerimeter)</b>
+<b class="nc"><i>154</i>&nbsp;			measurementList.putMeasurement(prefix + &quot;Perimeter &quot; + unit, roi.getScaledLength(pixelWidth, pixelHeight));</b>
+<b class="nc"><i>155</i>&nbsp;		if (doCircularity)</b>
+<b class="nc"><i>156</i>&nbsp;			measurementList.putMeasurement(prefix + &quot;Circularity&quot;, RoiTools.getCircularity(roi));		</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;	@Override
+<i>163</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;T&gt; imageData) {
+<b class="nc"><i>164</i>&nbsp;		ImageServer&lt;? extends T&gt; server = imageData.getServer();</b>
+<b class="nc"><i>165</i>&nbsp;		boolean pixelSizeMicrons = server != null &amp;&amp; server.getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>166</i>&nbsp;		params.getParameters().get(&quot;useMicrons&quot;).setHidden(!pixelSizeMicrons);</b>
+<b class="nc"><i>167</i>&nbsp;		return params;</b>
+<i>168</i>&nbsp;	}
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;	@Override
+<i>173</i>&nbsp;	protected Collection&lt;? extends PathObject&gt; getParentObjects(PluginRunner&lt;T&gt; runner) {
+<b class="nc"><i>174</i>&nbsp;		return runner.getImageData().getHierarchy().getSelectionModel().getSelectedObjects();</b>
+<i>175</i>&nbsp;	}
+<i>176</i>&nbsp;	
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

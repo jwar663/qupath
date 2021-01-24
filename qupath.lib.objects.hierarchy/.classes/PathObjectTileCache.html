@@ -1,0 +1,643 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathObjectTileCache</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects.hierarchy</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathObjectTileCache (qupath.lib.objects.hierarchy)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathObjectTileCache</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    30.8%
+  </span>
+  <span class="absValue">
+    (8/ 26)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    24.4%
+  </span>
+  <span class="absValue">
+    (49/ 201)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.objects.hierarchy;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.Collection;
+<i>27</i>&nbsp;import java.util.Collections;
+<i>28</i>&nbsp;import java.util.HashMap;
+<i>29</i>&nbsp;import java.util.HashSet;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Map.Entry;
+<i>33</i>&nbsp;import java.util.WeakHashMap;
+<i>34</i>&nbsp;import java.util.concurrent.locks.Lock;
+<i>35</i>&nbsp;import java.util.concurrent.locks.ReentrantReadWriteLock;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+<i>38</i>&nbsp;import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+<i>39</i>&nbsp;import org.locationtech.jts.algorithm.locate.SimplePointInAreaLocator;
+<i>40</i>&nbsp;import org.locationtech.jts.geom.Coordinate;
+<i>41</i>&nbsp;import org.locationtech.jts.geom.Envelope;
+<i>42</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>43</i>&nbsp;import org.locationtech.jts.geom.LinearRing;
+<i>44</i>&nbsp;import org.locationtech.jts.geom.Location;
+<i>45</i>&nbsp;import org.locationtech.jts.geom.Polygonal;
+<i>46</i>&nbsp;import org.locationtech.jts.geom.prep.PreparedGeometry;
+<i>47</i>&nbsp;import org.locationtech.jts.geom.prep.PreparedGeometryFactory;
+<i>48</i>&nbsp;import org.locationtech.jts.index.SpatialIndex;
+<i>49</i>&nbsp;import org.locationtech.jts.index.quadtree.Quadtree;
+<i>50</i>&nbsp;import org.slf4j.Logger;
+<i>51</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>54</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>55</i>&nbsp;import qupath.lib.objects.TemporaryObject;
+<i>56</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent;
+<i>57</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyListener;
+<i>58</i>&nbsp;import qupath.lib.objects.hierarchy.events.PathObjectHierarchyEvent.HierarchyEventType;
+<i>59</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>60</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;/**
+<i>63</i>&nbsp; * A tile cache that keeps a reference to a collection of PathObjects as flat lists.
+<i>64</i>&nbsp; * It endeavors to keep itself synchronized with a PathObjectHierarchy,
+<i>65</i>&nbsp; * responding to its change events.
+<i>66</i>&nbsp; * &lt;p&gt;
+<i>67</i>&nbsp; * In practice, the cache itself is constructed lazily whenever a request is made 
+<i>68</i>&nbsp; * through getObjectsForRegion, so as to avoid rebuilding it too often when the hierarchy
+<i>69</i>&nbsp; * is changing a lot.
+<i>70</i>&nbsp; * 
+<i>71</i>&nbsp; * @author Pete Bankhead
+<i>72</i>&nbsp; *
+<i>73</i>&nbsp; */
+<i>74</i>&nbsp;class PathObjectTileCache implements PathObjectHierarchyListener {
+<i>75</i>&nbsp;	
+<b class="fc"><i>76</i>&nbsp;	public static int DEFAULT_TILE_SIZE = 1024;</b>
+<i>77</i>&nbsp;	
+<b class="fc"><i>78</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathObjectTileCache.class);</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * Largest positive envelope, used when all objects are requested.
+<i>82</i>&nbsp;	 */
+<b class="fc"><i>83</i>&nbsp;	private final static Envelope MAX_ENVELOPE = new Envelope(-Double.MAX_VALUE, Double.MAX_VALUE, -Double.MAX_VALUE, Double.MAX_VALUE);</b>
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	/**
+<i>86</i>&nbsp;	 * Keep a map of envelopes per ROI; ROIs should be immutable.
+<i>87</i>&nbsp;	 */
+<b class="fc"><i>88</i>&nbsp;	private Map&lt;ROI, Envelope&gt; envelopeMap = new WeakHashMap&lt;&gt;();</b>
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	/**
+<i>91</i>&nbsp;	 * Keep a map of envelopes per object, because potentially an object might have its ROI replaced behind our back...
+<i>92</i>&nbsp;	 */
+<b class="fc"><i>93</i>&nbsp;	private Map&lt;PathObject, Envelope&gt; lastEnvelopeMap = new WeakHashMap&lt;&gt;();</b>
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Store a spatial index according to the class of PathObject.
+<i>97</i>&nbsp;	 */
+<b class="fc"><i>98</i>&nbsp;	private Map&lt;Class&lt;? extends PathObject&gt;, SpatialIndex&gt; map = new HashMap&lt;&gt;();</b>
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	/**
+<i>101</i>&nbsp;	 * Map to cache Geometries, specifically for annotations.
+<i>102</i>&nbsp;	 */
+<b class="fc"><i>103</i>&nbsp;	final private static Map&lt;ROI, Geometry&gt; geometryMap = Collections.synchronizedMap(new WeakHashMap&lt;&gt;());</b>
+<b class="fc"><i>104</i>&nbsp;	final private static Map&lt;ROI, PointOnGeometryLocator&gt; locatorMap = Collections.synchronizedMap(new WeakHashMap&lt;&gt;());</b>
+<i>105</i>&nbsp;//	final private static Map&lt;ROI, Coordinate&gt; centroidMap = Collections.synchronizedMap(new WeakHashMap&lt;&gt;());
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;	private PathObjectHierarchy hierarchy;
+<b class="fc"><i>108</i>&nbsp;	private boolean isActive = false;</b>
+<i>109</i>&nbsp;	
+<b class="fc"><i>110</i>&nbsp;	private final ReentrantReadWriteLock rwl = new ReentrantReadWriteLock();</b>
+<b class="fc"><i>111</i>&nbsp;    private final Lock r = rwl.readLock();</b>
+<b class="fc"><i>112</i>&nbsp;    private final Lock w = rwl.writeLock();</b>
+<i>113</i>&nbsp;	
+<i>114</i>&nbsp;	
+<b class="fc"><i>115</i>&nbsp;	public PathObjectTileCache(PathObjectHierarchy hierarchy) {</b>
+<b class="fc"><i>116</i>&nbsp;		this.hierarchy = hierarchy;</b>
+<b class="fc"><i>117</i>&nbsp;		if (hierarchy != null)</b>
+<b class="fc"><i>118</i>&nbsp;			hierarchy.addPathObjectListener(this);</b>
+<b class="fc"><i>119</i>&nbsp;	}</b>
+<i>120</i>&nbsp;	
+<i>121</i>&nbsp;	public void resetCache() {
+<b class="nc"><i>122</i>&nbsp;		isActive = false;</b>
+<b class="nc"><i>123</i>&nbsp;		logger.trace(&quot;Cache reset!&quot;);</b>
+<b class="nc"><i>124</i>&nbsp;	}</b>
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;//	int cacheCounter = 0;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;	private void constructCache(Class&lt;? extends PathObject&gt; limitToClass) {
+<b class="fc"><i>129</i>&nbsp;		w.lock();</b>
+<i>130</i>&nbsp;		try {
+<i>131</i>&nbsp;	//		logger.info(&quot;Skipping cache reconstruction...&quot;);
+<b class="fc"><i>132</i>&nbsp;			long startTime = System.currentTimeMillis();</b>
+<b class="fc"><i>133</i>&nbsp;			isActive = true;</b>
+<b class="fc"><i>134</i>&nbsp;			if (limitToClass == null)</b>
+<b class="fc"><i>135</i>&nbsp;				map.clear();</b>
+<i>136</i>&nbsp;			else
+<b class="nc"><i>137</i>&nbsp;				map.remove(limitToClass);</b>
+<b class="fc"><i>138</i>&nbsp;			addToCache(hierarchy.getRootObject(), true, limitToClass);</b>
+<b class="fc"><i>139</i>&nbsp;			long endTime = System.currentTimeMillis();</b>
+<b class="fc"><i>140</i>&nbsp;			logger.debug(&quot;Cache reconstructed in &quot; + (endTime - startTime)/1000.);</b>
+<i>141</i>&nbsp;		} finally {
+<b class="fc"><i>142</i>&nbsp;			w.unlock();</b>
+<b class="fc"><i>143</i>&nbsp;		}</b>
+<i>144</i>&nbsp;//		cacheCounter += (endTime - startTime);
+<i>145</i>&nbsp;//		logger.info(&quot;Cache count: &quot; + (cacheCounter)/1000.);
+<b class="fc"><i>146</i>&nbsp;	}</b>
+<i>147</i>&nbsp;	
+<i>148</i>&nbsp;	private void ensureCacheConstructed() {
+<b class="fc"><i>149</i>&nbsp;		if (!isActive())</b>
+<b class="fc"><i>150</i>&nbsp;			constructCache(null);</b>
+<b class="fc"><i>151</i>&nbsp;	}</b>
+<i>152</i>&nbsp;	
+<i>153</i>&nbsp;	// TRUE if the cache has been constructed
+<i>154</i>&nbsp;	public boolean isActive() {
+<b class="fc"><i>155</i>&nbsp;		return isActive;</b>
+<i>156</i>&nbsp;	}
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * Add a PathObject to the cache, optionally including children.
+<i>160</i>&nbsp;	 * 
+<i>161</i>&nbsp;	 * @param pathObject
+<i>162</i>&nbsp;	 * @param includeChildren
+<i>163</i>&nbsp;	 */
+<i>164</i>&nbsp;	private void addToCache(PathObject pathObject, boolean includeChildren, Class&lt;? extends PathObject&gt; limitToClass) {
+<i>165</i>&nbsp;		// If the cache isn&#39;t active, we can ignore this... it will be constructed when it is needed
+<b class="fc"><i>166</i>&nbsp;		if (!isActive())</b>
+<b class="nc"><i>167</i>&nbsp;			return;</b>
+<i>168</i>&nbsp;
+<b class="fc"><i>169</i>&nbsp;		if (pathObject.hasROI()) {</b>
+<b class="nc"><i>170</i>&nbsp;			Class&lt;? extends PathObject&gt; cls = pathObject.getClass();</b>
+<b class="nc"><i>171</i>&nbsp;			if (limitToClass == null || cls == limitToClass) {</b>
+<b class="nc"><i>172</i>&nbsp;				SpatialIndex mapObjects = map.get(cls);</b>
+<b class="nc"><i>173</i>&nbsp;				if (mapObjects == null) {</b>
+<b class="nc"><i>174</i>&nbsp;					mapObjects = createSpatialIndex();</b>
+<b class="nc"><i>175</i>&nbsp;					map.put(cls, mapObjects);</b>
+<i>176</i>&nbsp;				}
+<b class="nc"><i>177</i>&nbsp;				Envelope envelope = getEnvelope(pathObject);</b>
+<b class="nc"><i>178</i>&nbsp;				mapObjects.insert(envelope, pathObject);</b>
+<i>179</i>&nbsp;			}
+<i>180</i>&nbsp;		}
+<i>181</i>&nbsp;		
+<i>182</i>&nbsp;		// Add the children
+<b class="fc"><i>183</i>&nbsp;		if (includeChildren &amp;&amp; !(pathObject instanceof TemporaryObject) &amp;&amp; pathObject.hasChildren()) {</b>
+<b class="nc"><i>184</i>&nbsp;			for (PathObject child : pathObject.getChildObjectsAsArray())</b>
+<b class="nc"><i>185</i>&nbsp;				addToCache(child, includeChildren, limitToClass);</b>
+<i>186</i>&nbsp;		}
+<b class="fc"><i>187</i>&nbsp;	}</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;	Geometry getGeometry(ROI roi) {
+<b class="nc"><i>190</i>&nbsp;		var geometry = geometryMap.get(roi);</b>
+<b class="nc"><i>191</i>&nbsp;		if (geometry == null)</b>
+<b class="nc"><i>192</i>&nbsp;			return roi.getGeometry();</b>
+<i>193</i>&nbsp;		else
+<b class="nc"><i>194</i>&nbsp;			return geometry;</b>
+<i>195</i>&nbsp;	}
+<i>196</i>&nbsp;	
+<i>197</i>&nbsp;	Geometry getGeometry(PathObject pathObject) {
+<b class="nc"><i>198</i>&nbsp;		ROI roi = pathObject.getROI();</b>
+<b class="nc"><i>199</i>&nbsp;		Geometry geometry = geometryMap.get(roi);</b>
+<b class="nc"><i>200</i>&nbsp;		if (geometry == null) {</b>
+<b class="nc"><i>201</i>&nbsp;			geometry = roi.getGeometry();</b>
+<b class="nc"><i>202</i>&nbsp;			if (pathObject.isAnnotation() || pathObject.isTMACore()) {</b>
+<b class="nc"><i>203</i>&nbsp;				geometryMap.put(roi, geometry);</b>
+<i>204</i>&nbsp;			}
+<i>205</i>&nbsp;////			long startTime = System.currentTimeMillis();
+<i>206</i>&nbsp;//			if (!geometry.isValid()) {
+<i>207</i>&nbsp;//				int nVertices = geometry.getNumPoints();
+<i>208</i>&nbsp;//				if (geometry.getNumPoints() &lt; 100)
+<i>209</i>&nbsp;//					logger.warn(&quot;{} is not a valid geometry! Actual geometry {}&quot;, pathObject, geometry);
+<i>210</i>&nbsp;//				else
+<i>211</i>&nbsp;//					logger.warn(&quot;{} is not a valid geometry! Actual geometry {} ({} vertices)&quot;, pathObject, geometry.getGeometryType(), nVertices);
+<i>212</i>&nbsp;//			}
+<i>213</i>&nbsp;////			long endTime = System.currentTimeMillis();
+<i>214</i>&nbsp;////			System.err.println(&quot;Testing &quot; + (endTime - startTime) + &quot; ms for &quot; + geometry);
+<i>215</i>&nbsp;		}
+<b class="nc"><i>216</i>&nbsp;		return geometry;</b>
+<i>217</i>&nbsp;	}
+<i>218</i>&nbsp;	
+<i>219</i>&nbsp;	private Coordinate getCentroidCoordinate(PathObject pathObject) {
+<b class="nc"><i>220</i>&nbsp;		ROI roi = PathObjectTools.getROI(pathObject, true);</b>
+<i>221</i>&nbsp;		// It&#39;s faster not to rely on a synchronized map
+<b class="nc"><i>222</i>&nbsp;		return new Coordinate(roi.getCentroidX(), roi.getCentroidY());</b>
+<i>223</i>&nbsp;//		Coordinate coordinate = centroidMap.get(roi);
+<i>224</i>&nbsp;//		if (coordinate == null) {
+<i>225</i>&nbsp;//			coordinate = new Coordinate(roi.getCentroidX(), roi.getCentroidY());
+<i>226</i>&nbsp;////			coordinate = getGeometry(pathObject).getCentroid().getCoordinate();
+<i>227</i>&nbsp;//			centroidMap.put(roi, coordinate);
+<i>228</i>&nbsp;//		}
+<i>229</i>&nbsp;//		return coordinate;
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	PointOnGeometryLocator getLocator(ROI roi, boolean addToCache) {
+<b class="nc"><i>233</i>&nbsp;		var locator = locatorMap.get(roi);</b>
+<b class="nc"><i>234</i>&nbsp;		if (locator == null) {</b>
+<b class="nc"><i>235</i>&nbsp;			var geometry = getGeometry(roi);</b>
+<b class="nc"><i>236</i>&nbsp;			if (geometry instanceof Polygonal || geometry instanceof LinearRing)</b>
+<b class="nc"><i>237</i>&nbsp;				locator = new IndexedPointInAreaLocator(geometry);</b>
+<i>238</i>&nbsp;			else
+<b class="nc"><i>239</i>&nbsp;				locator = new SimplePointInAreaLocator(geometry);</b>
+<b class="nc"><i>240</i>&nbsp;			locatorMap.put(roi, locator);</b>
+<i>241</i>&nbsp;		}
+<b class="nc"><i>242</i>&nbsp;		return locator;</b>
+<i>243</i>&nbsp;	}
+<i>244</i>&nbsp;	
+<i>245</i>&nbsp;//	public boolean covers(PathObject possibleParent, PathObject possibleChild) {
+<i>246</i>&nbsp;//		return getGeometry(possibleParent).covers(getGeometry(possibleChild));
+<i>247</i>&nbsp;//	}
+<i>248</i>&nbsp;	
+<b class="fc"><i>249</i>&nbsp;	private Map&lt;Geometry, PreparedGeometry&gt; preparedGeometryMap = new WeakHashMap&lt;&gt;();</b>
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	PreparedGeometry getPreparedGeometry(Geometry geometry) {
+<b class="nc"><i>252</i>&nbsp;		var prepared = preparedGeometryMap.get(geometry);</b>
+<b class="nc"><i>253</i>&nbsp;		if (prepared != null)</b>
+<b class="nc"><i>254</i>&nbsp;			return prepared;</b>
+<i>255</i>&nbsp;		
+<b class="nc"><i>256</i>&nbsp;		synchronized (preparedGeometryMap) {</b>
+<b class="nc"><i>257</i>&nbsp;			prepared = preparedGeometryMap.get(geometry);</b>
+<b class="nc"><i>258</i>&nbsp;			if (prepared != null)</b>
+<b class="nc"><i>259</i>&nbsp;				return prepared;</b>
+<b class="nc"><i>260</i>&nbsp;			prepared = PreparedGeometryFactory.prepare(geometry);</b>
+<b class="nc"><i>261</i>&nbsp;			preparedGeometryMap.put(geometry, prepared);</b>
+<b class="nc"><i>262</i>&nbsp;			return prepared;</b>
+<b class="nc"><i>263</i>&nbsp;		}</b>
+<i>264</i>&nbsp;	}
+<i>265</i>&nbsp;	
+<i>266</i>&nbsp;	boolean covers(PathObject possibleParent, PathObject possibleChild) {
+<b class="nc"><i>267</i>&nbsp;		var child = getGeometry(possibleChild);</b>
+<i>268</i>&nbsp;		// If we have an annotation, do a quick check for a single coordinate outside
+<b class="nc"><i>269</i>&nbsp;		if (possibleParent.isAnnotation()) {</b>
+<b class="nc"><i>270</i>&nbsp;			if (getLocator(possibleParent.getROI(), true).locate(child.getCoordinate()) == Location.EXTERIOR)</b>
+<b class="nc"><i>271</i>&nbsp;				return false;</b>
+<i>272</i>&nbsp;		}
+<b class="nc"><i>273</i>&nbsp;		var parent = getGeometry(possibleParent);</b>
+<b class="nc"><i>274</i>&nbsp;		return covers(parent, child);</b>
+<i>275</i>&nbsp;	}
+<i>276</i>&nbsp;	
+<i>277</i>&nbsp;	boolean covers(PreparedGeometry parent, Geometry child) {
+<b class="nc"><i>278</i>&nbsp;		return parent.covers(child);</b>
+<i>279</i>&nbsp;	}
+<i>280</i>&nbsp;	
+<i>281</i>&nbsp;	boolean covers(Geometry parent, Geometry child) {
+<i>282</i>&nbsp;//		if (!parent.getEnvelopeInternal().covers(child.getEnvelopeInternal()))
+<i>283</i>&nbsp;//			return false;
+<i>284</i>&nbsp;//		if (parent instanceof Polygon)
+<i>285</i>&nbsp;//			return parent.covers(child);
+<i>286</i>&nbsp;//		if (parent instanceof MultiPolygon) {
+<i>287</i>&nbsp;//			for (int i = 0; i &lt; parent.getNumGeometries(); i++) {
+<i>288</i>&nbsp;//				if (covers(parent.getGeometryN(i), child))
+<i>289</i>&nbsp;//					return true;
+<i>290</i>&nbsp;//			}
+<i>291</i>&nbsp;//			return false;
+<i>292</i>&nbsp;//		}
+<b class="nc"><i>293</i>&nbsp;		return covers(getPreparedGeometry(parent), child);</b>
+<i>294</i>&nbsp;	}
+<i>295</i>&nbsp;	
+<i>296</i>&nbsp;	boolean containsCentroid(PathObject possibleParent, PathObject possibleChild) {
+<b class="nc"><i>297</i>&nbsp;		Coordinate centroid = getCentroidCoordinate(possibleChild);</b>
+<b class="nc"><i>298</i>&nbsp;		if (centroid == null)</b>
+<b class="nc"><i>299</i>&nbsp;			return false;</b>
+<b class="nc"><i>300</i>&nbsp;		if (possibleParent.isDetection())</b>
+<b class="nc"><i>301</i>&nbsp;			return SimplePointInAreaLocator.locate(</b>
+<b class="nc"><i>302</i>&nbsp;					centroid, getGeometry(possibleParent)) != Location.EXTERIOR;</b>
+<b class="nc"><i>303</i>&nbsp;		return getLocator(possibleParent.getROI(), true).locate(centroid) != Location.EXTERIOR;</b>
+<i>304</i>&nbsp;	}
+<i>305</i>&nbsp;	
+<i>306</i>&nbsp;	boolean containsCentroid(PointOnGeometryLocator locator, PathObject possibleChild) {
+<b class="nc"><i>307</i>&nbsp;		Coordinate centroid = getCentroidCoordinate(possibleChild);</b>
+<b class="nc"><i>308</i>&nbsp;		if (centroid == null)</b>
+<b class="nc"><i>309</i>&nbsp;			return false;</b>
+<b class="nc"><i>310</i>&nbsp;		return locator.locate(centroid) != Location.EXTERIOR;</b>
+<i>311</i>&nbsp;	}
+<i>312</i>&nbsp;	
+<i>313</i>&nbsp;	boolean containsCentroid(Geometry possibleParent, PathObject possibleChild) {
+<b class="nc"><i>314</i>&nbsp;		Coordinate centroid = getCentroidCoordinate(possibleChild);</b>
+<b class="nc"><i>315</i>&nbsp;		if (centroid == null)</b>
+<b class="nc"><i>316</i>&nbsp;			return false;</b>
+<b class="nc"><i>317</i>&nbsp;		return SimplePointInAreaLocator.locate(centroid, possibleParent) != Location.EXTERIOR;</b>
+<i>318</i>&nbsp;	}
+<i>319</i>&nbsp;	
+<i>320</i>&nbsp;	
+<i>321</i>&nbsp;	private SpatialIndex createSpatialIndex() {
+<b class="nc"><i>322</i>&nbsp;		return new Quadtree();</b>
+<i>323</i>&nbsp;//		return new STRtree();
+<i>324</i>&nbsp;	}
+<i>325</i>&nbsp;	
+<i>326</i>&nbsp;	private Envelope getEnvelope(PathObject pathObject) {
+<b class="nc"><i>327</i>&nbsp;		var envelope = getEnvelope(pathObject.getROI());</b>
+<b class="nc"><i>328</i>&nbsp;		lastEnvelopeMap.put(pathObject, envelope);</b>
+<b class="nc"><i>329</i>&nbsp;		return envelope;</b>
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;	
+<i>332</i>&nbsp;	private Envelope getEnvelope(ROI roi) {
+<b class="nc"><i>333</i>&nbsp;		var envelope = envelopeMap.get(roi);</b>
+<b class="nc"><i>334</i>&nbsp;		if (envelope == null) {</b>
+<b class="nc"><i>335</i>&nbsp;			envelope = new Envelope(roi.getBoundsX(), roi.getBoundsX() + roi.getBoundsWidth(),</b>
+<b class="nc"><i>336</i>&nbsp;					roi.getBoundsY(), roi.getBoundsY() + roi.getBoundsHeight());</b>
+<b class="nc"><i>337</i>&nbsp;			envelopeMap.put(roi, envelope);</b>
+<i>338</i>&nbsp;		}
+<b class="nc"><i>339</i>&nbsp;		return envelope;</b>
+<i>340</i>&nbsp;	}
+<i>341</i>&nbsp;	
+<i>342</i>&nbsp;	private Envelope getEnvelope(ImageRegion region) {
+<b class="fc"><i>343</i>&nbsp;		return new Envelope(region.getMinX(), region.getMaxX(),</b>
+<b class="fc"><i>344</i>&nbsp;				region.getMinY(), region.getMaxY());</b>
+<i>345</i>&nbsp;	}
+<i>346</i>&nbsp;	
+<i>347</i>&nbsp;	
+<i>348</i>&nbsp;	
+<i>349</i>&nbsp;	/**
+<i>350</i>&nbsp;	 * This doesn&#39;t acquire the lock! The locking is done first.
+<i>351</i>&nbsp;	 * 
+<i>352</i>&nbsp;	 * @param pathObject
+<i>353</i>&nbsp;	 * @param removeChildren
+<i>354</i>&nbsp;	 */
+<i>355</i>&nbsp;	private void removeFromCache(PathObject pathObject, boolean removeChildren) {
+<i>356</i>&nbsp;		// If the cache isn&#39;t active, then nothing to remove
+<b class="nc"><i>357</i>&nbsp;		if (!isActive())</b>
+<b class="nc"><i>358</i>&nbsp;			return;</b>
+<i>359</i>&nbsp;		
+<b class="nc"><i>360</i>&nbsp;		SpatialIndex mapObjects = map.get(pathObject.getClass());</b>
+<i>361</i>&nbsp;		
+<i>362</i>&nbsp;		// We can remove objects from a Quadtree
+<b class="nc"><i>363</i>&nbsp;		if (mapObjects instanceof Quadtree) {</b>
+<b class="nc"><i>364</i>&nbsp;			Envelope envelope = lastEnvelopeMap.get(pathObject);</b>
+<b class="nc"><i>365</i>&nbsp;			envelope = MAX_ENVELOPE;</b>
+<i>366</i>&nbsp;//				System.err.println(&quot;Before: &quot; + mapObjects.query(MAX_ENVELOPE).size());
+<b class="nc"><i>367</i>&nbsp;			if (envelope != null) {</b>
+<b class="nc"><i>368</i>&nbsp;				if (mapObjects.remove(envelope, pathObject)) {</b>
+<b class="nc"><i>369</i>&nbsp;					logger.debug(&quot;Removed {} from cache&quot;, pathObject);</b>
+<i>370</i>&nbsp;				} else
+<b class="nc"><i>371</i>&nbsp;					logger.debug(&quot;Unable to remove {} from cache&quot;, pathObject);</b>
+<i>372</i>&nbsp;			} else {
+<b class="nc"><i>373</i>&nbsp;				logger.debug(&quot;No envelope found for {}&quot;, pathObject);					</b>
+<i>374</i>&nbsp;			}
+<i>375</i>&nbsp;//				System.err.println(&quot;After: &quot; + mapObjects.query(MAX_ENVELOPE).size());
+<i>376</i>&nbsp;			// Remove the children
+<b class="nc"><i>377</i>&nbsp;			if (removeChildren) {</b>
+<b class="nc"><i>378</i>&nbsp;				for (PathObject child : pathObject.getChildObjectsAsArray())</b>
+<b class="nc"><i>379</i>&nbsp;					removeFromCache(child, removeChildren);</b>
+<i>380</i>&nbsp;			}
+<b class="nc"><i>381</i>&nbsp;		} else if (mapObjects instanceof SpatialIndex &amp;&amp; !removeChildren) {</b>
+<i>382</i>&nbsp;			// We can&#39;t remove objects from a STRtree, but since we&#39;re just removing one object we can rebuild only the cache for this class
+<b class="nc"><i>383</i>&nbsp;			constructCache(pathObject.getClass());</b>
+<i>384</i>&nbsp;		} else {
+<i>385</i>&nbsp;			// If we need to remove multiple objects, better to just rebuild the entire cache
+<b class="nc"><i>386</i>&nbsp;			constructCache(null);</b>
+<i>387</i>&nbsp;		}
+<b class="nc"><i>388</i>&nbsp;	}</b>
+<i>389</i>&nbsp;	
+<i>390</i>&nbsp;	
+<i>391</i>&nbsp;//	/**
+<i>392</i>&nbsp;//	 * Add a PathObject to the cache.  Child objects are not added.
+<i>393</i>&nbsp;//	 * @param pathObject
+<i>394</i>&nbsp;//	 */
+<i>395</i>&nbsp;//	private void addToCache(PathObject pathObject) {
+<i>396</i>&nbsp;//		addToCache(pathObject, false);
+<i>397</i>&nbsp;//	}
+<i>398</i>&nbsp;	
+<i>399</i>&nbsp;	
+<i>400</i>&nbsp;	/**
+<i>401</i>&nbsp;	 * Get all the PathObjects stored in this cache of a specified type and having ROIs with bounds overlapping a specified region.
+<i>402</i>&nbsp;	 * This does not guarantee that the ROI (which may not be rectangular) overlaps the region...
+<i>403</i>&nbsp;	 * but a quick test is preferred over a more expensive one.
+<i>404</i>&nbsp;	 * &lt;p&gt;
+<i>405</i>&nbsp;	 * Note that pathObjects will be added to the collection provided, if there is one.
+<i>406</i>&nbsp;	 * The same object will be added to this collection multiple times if it overlaps different tiles -
+<i>407</i>&nbsp;	 * again in the interests of speed, no check is made.
+<i>408</i>&nbsp;	 * However this can be addressed by using a Set as the collection.
+<i>409</i>&nbsp;	 * &lt;p&gt;
+<i>410</i>&nbsp;	 * If a collection is not provided, another Collection is created &amp; used instead.
+<i>411</i>&nbsp;	 * 
+<i>412</i>&nbsp;	 * @param cls a PathObject class, or null if all object types should be returned
+<i>413</i>&nbsp;	 * @param region an image region, or null if all objects with ROIs should be return
+<i>414</i>&nbsp;	 * @param pathObjects an (optional) existing collection to which PathObjects should be added
+<i>415</i>&nbsp;	 * @param includeSubclasses true if subclasses of the specified class should be included
+<i>416</i>&nbsp;	 * @return
+<i>417</i>&nbsp;	 */
+<i>418</i>&nbsp;	public Collection&lt;PathObject&gt; getObjectsForRegion(Class&lt;? extends PathObject&gt; cls, ImageRegion region, Collection&lt;PathObject&gt; pathObjects, boolean includeSubclasses) {
+<b class="fc"><i>419</i>&nbsp;		ensureCacheConstructed();</b>
+<i>420</i>&nbsp;		
+<b class="fc"><i>421</i>&nbsp;		var envelope = region == null ? MAX_ENVELOPE : getEnvelope(region);</b>
+<i>422</i>&nbsp;		
+<b class="fc"><i>423</i>&nbsp;		int z = region == null ? -1 : region.getZ();</b>
+<b class="fc"><i>424</i>&nbsp;		int t = region == null ? -1 : region.getT();</b>
+<b class="fc"><i>425</i>&nbsp;		r.lock();</b>
+<i>426</i>&nbsp;		try {
+<i>427</i>&nbsp;			// Iterate through all the classes, getting objects of the specified class or subclasses thereof
+<b class="fc"><i>428</i>&nbsp;			for (Entry&lt;Class&lt;? extends PathObject&gt;, SpatialIndex&gt; entry : map.entrySet()) {</b>
+<b class="nc"><i>429</i>&nbsp;				if (cls == null || (includeSubclasses &amp;&amp; cls.isAssignableFrom(entry.getKey())) || cls.isInstance(entry.getKey())) {</b>
+<b class="nc"><i>430</i>&nbsp;					if (entry.getValue() != null) {</b>
+<b class="nc"><i>431</i>&nbsp;						var list = entry.getValue().query(envelope);</b>
+<b class="nc"><i>432</i>&nbsp;						if (list.isEmpty())</b>
+<b class="nc"><i>433</i>&nbsp;							continue;</b>
+<i>434</i>&nbsp;						
+<b class="nc"><i>435</i>&nbsp;						if (pathObjects == null)</b>
+<b class="nc"><i>436</i>&nbsp;							pathObjects = new HashSet&lt;PathObject&gt;();</b>
+<i>437</i>&nbsp;						
+<i>438</i>&nbsp;						// Add all objects that have a parent, i.e. might be in the hierarchy
+<b class="nc"><i>439</i>&nbsp;						for (PathObject pathObject : (List&lt;PathObject&gt;)list) {</b>
+<b class="nc"><i>440</i>&nbsp;							var roi = pathObject.getROI();</b>
+<b class="nc"><i>441</i>&nbsp;							if (roi == null || region == null || (roi.getZ() == z &amp;&amp; roi.getT() == t)) {</b>
+<b class="nc"><i>442</i>&nbsp;								if (pathObject.getParent() != null || pathObject.isRootObject()) {</b>
+<b class="nc"><i>443</i>&nbsp;									if (envelope.intersects(getEnvelope(pathObject)))</b>
+<b class="nc"><i>444</i>&nbsp;										pathObjects.add(pathObject);</b>
+<i>445</i>&nbsp;								}
+<i>446</i>&nbsp;							}
+<b class="nc"><i>447</i>&nbsp;						}</b>
+<i>448</i>&nbsp;					}
+<i>449</i>&nbsp;//						pathObjects = entry.getValue().getObjectsForRegion(region, pathObjects);
+<i>450</i>&nbsp;				}
+<b class="nc"><i>451</i>&nbsp;			}</b>
+<i>452</i>&nbsp;	//		logger.info(&quot;Objects for &quot; + region + &quot;: &quot; + (pathObjects == null ? 0 : pathObjects.size()));
+<b class="fc"><i>453</i>&nbsp;			if (pathObjects == null)</b>
+<b class="fc"><i>454</i>&nbsp;				return Collections.emptySet();</b>
+<b class="fc"><i>455</i>&nbsp;			return pathObjects;</b>
+<i>456</i>&nbsp;		} finally {
+<b class="fc"><i>457</i>&nbsp;			r.unlock();</b>
+<b class="nc"><i>458</i>&nbsp;		}</b>
+<i>459</i>&nbsp;	}
+<i>460</i>&nbsp;	
+<i>461</i>&nbsp;	public boolean hasObjectsForRegion(Class&lt;? extends PathObject&gt; cls, ImageRegion region, boolean includeSubclasses) {
+<b class="nc"><i>462</i>&nbsp;		ensureCacheConstructed();</b>
+<i>463</i>&nbsp;		
+<b class="nc"><i>464</i>&nbsp;		var envelope = region == null ? MAX_ENVELOPE : getEnvelope(region);</b>
+<i>465</i>&nbsp;		
+<b class="nc"><i>466</i>&nbsp;		int z = region == null ? -1 : region.getZ();</b>
+<b class="nc"><i>467</i>&nbsp;		int t = region == null ? -1 : region.getT();</b>
+<b class="nc"><i>468</i>&nbsp;		r.lock();</b>
+<i>469</i>&nbsp;		try {
+<i>470</i>&nbsp;			// Iterate through all the classes, getting objects of the specified class or subclasses thereof
+<b class="nc"><i>471</i>&nbsp;			for (Entry&lt;Class&lt;? extends PathObject&gt;, SpatialIndex&gt; entry : map.entrySet()) {</b>
+<b class="nc"><i>472</i>&nbsp;				if (cls == null || cls.isInstance(entry.getKey()) || (includeSubclasses &amp;&amp; cls.isAssignableFrom(entry.getKey()))) {</b>
+<b class="nc"><i>473</i>&nbsp;					if (entry.getValue() != null) {</b>
+<b class="nc"><i>474</i>&nbsp;						var list = (List&lt;PathObject&gt;)entry.getValue().query(envelope);</b>
+<b class="nc"><i>475</i>&nbsp;						for (var pathObject : list) {</b>
+<b class="nc"><i>476</i>&nbsp;							var roi = pathObject.getROI();</b>
+<b class="nc"><i>477</i>&nbsp;							if (roi == null)</b>
+<b class="nc"><i>478</i>&nbsp;								continue;</b>
+<b class="nc"><i>479</i>&nbsp;							if (region == null)</b>
+<b class="nc"><i>480</i>&nbsp;								return true;</b>
+<b class="nc"><i>481</i>&nbsp;							if (roi.getZ() != z || roi.getT() != t)</b>
+<b class="nc"><i>482</i>&nbsp;								continue;</b>
+<b class="nc"><i>483</i>&nbsp;							if (region.intersects(roi.getBoundsX(), roi.getBoundsY(), roi.getBoundsWidth(), roi.getBoundsHeight())) {</b>
+<b class="nc"><i>484</i>&nbsp;								return true;</b>
+<i>485</i>&nbsp;							}
+<b class="nc"><i>486</i>&nbsp;						}</b>
+<i>487</i>&nbsp;//						if (list.stream().anyMatch(p -&gt; p.hasROI() &amp;&amp; 
+<i>488</i>&nbsp;//								(region == null || (p.getROI().getZ() == z &amp;&amp; p.getROI().getT() == t))))
+<i>489</i>&nbsp;//							return true;
+<i>490</i>&nbsp;//						if (entry.getValue().hasObjectsForRegion(region))
+<i>491</i>&nbsp;//							return true;
+<i>492</i>&nbsp;					}
+<i>493</i>&nbsp;				}
+<b class="nc"><i>494</i>&nbsp;			}</b>
+<b class="nc"><i>495</i>&nbsp;			return false;</b>
+<i>496</i>&nbsp;		} finally {
+<b class="nc"><i>497</i>&nbsp;			r.unlock();</b>
+<b class="nc"><i>498</i>&nbsp;		}</b>
+<i>499</i>&nbsp;	}
+<i>500</i>&nbsp;	
+<i>501</i>&nbsp;//	public synchronized Collection&lt;PathObject&gt; getObjectsForRegion(Class&lt;? extends PathObject&gt; cls, Rectangle region, Collection&lt;PathObject&gt; pathObjects) {
+<i>502</i>&nbsp;//		ensureCacheConstructed();
+<i>503</i>&nbsp;//		
+<i>504</i>&nbsp;//		if (pathObjects == null)
+<i>505</i>&nbsp;//			pathObjects = new HashSet&lt;&gt;();
+<i>506</i>&nbsp;//		
+<i>507</i>&nbsp;//		// Iterate through all the classes, getting objects of the specified class or subclasses thereof
+<i>508</i>&nbsp;//		if (cls == null) {
+<i>509</i>&nbsp;//			for (Class&lt;? extends PathObject&gt; tempClass : map.keySet())
+<i>510</i>&nbsp;//				getObjectsForRegion(tempClass, region, pathObjects);
+<i>511</i>&nbsp;//			return pathObjects;
+<i>512</i>&nbsp;//		}
+<i>513</i>&nbsp;//		
+<i>514</i>&nbsp;//		// Extract the map for the type
+<i>515</i>&nbsp;//		PathObjectTileMap mapObjects = map.get(cls);
+<i>516</i>&nbsp;//		if (mapObjects == null)
+<i>517</i>&nbsp;//			return pathObjects;
+<i>518</i>&nbsp;//		
+<i>519</i>&nbsp;//		// Get the objects
+<i>520</i>&nbsp;//		return mapObjects.getObjectsForRegion(region, pathObjects);
+<i>521</i>&nbsp;//	}
+<i>522</i>&nbsp;	
+<i>523</i>&nbsp;	
+<i>524</i>&nbsp;
+<i>525</i>&nbsp;//	@Override
+<i>526</i>&nbsp;//	public void pathObjectChanged(PathObjectHierarchy pathObjectHierarchy, PathObject pathObject) {
+<i>527</i>&nbsp;//		// Remove, then re-add the object - ignoring children (which shouldn&#39;t be changed, as no structural change is associated with this event)
+<i>528</i>&nbsp;//		removeFromCache(pathObject, false);
+<i>529</i>&nbsp;//		addToCache(pathObject, false);
+<i>530</i>&nbsp;//	}
+<i>531</i>&nbsp;
+<i>532</i>&nbsp;
+<i>533</i>&nbsp;	@Override
+<i>534</i>&nbsp;	public void hierarchyChanged(final PathObjectHierarchyEvent event) {
+<b class="nc"><i>535</i>&nbsp;		w.lock();</b>
+<i>536</i>&nbsp;		try {
+<b class="nc"><i>537</i>&nbsp;			boolean singleChange = event.getChangedObjects().size() == 1;</b>
+<b class="nc"><i>538</i>&nbsp;			PathObject singleObject = singleChange ? event.getChangedObjects().get(0) : null;</b>
+<b class="nc"><i>539</i>&nbsp;			if (singleChange &amp;&amp; event.getEventType() == HierarchyEventType.ADDED) {</b>
+<b class="nc"><i>540</i>&nbsp;				removeFromCache(singleObject, false);</b>
+<b class="nc"><i>541</i>&nbsp;				addToCache(singleObject, false, singleObject.getClass());</b>
+<b class="nc"><i>542</i>&nbsp;			} else if (singleChange &amp;&amp; event.getEventType() == HierarchyEventType.REMOVED) {</b>
+<b class="nc"><i>543</i>&nbsp;				removeFromCache(singleObject, false);</b>
+<b class="nc"><i>544</i>&nbsp;			} else if (event.getEventType() == HierarchyEventType.OTHER_STRUCTURE_CHANGE || event.getEventType() == HierarchyEventType.CHANGE_OTHER) {</b>
+<i>545</i>&nbsp;//				if (singleChange &amp;&amp; !singleObject.isRootObject()) {
+<i>546</i>&nbsp;//					removeFromCache(singleObject, false);
+<i>547</i>&nbsp;//					addToCache(singleObject, false, singleObject.getClass());					
+<i>548</i>&nbsp;//				} else
+<i>549</i>&nbsp;//				System.err.println(event);
+<b class="nc"><i>550</i>&nbsp;				if (!event.isChanging())</b>
+<b class="nc"><i>551</i>&nbsp;					resetCache();</b>
+<i>552</i>&nbsp;			}
+<i>553</i>&nbsp;		} finally {
+<b class="nc"><i>554</i>&nbsp;			w.unlock();</b>
+<b class="nc"><i>555</i>&nbsp;		}</b>
+<i>556</i>&nbsp;//		else if (event.getEventType() == HierarchyEventType.OBJECT_CHANGE)
+<i>557</i>&nbsp;//			resetCache(); // TODO: Check if full change is necessary for object change events			
+<b class="nc"><i>558</i>&nbsp;	}</b>
+<i>559</i>&nbsp;	
+<i>560</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

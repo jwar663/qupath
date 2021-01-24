@@ -1,0 +1,375 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Preprocessing</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.opencv.ml.objects.features</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Preprocessing (qupath.opencv.ml.objects.features)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Preprocessing</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 55)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Preprocessing$PCAProjector</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 84)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.opencv.ml.objects.features;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.nio.FloatBuffer;
+<i>25</i>&nbsp;import java.util.Arrays;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import org.bytedeco.opencv.global.opencv_core;
+<i>28</i>&nbsp;import org.bytedeco.opencv.opencv_core.Mat;
+<i>29</i>&nbsp;import org.bytedeco.opencv.opencv_core.Scalar;
+<i>30</i>&nbsp;import org.slf4j.Logger;
+<i>31</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;import com.google.gson.annotations.JsonAdapter;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>36</i>&nbsp;import qupath.lib.classifiers.Normalization;
+<i>37</i>&nbsp;import qupath.lib.io.OpenCVTypeAdapters;
+<i>38</i>&nbsp;
+<i>39</i>&nbsp;/**
+<i>40</i>&nbsp; * Helper class for preprocessing input for machine learning algorithms using OpenCV Mats.
+<i>41</i>&nbsp; * 
+<i>42</i>&nbsp; * @author Pete Bankhead
+<i>43</i>&nbsp; */
+<b class="nc"><i>44</i>&nbsp;public class Preprocessing {</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;	/**
+<i>47</i>&nbsp;	 * Create a principle components analysis projection to reduce features.
+<i>48</i>&nbsp;	 * @param data input data used to create the projector
+<i>49</i>&nbsp;	 * @param retainedVariance variance to retain (determines the number of output features)
+<i>50</i>&nbsp;	 * @param normalize if true, normalize the output features
+<i>51</i>&nbsp;	 * @return a {@link PCAProjector} that can be applied to new data
+<i>52</i>&nbsp;	 */
+<i>53</i>&nbsp;	public static PCAProjector createPCAProjector(Mat data, double retainedVariance, boolean normalize) {
+<b class="nc"><i>54</i>&nbsp;		return new PCAProjector(data, retainedVariance, normalize);</b>
+<i>55</i>&nbsp;	}
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;	/**
+<i>58</i>&nbsp;	 * Create a simple normalizer to rescale input data.
+<i>59</i>&nbsp;	 * 
+<i>60</i>&nbsp;	 * @param normalization the method of normalization to apply
+<i>61</i>&nbsp;	 * @param samples the input samples used to determine the normalization parameter
+<i>62</i>&nbsp;	 * @param missingValue an optional value that may be used to replace non-finite (i.e. missing) feature values
+<i>63</i>&nbsp;	 * @return a {@link Normalizer} that may be applied to new data
+<i>64</i>&nbsp;	 */
+<i>65</i>&nbsp;	public static Normalizer createNormalizer(final Normalization normalization, final Mat samples, final double missingValue) {
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;		Mat features;
+<b class="nc"><i>68</i>&nbsp;		if (samples.channels() == 1)</b>
+<b class="nc"><i>69</i>&nbsp;			features = samples;</b>
+<i>70</i>&nbsp;		else
+<b class="nc"><i>71</i>&nbsp;			features = samples.reshape(1, samples.rows() * samples.cols());</b>
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;		int nSamples = features.rows();</b>
+<b class="nc"><i>74</i>&nbsp;		int nFeatures = features.cols();</b>
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;		var offsets = new double[nFeatures];</b>
+<b class="nc"><i>77</i>&nbsp;		var scales = new double[nFeatures];</b>
+<b class="nc"><i>78</i>&nbsp;		Arrays.fill(scales, 1.0);</b>
+<i>79</i>&nbsp;
+<b class="nc"><i>80</i>&nbsp;		if (normalization == Normalization.NONE) {</b>
+<b class="nc"><i>81</i>&nbsp;			return Normalizer.createNormalizer(offsets, scales, missingValue);</b>
+<i>82</i>&nbsp;		}
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;		var indexer = samples.createIndexer();</b>
+<b class="nc"><i>85</i>&nbsp;		var inds = new long[2];</b>
+<b class="nc"><i>86</i>&nbsp;		for (int c = 0; c &lt; nFeatures; c++) {</b>
+<b class="nc"><i>87</i>&nbsp;			var stats = new RunningStatistics();</b>
+<b class="nc"><i>88</i>&nbsp;			inds[1] = c;</b>
+<b class="nc"><i>89</i>&nbsp;			for (int r = 0; r &lt; nSamples; r++) {</b>
+<b class="nc"><i>90</i>&nbsp;				inds[0] = r;</b>
+<b class="nc"><i>91</i>&nbsp;				var val = indexer.getDouble(inds);</b>
+<b class="nc"><i>92</i>&nbsp;				if (Double.isFinite(val))</b>
+<b class="nc"><i>93</i>&nbsp;					stats.addValue(val);</b>
+<i>94</i>&nbsp;			}
+<b class="nc"><i>95</i>&nbsp;			offsets[c] = 0.0;</b>
+<b class="nc"><i>96</i>&nbsp;			scales[c] = 1.0;</b>
+<b class="nc"><i>97</i>&nbsp;			if (stats.size() &gt; 0) {</b>
+<b class="nc"><i>98</i>&nbsp;				if (normalization == Normalization.MEAN_VARIANCE) {</b>
+<b class="nc"><i>99</i>&nbsp;					offsets[c] = -stats.getMean();</b>
+<b class="nc"><i>100</i>&nbsp;					scales[c] = 1.0/stats.getStdDev();</b>
+<b class="nc"><i>101</i>&nbsp;				} else if (normalization == Normalization.MIN_MAX) {</b>
+<b class="nc"><i>102</i>&nbsp;					offsets[c] = -stats.getMin();</b>
+<b class="nc"><i>103</i>&nbsp;					scales[c] = 1.0/(stats.getMax() - stats.getMin());</b>
+<i>104</i>&nbsp;				}
+<i>105</i>&nbsp;			}
+<i>106</i>&nbsp;		}
+<b class="nc"><i>107</i>&nbsp;		indexer.release();</b>
+<i>108</i>&nbsp;
+<b class="nc"><i>109</i>&nbsp;		if (features != samples)</b>
+<b class="nc"><i>110</i>&nbsp;			features.release();</b>
+<i>111</i>&nbsp;
+<b class="nc"><i>112</i>&nbsp;		return Normalizer.createNormalizer(offsets, scales, missingValue);</b>
+<i>113</i>&nbsp;	}
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;	/**
+<i>117</i>&nbsp;	 * Apply a {@link Normalizer} to new training data samples.
+<i>118</i>&nbsp;	 * Features may be either columns or channels.
+<i>119</i>&nbsp;	 * @param samples the input data
+<i>120</i>&nbsp;	 * @param normalizer the normalizer to apply
+<i>121</i>&nbsp;	 */
+<i>122</i>&nbsp;	public static void normalize(final Mat samples, final Normalizer normalizer) {
+<b class="nc"><i>123</i>&nbsp;		if (normalizer == null || normalizer.isIdentity()) {</b>
+<i>124</i>&nbsp;			// If we have an identify normalizer, 
+<b class="nc"><i>125</i>&nbsp;			if (Double.isFinite(normalizer.getMissingValue())) {</b>
+<b class="nc"><i>126</i>&nbsp;				opencv_core.patchNaNs(samples, normalizer.getMissingValue());</b>
+<i>127</i>&nbsp;			}
+<i>128</i>&nbsp;			return;
+<i>129</i>&nbsp;		}
+<i>130</i>&nbsp;
+<b class="nc"><i>131</i>&nbsp;		boolean doChannels = samples.channels() &gt; 1 &amp;&amp; samples.channels() == normalizer.nFeatures();</b>
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;		// It makes a major difference to performance if these values are extracted rather than requested in the loops
+<b class="nc"><i>134</i>&nbsp;		int nChannels = samples.channels();</b>
+<b class="nc"><i>135</i>&nbsp;		int nRows = samples.rows();</b>
+<b class="nc"><i>136</i>&nbsp;		int nCols = samples.cols();</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;		//		FloatIndexer indexer = samples.createIndexer();
+<i>139</i>&nbsp;		//		for (int channel = 0; channel &lt; nChannels; channel++) {
+<i>140</i>&nbsp;		//			for (int row = 0; row &lt; nRows; row++) {
+<i>141</i>&nbsp;		//				for (int col = 0; col &lt; nCols; col++) {
+<i>142</i>&nbsp;		//					int f = doChannels ? channel : col;
+<i>143</i>&nbsp;		//					double val = indexer.get(row, col, channel);
+<i>144</i>&nbsp;		//					val = normalizer.normalizeFeature(f, val);
+<i>145</i>&nbsp;		//					indexer.put(row, col, channel, (float)val);
+<i>146</i>&nbsp;		//				}				
+<i>147</i>&nbsp;		//			}			
+<i>148</i>&nbsp;		//		}
+<i>149</i>&nbsp;		//		indexer.release();
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;		var indexer = samples.createIndexer();</b>
+<b class="nc"><i>152</i>&nbsp;		var inds = new long[3];</b>
+<i>153</i>&nbsp;
+<b class="nc"><i>154</i>&nbsp;		for (int channel = 0; channel &lt; nChannels; channel++) {</b>
+<b class="nc"><i>155</i>&nbsp;			inds[2] = channel;</b>
+<b class="nc"><i>156</i>&nbsp;			for (int row = 0; row &lt; nRows; row++) {</b>
+<b class="nc"><i>157</i>&nbsp;				inds[0] = row;</b>
+<b class="nc"><i>158</i>&nbsp;				for (int col = 0; col &lt; nCols; col++) {</b>
+<b class="nc"><i>159</i>&nbsp;					inds[1] = col;</b>
+<b class="nc"><i>160</i>&nbsp;					int f = doChannels ? channel : col;</b>
+<b class="nc"><i>161</i>&nbsp;					double val = indexer.getDouble(inds);</b>
+<b class="nc"><i>162</i>&nbsp;					val = normalizer.normalizeFeature(f, val);</b>
+<b class="nc"><i>163</i>&nbsp;					indexer.putDouble(inds, val);</b>
+<i>164</i>&nbsp;				}				
+<i>165</i>&nbsp;			}			
+<i>166</i>&nbsp;		}
+<b class="nc"><i>167</i>&nbsp;		indexer.release();	</b>
+<i>168</i>&nbsp;	}
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;	 * Helper class to apply PCA projection.
+<i>173</i>&nbsp;	 */
+<i>174</i>&nbsp;	@JsonAdapter(OpenCVTypeAdapters.OpenCVTypeAdaptorFactory.class)
+<i>175</i>&nbsp;	public static class PCAProjector implements AutoCloseable {
+<i>176</i>&nbsp;
+<b class="nc"><i>177</i>&nbsp;		private static final Logger logger = LoggerFactory.getLogger(PCAProjector.class);</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;		private static final double DEFAULT_EPSILON = 1e-5;
+<i>180</i>&nbsp;
+<b class="nc"><i>181</i>&nbsp;		@JsonAdapter(OpenCVTypeAdapters.OpenCVTypeAdaptorFactory.class)</b>
+<i>182</i>&nbsp;		private Mat mean = new Mat();
+<i>183</i>&nbsp;
+<b class="nc"><i>184</i>&nbsp;		@JsonAdapter(OpenCVTypeAdapters.OpenCVTypeAdaptorFactory.class)</b>
+<i>185</i>&nbsp;		private Mat eigenvectors = new Mat();
+<i>186</i>&nbsp;
+<b class="nc"><i>187</i>&nbsp;		@JsonAdapter(OpenCVTypeAdapters.OpenCVTypeAdaptorFactory.class)</b>
+<i>188</i>&nbsp;		private Mat eigenvalues = new Mat();
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;		@JsonAdapter(OpenCVTypeAdapters.OpenCVTypeAdaptorFactory.class)
+<i>191</i>&nbsp;		private transient Mat eigenvaluesSqrt;
+<i>192</i>&nbsp;
+<b class="nc"><i>193</i>&nbsp;		private boolean normalize = true;</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;
+<i>196</i>&nbsp;		/**
+<i>197</i>&nbsp;		 * Apply PCA for dimensionality reduction.
+<i>198</i>&nbsp;		 * 
+<i>199</i>&nbsp;		 * @param data the data from which eigenvectors should be computed
+<i>200</i>&nbsp;		 * @param retainedVariance value between 0 and 1
+<i>201</i>&nbsp;		 * @param normalize applied during {@link #project(Mat, Mat)}
+<i>202</i>&nbsp;		 */
+<b class="nc"><i>203</i>&nbsp;		PCAProjector(Mat data, double retainedVariance, boolean normalize) {</b>
+<b class="nc"><i>204</i>&nbsp;			this.normalize = normalize;</b>
+<b class="nc"><i>205</i>&nbsp;			opencv_core.PCACompute2(data, mean, eigenvectors, eigenvalues, retainedVariance);</b>
+<i>206</i>&nbsp;			//			System.err.println(mean.createIndexer());
+<b class="nc"><i>207</i>&nbsp;			logger.info(&quot;Reduced dimensions from {} to {}&quot;,data.cols(), eigenvectors.rows());</b>
+<i>208</i>&nbsp;		}
+<i>209</i>&nbsp;		
+<i>210</i>&nbsp;		/**
+<i>211</i>&nbsp;		 * Number of output components.
+<i>212</i>&nbsp;		 * @return
+<i>213</i>&nbsp;		 */
+<i>214</i>&nbsp;		public int nComponents() {
+<b class="nc"><i>215</i>&nbsp;			return eigenvectors == null ? 0 : eigenvectors.rows();</b>
+<i>216</i>&nbsp;		}
+<i>217</i>&nbsp;
+<i>218</i>&nbsp;		/**
+<i>219</i>&nbsp;		 * Apply the projection.
+<i>220</i>&nbsp;		 * @param data input data
+<i>221</i>&nbsp;		 * @param result output
+<i>222</i>&nbsp;		 */
+<i>223</i>&nbsp;		public void project(Mat data, Mat result) {
+<b class="nc"><i>224</i>&nbsp;			opencv_core.PCAProject(data, mean, eigenvectors, result);</b>
+<b class="nc"><i>225</i>&nbsp;			if (normalize)</b>
+<b class="nc"><i>226</i>&nbsp;				doNormalize(result);</b>
+<i>227</i>&nbsp;		}
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;		void doNormalize(Mat result) {
+<b class="nc"><i>230</i>&nbsp;			if (eigenvaluesSqrt == null) {</b>
+<b class="nc"><i>231</i>&nbsp;				eigenvaluesSqrt = new Mat();</b>
+<b class="nc"><i>232</i>&nbsp;				eigenvalues.copyTo(eigenvaluesSqrt);</b>
+<b class="nc"><i>233</i>&nbsp;				opencv_core.add(eigenvaluesSqrt, Scalar.all(DEFAULT_EPSILON));</b>
+<b class="nc"><i>234</i>&nbsp;				opencv_core.sqrt(eigenvaluesSqrt, eigenvaluesSqrt);</b>
+<b class="nc"><i>235</i>&nbsp;				eigenvaluesSqrt.put(eigenvaluesSqrt.t());</b>
+<i>236</i>&nbsp;				//				eigenvaluesSqrt.convertTo(eigenvaluesSqrt, opencv_core.CV_64FC1);
+<i>237</i>&nbsp;				//				eigenvaluesSqrt.put(opencv_core.divide(1.0, eigenvaluesSqrt));
+<i>238</i>&nbsp;			}
+<i>239</i>&nbsp;			//			var indexer = result.createIndexer();
+<i>240</i>&nbsp;			//			var before = indexer.getDouble(0L);
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;
+<i>243</i>&nbsp;			// Because we&#39;re likely either to have one row or many, either divide by row 
+<i>244</i>&nbsp;			// or work by column (even though rows may seem more natural, it&#39;s much slower)
+<b class="nc"><i>245</i>&nbsp;			if (result.rows() == 1)</b>
+<b class="nc"><i>246</i>&nbsp;				opencv_core.dividePut(result, eigenvaluesSqrt);</b>
+<i>247</i>&nbsp;			else {
+<b class="nc"><i>248</i>&nbsp;				FloatBuffer buffer = (FloatBuffer)eigenvaluesSqrt.createBuffer();</b>
+<b class="nc"><i>249</i>&nbsp;				for (int c = 0; c &lt; result.cols(); c++) {</b>
+<b class="nc"><i>250</i>&nbsp;					opencv_core.dividePut(result.col(c), buffer.get(c));</b>
+<i>251</i>&nbsp;				}				
+<i>252</i>&nbsp;			}
+<i>253</i>&nbsp;		}
+<i>254</i>&nbsp;
+<i>255</i>&nbsp;		@Override
+<i>256</i>&nbsp;		public void close() throws Exception {
+<b class="nc"><i>257</i>&nbsp;			mean.release();</b>
+<b class="nc"><i>258</i>&nbsp;			eigenvectors.release();</b>
+<b class="nc"><i>259</i>&nbsp;			eigenvalues.release();</b>
+<b class="nc"><i>260</i>&nbsp;			if (eigenvaluesSqrt != null)</b>
+<b class="nc"><i>261</i>&nbsp;				eigenvaluesSqrt.release();</b>
+<i>262</i>&nbsp;		}
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;	}
+<i>265</i>&nbsp;
+<i>266</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

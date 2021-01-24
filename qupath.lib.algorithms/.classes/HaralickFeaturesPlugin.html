@@ -1,0 +1,602 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: HaralickFeaturesPlugin</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.algorithms</a> ]
+</div>
+
+<h1>Coverage Summary for Class: HaralickFeaturesPlugin (qupath.lib.algorithms)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">HaralickFeaturesPlugin</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 209)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">HaralickFeaturesPlugin$HaralickRunnable</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 13)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 222)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.algorithms;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Color;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>29</i>&nbsp;import java.io.IOException;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Arrays;
+<i>32</i>&nbsp;import java.util.Collection;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;import org.slf4j.Logger;
+<i>36</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import qupath.lib.analysis.features.HaralickFeatureComputer;
+<i>39</i>&nbsp;import qupath.lib.analysis.features.HaralickFeatures;
+<i>40</i>&nbsp;import qupath.lib.analysis.images.SimpleImage;
+<i>41</i>&nbsp;import qupath.lib.analysis.images.SimpleImages;
+<i>42</i>&nbsp;import qupath.lib.analysis.images.SimpleModifiableImage;
+<i>43</i>&nbsp;import qupath.lib.analysis.stats.RunningStatistics;
+<i>44</i>&nbsp;import qupath.lib.analysis.stats.StatisticsHelper;
+<i>45</i>&nbsp;import qupath.lib.awt.common.BufferedImageTools;
+<i>46</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>47</i>&nbsp;import qupath.lib.color.ColorTransformer;
+<i>48</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>49</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>50</i>&nbsp;import qupath.lib.geom.ImmutableDimension;
+<i>51</i>&nbsp;import qupath.lib.images.ImageData;
+<i>52</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>53</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>54</i>&nbsp;import qupath.lib.measurements.MeasurementList;
+<i>55</i>&nbsp;import qupath.lib.objects.PathCellObject;
+<i>56</i>&nbsp;import qupath.lib.objects.PathDetectionObject;
+<i>57</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>58</i>&nbsp;import qupath.lib.objects.TMACoreObject;
+<i>59</i>&nbsp;import qupath.lib.plugins.AbstractInteractivePlugin;
+<i>60</i>&nbsp;import qupath.lib.plugins.PluginRunner;
+<i>61</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>62</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>63</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;/**
+<i>66</i>&nbsp; * Plugin for calculating Haralick texture features, within or around detections or tiles.
+<i>67</i>&nbsp; * &lt;p&gt;
+<i>68</i>&nbsp; * The ROIs of the detections can be used directly as masks, or else the textures can alternatively be 
+<i>69</i>&nbsp; * calculated within square or circular regions around the object centroids.
+<i>70</i>&nbsp; * This latter option makes it possible to calculate a high density of tiles (for example), and then to 
+<i>71</i>&nbsp; * compute textures at different resolutions independently of the tile size.
+<i>72</i>&nbsp; * 
+<i>73</i>&nbsp; * @author Pete Bankhead
+<i>74</i>&nbsp; *
+<i>75</i>&nbsp; */
+<i>76</i>&nbsp;public class HaralickFeaturesPlugin extends AbstractInteractivePlugin&lt;BufferedImage&gt; {
+<i>77</i>&nbsp;	
+<b class="nc"><i>78</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(HaralickFeaturesPlugin.class);</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	private ParameterList params;
+<i>81</i>&nbsp;	
+<i>82</i>&nbsp;	/**
+<i>83</i>&nbsp;	 * Default constructor.
+<i>84</i>&nbsp;	 */
+<b class="nc"><i>85</i>&nbsp;	public HaralickFeaturesPlugin() {</b>
+<b class="nc"><i>86</i>&nbsp;		params = new ParameterList().</b>
+<b class="nc"><i>87</i>&nbsp;				addDoubleParameter(&quot;downsample&quot;, &quot;Downsample&quot;, 1, null, &quot;Amount to downsample the image before calculating textures; choose 1 to use full resolution, or a higher value to use a smaller image&quot;).</b>
+<b class="nc"><i>88</i>&nbsp;				addDoubleParameter(&quot;magnification&quot;, &quot;Magnification&quot;, 5, null, &quot;Magnification factor of the image used to calculate the textures&quot;).</b>
+<b class="nc"><i>89</i>&nbsp;				addDoubleParameter(&quot;pixelSizeMicrons&quot;, &quot;Preferred pixel size&quot;, 2, GeneralTools.micrometerSymbol(), &quot;Preferred pixel size of the image used to calculate the textures - higher values means coarser (lower resolution) images&quot;).</b>
+<b class="nc"><i>90</i>&nbsp;				addChoiceParameter(&quot;stainChoice&quot;, &quot;Color transforms&quot;, &quot;Optical density&quot;, Arrays.asList(&quot;Optical density&quot;, &quot;H-DAB&quot;, &quot;H&amp;E&quot;, &quot;H-DAB (8-bit)&quot;, &quot;H&amp;E (8-bit)&quot;, &quot;RGB OD&quot;, &quot;RGB&quot;, &quot;Grayscale&quot;, &quot;HSB&quot;), &quot;Color transforms to apply before calculating textures&quot;);</b>
+<i>91</i>&nbsp;		
+<b class="nc"><i>92</i>&nbsp;		params.addDoubleParameter(&quot;tileSizeMicrons&quot;, &quot;Tile diameter&quot;, 25, GeneralTools.micrometerSymbol(), &quot;Diameter of square tile around the object centroid used to calculate textures.\nIf &lt;= 0, the tile itself will be used to defined the ROI in which textures are calculated&quot;);</b>
+<b class="nc"><i>93</i>&nbsp;		params.addDoubleParameter(&quot;tileSizePx&quot;, &quot;Tile diameter&quot;, 200, &quot;px (full resolution image)&quot;, &quot;Diameter of square tile around the object centroid used to calculate textures.\nIf &lt;= 0, the tile itself will be used to defined the ROI in which textures are calculated&quot;);</b>
+<i>94</i>&nbsp;
+<b class="nc"><i>95</i>&nbsp;		params.addBooleanParameter(&quot;includeStats&quot;, &quot;Include basic statistics&quot;, true, &quot;Include basic statistics (mean, min, max, std dev) as well as Haralick textures&quot;).</b>
+<b class="nc"><i>96</i>&nbsp;				addBooleanParameter(&quot;doCircular&quot;, &quot;Use circular tiles&quot;, false, &quot;If the tile diameter &gt; 0, calculate textures in a circular (rather than square) region around the centroid of each object&quot;).</b>
+<b class="nc"><i>97</i>&nbsp;				addBooleanParameter(&quot;useNucleusROIs&quot;, &quot;Use cell nucleus ROIs&quot;, true, &quot;If textures are computed around cell objects, the nucleus ROI is used where available&quot;).</b>
+<b class="nc"><i>98</i>&nbsp;				addIntParameter(&quot;haralickDistance&quot;, &quot;Haralick distance&quot;, 1, null, &quot;Spacing between pixels used in computing the co-occurrence matrix for Haralick textures (default = 1)&quot;).</b>
+<b class="nc"><i>99</i>&nbsp;				addIntParameter(&quot;haralickBins&quot;, &quot;Haralick number of bins&quot;, 32, null, 8, 256, &quot;Number of intensity bins to use when computing the co-occurrence matrix for Haralick textures (default = 32)&quot;);</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;	static ImmutableDimension getPreferredTileSizePixels(final ImageServer&lt;BufferedImage&gt; server, final ParameterList params) {
+<i>105</i>&nbsp;		// Determine tile size
+<i>106</i>&nbsp;		int tileWidth, tileHeight;
+<b class="nc"><i>107</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>108</i>&nbsp;		if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>109</i>&nbsp;			double tileSize = params.getDoubleParameterValue(&quot;tileSizeMicrons&quot;);</b>
+<b class="nc"><i>110</i>&nbsp;			tileWidth = (int)(tileSize / cal.getPixelWidthMicrons() + .5);</b>
+<b class="nc"><i>111</i>&nbsp;			tileHeight = (int)(tileSize / cal.getPixelHeightMicrons() + .5);</b>
+<b class="nc"><i>112</i>&nbsp;		} else {</b>
+<b class="nc"><i>113</i>&nbsp;			tileWidth = (int)(params.getDoubleParameterValue(&quot;tileSizePx&quot;) + .5);</b>
+<b class="nc"><i>114</i>&nbsp;			tileHeight = tileWidth;</b>
+<i>115</i>&nbsp;		}
+<b class="nc"><i>116</i>&nbsp;		return ImmutableDimension.getInstance(tileWidth, tileHeight);</b>
+<i>117</i>&nbsp;	}
+<i>118</i>&nbsp;	
+<i>119</i>&nbsp;	static String getDiameterString(final ImageServer&lt;BufferedImage&gt; server, final ParameterList params) {
+<b class="nc"><i>120</i>&nbsp;		if (server.getPixelCalibration().hasPixelSizeMicrons())</b>
+<b class="nc"><i>121</i>&nbsp;			return String.format(&quot;%.1f %s&quot;, params.getDoubleParameterValue(&quot;tileSizeMicrons&quot;), GeneralTools.micrometerSymbol());</b>
+<i>122</i>&nbsp;		else
+<b class="nc"><i>123</i>&nbsp;			return String.format(&quot;%d px&quot;, (int)(params.getDoubleParameterValue(&quot;tileSizePx&quot;) + .5));</b>
+<i>124</i>&nbsp;	}
+<i>125</i>&nbsp;	
+<i>126</i>&nbsp;	
+<i>127</i>&nbsp;	@Override
+<i>128</i>&nbsp;	protected void addRunnableTasks(final ImageData&lt;BufferedImage&gt; imageData, final PathObject parentObject, List&lt;Runnable&gt; tasks) {
+<b class="nc"><i>129</i>&nbsp;		final ParameterList params = getParameterList(imageData);</b>
+<b class="nc"><i>130</i>&nbsp;		final ImageServer&lt;BufferedImage&gt; server = imageData.getServer();</b>
+<b class="nc"><i>131</i>&nbsp;		tasks.add(new HaralickRunnable(server, parentObject, params, imageData.getColorDeconvolutionStains()));</b>
+<i>132</i>&nbsp;	}
+<i>133</i>&nbsp;	
+<i>134</i>&nbsp;	
+<i>135</i>&nbsp;//	@Override
+<i>136</i>&nbsp;//	protected Collection&lt;Runnable&gt; getTasks(final PluginRunner&lt;BufferedImage&gt; runner) {
+<i>137</i>&nbsp;//		Collection&lt;Runnable&gt; tasks = super.getTasks(runner);
+<i>138</i>&nbsp;//		// If we have a region store, it can be preferable to shuffle the tasks for performance.
+<i>139</i>&nbsp;//		// This is because regions larger than the requested tile size will be cached,
+<i>140</i>&nbsp;//		// so threads waiting for adjacent tiles can both block waiting for the same image -
+<i>141</i>&nbsp;//		// causing fetching regions to become a bottleneck.
+<i>142</i>&nbsp;//		// By shuffling tiles, all the threads put in requests for different requests at the start
+<i>143</i>&nbsp;//		// (which is slow), but as the image is processed then increasingly the required regions are
+<i>144</i>&nbsp;//		// already in the cache when they are needed - causing a dramatic speedup during runtime.
+<i>145</i>&nbsp;//		// Overall throughput should be improved, since the time spend blocked is minimized.
+<i>146</i>&nbsp;//		// *However* this is only likely to work if the cache is sufficiently big... otherwise
+<i>147</i>&nbsp;//		// a slowdown is possible, due to adjacent regions needing to be requested multiple times
+<i>148</i>&nbsp;//		// because the cache has been emptied in the interim.
+<i>149</i>&nbsp;////		if (regionStore != null &amp; Runtime.getRuntime().totalMemory() &gt;= 1024L*1024L*1024L*4L) {
+<i>150</i>&nbsp;////			if (!(tasks instanceof List))
+<i>151</i>&nbsp;////				tasks = new ArrayList&lt;&gt;(tasks);
+<i>152</i>&nbsp;////			Collections.shuffle((List&lt;?&gt;)tasks);
+<i>153</i>&nbsp;//			
+<i>154</i>&nbsp;//		return tasks;
+<i>155</i>&nbsp;//	}
+<i>156</i>&nbsp;	
+<i>157</i>&nbsp;	
+<i>158</i>&nbsp;	static class HaralickRunnable implements Runnable {
+<i>159</i>&nbsp;		
+<i>160</i>&nbsp;		private ImageServer&lt;BufferedImage&gt; server;
+<i>161</i>&nbsp;		private ParameterList params;
+<i>162</i>&nbsp;		private PathObject parentObject;
+<i>163</i>&nbsp;		private ColorDeconvolutionStains stains;
+<i>164</i>&nbsp;		
+<b class="nc"><i>165</i>&nbsp;		public HaralickRunnable(final ImageServer&lt;BufferedImage&gt; server, final PathObject parentObject, final ParameterList params, final ColorDeconvolutionStains stains) {</b>
+<b class="nc"><i>166</i>&nbsp;			this.server = server;</b>
+<b class="nc"><i>167</i>&nbsp;			this.parentObject = parentObject;</b>
+<b class="nc"><i>168</i>&nbsp;			this.params = params;</b>
+<b class="nc"><i>169</i>&nbsp;			this.stains = stains;</b>
+<i>170</i>&nbsp;		}
+<i>171</i>&nbsp;
+<i>172</i>&nbsp;		@Override
+<i>173</i>&nbsp;		public void run() {
+<i>174</i>&nbsp;			try {
+<b class="nc"><i>175</i>&nbsp;				processObject(parentObject, params, server, stains);</b>
+<b class="nc"><i>176</i>&nbsp;			} catch (IOException e) {</b>
+<b class="nc"><i>177</i>&nbsp;				logger.error(&quot;Unable to process &quot; + parentObject, e);</b>
+<i>178</i>&nbsp;			} finally {
+<b class="nc"><i>179</i>&nbsp;				parentObject.getMeasurementList().close();</b>
+<b class="nc"><i>180</i>&nbsp;				server = null;</b>
+<b class="nc"><i>181</i>&nbsp;				params = null;</b>
+<b class="nc"><i>182</i>&nbsp;			}</b>
+<i>183</i>&nbsp;		}
+<i>184</i>&nbsp;		
+<i>185</i>&nbsp;		
+<i>186</i>&nbsp;		@Override
+<i>187</i>&nbsp;		public String toString() {
+<i>188</i>&nbsp;			// TODO: Give a better toString()
+<b class="nc"><i>189</i>&nbsp;			return &quot;Haralick features&quot;;</b>
+<i>190</i>&nbsp;		}
+<i>191</i>&nbsp;		
+<i>192</i>&nbsp;	}
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;
+<i>197</i>&nbsp;	static boolean processObject(final PathObject pathObject, final ParameterList params, final ImageServer&lt;BufferedImage&gt; server, final ColorDeconvolutionStains stains) throws IOException {
+<b class="nc"><i>198</i>&nbsp;		String stainsName = (String)params.getChoiceParameterValue(&quot;stainChoice&quot;);</b>
+<b class="nc"><i>199</i>&nbsp;		double mag = params.getDoubleParameterValue(&quot;magnification&quot;);</b>
+<b class="nc"><i>200</i>&nbsp;		int d = params.getIntParameterValue(&quot;haralickDistance&quot;);</b>
+<b class="nc"><i>201</i>&nbsp;		int nBins = params.getIntParameterValue(&quot;haralickBins&quot;);</b>
+<b class="nc"><i>202</i>&nbsp;		boolean includeStats = params.getBooleanParameterValue(&quot;includeStats&quot;);</b>
+<b class="nc"><i>203</i>&nbsp;		boolean doCircular = params.getBooleanParameterValue(&quot;doCircular&quot;);</b>
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;		double downsample;
+<b class="nc"><i>206</i>&nbsp;		boolean hasMagnification = !Double.isNaN(server.getMetadata().getMagnification());</b>
+<b class="nc"><i>207</i>&nbsp;		PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>208</i>&nbsp;		if (hasMagnification)</b>
+<b class="nc"><i>209</i>&nbsp;			downsample = server.getMetadata().getMagnification() / mag;</b>
+<b class="nc"><i>210</i>&nbsp;		else if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>211</i>&nbsp;			downsample = params.getDoubleParameterValue(&quot;pixelSizeMicrons&quot;) / cal.getAveragedPixelSizeMicrons();</b>
+<i>212</i>&nbsp;		} else
+<b class="nc"><i>213</i>&nbsp;			downsample = params.getDoubleParameterValue(&quot;downsample&quot;);</b>
+<i>214</i>&nbsp;			
+<i>215</i>&nbsp;//		double downsample = server.getMagnification() / mag;
+<i>216</i>&nbsp;		
+<i>217</i>&nbsp;		// Try to get ROI
+<b class="nc"><i>218</i>&nbsp;		ROI pathROI = null;</b>
+<b class="nc"><i>219</i>&nbsp;		if (pathObject instanceof PathCellObject &amp;&amp; Boolean.TRUE.equals(params.getBooleanParameterValue(&quot;useNucleusROIs&quot;)))</b>
+<b class="nc"><i>220</i>&nbsp;			pathROI = ((PathCellObject)pathObject).getNucleusROI();</b>
+<i>221</i>&nbsp;		else
+<b class="nc"><i>222</i>&nbsp;			pathROI = pathObject.getROI();</b>
+<b class="nc"><i>223</i>&nbsp;		if (pathROI == null)</b>
+<b class="nc"><i>224</i>&nbsp;			return false;</b>
+<i>225</i>&nbsp;		
+<i>226</i>&nbsp;		// Get bounds
+<b class="nc"><i>227</i>&nbsp;		ImmutableDimension size = getPreferredTileSizePixels(server, params);</b>
+<i>228</i>&nbsp;		
+<i>229</i>&nbsp;		RegionRequest region;
+<b class="nc"><i>230</i>&nbsp;		boolean createMaskROI = false;</b>
+<b class="nc"><i>231</i>&nbsp;		if (size.getWidth() &lt;= 0 || size.getHeight() &lt;= 0) {</b>
+<b class="nc"><i>232</i>&nbsp;			region = RegionRequest.createInstance(server.getPath(), downsample, pathObject.getROI());</b>
+<b class="nc"><i>233</i>&nbsp;			createMaskROI = true;</b>
+<b class="nc"><i>234</i>&nbsp;			doCircular = false;</b>
+<b class="nc"><i>235</i>&nbsp;		} else if (size.getWidth() / downsample &lt; 1 || size.getHeight() / downsample &lt; 1)</b>
+<i>236</i>&nbsp;			// Positive size, but insufficient to make measurements
+<b class="nc"><i>237</i>&nbsp;			return false;</b>
+<i>238</i>&nbsp;		else {
+<i>239</i>&nbsp;	//		RegionRequest region = RegionRequest.createInstance(server.getPath(), downsample, (int)(pathROI.getCentroidX() + .5) - size.width/2, (int)(pathROI.getCentroidY() + .5) - size.height/2, size.width, size.height, pathROI.getT(), pathROI.getZ());
+<i>240</i>&nbsp;			// Try to align with pixel boundaries according to the downsample being used - otherwise, interpolation can cause some strange, pattern artefacts
+<b class="nc"><i>241</i>&nbsp;			int xStart = (int)((int)(pathROI.getCentroidX() / downsample + .5) * downsample) - size.width/2;</b>
+<b class="nc"><i>242</i>&nbsp;			int yStart = (int)((int)(pathROI.getCentroidY() / downsample + .5) * downsample) - size.height/2;</b>
+<b class="nc"><i>243</i>&nbsp;			int width = Math.min(server.getWidth(), xStart + size.width) - xStart;</b>
+<b class="nc"><i>244</i>&nbsp;			int height = Math.min(server.getHeight(), yStart + size.height) - yStart;</b>
+<b class="nc"><i>245</i>&nbsp;			region = RegionRequest.createInstance(server.getPath(), downsample, xStart, yStart, width, height, pathROI.getT(), pathROI.getZ());</b>
+<i>246</i>&nbsp;		}
+<i>247</i>&nbsp;
+<i>248</i>&nbsp;		// Check image large enough to do *anything* of value
+<b class="nc"><i>249</i>&nbsp;		if (region.getWidth() / downsample &lt; 3 || region.getHeight() / downsample &lt; 3)</b>
+<b class="nc"><i>250</i>&nbsp;			return false;</b>
+<i>251</i>&nbsp;
+<i>252</i>&nbsp;//		System.out.println(bounds);
+<i>253</i>&nbsp;//		System.out.println(&quot;Size: &quot; + size);
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;		BufferedImage img = server.readBufferedImage(region);</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;		if (img == null) {</b>
+<b class="nc"><i>258</i>&nbsp;			logger.error(&quot;Could not read image - unable to compute Haralick features for {}&quot;, pathObject);</b>
+<b class="nc"><i>259</i>&nbsp;			return false;</b>
+<i>260</i>&nbsp;		}
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;		// Create mask ROI if necessary
+<b class="nc"><i>263</i>&nbsp;		byte[] maskBytes = null;</b>
+<b class="nc"><i>264</i>&nbsp;		if (createMaskROI) {</b>
+<b class="nc"><i>265</i>&nbsp;			ROI roi = pathObject.getROI();</b>
+<i>266</i>&nbsp;//			if (pathObject instanceof PathCellObject &amp;&amp; ((PathCellObject)pathObject).getNucleusROI() != null)
+<i>267</i>&nbsp;//				roi = ((PathCellObject)pathObject).getNucleusROI();
+<b class="nc"><i>268</i>&nbsp;			BufferedImage imgMask = BufferedImageTools.createROIMask(img.getWidth(), img.getHeight(), roi, region);</b>
+<b class="nc"><i>269</i>&nbsp;			maskBytes = ((DataBufferByte)imgMask.getRaster().getDataBuffer()).getData();</b>
+<i>270</i>&nbsp;		}
+<i>271</i>&nbsp;		
+<b class="nc"><i>272</i>&nbsp;		double minValue = Double.NaN;</b>
+<b class="nc"><i>273</i>&nbsp;		double maxValue = Double.NaN;</b>
+<i>274</i>&nbsp;		
+<i>275</i>&nbsp;		// Get a buffer containing the image pixels
+<b class="nc"><i>276</i>&nbsp;		int w = img.getWidth();</b>
+<b class="nc"><i>277</i>&nbsp;		int h = img.getHeight();</b>
+<b class="nc"><i>278</i>&nbsp;		int[] buf = img.getRGB(0, 0, w, h, null, 0, w);</b>
+<i>279</i>&nbsp;
+<i>280</i>&nbsp;		// Create a color transformer to get the images we need
+<b class="nc"><i>281</i>&nbsp;		float[] pixels = new float[buf.length];</b>
+<b class="nc"><i>282</i>&nbsp;		SimpleModifiableImage pxImg = SimpleImages.createFloatImage(pixels, w, h);</b>
+<i>283</i>&nbsp;		
+<b class="nc"><i>284</i>&nbsp;		MeasurementList measurementList = pathObject.getMeasurementList();</b>
+<i>285</i>&nbsp;		
+<b class="nc"><i>286</i>&nbsp;		String postfix = maskBytes == null ? &quot; (&quot; + getDiameterString(server, params) + &quot;)&quot; : &quot;&quot;;</b>
+<i>287</i>&nbsp;
+<b class="nc"><i>288</i>&nbsp;		if (stainsName.equals(&quot;H-DAB&quot;)) {</b>
+<b class="nc"><i>289</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>290</i>&nbsp;			maxValue = 2.0;</b>
+<b class="nc"><i>291</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_DAB, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>292</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;DAB&quot;+postfix, ColorTransformer.ColorTransformMethod.DAB_H_DAB, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<i>293</i>&nbsp;		}
+<b class="nc"><i>294</i>&nbsp;		else if (stainsName.equals(&quot;H&amp;E&quot;)) {</b>
+<b class="nc"><i>295</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>296</i>&nbsp;			maxValue = 2;</b>
+<b class="nc"><i>297</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_E, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>298</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Eosin&quot;+postfix, ColorTransformer.ColorTransformMethod.Eosin_H_E, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>299</i>&nbsp;		} else if (stainsName.equals(&quot;H-DAB (8-bit)&quot;)) {</b>
+<b class="nc"><i>300</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>301</i>&nbsp;			maxValue = 255;</b>
+<b class="nc"><i>302</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_DAB_8_bit, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>303</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;DAB 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.DAB_H_DAB_8_bit, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<i>304</i>&nbsp;		}
+<b class="nc"><i>305</i>&nbsp;		else if (stainsName.equals(&quot;H&amp;E (8-bit)&quot;)) {</b>
+<b class="nc"><i>306</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>307</i>&nbsp;			maxValue = 255;</b>
+<b class="nc"><i>308</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Hematoxylin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Hematoxylin_H_E_8_bit, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>309</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Eosin 8-bit&quot;+postfix, ColorTransformer.ColorTransformMethod.Eosin_H_E_8_bit, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>310</i>&nbsp;		} else if (stainsName.equals(&quot;Optical density&quot;)) {</b>
+<b class="nc"><i>311</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>312</i>&nbsp;			maxValue = 2.5;</b>
+<b class="nc"><i>313</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;OD sum&quot;+postfix, ColorTransformer.ColorTransformMethod.Optical_density_sum, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>314</i>&nbsp;		} else if (stainsName.equals(&quot;RGB&quot;)) {</b>
+<b class="nc"><i>315</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>316</i>&nbsp;			maxValue = 255;</b>
+<b class="nc"><i>317</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Red&quot;+postfix, ColorTransformer.ColorTransformMethod.Red, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>318</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Green&quot;+postfix, ColorTransformer.ColorTransformMethod.Green, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>319</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Blue&quot;+postfix, ColorTransformer.ColorTransformMethod.Blue, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>320</i>&nbsp;		} else if (stainsName.equals(&quot;RGB OD&quot;)) {</b>
+<b class="nc"><i>321</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>322</i>&nbsp;			maxValue = 1.5; // Actual possible max is around 2.4 for 8-bit input... but this gives a lot of bins for (almost) saturated pixels</b>
+<b class="nc"><i>323</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Red OD&quot;+postfix, ColorTransformer.ColorTransformMethod.Red_OD, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>324</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Green OD&quot;+postfix, ColorTransformer.ColorTransformMethod.Green_OD, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>325</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Blue OD&quot;+postfix, ColorTransformer.ColorTransformMethod.Blue_OD, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>326</i>&nbsp;		} else if (stainsName.equals(&quot;Grayscale&quot;)) {</b>
+<b class="nc"><i>327</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>328</i>&nbsp;			maxValue = 255;</b>
+<b class="nc"><i>329</i>&nbsp;			processTransformedImage(pxImg, buf, pixels, measurementList, &quot;Grayscale&quot;+postfix, ColorTransformer.ColorTransformMethod.RGB_mean, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>330</i>&nbsp;		} else if (stainsName.equals(&quot;HSB&quot;)) {</b>
+<b class="nc"><i>331</i>&nbsp;			minValue = 0;</b>
+<b class="nc"><i>332</i>&nbsp;			maxValue = 1;</b>
+<i>333</i>&nbsp;			
+<i>334</i>&nbsp;			
+<b class="nc"><i>335</i>&nbsp;			float[] hsb = null;</b>
+<b class="nc"><i>336</i>&nbsp;			double sinX = 0;</b>
+<b class="nc"><i>337</i>&nbsp;			double cosX = 0;</b>
+<b class="nc"><i>338</i>&nbsp;			float[] pixelsBrightness = new float[pixels.length];</b>
+<b class="nc"><i>339</i>&nbsp;			float[] pixelsSaturation = new float[pixels.length];</b>
+<b class="nc"><i>340</i>&nbsp;			for (int i = 0; i &lt; buf.length; i++) {</b>
+<b class="nc"><i>341</i>&nbsp;				if (maskBytes != null &amp;&amp; maskBytes[i] == (byte)0)</b>
+<b class="nc"><i>342</i>&nbsp;					continue;</b>
+<b class="nc"><i>343</i>&nbsp;				int val = buf[i];</b>
+<b class="nc"><i>344</i>&nbsp;				hsb = Color.RGBtoHSB(ColorTools.red(val), ColorTools.green(val), ColorTools.blue(val), hsb);</b>
+<b class="nc"><i>345</i>&nbsp;				pixelsSaturation[i] = hsb[1];</b>
+<b class="nc"><i>346</i>&nbsp;				pixelsBrightness[i] = hsb[2];</b>
+<b class="nc"><i>347</i>&nbsp;				double alpha = hsb[0] * 2 * Math.PI;</b>
+<b class="nc"><i>348</i>&nbsp;				sinX += Math.sin(alpha);</b>
+<b class="nc"><i>349</i>&nbsp;				cosX += Math.cos(alpha);</b>
+<i>350</i>&nbsp;			}
+<b class="nc"><i>351</i>&nbsp;			measurementList.putMeasurement(&quot;Mean hue&quot;, Math.atan2(sinX, cosX) / (2 * Math.PI) + 0.5);</b>
+<i>352</i>&nbsp;//			measurementList.putMeasurement(&quot;Mean saturation&quot;, hsb[1]);
+<i>353</i>&nbsp;//			measurementList.putMeasurement(&quot;Mean brightness&quot;, hsb[2]);
+<b class="nc"><i>354</i>&nbsp;			processTransformedImage(SimpleImages.createFloatImage(pixelsSaturation, w, h), buf, pixelsSaturation, measurementList, &quot;Saturation&quot;+postfix, null, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<b class="nc"><i>355</i>&nbsp;			processTransformedImage(SimpleImages.createFloatImage(pixelsBrightness, w, h), buf, pixelsBrightness, measurementList, &quot;Brightness&quot;+postfix, null, minValue, maxValue, d, nBins, stains, maskBytes, includeStats, doCircular);</b>
+<i>356</i>&nbsp;		}
+<b class="nc"><i>357</i>&nbsp;		measurementList.close();</b>
+<i>358</i>&nbsp;		
+<b class="nc"><i>359</i>&nbsp;		return true;</b>
+<i>360</i>&nbsp;		
+<i>361</i>&nbsp;	}
+<i>362</i>&nbsp;	
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;	
+<i>365</i>&nbsp;	static void processTransformedImage(SimpleModifiableImage pxImg, int[] buf, float[] pixels, MeasurementList measurementList, String name, ColorTransformer.ColorTransformMethod method, double minValue, double maxValue, int d, int nBins, ColorDeconvolutionStains stains, byte[] maskBytes, boolean includeStats, boolean doCircular) {
+<i>366</i>&nbsp;		// Transform pixels, if we have a method
+<b class="nc"><i>367</i>&nbsp;		if (method != null)</b>
+<b class="nc"><i>368</i>&nbsp;			ColorTransformer.getTransformedPixels(buf, method, pixels, stains);</b>
+<i>369</i>&nbsp;		// Apply circular mask, if required
+<b class="nc"><i>370</i>&nbsp;		if (doCircular) {</b>
+<b class="nc"><i>371</i>&nbsp;			double w = pxImg.getWidth();</b>
+<b class="nc"><i>372</i>&nbsp;			double h = pxImg.getHeight();</b>
+<b class="nc"><i>373</i>&nbsp;			double cx = (w-1) / 2;</b>
+<b class="nc"><i>374</i>&nbsp;			double cy = (h-1) / 2;</b>
+<b class="nc"><i>375</i>&nbsp;			double radius = Math.max(w, h) * .5;</b>
+<b class="nc"><i>376</i>&nbsp;			double distThreshold = radius * radius;</b>
+<b class="nc"><i>377</i>&nbsp;			for (int y = 0; y &lt; h; y++) {</b>
+<b class="nc"><i>378</i>&nbsp;				for (int x = 0; x &lt; w; x++) {</b>
+<b class="nc"><i>379</i>&nbsp;					if ((cx - x)*(cx - x) + (cy - y)*(cy - y) &gt; distThreshold)</b>
+<b class="nc"><i>380</i>&nbsp;						pxImg.setValue(x, y, Float.NaN);</b>
+<i>381</i>&nbsp;				}			
+<i>382</i>&nbsp;			}
+<i>383</i>&nbsp;		}
+<i>384</i>&nbsp;		// Apply mask, if required
+<b class="nc"><i>385</i>&nbsp;		if (maskBytes != null) {</b>
+<b class="nc"><i>386</i>&nbsp;			int w = pxImg.getWidth();</b>
+<b class="nc"><i>387</i>&nbsp;			for (int i = 0; i &lt; pixels.length; i++) {</b>
+<b class="nc"><i>388</i>&nbsp;				if (maskBytes[i] == (byte)0)</b>
+<b class="nc"><i>389</i>&nbsp;					pxImg.setValue(i % w, i / w, Float.NaN);</b>
+<i>390</i>&nbsp;			}
+<i>391</i>&nbsp;		}
+<i>392</i>&nbsp;		
+<i>393</i>&nbsp;		
+<b class="nc"><i>394</i>&nbsp;		if (includeStats)</b>
+<b class="nc"><i>395</i>&nbsp;			addBasicStatistics(pxImg, measurementList, name);</b>
+<b class="nc"><i>396</i>&nbsp;		if (d &gt; 0)</b>
+<b class="nc"><i>397</i>&nbsp;			addHaralickFeatures(HaralickFeatureComputer.measureHaralick(pxImg, null, nBins, minValue, maxValue, d), measurementList, name);</b>
+<i>398</i>&nbsp;	}
+<i>399</i>&nbsp;	
+<i>400</i>&nbsp;	
+<i>401</i>&nbsp;
+<i>402</i>&nbsp;	static void addBasicStatistics(final SimpleImage img, final MeasurementList measurementList, final String name) {
+<b class="nc"><i>403</i>&nbsp;		RunningStatistics stats = StatisticsHelper.computeRunningStatistics(img);</b>
+<b class="nc"><i>404</i>&nbsp;		measurementList.putMeasurement(name + &quot; Mean&quot;, stats.getMean());</b>
+<b class="nc"><i>405</i>&nbsp;		measurementList.putMeasurement(name + &quot; Min&quot;, stats.getMin());</b>
+<b class="nc"><i>406</i>&nbsp;		measurementList.putMeasurement(name + &quot; Max&quot;, stats.getMax());</b>
+<b class="nc"><i>407</i>&nbsp;		measurementList.putMeasurement(name + &quot; Range&quot;, stats.getRange());</b>
+<b class="nc"><i>408</i>&nbsp;		measurementList.putMeasurement(name + &quot; Std.dev.&quot;, stats.getStdDev());</b>
+<i>409</i>&nbsp;		
+<i>410</i>&nbsp;		// Compute skewness and kurtosis
+<b class="nc"><i>411</i>&nbsp;		double m = stats.getMean();</b>
+<b class="nc"><i>412</i>&nbsp;		double skewness = 0;</b>
+<b class="nc"><i>413</i>&nbsp;		double kurtosis = 0;</b>
+<b class="nc"><i>414</i>&nbsp;		double variance = 0;</b>
+<b class="nc"><i>415</i>&nbsp;		double n = stats.size();</b>
+<b class="nc"><i>416</i>&nbsp;		for (int y = 0; y &lt; img.getHeight(); y++) {</b>
+<b class="nc"><i>417</i>&nbsp;			for (int x = 0; x &lt; img.getWidth(); x++) {</b>
+<b class="nc"><i>418</i>&nbsp;				float val = img.getValue(x, y);</b>
+<b class="nc"><i>419</i>&nbsp;				if (Float.isNaN(val))</b>
+<b class="nc"><i>420</i>&nbsp;					continue;</b>
+<b class="nc"><i>421</i>&nbsp;				double d = val - m;</b>
+<b class="nc"><i>422</i>&nbsp;				double d3 = d*d*d;</b>
+<b class="nc"><i>423</i>&nbsp;				variance += d*d/n;</b>
+<b class="nc"><i>424</i>&nbsp;				skewness += d3/n;</b>
+<b class="nc"><i>425</i>&nbsp;				kurtosis += d3*d/n;</b>
+<i>426</i>&nbsp;			}			
+<i>427</i>&nbsp;		}
+<i>428</i>&nbsp;		// TODO: Reinsert skewness &amp; kurtosis measurements, after checking
+<i>429</i>&nbsp;////		double sigma = stats.getStdDev();
+<i>430</i>&nbsp;////		System.out.println(&quot;Variance difference: &quot; + variance + &quot;,  &quot; + stats.getVariance());
+<i>431</i>&nbsp;////		measurementList.putMeasurement(name + &quot; Variance (again)&quot;, variance);
+<b class="nc"><i>432</i>&nbsp;		measurementList.putMeasurement(name + &quot; Skewness&quot;, skewness/(variance*Math.sqrt(variance)));</b>
+<b class="nc"><i>433</i>&nbsp;		measurementList.putMeasurement(name + &quot; Kurtosis&quot;, kurtosis/(variance*variance));</b>
+<i>434</i>&nbsp;	}
+<i>435</i>&nbsp;
+<i>436</i>&nbsp;	
+<i>437</i>&nbsp;	static void addHaralickFeatures(final HaralickFeatures haralickFeatures, final MeasurementList measurementList, final String name) {
+<b class="nc"><i>438</i>&nbsp;		for (int i = 0; i &lt; haralickFeatures.nFeatures(); i++) {</b>
+<b class="nc"><i>439</i>&nbsp;			measurementList.putMeasurement(String.format(&quot;%s Haralick %s (F%d)&quot;, name,</b>
+<b class="nc"><i>440</i>&nbsp;					haralickFeatures.getFeatureName(i),</b>
+<b class="nc"><i>441</i>&nbsp;					i), haralickFeatures.getFeature(i));</b>
+<i>442</i>&nbsp;		}
+<i>443</i>&nbsp;	}
+<i>444</i>&nbsp;
+<i>445</i>&nbsp;
+<i>446</i>&nbsp;
+<i>447</i>&nbsp;	@Override
+<i>448</i>&nbsp;	public ParameterList getDefaultParameterList(final ImageData&lt;BufferedImage&gt; imageData) {
+<b class="nc"><i>449</i>&nbsp;		boolean hasMicrons = imageData.getServer().getPixelCalibration().hasPixelSizeMicrons();</b>
+<b class="nc"><i>450</i>&nbsp;		boolean hasMagnification = !Double.isNaN(imageData.getServer().getMetadata().getMagnification());</b>
+<i>451</i>&nbsp;		
+<b class="nc"><i>452</i>&nbsp;		params.getParameters().get(&quot;tileSizeMicrons&quot;).setHidden(!hasMicrons);</b>
+<b class="nc"><i>453</i>&nbsp;		params.getParameters().get(&quot;tileSizePx&quot;).setHidden(hasMicrons);</b>
+<i>454</i>&nbsp;		
+<b class="nc"><i>455</i>&nbsp;		params.getParameters().get(&quot;magnification&quot;).setHidden(!hasMagnification);</b>
+<b class="nc"><i>456</i>&nbsp;		params.getParameters().get(&quot;pixelSizeMicrons&quot;).setHidden(!hasMicrons || hasMagnification);</b>
+<i>457</i>&nbsp;		
+<b class="nc"><i>458</i>&nbsp;		params.getParameters().get(&quot;downsample&quot;).setHidden(hasMicrons || hasMagnification);</b>
+<i>459</i>&nbsp;		
+<b class="nc"><i>460</i>&nbsp;		return params;</b>
+<i>461</i>&nbsp;	}
+<i>462</i>&nbsp;
+<i>463</i>&nbsp;	@Override
+<i>464</i>&nbsp;	public String getName() {
+<b class="nc"><i>465</i>&nbsp;		return &quot;Add Haralick texture features&quot;;</b>
+<i>466</i>&nbsp;	}
+<i>467</i>&nbsp;
+<i>468</i>&nbsp;	@Override
+<i>469</i>&nbsp;	public String getLastResultsDescription() {
+<b class="nc"><i>470</i>&nbsp;		return &quot;&quot;;</b>
+<i>471</i>&nbsp;	}
+<i>472</i>&nbsp;
+<i>473</i>&nbsp;	@Override
+<i>474</i>&nbsp;	public String getDescription() {
+<b class="nc"><i>475</i>&nbsp;		return &quot;Add Haralick texture features to existing object measurements&quot;;</b>
+<i>476</i>&nbsp;	}
+<i>477</i>&nbsp;
+<i>478</i>&nbsp;	@Override
+<i>479</i>&nbsp;	protected Collection&lt;PathObject&gt; getParentObjects(final PluginRunner&lt;BufferedImage&gt; runner) {
+<b class="nc"><i>480</i>&nbsp;		return runner.getImageData().getHierarchy().getSelectionModel().getSelectedObjects();</b>
+<i>481</i>&nbsp;//		return runner.getImageData().getHierarchy().getSelectionModel().getSelectedObjects();
+<i>482</i>&nbsp;//		return runner.getImageData().getHierarchy().getObjects(null, PathDetectionObject.class);
+<i>483</i>&nbsp;	}
+<i>484</i>&nbsp;
+<i>485</i>&nbsp;	@Override
+<i>486</i>&nbsp;	public Collection&lt;Class&lt;? extends PathObject&gt;&gt; getSupportedParentObjectClasses() {
+<b class="nc"><i>487</i>&nbsp;		List&lt;Class&lt;? extends PathObject&gt;&gt; parents = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>488</i>&nbsp;		parents.add(PathDetectionObject.class);</b>
+<b class="nc"><i>489</i>&nbsp;		parents.add(TMACoreObject.class);</b>
+<b class="nc"><i>490</i>&nbsp;		return parents;</b>
+<i>491</i>&nbsp;	}
+<i>492</i>&nbsp;
+<i>493</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

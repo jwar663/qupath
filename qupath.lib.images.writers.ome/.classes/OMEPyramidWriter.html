@@ -1,0 +1,1601 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: OMEPyramidWriter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.writers.ome</a> ]
+</div>
+
+<h1>Coverage Summary for Class: OMEPyramidWriter (qupath.lib.images.writers.ome)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OMEPyramidWriter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 79)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$Builder</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 94)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$ChannelExportType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$CompressionType</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (2/ 6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.5%
+  </span>
+  <span class="absValue">
+    (8/ 39)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$OMEPyramidSeries</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 275)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">OMEPyramidWriter$OMEPyramidSeries$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    3.1%
+  </span>
+  <span class="absValue">
+    (2/ 65)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    1.6%
+  </span>
+  <span class="absValue">
+    (8/ 506)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.writers.ome;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.image.BufferedImage;
+<i>25</i>&nbsp;import java.awt.image.WritableRaster;
+<i>26</i>&nbsp;import java.io.File;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.nio.ByteBuffer;
+<i>29</i>&nbsp;import java.nio.ByteOrder;
+<i>30</i>&nbsp;import java.util.ArrayList;
+<i>31</i>&nbsp;import java.util.Arrays;
+<i>32</i>&nbsp;import java.util.Collection;
+<i>33</i>&nbsp;import java.util.HashMap;
+<i>34</i>&nbsp;import java.util.HashSet;
+<i>35</i>&nbsp;import java.util.List;
+<i>36</i>&nbsp;import java.util.Map;
+<i>37</i>&nbsp;import java.util.Set;
+<i>38</i>&nbsp;import java.util.concurrent.Executors;
+<i>39</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>40</i>&nbsp;import java.util.concurrent.atomic.AtomicInteger;
+<i>41</i>&nbsp;import java.util.stream.Collectors;
+<i>42</i>&nbsp;import java.util.stream.IntStream;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.slf4j.Logger;
+<i>45</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import loci.formats.FormatException;
+<i>48</i>&nbsp;import loci.formats.MetadataTools;
+<i>49</i>&nbsp;import loci.formats.meta.IMetadata;
+<i>50</i>&nbsp;import loci.formats.meta.IPyramidStore;
+<i>51</i>&nbsp;import loci.formats.out.OMETiffWriter;
+<i>52</i>&nbsp;import loci.formats.out.PyramidOMETiffWriter;
+<i>53</i>&nbsp;import loci.formats.tiff.IFD;
+<i>54</i>&nbsp;import ome.units.UNITS;
+<i>55</i>&nbsp;import ome.units.quantity.Length;
+<i>56</i>&nbsp;import ome.xml.model.enums.DimensionOrder;
+<i>57</i>&nbsp;import ome.xml.model.enums.PixelType;
+<i>58</i>&nbsp;import ome.xml.model.primitives.Color;
+<i>59</i>&nbsp;import ome.xml.model.primitives.PositiveInteger;
+<i>60</i>&nbsp;import qupath.lib.color.ColorModelFactory;
+<i>61</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>62</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>63</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>64</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>65</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>66</i>&nbsp;import qupath.lib.images.servers.ServerTools;
+<i>67</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ChannelType;
+<i>68</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>69</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;/**
+<i>72</i>&nbsp; * Write OME-TIFF files based on QuPath ImageServers.
+<i>73</i>&nbsp; * &lt;p&gt;
+<i>74</i>&nbsp; * The files may optionally be pyramidal TIFFs.  Some key metadata is set (e.g. channel names/colors, pixel size), 
+<i>75</i>&nbsp; * and an effort is made to support multidimensional images - but this has not been extensively checked.  
+<i>76</i>&nbsp; * &lt;p&gt;
+<i>77</i>&nbsp; * Currently the magnification is &lt;i&gt;not&lt;/i&gt; written, nor is the full OME XML metadata, and images written using this class 
+<i>78</i>&nbsp; * should &lt;i&gt;not&lt;/i&gt; be assumed to contain all the necessary information, correctly or at all (i.e. always keep your original data files!).
+<i>79</i>&nbsp; * &lt;p&gt;
+<i>80</i>&nbsp; * Note this requires Bio-Formats v6.0.0 or later.
+<i>81</i>&nbsp; * 
+<i>82</i>&nbsp; * @author Pete Bankhead
+<i>83</i>&nbsp; *
+<i>84</i>&nbsp; */
+<i>85</i>&nbsp;public class OMEPyramidWriter {
+<i>86</i>&nbsp;	
+<i>87</i>&nbsp;	private OMEPyramidWriter() {}
+<i>88</i>&nbsp;	
+<b class="nc"><i>89</i>&nbsp;	private static Logger logger = LoggerFactory.getLogger(OMEPyramidWriter.class);</b>
+<i>90</i>&nbsp;	
+<i>91</i>&nbsp;	/**
+<i>92</i>&nbsp;	 * Preferred compression type when using Bio-Formats.
+<i>93</i>&nbsp;	 */
+<b class="fc"><i>94</i>&nbsp;	public static enum CompressionType {</b>
+<i>95</i>&nbsp;		/**
+<i>96</i>&nbsp;		 * No compression (faster to write, no loss of information, but large file sizes).
+<i>97</i>&nbsp;		 */
+<b class="fc"><i>98</i>&nbsp;		UNCOMPRESSED,</b>
+<i>99</i>&nbsp;		/**
+<i>100</i>&nbsp;		 * Default (QuPath will select compression option based on image size and type, may be lossless or lossy).
+<i>101</i>&nbsp;		 */
+<b class="fc"><i>102</i>&nbsp;		DEFAULT,</b>
+<i>103</i>&nbsp;		/**
+<i>104</i>&nbsp;		 * JPEG compression (only for single channel or RGB 8-bit images).
+<i>105</i>&nbsp;		 */
+<b class="fc"><i>106</i>&nbsp;		JPEG,</b>
+<i>107</i>&nbsp;		/**
+<i>108</i>&nbsp;		 * Lossless JPEG-2000 compression.
+<i>109</i>&nbsp;		 */
+<b class="fc"><i>110</i>&nbsp;		J2K,</b>
+<i>111</i>&nbsp;		/**
+<i>112</i>&nbsp;		 * Lossy JPEG-2000 compression.
+<i>113</i>&nbsp;		 */
+<b class="fc"><i>114</i>&nbsp;		J2K_LOSSY,</b>
+<i>115</i>&nbsp;		/**
+<i>116</i>&nbsp;		 * LZW compression.
+<i>117</i>&nbsp;		 */
+<b class="fc"><i>118</i>&nbsp;		LZW,</b>
+<i>119</i>&nbsp;		/**
+<i>120</i>&nbsp;		 * ZLIB compression.
+<i>121</i>&nbsp;		 */
+<b class="fc"><i>122</i>&nbsp;		ZLIB;</b>
+<i>123</i>&nbsp;		
+<i>124</i>&nbsp;		/**
+<i>125</i>&nbsp;		 * Get the String representation understood by OMETiffWriter.
+<i>126</i>&nbsp;		 * @param server server that may be used if the type is {@link CompressionType#DEFAULT}
+<i>127</i>&nbsp;		 * @return
+<i>128</i>&nbsp;		 */
+<i>129</i>&nbsp;		public String getOMEString(ImageServer&lt;?&gt; server) {
+<b class="nc"><i>130</i>&nbsp;			switch(this) {</b>
+<i>131</i>&nbsp;			case J2K:
+<b class="nc"><i>132</i>&nbsp;				return OMETiffWriter.COMPRESSION_J2K;</b>
+<i>133</i>&nbsp;			case J2K_LOSSY:
+<b class="nc"><i>134</i>&nbsp;				return OMETiffWriter.COMPRESSION_J2K_LOSSY;</b>
+<i>135</i>&nbsp;			case JPEG:
+<b class="nc"><i>136</i>&nbsp;				return OMETiffWriter.COMPRESSION_JPEG;</b>
+<i>137</i>&nbsp;			case UNCOMPRESSED:
+<b class="nc"><i>138</i>&nbsp;				return OMETiffWriter.COMPRESSION_UNCOMPRESSED;</b>
+<i>139</i>&nbsp;			case LZW:
+<b class="nc"><i>140</i>&nbsp;				return OMETiffWriter.COMPRESSION_LZW;</b>
+<i>141</i>&nbsp;			case ZLIB:
+<b class="nc"><i>142</i>&nbsp;				return OMETiffWriter.COMPRESSION_ZLIB;</b>
+<i>143</i>&nbsp;			case DEFAULT:
+<i>144</i>&nbsp;			default:
+<b class="nc"><i>145</i>&nbsp;				if (server.isRGB() &amp;&amp; server.nResolutions() &gt; 1)</b>
+<b class="nc"><i>146</i>&nbsp;					return OMETiffWriter.COMPRESSION_JPEG;</b>
+<b class="nc"><i>147</i>&nbsp;				if (server.getPixelType() == qupath.lib.images.servers.PixelType.UINT8)</b>
+<i>148</i>&nbsp;					// LZW is apparently bad for 16-bit (can increase file sizes?)
+<b class="nc"><i>149</i>&nbsp;					return OMETiffWriter.COMPRESSION_LZW;</b>
+<i>150</i>&nbsp;				else
+<b class="nc"><i>151</i>&nbsp;					return OMETiffWriter.COMPRESSION_ZLIB;</b>
+<i>152</i>&nbsp;			}
+<i>153</i>&nbsp;		}
+<i>154</i>&nbsp;		
+<i>155</i>&nbsp;		/**
+<i>156</i>&nbsp;		 * Returns true if the compression type supports a specific image server, or false 
+<i>157</i>&nbsp;		 * if it is incompatible. This may be due to bit-depth, number of channels etc.
+<i>158</i>&nbsp;		 * @param server
+<i>159</i>&nbsp;		 * @return
+<i>160</i>&nbsp;		 */
+<i>161</i>&nbsp;		public boolean supportsImage(ImageServer&lt;?&gt; server) {
+<b class="nc"><i>162</i>&nbsp;			switch(this) {</b>
+<i>163</i>&nbsp;			case JPEG:
+<b class="nc"><i>164</i>&nbsp;				return server.isRGB() || </b>
+<b class="nc"><i>165</i>&nbsp;						(server.nChannels() == 1 &amp;&amp; server.getPixelType() == qupath.lib.images.servers.PixelType.UINT8);</b>
+<i>166</i>&nbsp;			case J2K:
+<i>167</i>&nbsp;			case J2K_LOSSY:
+<i>168</i>&nbsp;				// It seems OME-TIFF can only write 8-bit or 16-bit J2K?
+<b class="nc"><i>169</i>&nbsp;				return server.getPixelType().getBytesPerPixel() &lt;= 2;</b>
+<i>170</i>&nbsp;			case LZW:
+<i>171</i>&nbsp;			case DEFAULT:
+<i>172</i>&nbsp;			case UNCOMPRESSED:
+<i>173</i>&nbsp;			case ZLIB:
+<b class="nc"><i>174</i>&nbsp;				return true;</b>
+<i>175</i>&nbsp;			default:
+<b class="nc"><i>176</i>&nbsp;				return false;</b>
+<i>177</i>&nbsp;			}
+<i>178</i>&nbsp;		}
+<i>179</i>&nbsp;		
+<i>180</i>&nbsp;		/**
+<i>181</i>&nbsp;		 * Get a friendlier string representation
+<i>182</i>&nbsp;		 * @return
+<i>183</i>&nbsp;		 */
+<i>184</i>&nbsp;		public String toFriendlyString() {
+<b class="nc"><i>185</i>&nbsp;			switch(this) {</b>
+<i>186</i>&nbsp;			case DEFAULT:
+<b class="nc"><i>187</i>&nbsp;				return &quot;Default (lossless or lossy)&quot;;</b>
+<i>188</i>&nbsp;			case J2K:
+<b class="nc"><i>189</i>&nbsp;				return &quot;JPEG-2000 (lossless)&quot;;</b>
+<i>190</i>&nbsp;			case J2K_LOSSY:
+<b class="nc"><i>191</i>&nbsp;				return &quot;JPEG-2000 (lossy)&quot;;</b>
+<i>192</i>&nbsp;			case JPEG:
+<b class="nc"><i>193</i>&nbsp;				return &quot;JPEG (lossy)&quot;;</b>
+<i>194</i>&nbsp;			case UNCOMPRESSED:
+<b class="nc"><i>195</i>&nbsp;				return &quot;Uncompressed&quot;;</b>
+<i>196</i>&nbsp;			case LZW:
+<b class="nc"><i>197</i>&nbsp;				return &quot;LZW (lossless)&quot;;</b>
+<i>198</i>&nbsp;			case ZLIB:
+<b class="nc"><i>199</i>&nbsp;				return &quot;ZLIB (lossless)&quot;;</b>
+<i>200</i>&nbsp;			default:
+<b class="nc"><i>201</i>&nbsp;				throw new IllegalArgumentException(&quot;Unknown compression type: &quot; + this);</b>
+<i>202</i>&nbsp;			}
+<i>203</i>&nbsp;		}
+<i>204</i>&nbsp;		
+<i>205</i>&nbsp;		/**
+<i>206</i>&nbsp;		 * Get the CompressionType corresponding to the given input
+<i>207</i>&nbsp;		 * @param friendlyCompression
+<i>208</i>&nbsp;		 * @return
+<i>209</i>&nbsp;		 */
+<i>210</i>&nbsp;		public static CompressionType fromFriendlyString(String friendlyCompression) {
+<b class="nc"><i>211</i>&nbsp;			for (var compression: CompressionType.values()) {</b>
+<b class="nc"><i>212</i>&nbsp;				if (friendlyCompression.equals(compression.toFriendlyString()))</b>
+<b class="nc"><i>213</i>&nbsp;					return compression;</b>
+<i>214</i>&nbsp;			}
+<b class="nc"><i>215</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown compression type: &quot; + friendlyCompression);</b>
+<i>216</i>&nbsp;		}
+<i>217</i>&nbsp;	}
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;	
+<i>220</i>&nbsp;	
+<b class="nc"><i>221</i>&nbsp;	private static int DEFAULT_TILE_SIZE = 512;</b>
+<b class="nc"><i>222</i>&nbsp;	private static int MIN_SIZE_FOR_TILING = DEFAULT_TILE_SIZE * 8;</b>
+<b class="nc"><i>223</i>&nbsp;	private static int MIN_SIZE_FOR_PYRAMID = MIN_SIZE_FOR_TILING * 2;</b>
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;		
+<i>226</i>&nbsp;	/**
+<i>227</i>&nbsp;	 * Enum representing different ways in which channels may be written to a file.
+<i>228</i>&nbsp;	 */
+<b class="nc"><i>229</i>&nbsp;	public static enum ChannelExportType {</b>
+<i>230</i>&nbsp;		/**
+<i>231</i>&nbsp;		 * Leave it up to the writer to choose the appropriate method.
+<i>232</i>&nbsp;		 */
+<b class="nc"><i>233</i>&nbsp;		DEFAULT,</b>
+<i>234</i>&nbsp;		/**
+<i>235</i>&nbsp;		 * Channels are interleaved (&#39;PLANARCONFIG_CONTIG&#39;).
+<i>236</i>&nbsp;		 */
+<b class="nc"><i>237</i>&nbsp;		INTERLEAVED,</b>
+<i>238</i>&nbsp;		/**
+<i>239</i>&nbsp;		 * Channels are stored as separate image planes (&#39;PLANARCONFIG_SEPARATE&#39;).
+<i>240</i>&nbsp;		 */
+<b class="nc"><i>241</i>&nbsp;		PLANAR,</b>
+<i>242</i>&nbsp;		/**
+<i>243</i>&nbsp;		 * Channels are stored as separate images (this is not yet supported!).
+<i>244</i>&nbsp;		 */
+<b class="nc"><i>245</i>&nbsp;		IMAGES</b>
+<i>246</i>&nbsp;	}
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	
+<b class="nc"><i>249</i>&nbsp;	private boolean keepExisting = false;</b>
+<i>250</i>&nbsp;	
+<b class="nc"><i>251</i>&nbsp;	private List&lt;OMEPyramidSeries&gt; series = new ArrayList&lt;&gt;();</b>
+<i>252</i>&nbsp;	
+<b class="nc"><i>253</i>&nbsp;	private OMEPyramidWriter(Collection&lt;OMEPyramidSeries&gt; series) {</b>
+<b class="nc"><i>254</i>&nbsp;		this.series.addAll(series);</b>
+<i>255</i>&nbsp;	}
+<i>256</i>&nbsp;	
+<i>257</i>&nbsp;	/**
+<i>258</i>&nbsp;	 * Write an image consisting of one or more series to the specified path.
+<i>259</i>&nbsp;	 * @param path
+<i>260</i>&nbsp;	 * @throws FormatException
+<i>261</i>&nbsp;	 * @throws IOException
+<i>262</i>&nbsp;	 * @see #createWriter(Collection)
+<i>263</i>&nbsp;	 * @see #createWriter(OMEPyramidSeries...)
+<i>264</i>&nbsp;	 */
+<i>265</i>&nbsp;	public void writeImage(final String path) throws FormatException, IOException {
+<b class="nc"><i>266</i>&nbsp;		IMetadata meta = MetadataTools.createOMEXMLMetadata();</b>
+<i>267</i>&nbsp;		
+<b class="nc"><i>268</i>&nbsp;		File file = new File(path);</b>
+<b class="nc"><i>269</i>&nbsp;		if (file.exists() &amp;&amp; !keepExisting) {</b>
+<b class="nc"><i>270</i>&nbsp;			logger.warn(&quot;Deleting existing file {}&quot;, path);</b>
+<b class="nc"><i>271</i>&nbsp;			if (!file.delete())</b>
+<b class="nc"><i>272</i>&nbsp;				throw new IOException(&quot;Unable to delete &quot; + file.getAbsolutePath());</b>
+<i>273</i>&nbsp;		}
+<i>274</i>&nbsp;				
+<b class="nc"><i>275</i>&nbsp;		try (PyramidOMETiffWriter writer = new PyramidOMETiffWriter()) {</b>
+<b class="nc"><i>276</i>&nbsp;			boolean doBigTiff = false;</b>
+<b class="nc"><i>277</i>&nbsp;			long nPixelBytes = 0L;</b>
+<b class="nc"><i>278</i>&nbsp;			for (int s = 0; s &lt; series.size(); s++) {</b>
+<b class="nc"><i>279</i>&nbsp;				var temp = series.get(s);</b>
+<b class="nc"><i>280</i>&nbsp;				doBigTiff = Boolean.TRUE.equals(temp.bigTiff) | doBigTiff;</b>
+<b class="nc"><i>281</i>&nbsp;				nPixelBytes += ((long)temp.width * temp.height * temp.channels.length * temp.server.getPixelType().getBytesPerPixel() *</b>
+<i>282</i>&nbsp;						(temp.tEnd - temp.tStart) * (temp.zEnd - temp.zStart));
+<b class="nc"><i>283</i>&nbsp;				temp.initializeMetadata(meta, s);</b>
+<i>284</i>&nbsp;			}
+<i>285</i>&nbsp;			
+<b class="nc"><i>286</i>&nbsp;			writer.setWriteSequentially(true); // Setting this to false can be problematic!</b>
+<i>287</i>&nbsp;			// Switch automatically to bigtiff is we have a large image or it has already been requested
+<b class="nc"><i>288</i>&nbsp;			if (doBigTiff || nPixelBytes &gt;= Integer.MAX_VALUE)</b>
+<b class="nc"><i>289</i>&nbsp;				writer.setBigTiff(doBigTiff);</b>
+<i>290</i>&nbsp;			
+<b class="nc"><i>291</i>&nbsp;			writer.setMetadataRetrieve(meta);</b>
+<b class="nc"><i>292</i>&nbsp;			writer.setId(path);</b>
+<b class="nc"><i>293</i>&nbsp;			for (int s = 0; s &lt; series.size(); s++) {</b>
+<b class="nc"><i>294</i>&nbsp;				var temp = series.get(s);</b>
+<b class="nc"><i>295</i>&nbsp;				logger.info(&quot;Writing {} to {} (series {}/{})&quot;, ServerTools.getDisplayableImageName(temp.server), path, s+1, series.size());</b>
+<b class="nc"><i>296</i>&nbsp;				temp.writePyramid(writer, meta, s);</b>
+<i>297</i>&nbsp;			}
+<b class="nc"><i>298</i>&nbsp;		}</b>
+<i>299</i>&nbsp;		
+<i>300</i>&nbsp;	}
+<i>301</i>&nbsp;	
+<i>302</i>&nbsp;	
+<i>303</i>&nbsp;	static class OMEPyramidSeries {
+<i>304</i>&nbsp;		
+<i>305</i>&nbsp;		private OMEPyramidSeries() {}
+<i>306</i>&nbsp;		
+<i>307</i>&nbsp;		private ImageServer&lt;BufferedImage&gt; server;
+<i>308</i>&nbsp;		
+<i>309</i>&nbsp;		private String name; // Series name
+<i>310</i>&nbsp;	
+<i>311</i>&nbsp;		private double[] downsamples;
+<i>312</i>&nbsp;		private int tileWidth, tileHeight;
+<i>313</i>&nbsp;	
+<i>314</i>&nbsp;		private int x, y, width, height;
+<b class="nc"><i>315</i>&nbsp;		private int zStart = 0;</b>
+<b class="nc"><i>316</i>&nbsp;		private int zEnd = 0;</b>
+<b class="nc"><i>317</i>&nbsp;		private int tStart = 0;</b>
+<b class="nc"><i>318</i>&nbsp;		private int tEnd = 0;</b>
+<i>319</i>&nbsp;		private int[] channels;
+<i>320</i>&nbsp;		
+<b class="nc"><i>321</i>&nbsp;		private ByteOrder endian = ByteOrder.BIG_ENDIAN;</b>
+<i>322</i>&nbsp;		
+<b class="nc"><i>323</i>&nbsp;		private boolean parallelExport = false;</b>
+<i>324</i>&nbsp;		
+<i>325</i>&nbsp;		private Boolean bigTiff;
+<b class="nc"><i>326</i>&nbsp;		private ChannelExportType channelExportType = ChannelExportType.DEFAULT;</b>
+<i>327</i>&nbsp;	
+<b class="nc"><i>328</i>&nbsp;		private CompressionType compression = CompressionType.DEFAULT;</b>
+<i>329</i>&nbsp;		
+<i>330</i>&nbsp;		public void initializeMetadata(IMetadata meta, int series) throws IOException {
+<i>331</i>&nbsp;			
+<b class="nc"><i>332</i>&nbsp;			meta.setImageID(&quot;Image:&quot;+series, series);</b>
+<b class="nc"><i>333</i>&nbsp;			meta.setPixelsID(&quot;Pixels:&quot;+series, series);</b>
+<b class="nc"><i>334</i>&nbsp;			if (name != null)</b>
+<b class="nc"><i>335</i>&nbsp;				meta.setImageName(name, series);</b>
+<i>336</i>&nbsp;			
+<b class="nc"><i>337</i>&nbsp;			meta.setPixelsBigEndian(ByteOrder.BIG_ENDIAN.equals(endian), series);</b>
+<i>338</i>&nbsp;			
+<b class="nc"><i>339</i>&nbsp;			meta.setPixelsDimensionOrder(DimensionOrder.XYCZT, series);</b>
+<b class="nc"><i>340</i>&nbsp;			switch (server.getPixelType()) {</b>
+<i>341</i>&nbsp;			case INT8:
+<b class="nc"><i>342</i>&nbsp;				meta.setPixelsType(PixelType.INT8, series);</b>
+<b class="nc"><i>343</i>&nbsp;				break;</b>
+<i>344</i>&nbsp;			case UINT8:
+<b class="nc"><i>345</i>&nbsp;				meta.setPixelsType(PixelType.UINT8, series);</b>
+<b class="nc"><i>346</i>&nbsp;				break;</b>
+<i>347</i>&nbsp;			case INT16:
+<b class="nc"><i>348</i>&nbsp;				meta.setPixelsType(PixelType.INT16, series);</b>
+<b class="nc"><i>349</i>&nbsp;				break;</b>
+<i>350</i>&nbsp;			case UINT16:
+<b class="nc"><i>351</i>&nbsp;				meta.setPixelsType(PixelType.UINT16, series);</b>
+<b class="nc"><i>352</i>&nbsp;				break;</b>
+<i>353</i>&nbsp;			case INT32:
+<b class="nc"><i>354</i>&nbsp;				meta.setPixelsType(PixelType.INT32, series);</b>
+<b class="nc"><i>355</i>&nbsp;				break;</b>
+<i>356</i>&nbsp;			case UINT32:
+<b class="nc"><i>357</i>&nbsp;				meta.setPixelsType(PixelType.UINT32, series);</b>
+<b class="nc"><i>358</i>&nbsp;				break;</b>
+<i>359</i>&nbsp;			case FLOAT32:
+<b class="nc"><i>360</i>&nbsp;				meta.setPixelsType(PixelType.FLOAT, series);</b>
+<b class="nc"><i>361</i>&nbsp;				break;</b>
+<i>362</i>&nbsp;			case FLOAT64:
+<b class="nc"><i>363</i>&nbsp;				meta.setPixelsType(PixelType.DOUBLE, series);</b>
+<b class="nc"><i>364</i>&nbsp;				break;</b>
+<i>365</i>&nbsp;			default:
+<b class="nc"><i>366</i>&nbsp;				throw new IOException(&quot;Cannot convert pixel type value of &quot; + server.getPixelType() + &quot; into a valid OME PixelType&quot;);</b>
+<i>367</i>&nbsp;			}
+<b class="nc"><i>368</i>&nbsp;			meta.setPixelsSizeX(new PositiveInteger((int)(width / downsamples[0])), series);</b>
+<b class="nc"><i>369</i>&nbsp;			meta.setPixelsSizeY(new PositiveInteger((int)(height / downsamples[0])), series);</b>
+<i>370</i>&nbsp;	
+<i>371</i>&nbsp;			// Currently, only support single plane
+<b class="nc"><i>372</i>&nbsp;			int sizeZ = zEnd - zStart;</b>
+<b class="nc"><i>373</i>&nbsp;			int sizeT = tEnd - tStart;</b>
+<b class="nc"><i>374</i>&nbsp;			if (sizeZ &lt;= 0)</b>
+<b class="nc"><i>375</i>&nbsp;				throw new IllegalArgumentException(&quot;Need to specify positive z-slice range (non-inclusive): requested start &quot; + zStart + &quot; and end &quot; + zEnd);</b>
+<b class="nc"><i>376</i>&nbsp;			if (sizeT &lt;= 0)</b>
+<b class="nc"><i>377</i>&nbsp;				throw new IllegalArgumentException(&quot;Need to specify positive time point range (non-inclusive): requested start &quot; + tStart + &quot; and end &quot; + tEnd);</b>
+<b class="nc"><i>378</i>&nbsp;			meta.setPixelsSizeZ(new PositiveInteger(sizeZ), series);</b>
+<b class="nc"><i>379</i>&nbsp;			meta.setPixelsSizeT(new PositiveInteger(sizeT), series);</b>
+<i>380</i>&nbsp;			
+<b class="nc"><i>381</i>&nbsp;			int nSamples = 1;</b>
+<b class="nc"><i>382</i>&nbsp;			int nChannels = this.channels.length;</b>
+<b class="nc"><i>383</i>&nbsp;			boolean isRGB = server.isRGB() &amp;&amp; Arrays.equals(channels, new int[] {0, 1, 2});</b>
+<b class="nc"><i>384</i>&nbsp;			boolean isInterleaved = false;</b>
+<b class="nc"><i>385</i>&nbsp;			if (channelExportType == ChannelExportType.DEFAULT) {</b>
+<b class="nc"><i>386</i>&nbsp;				if (isRGB)</b>
+<b class="nc"><i>387</i>&nbsp;					channelExportType = ChannelExportType.INTERLEAVED;</b>
+<i>388</i>&nbsp;				else
+<b class="nc"><i>389</i>&nbsp;					channelExportType = ChannelExportType.PLANAR;				</b>
+<i>390</i>&nbsp;			}
+<i>391</i>&nbsp;	
+<b class="nc"><i>392</i>&nbsp;			switch (channelExportType) {</b>
+<i>393</i>&nbsp;			case IMAGES:
+<b class="nc"><i>394</i>&nbsp;				if (nChannels &gt; 1) {</b>
+<b class="nc"><i>395</i>&nbsp;					logger.warn(&quot;Exporting channels to individual images not yet supported! Will use the default...&quot;);</b>
+<i>396</i>&nbsp;				}
+<i>397</i>&nbsp;			case PLANAR:
+<b class="nc"><i>398</i>&nbsp;				break;</b>
+<i>399</i>&nbsp;			case INTERLEAVED:
+<i>400</i>&nbsp;			case DEFAULT:
+<i>401</i>&nbsp;			default:
+<b class="nc"><i>402</i>&nbsp;				isInterleaved = nChannels &gt; 1;</b>
+<b class="nc"><i>403</i>&nbsp;				nSamples = nChannels;</b>
+<i>404</i>&nbsp;				break;
+<i>405</i>&nbsp;			}
+<i>406</i>&nbsp;			
+<b class="nc"><i>407</i>&nbsp;			if (channels.length &lt;= 0)</b>
+<b class="nc"><i>408</i>&nbsp;				throw new IllegalArgumentException(&quot;No channels specified for export!&quot;);</b>
+<i>409</i>&nbsp;	
+<i>410</i>&nbsp;			//		nChannels = 2;
+<i>411</i>&nbsp;	
+<i>412</i>&nbsp;			// Set channel colors
+<b class="nc"><i>413</i>&nbsp;			meta.setPixelsSizeC(new PositiveInteger(nChannels), series);</b>
+<b class="nc"><i>414</i>&nbsp;			if (isRGB) {</b>
+<b class="nc"><i>415</i>&nbsp;				meta.setChannelID(&quot;Channel:0&quot;, series, 0);			</b>
+<b class="nc"><i>416</i>&nbsp;				meta.setPixelsInterleaved(isInterleaved, series);</b>
+<b class="nc"><i>417</i>&nbsp;				meta.setChannelSamplesPerPixel(new PositiveInteger(nSamples), series, 0);	</b>
+<i>418</i>&nbsp;			} else {
+<b class="nc"><i>419</i>&nbsp;				meta.setChannelSamplesPerPixel(new PositiveInteger(nSamples), series, 0);</b>
+<b class="nc"><i>420</i>&nbsp;				meta.setPixelsInterleaved(isInterleaved, series);</b>
+<b class="nc"><i>421</i>&nbsp;				for (int c = 0; c &lt; nChannels; c++) {</b>
+<b class="nc"><i>422</i>&nbsp;					meta.setChannelID(&quot;Channel:0:&quot; + c, series, c);			</b>
+<i>423</i>&nbsp;	//				meta.setChannelSamplesPerPixel(new PositiveInteger(nSamples), series, c);
+<i>424</i>&nbsp;	//				Integer color = server.getChannels().get(c).getColor();
+<b class="nc"><i>425</i>&nbsp;					ImageChannel channel = server.getChannel(c);</b>
+<b class="nc"><i>426</i>&nbsp;					Integer color = channel.getColor();</b>
+<b class="nc"><i>427</i>&nbsp;					meta.setChannelColor(new Color(</b>
+<b class="nc"><i>428</i>&nbsp;							ColorTools.red(color),</b>
+<b class="nc"><i>429</i>&nbsp;							ColorTools.green(color),</b>
+<b class="nc"><i>430</i>&nbsp;							ColorTools.blue(color),</b>
+<i>431</i>&nbsp;							0
+<i>432</i>&nbsp;							), series, c);
+<b class="nc"><i>433</i>&nbsp;					meta.setChannelName(channel.getName(), series, c);</b>
+<i>434</i>&nbsp;				}			
+<i>435</i>&nbsp;			}
+<i>436</i>&nbsp;	
+<i>437</i>&nbsp;			// Set physical units, if we have them
+<b class="nc"><i>438</i>&nbsp;			PixelCalibration cal = server.getPixelCalibration();</b>
+<b class="nc"><i>439</i>&nbsp;			if (cal.hasPixelSizeMicrons()) {</b>
+<b class="nc"><i>440</i>&nbsp;				meta.setPixelsPhysicalSizeX(new Length(cal.getPixelWidthMicrons() * downsamples[0], UNITS.MICROMETER), series);</b>
+<b class="nc"><i>441</i>&nbsp;				meta.setPixelsPhysicalSizeY(new Length(cal.getPixelHeightMicrons() * downsamples[0], UNITS.MICROMETER), series);</b>
+<i>442</i>&nbsp;			}
+<b class="nc"><i>443</i>&nbsp;			if (!Double.isNaN(cal.getZSpacingMicrons()))</b>
+<b class="nc"><i>444</i>&nbsp;				meta.setPixelsPhysicalSizeZ(new Length(cal.getZSpacingMicrons(), UNITS.MICROMETER), series);</b>
+<i>445</i>&nbsp;	
+<i>446</i>&nbsp;			// TODO: Consider setting the magnification
+<i>447</i>&nbsp;	
+<i>448</i>&nbsp;			// Set resolutions
+<b class="nc"><i>449</i>&nbsp;			for (int level = 0; level &lt; downsamples.length; level++) {</b>
+<b class="nc"><i>450</i>&nbsp;				double d = downsamples[level];</b>
+<b class="nc"><i>451</i>&nbsp;				int w = (int)(width / d);</b>
+<b class="nc"><i>452</i>&nbsp;				int h = (int)(height / d);</b>
+<b class="nc"><i>453</i>&nbsp;				((IPyramidStore)meta).setResolutionSizeX(new PositiveInteger(w), series, level);</b>
+<b class="nc"><i>454</i>&nbsp;				((IPyramidStore)meta).setResolutionSizeY(new PositiveInteger(h), series, level);</b>
+<i>455</i>&nbsp;			}
+<i>456</i>&nbsp;	
+<i>457</i>&nbsp;		}
+<i>458</i>&nbsp;		
+<i>459</i>&nbsp;		/**
+<i>460</i>&nbsp;		 * Write an OME-TIFF pyramidal image to the given file.
+<i>461</i>&nbsp;		 * 
+<i>462</i>&nbsp;		 * @param path file path for output
+<i>463</i>&nbsp;		 * @throws FormatException
+<i>464</i>&nbsp;		 * @throws IOException
+<i>465</i>&nbsp;		 */
+<i>466</i>&nbsp;		public void writePyramid(final String path) throws FormatException, IOException {
+<b class="nc"><i>467</i>&nbsp;			var writer = new OMEPyramidWriter();</b>
+<b class="nc"><i>468</i>&nbsp;			writer.series.add(this);</b>
+<b class="nc"><i>469</i>&nbsp;			writer.writeImage(path);</b>
+<i>470</i>&nbsp;		}
+<i>471</i>&nbsp;		
+<i>472</i>&nbsp;		/**
+<i>473</i>&nbsp;		 * Append an image as a specific series.
+<i>474</i>&nbsp;		 * 
+<i>475</i>&nbsp;		 * @param writer the current writer; it should already be initialized, with metadata and ID set
+<i>476</i>&nbsp;		 * @param meta the metadata, which should already have been initialized and set in the writer before writing any pixels
+<i>477</i>&nbsp;		 * @param series number of series to be written (starting with 0; assumes previous series already written)
+<i>478</i>&nbsp;		 * @throws FormatException
+<i>479</i>&nbsp;		 * @throws IOException
+<i>480</i>&nbsp;		 * 
+<i>481</i>&nbsp;		 * @see Builder
+<i>482</i>&nbsp;		 * @see #initializeMetadata(IMetadata, int)
+<i>483</i>&nbsp;		 */
+<i>484</i>&nbsp;		public void writePyramid(final PyramidOMETiffWriter writer, IMetadata meta, final int series) throws FormatException, IOException {
+<i>485</i>&nbsp;	
+<b class="nc"><i>486</i>&nbsp;			boolean isRGB = server.isRGB() &amp;&amp; Arrays.equals(channels, new int[] {0, 1, 2});</b>
+<b class="nc"><i>487</i>&nbsp;			int nChannels = meta.getPixelsSizeC(series).getValue();</b>
+<b class="nc"><i>488</i>&nbsp;			int nSamples = meta.getChannelSamplesPerPixel(series, 0).getValue();</b>
+<b class="nc"><i>489</i>&nbsp;			int sizeZ = meta.getPixelsSizeZ(series).getValue();</b>
+<b class="nc"><i>490</i>&nbsp;			int sizeT = meta.getPixelsSizeT(series).getValue();</b>
+<b class="nc"><i>491</i>&nbsp;			int width = meta.getPixelsSizeX(series).getValue();</b>
+<b class="nc"><i>492</i>&nbsp;			int height = meta.getPixelsSizeY(series).getValue();</b>
+<b class="nc"><i>493</i>&nbsp;			int nPlanes = (nChannels / nSamples) * sizeZ * sizeT;</b>
+<i>494</i>&nbsp;			
+<b class="nc"><i>495</i>&nbsp;			if (compression.supportsImage(server))</b>
+<b class="nc"><i>496</i>&nbsp;				writer.setCompression(compression.getOMEString(server));</b>
+<i>497</i>&nbsp;			else {
+<b class="nc"><i>498</i>&nbsp;				String compressionString = CompressionType.DEFAULT.getOMEString(server);</b>
+<b class="nc"><i>499</i>&nbsp;				logger.warn(&quot;Requested compression {} incompatible with current image, will use {} instead&quot;,</b>
+<b class="nc"><i>500</i>&nbsp;						compression.getOMEString(server),</b>
+<i>501</i>&nbsp;						compressionString);
+<b class="nc"><i>502</i>&nbsp;				writer.setCompression(compressionString);</b>
+<i>503</i>&nbsp;			}
+<b class="nc"><i>504</i>&nbsp;			writer.setInterleaved(meta.getPixelsInterleaved(series));</b>
+<i>505</i>&nbsp;						
+<b class="nc"><i>506</i>&nbsp;			int tileWidth = this.tileWidth;</b>
+<b class="nc"><i>507</i>&nbsp;			int tileHeight = this.tileHeight;</b>
+<b class="nc"><i>508</i>&nbsp;			boolean isTiled = tileWidth &gt; 0 &amp;&amp; tileHeight &gt; 0;</b>
+<b class="nc"><i>509</i>&nbsp;			if (isTiled) {</b>
+<b class="nc"><i>510</i>&nbsp;				tileWidth = writer.setTileSizeX(tileWidth);</b>
+<b class="nc"><i>511</i>&nbsp;				tileHeight = writer.setTileSizeY(tileHeight);				</b>
+<i>512</i>&nbsp;			}
+<i>513</i>&nbsp;			
+<i>514</i>&nbsp;			// If the image represents classifications, set the color model accordingly
+<b class="nc"><i>515</i>&nbsp;			if (server.getMetadata().getChannelType() == ChannelType.CLASSIFICATION) {</b>
+<i>516</i>&nbsp;				// Try to set color model, but continue if this fails (e.g. if there are too many classifications)
+<i>517</i>&nbsp;				try {
+<b class="nc"><i>518</i>&nbsp;					writer.setColorModel(ColorModelFactory.getIndexedClassificationColorModel(server.getMetadata().getClassificationLabels()));</b>
+<b class="nc"><i>519</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>520</i>&nbsp;					logger.warn(&quot;Error setting classification color model: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>521</i>&nbsp;				}</b>
+<i>522</i>&nbsp;			}
+<i>523</i>&nbsp;	
+<b class="nc"><i>524</i>&nbsp;			writer.setSeries(series);</b>
+<i>525</i>&nbsp;			
+<b class="nc"><i>526</i>&nbsp;			Map&lt;Integer, IFD&gt; map = new HashMap&lt;&gt;();</b>
+<i>527</i>&nbsp;	
+<b class="nc"><i>528</i>&nbsp;			writer.setSeries(series);</b>
+<b class="nc"><i>529</i>&nbsp;			for (int level = 0; level &lt; downsamples.length; level++) {</b>
+<i>530</i>&nbsp;				
+<b class="nc"><i>531</i>&nbsp;				writer.setResolution(level);</b>
+<i>532</i>&nbsp;				
+<i>533</i>&nbsp;				// Preallocate any IFD
+<b class="nc"><i>534</i>&nbsp;				map.clear();</b>
+<b class="nc"><i>535</i>&nbsp;				for (int i = 0; i &lt; nPlanes; i++) {</b>
+<b class="nc"><i>536</i>&nbsp;					IFD ifd = new IFD();</b>
+<b class="nc"><i>537</i>&nbsp;					if (isTiled) {</b>
+<b class="nc"><i>538</i>&nbsp;						ifd.put(IFD.TILE_WIDTH, tileWidth);</b>
+<b class="nc"><i>539</i>&nbsp;						ifd.put(IFD.TILE_LENGTH, tileHeight);</b>
+<i>540</i>&nbsp;					}
+<b class="nc"><i>541</i>&nbsp;					if (nSamples &gt; 1 &amp;&amp; !isRGB)</b>
+<b class="nc"><i>542</i>&nbsp;						ifd.put(IFD.EXTRA_SAMPLES, new short[nSamples-1]);</b>
+<b class="nc"><i>543</i>&nbsp;					map.put(Integer.valueOf(i), ifd);</b>
+<i>544</i>&nbsp;				}
+<i>545</i>&nbsp;	
+<b class="nc"><i>546</i>&nbsp;				double d = downsamples[level];</b>
+<i>547</i>&nbsp;								
+<b class="nc"><i>548</i>&nbsp;				int w = (int)(width * downsamples[0] / d);</b>
+<b class="nc"><i>549</i>&nbsp;				int h = (int)(height * downsamples[0] / d);</b>
+<i>550</i>&nbsp;	
+<b class="nc"><i>551</i>&nbsp;				int tInc = tEnd &gt;= tStart ? 1 : -1;</b>
+<b class="nc"><i>552</i>&nbsp;				int zInc = zEnd &gt;= zStart ? 1 : -1;</b>
+<b class="nc"><i>553</i>&nbsp;				int effectiveSizeC = nChannels / nSamples;</b>
+<i>554</i>&nbsp;				
+<b class="nc"><i>555</i>&nbsp;				AtomicInteger count = new AtomicInteger(0);</b>
+<i>556</i>&nbsp;								
+<b class="nc"><i>557</i>&nbsp;				int ti = 0;</b>
+<b class="nc"><i>558</i>&nbsp;				for (int t = tStart; t &lt; tEnd; t += tInc) {</b>
+<b class="nc"><i>559</i>&nbsp;					int zi = 0;</b>
+<b class="nc"><i>560</i>&nbsp;					for (int z = zStart; z &lt; zEnd; z += zInc) {</b>
+<i>561</i>&nbsp;						
+<i>562</i>&nbsp;						/*
+<i>563</i>&nbsp;						 *  It appears we can use parallelization for tile writing (thanks to synchronization in the writer),
+<i>564</i>&nbsp;						 *  provided we write the (0,0) tile first.
+<i>565</i>&nbsp;						 */
+<b class="nc"><i>566</i>&nbsp;						long planeStartTime = System.currentTimeMillis();</b>
+<i>567</i>&nbsp;						
+<i>568</i>&nbsp;						// Create a list of all required requests, extracting the first
+<b class="nc"><i>569</i>&nbsp;						List&lt;ImageRegion&gt; regions = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>570</i>&nbsp;						for (int yy = 0; yy &lt; h; yy += tileHeight) {</b>
+<b class="nc"><i>571</i>&nbsp;							int hh = Math.min(h - yy, tileHeight);</b>
+<b class="nc"><i>572</i>&nbsp;							for (int xx = 0; xx &lt; w; xx += tileWidth) {</b>
+<b class="nc"><i>573</i>&nbsp;								int ww = Math.min(w - xx, tileWidth);</b>
+<b class="nc"><i>574</i>&nbsp;								regions.add(ImageRegion.createInstance(xx, yy, ww, hh, z, t));</b>
+<i>575</i>&nbsp;							}
+<i>576</i>&nbsp;						}
+<i>577</i>&nbsp;						
+<b class="nc"><i>578</i>&nbsp;						int total = regions.size() * (tEnd - tStart) * (zEnd - zStart);</b>
+<b class="nc"><i>579</i>&nbsp;						if (z == zStart &amp;&amp; t == tStart)</b>
+<b class="nc"><i>580</i>&nbsp;							logger.info(&quot;Writing resolution {} of {} (downsample={}, {} tiles)&quot;, level+1, downsamples.length, d, total);</b>
+<i>581</i>&nbsp;
+<b class="nc"><i>582</i>&nbsp;						ImageRegion firstRegion = regions.remove(0);</b>
+<i>583</i>&nbsp;						
+<i>584</i>&nbsp;						// Show progress at key moments
+<b class="nc"><i>585</i>&nbsp;						int inc = total &gt; 1000 ? 20 : 10;</b>
+<b class="nc"><i>586</i>&nbsp;						Set&lt;Integer&gt; keyCounts = IntStream.range(1, inc).mapToObj(i -&gt; (int)Math.round((double)total / inc * i)).collect(Collectors.toCollection(() -&gt; new HashSet&lt;&gt;()));</b>
+<b class="nc"><i>587</i>&nbsp;						keyCounts.add(total-1);</b>
+<i>588</i>&nbsp;						
+<i>589</i>&nbsp;						// Loop through effective channels (which is 1 if we are writing interleaved)
+<b class="nc"><i>590</i>&nbsp;						for (int ci = 0; ci &lt; effectiveSizeC; ci++) {</b>
+<i>591</i>&nbsp;							
+<b class="nc"><i>592</i>&nbsp;							int plane = ti * sizeZ * effectiveSizeC + zi * effectiveSizeC + ci;</b>
+<b class="nc"><i>593</i>&nbsp;							IFD ifd = map.get(Integer.valueOf(plane));</b>
+<b class="nc"><i>594</i>&nbsp;							int[] localChannels = effectiveSizeC == channels.length ? new int[] {channels[ci]} : channels;</b>
+<i>595</i>&nbsp;						
+<b class="nc"><i>596</i>&nbsp;							logger.info(&quot;Writing plane {}/{}&quot;, plane+1, nPlanes);</b>
+<i>597</i>&nbsp;								
+<i>598</i>&nbsp;							// We *must* write the first region first
+<b class="nc"><i>599</i>&nbsp;							writeRegion(writer, plane, ifd, firstRegion, d, isRGB, localChannels);</b>
+<b class="nc"><i>600</i>&nbsp;							if (!regions.isEmpty()) {</b>
+<b class="nc"><i>601</i>&nbsp;								var tasks = regions.stream().map(region -&gt; new Runnable() {</b>
+<i>602</i>&nbsp;									@Override
+<i>603</i>&nbsp;									public void run() {
+<i>604</i>&nbsp;										try {
+<b class="nc"><i>605</i>&nbsp;											if (Thread.currentThread().isInterrupted())</b>
+<i>606</i>&nbsp;												return;
+<b class="nc"><i>607</i>&nbsp;											writeRegion(writer, plane, ifd, region, d, isRGB, localChannels);</b>
+<b class="nc"><i>608</i>&nbsp;										} catch (Exception e) {</b>
+<b class="nc"><i>609</i>&nbsp;											logger.error(String.format(</b>
+<i>610</i>&nbsp;													&quot;Error writing %s (downsample=%.2f)&quot;,
+<b class="nc"><i>611</i>&nbsp;													region.toString(), d),</b>
+<i>612</i>&nbsp;													e);
+<i>613</i>&nbsp;										} finally {
+<b class="nc"><i>614</i>&nbsp;											int localCount = count.incrementAndGet();</b>
+<b class="nc"><i>615</i>&nbsp;											if (total &gt; 20 &amp;&amp; keyCounts.size() &gt; 1 &amp;&amp; keyCounts.contains(localCount)) {</b>
+<b class="nc"><i>616</i>&nbsp;												double percentage = localCount*100.0/total;</b>
+<b class="nc"><i>617</i>&nbsp;												logger.info(&quot;Written {}% tiles&quot;, Math.round(percentage));</b>
+<i>618</i>&nbsp;											}
+<b class="nc"><i>619</i>&nbsp;										}</b>
+<i>620</i>&nbsp;									}
+<b class="nc"><i>621</i>&nbsp;								}).collect(Collectors.toList());</b>
+<i>622</i>&nbsp;								
+<b class="nc"><i>623</i>&nbsp;								if (parallelExport) {</b>
+<b class="nc"><i>624</i>&nbsp;									var pool = Executors.newWorkStealingPool(4);</b>
+<b class="nc"><i>625</i>&nbsp;									for (var task : tasks) {</b>
+<b class="nc"><i>626</i>&nbsp;										pool.submit(task);</b>
+<b class="nc"><i>627</i>&nbsp;									}</b>
+<b class="nc"><i>628</i>&nbsp;									pool.shutdown();</b>
+<i>629</i>&nbsp;									try {
+<b class="nc"><i>630</i>&nbsp;										pool.awaitTermination(regions.size(), TimeUnit.MINUTES);</b>
+<b class="nc"><i>631</i>&nbsp;										logger.info(&quot;Plane written in {} ms&quot;, System.currentTimeMillis() - planeStartTime);</b>
+<b class="nc"><i>632</i>&nbsp;									} catch (InterruptedException e) {</b>
+<b class="nc"><i>633</i>&nbsp;										logger.warn(&quot;OME-TIFF export interrupted!&quot;);</b>
+<b class="nc"><i>634</i>&nbsp;										pool.shutdownNow();</b>
+<b class="nc"><i>635</i>&nbsp;										throw new IOException(&quot;Error writing regions&quot;, e);</b>
+<b class="nc"><i>636</i>&nbsp;									}</b>
+<b class="nc"><i>637</i>&nbsp;								} else {</b>
+<b class="nc"><i>638</i>&nbsp;									for (var task : tasks) {</b>
+<b class="nc"><i>639</i>&nbsp;										if (Thread.currentThread().isInterrupted()) {</b>
+<b class="nc"><i>640</i>&nbsp;											throw new IOException(&quot;Interrupted writing regions!&quot;);</b>
+<i>641</i>&nbsp;										}
+<b class="nc"><i>642</i>&nbsp;										task.run();</b>
+<b class="nc"><i>643</i>&nbsp;									}</b>
+<i>644</i>&nbsp;								}
+<i>645</i>&nbsp;							}
+<i>646</i>&nbsp;						}
+<b class="nc"><i>647</i>&nbsp;						zi++;</b>
+<i>648</i>&nbsp;					}
+<b class="nc"><i>649</i>&nbsp;					ti++;</b>
+<i>650</i>&nbsp;				}
+<i>651</i>&nbsp;			}
+<b class="nc"><i>652</i>&nbsp;			logger.trace(&quot;Image count: {}&quot;, meta.getImageCount());</b>
+<b class="nc"><i>653</i>&nbsp;			logger.trace(&quot;Plane count: {}&quot;, writer.getPlaneCount());</b>
+<b class="nc"><i>654</i>&nbsp;			logger.trace(&quot;Resolution count: {}&quot;, writer.getResolutionCount());</b>
+<i>655</i>&nbsp;		}
+<i>656</i>&nbsp;	
+<i>657</i>&nbsp;		
+<i>658</i>&nbsp;		/**
+<i>659</i>&nbsp;		 * Convert a region in the export coordinate space for a specific plane 
+<i>660</i>&nbsp;		 * into a RegionRequest for the original ImageServer.
+<i>661</i>&nbsp;		 * 
+<i>662</i>&nbsp;		 * @param region
+<i>663</i>&nbsp;		 * @return
+<i>664</i>&nbsp;		 */
+<i>665</i>&nbsp;		RegionRequest downsampledRegionToRequest(ImageRegion region, double downsample) {
+<b class="nc"><i>666</i>&nbsp;			return RegionRequest.createInstance(</b>
+<b class="nc"><i>667</i>&nbsp;					server.getPath(), downsample, </b>
+<b class="nc"><i>668</i>&nbsp;					(int)(region.getX() * downsample) + x, </b>
+<b class="nc"><i>669</i>&nbsp;					(int)(region.getY() * downsample) + y, </b>
+<b class="nc"><i>670</i>&nbsp;					(int)(region.getWidth() * downsample), </b>
+<b class="nc"><i>671</i>&nbsp;					(int)(region.getHeight() * downsample),</b>
+<b class="nc"><i>672</i>&nbsp;					region.getZ(),</b>
+<b class="nc"><i>673</i>&nbsp;					region.getT());</b>
+<i>674</i>&nbsp;		}
+<i>675</i>&nbsp;		
+<i>676</i>&nbsp;		
+<i>677</i>&nbsp;		private void writeRegion(PyramidOMETiffWriter writer, int plane, IFD ifd, ImageRegion region, double downsample, boolean isRGB, int[] channels) throws FormatException, IOException {
+<b class="nc"><i>678</i>&nbsp;			RegionRequest request = downsampledRegionToRequest(region, downsample);</b>
+<b class="nc"><i>679</i>&nbsp;			BufferedImage img = server.readBufferedImage(request);</b>
+<i>680</i>&nbsp;			
+<b class="nc"><i>681</i>&nbsp;			int bytesPerPixel = server.getPixelType().getBytesPerPixel();</b>
+<b class="nc"><i>682</i>&nbsp;			int nChannels = channels.length;</b>
+<b class="nc"><i>683</i>&nbsp;			if (img == null) {</b>
+<b class="nc"><i>684</i>&nbsp;				byte[] zeros = new byte[region.getWidth() * region.getHeight() * bytesPerPixel * nChannels];</b>
+<b class="nc"><i>685</i>&nbsp;				writer.saveBytes(plane, zeros, ifd, region.getX(), region.getY(), region.getWidth(), region.getHeight());</b>
+<i>686</i>&nbsp;				return;
+<i>687</i>&nbsp;			}
+<i>688</i>&nbsp;			
+<b class="nc"><i>689</i>&nbsp;			int ww = img.getWidth();</b>
+<b class="nc"><i>690</i>&nbsp;			int hh = img.getHeight();</b>
+<b class="nc"><i>691</i>&nbsp;			ByteBuffer buf = ByteBuffer.allocate(ww * hh * bytesPerPixel * nChannels)</b>
+<b class="nc"><i>692</i>&nbsp;					.order(endian);</b>
+<i>693</i>&nbsp;			
+<b class="nc"><i>694</i>&nbsp;			if (isRGB) {</b>
+<b class="nc"><i>695</i>&nbsp;				Object pixelBuffer = getPixelBuffer(ww*hh);</b>
+<b class="nc"><i>696</i>&nbsp;				if (!(pixelBuffer instanceof int[]))</b>
+<b class="nc"><i>697</i>&nbsp;					pixelBuffer = null;</b>
+<b class="nc"><i>698</i>&nbsp;				int[] rgba = img.getRGB(0, 0, ww, hh, (int[])pixelBuffer, 0, ww);</b>
+<b class="nc"><i>699</i>&nbsp;				for (int val : rgba) {</b>
+<b class="nc"><i>700</i>&nbsp;					buf.put((byte)ColorTools.red(val));</b>
+<b class="nc"><i>701</i>&nbsp;					buf.put((byte)ColorTools.green(val));</b>
+<b class="nc"><i>702</i>&nbsp;					buf.put((byte)ColorTools.blue(val));</b>
+<i>703</i>&nbsp;				}
+<b class="nc"><i>704</i>&nbsp;				writer.saveBytes(plane, buf.array(), ifd, region.getX(), region.getY(), ww, hh);</b>
+<b class="nc"><i>705</i>&nbsp;			} else {</b>
+<b class="nc"><i>706</i>&nbsp;				for (int ci = 0; ci &lt; channels.length; ci++) {</b>
+<b class="nc"><i>707</i>&nbsp;					int c = channels[ci];</b>
+<b class="nc"><i>708</i>&nbsp;					int ind = ci * bytesPerPixel;</b>
+<b class="nc"><i>709</i>&nbsp;					channelToBuffer(img.getRaster(), c, buf, ind, channels.length * bytesPerPixel);</b>
+<i>710</i>&nbsp;				}
+<b class="nc"><i>711</i>&nbsp;				writer.saveBytes(plane, buf.array(), ifd, region.getX(), region.getY(), ww, hh);</b>
+<i>712</i>&nbsp;			}
+<i>713</i>&nbsp;		}
+<i>714</i>&nbsp;		
+<i>715</i>&nbsp;		/**
+<i>716</i>&nbsp;		 * Extract pixels to a ByteBuffer.
+<i>717</i>&nbsp;		 * 
+<i>718</i>&nbsp;		 * @param raster the WritableRaster containing the pixel data
+<i>719</i>&nbsp;		 * @param c channel (band) number
+<i>720</i>&nbsp;		 * @param buf the buffer to which the pixels should be extracted
+<i>721</i>&nbsp;		 * @param startInd the starting index in the buffer, where the first pixel should be written
+<i>722</i>&nbsp;		 * @param inc the increment (in bytes) between each pixel that is written
+<i>723</i>&nbsp;		 */
+<i>724</i>&nbsp;		boolean channelToBuffer(WritableRaster raster, int c, ByteBuffer buf, int startInd, int inc) {
+<b class="nc"><i>725</i>&nbsp;			int ind = startInd;</b>
+<b class="nc"><i>726</i>&nbsp;			int ww = raster.getWidth();</b>
+<b class="nc"><i>727</i>&nbsp;			int hh = raster.getHeight();</b>
+<b class="nc"><i>728</i>&nbsp;			int n = ww*hh;</b>
+<b class="nc"><i>729</i>&nbsp;			Object pixelBuffer = getPixelBuffer(n);</b>
+<b class="nc"><i>730</i>&nbsp;			switch (server.getPixelType()) {</b>
+<i>731</i>&nbsp;			case INT8:
+<i>732</i>&nbsp;			case UINT8:
+<i>733</i>&nbsp;			case INT16:
+<i>734</i>&nbsp;			case UINT16:
+<i>735</i>&nbsp;			case INT32:
+<i>736</i>&nbsp;			case UINT32:
+<b class="nc"><i>737</i>&nbsp;				int[] pixelsInt = pixelBuffer instanceof int[] ? (int[])pixelBuffer : null;</b>
+<b class="nc"><i>738</i>&nbsp;				if (pixelsInt == null || pixelsInt.length &lt; n)</b>
+<b class="nc"><i>739</i>&nbsp;					pixelsInt = new int[n];</b>
+<b class="nc"><i>740</i>&nbsp;				pixelsInt = raster.getSamples(0, 0, ww, hh, c, pixelsInt);</b>
+<b class="nc"><i>741</i>&nbsp;				if (server.getPixelType().getBitsPerPixel() == 8) {</b>
+<b class="nc"><i>742</i>&nbsp;					for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>743</i>&nbsp;						buf.put(ind, (byte)pixelsInt[i]);</b>
+<b class="nc"><i>744</i>&nbsp;						ind += inc;</b>
+<i>745</i>&nbsp;					}
+<b class="nc"><i>746</i>&nbsp;				} else if (server.getPixelType().getBitsPerPixel() == 16) {</b>
+<b class="nc"><i>747</i>&nbsp;					for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>748</i>&nbsp;						buf.putShort(ind, (short)pixelsInt[i]);</b>
+<b class="nc"><i>749</i>&nbsp;						ind += inc;</b>
+<i>750</i>&nbsp;					}
+<b class="nc"><i>751</i>&nbsp;				} else if (server.getPixelType().getBitsPerPixel() == 32) {</b>
+<b class="nc"><i>752</i>&nbsp;					for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>753</i>&nbsp;						buf.putInt(ind, (int)pixelsInt[i]);</b>
+<b class="nc"><i>754</i>&nbsp;						ind += inc;</b>
+<i>755</i>&nbsp;					}
+<i>756</i>&nbsp;				}
+<b class="nc"><i>757</i>&nbsp;				return true;</b>
+<i>758</i>&nbsp;			case FLOAT32:
+<b class="nc"><i>759</i>&nbsp;				float[] pixelsFloat = pixelBuffer instanceof float[] ? (float[])pixelBuffer : null;</b>
+<b class="nc"><i>760</i>&nbsp;				if (pixelsFloat == null || pixelsFloat.length &lt; n)</b>
+<b class="nc"><i>761</i>&nbsp;					pixelsFloat = new float[n];</b>
+<b class="nc"><i>762</i>&nbsp;				pixelsFloat = raster.getSamples(0, 0, ww, hh, c, pixelsFloat);</b>
+<b class="nc"><i>763</i>&nbsp;				for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>764</i>&nbsp;					buf.putFloat(ind, pixelsFloat[i]);</b>
+<b class="nc"><i>765</i>&nbsp;					ind += inc;</b>
+<i>766</i>&nbsp;				}
+<b class="nc"><i>767</i>&nbsp;				return true;</b>
+<i>768</i>&nbsp;			case FLOAT64:
+<b class="nc"><i>769</i>&nbsp;				double[] pixelsDouble = pixelBuffer instanceof double[] ? (double[])pixelBuffer : null;</b>
+<b class="nc"><i>770</i>&nbsp;				if (pixelsDouble == null || pixelsDouble.length &lt; n)</b>
+<b class="nc"><i>771</i>&nbsp;					pixelsDouble = new double[n];</b>
+<b class="nc"><i>772</i>&nbsp;				pixelsDouble = raster.getSamples(0, 0, ww, hh, c, pixelsDouble);</b>
+<b class="nc"><i>773</i>&nbsp;				for (int i = 0; i &lt; n; i++) {</b>
+<b class="nc"><i>774</i>&nbsp;					buf.putDouble(ind, pixelsDouble[i]);</b>
+<b class="nc"><i>775</i>&nbsp;					ind += inc;</b>
+<i>776</i>&nbsp;				}
+<b class="nc"><i>777</i>&nbsp;				return true;</b>
+<i>778</i>&nbsp;			default:
+<b class="nc"><i>779</i>&nbsp;				logger.warn(&quot;Cannot convert to buffer - unknown pixel type {}&quot;, server.getPixelType());</b>
+<b class="nc"><i>780</i>&nbsp;				return false;</b>
+<i>781</i>&nbsp;			}
+<i>782</i>&nbsp;		}
+<i>783</i>&nbsp;		
+<b class="nc"><i>784</i>&nbsp;		private ThreadLocal&lt;Object&gt; pixelBuffer = new ThreadLocal&lt;&gt;();</b>
+<i>785</i>&nbsp;		
+<i>786</i>&nbsp;		/**
+<i>787</i>&nbsp;		 * Get a primitive array of the specified length for extracting pixels from the current server.
+<i>788</i>&nbsp;		 * 
+<i>789</i>&nbsp;		 * @param length
+<i>790</i>&nbsp;		 * @return
+<i>791</i>&nbsp;		 */
+<i>792</i>&nbsp;		Object getPixelBuffer(int length) {
+<b class="nc"><i>793</i>&nbsp;			Object originalBuffer = this.pixelBuffer.get();</b>
+<b class="nc"><i>794</i>&nbsp;			Object updatedBuffer = null;</b>
+<b class="nc"><i>795</i>&nbsp;			switch (server.getPixelType()) {</b>
+<i>796</i>&nbsp;			case FLOAT32:
+<b class="nc"><i>797</i>&nbsp;				updatedBuffer = ensureFloatArray(originalBuffer, length);</b>
+<b class="nc"><i>798</i>&nbsp;				break;</b>
+<i>799</i>&nbsp;			case FLOAT64:
+<b class="nc"><i>800</i>&nbsp;				updatedBuffer = ensureDoubleArray(originalBuffer, length);</b>
+<b class="nc"><i>801</i>&nbsp;				break;</b>
+<i>802</i>&nbsp;			default:
+<i>803</i>&nbsp;				// Everything else uses ints (including 8-bit RGB)
+<b class="nc"><i>804</i>&nbsp;				updatedBuffer = ensureIntArray(originalBuffer, length);</b>
+<i>805</i>&nbsp;			}
+<b class="nc"><i>806</i>&nbsp;			if (updatedBuffer != originalBuffer)</b>
+<b class="nc"><i>807</i>&nbsp;				pixelBuffer.set(updatedBuffer);</b>
+<b class="nc"><i>808</i>&nbsp;			return updatedBuffer;</b>
+<i>809</i>&nbsp;		}
+<i>810</i>&nbsp;		
+<i>811</i>&nbsp;		
+<i>812</i>&nbsp;	}
+<i>813</i>&nbsp;	
+<i>814</i>&nbsp;	
+<i>815</i>&nbsp;	static int[] ensureIntArray(Object array, int length) {
+<b class="nc"><i>816</i>&nbsp;		if (!(array instanceof int[]) || ((int[])array).length != length)</b>
+<b class="nc"><i>817</i>&nbsp;			return new int[length];</b>
+<b class="nc"><i>818</i>&nbsp;		return (int[])array;</b>
+<i>819</i>&nbsp;	}
+<i>820</i>&nbsp;	
+<i>821</i>&nbsp;	static float[] ensureFloatArray(Object array, int length) {
+<b class="nc"><i>822</i>&nbsp;		if (!(array instanceof float[]) || ((float[])array).length != length)</b>
+<b class="nc"><i>823</i>&nbsp;			return new float[length];</b>
+<b class="nc"><i>824</i>&nbsp;		return (float[])array;</b>
+<i>825</i>&nbsp;	}
+<i>826</i>&nbsp;	
+<i>827</i>&nbsp;	static double[] ensureDoubleArray(Object array, int length) {
+<b class="nc"><i>828</i>&nbsp;		if (!(array instanceof double[]) || ((double[])array).length != length)</b>
+<b class="nc"><i>829</i>&nbsp;			return new double[length];</b>
+<b class="nc"><i>830</i>&nbsp;		return (double[])array;</b>
+<i>831</i>&nbsp;	}
+<i>832</i>&nbsp;	
+<i>833</i>&nbsp;
+<i>834</i>&nbsp;//	public static class Builder {
+<i>835</i>&nbsp;//		
+<i>836</i>&nbsp;//		private List&lt;SeriesBuilder&gt; series = new ArrayList&lt;&gt;();
+<i>837</i>&nbsp;//		
+<i>838</i>&nbsp;//		
+<i>839</i>&nbsp;//		
+<i>840</i>&nbsp;//	}
+<i>841</i>&nbsp;	
+<i>842</i>&nbsp;	/**
+<i>843</i>&nbsp;	 * Create a writer capable of writing an image with one or more series.
+<i>844</i>&nbsp;	 * @param series
+<i>845</i>&nbsp;	 * @return
+<i>846</i>&nbsp;	 */
+<i>847</i>&nbsp;	public static OMEPyramidWriter createWriter(OMEPyramidSeries... series) {
+<b class="nc"><i>848</i>&nbsp;		return new OMEPyramidWriter(Arrays.asList(series));</b>
+<i>849</i>&nbsp;	}
+<i>850</i>&nbsp;	
+<i>851</i>&nbsp;	/**
+<i>852</i>&nbsp;	 * Create a writer capable of writing an image with a collection ofseries.
+<i>853</i>&nbsp;	 * @param series
+<i>854</i>&nbsp;	 * @return
+<i>855</i>&nbsp;	 */
+<i>856</i>&nbsp;	public static OMEPyramidWriter createWriter(Collection&lt;OMEPyramidSeries&gt; series) {
+<b class="nc"><i>857</i>&nbsp;		return new OMEPyramidWriter(series);</b>
+<i>858</i>&nbsp;	}
+<i>859</i>&nbsp;
+<i>860</i>&nbsp;	/**
+<i>861</i>&nbsp;	 * Builder class to define parameters when exporting an image region as OME-TIFF,
+<i>862</i>&nbsp;	 * possibly as an image pyramid.
+<i>863</i>&nbsp;	 * 
+<i>864</i>&nbsp;	 * @author Pete Bankhead
+<i>865</i>&nbsp;	 *
+<i>866</i>&nbsp;	 */
+<i>867</i>&nbsp;	public static class Builder {
+<i>868</i>&nbsp;
+<b class="nc"><i>869</i>&nbsp;		private OMEPyramidSeries series = new OMEPyramidSeries();</b>
+<i>870</i>&nbsp;
+<i>871</i>&nbsp;		/**
+<i>872</i>&nbsp;		 * Constructor.
+<i>873</i>&nbsp;		 * @param server the ImageServer from which pixels will be requested and written to the OME-TIFF.
+<i>874</i>&nbsp;		 */
+<b class="nc"><i>875</i>&nbsp;		public Builder(ImageServer&lt;BufferedImage&gt; server) {</b>
+<b class="nc"><i>876</i>&nbsp;			series.server = server;</b>
+<b class="nc"><i>877</i>&nbsp;			series.server = server;</b>
+<b class="nc"><i>878</i>&nbsp;			series.x = 0;</b>
+<b class="nc"><i>879</i>&nbsp;			series.y = 0;</b>
+<b class="nc"><i>880</i>&nbsp;			series.width = server.getWidth();</b>
+<b class="nc"><i>881</i>&nbsp;			series.height = server.getHeight();</b>
+<i>882</i>&nbsp;			
+<b class="nc"><i>883</i>&nbsp;			series.downsamples = server.getPreferredDownsamples();</b>
+<b class="nc"><i>884</i>&nbsp;			if (server.getMetadata().getPreferredTileWidth() &gt;= server.getWidth() &amp;&amp; server.getMetadata().getPreferredTileHeight() &gt;= server.getHeight()) {</b>
+<b class="nc"><i>885</i>&nbsp;				series.tileWidth = server.getMetadata().getPreferredTileWidth();</b>
+<b class="nc"><i>886</i>&nbsp;				series.tileHeight = server.getMetadata().getPreferredTileHeight();</b>
+<i>887</i>&nbsp;			} else {
+<b class="nc"><i>888</i>&nbsp;				series.tileWidth = 256;</b>
+<b class="nc"><i>889</i>&nbsp;				series.tileHeight = 256;</b>
+<i>890</i>&nbsp;			}
+<b class="nc"><i>891</i>&nbsp;			series.zStart = 0;</b>
+<b class="nc"><i>892</i>&nbsp;			series.zEnd = server.nZSlices();</b>
+<b class="nc"><i>893</i>&nbsp;			series.tStart = 0;</b>
+<b class="nc"><i>894</i>&nbsp;			series.tEnd = server.nTimepoints();</b>
+<b class="nc"><i>895</i>&nbsp;			if (server.getMetadata().getChannelType() == ImageServerMetadata.ChannelType.CLASSIFICATION)</b>
+<b class="nc"><i>896</i>&nbsp;				series.channels = new int[] {0};</b>
+<i>897</i>&nbsp;			else
+<b class="nc"><i>898</i>&nbsp;				series.channels = IntStream.range(0, server.nChannels()).toArray();</b>
+<i>899</i>&nbsp;		}
+<i>900</i>&nbsp;		
+<i>901</i>&nbsp;//		/**
+<i>902</i>&nbsp;//		 * Request that any existing file with the same path is kept, rather than being deleted.
+<i>903</i>&nbsp;//		 * @return
+<i>904</i>&nbsp;//		 */
+<i>905</i>&nbsp;//		public Builder keepExistingFile() {
+<i>906</i>&nbsp;//			writer.keepExisting = true;
+<i>907</i>&nbsp;//			return this;
+<i>908</i>&nbsp;//		}
+<i>909</i>&nbsp;		
+<i>910</i>&nbsp;		/**
+<i>911</i>&nbsp;		 * Request that channels are written as separate image planes.
+<i>912</i>&nbsp;		 * @return this builder
+<i>913</i>&nbsp;		 */
+<i>914</i>&nbsp;		public Builder channelsPlanar() {
+<b class="nc"><i>915</i>&nbsp;			series.channelExportType = ChannelExportType.PLANAR;</b>
+<b class="nc"><i>916</i>&nbsp;			return this;</b>
+<i>917</i>&nbsp;		}
+<i>918</i>&nbsp;
+<i>919</i>&nbsp;		/**
+<i>920</i>&nbsp;		 * Request that channels are written interleaved within a single image plane.
+<i>921</i>&nbsp;		 * @return this builder
+<i>922</i>&nbsp;		 */
+<i>923</i>&nbsp;		public Builder channelsInterleaved() {
+<b class="nc"><i>924</i>&nbsp;			series.channelExportType = ChannelExportType.INTERLEAVED;</b>
+<b class="nc"><i>925</i>&nbsp;			return this;</b>
+<i>926</i>&nbsp;		}
+<i>927</i>&nbsp;
+<i>928</i>&nbsp;		/**
+<i>929</i>&nbsp;		 * Request that channels are written as separate images.
+<i>930</i>&nbsp;		 * @return this builder
+<i>931</i>&nbsp;		 */
+<i>932</i>&nbsp;		public Builder channelsImages() {
+<b class="nc"><i>933</i>&nbsp;			series.channelExportType = ChannelExportType.IMAGES;</b>
+<b class="nc"><i>934</i>&nbsp;			return this;</b>
+<i>935</i>&nbsp;		}
+<i>936</i>&nbsp;
+<i>937</i>&nbsp;		/**
+<i>938</i>&nbsp;		 * Request that the image is written in BigTIFF format.
+<i>939</i>&nbsp;		 * @return this builder
+<i>940</i>&nbsp;		 */
+<i>941</i>&nbsp;		public Builder bigTiff() {
+<b class="nc"><i>942</i>&nbsp;			series.bigTiff = Boolean.TRUE;</b>
+<b class="nc"><i>943</i>&nbsp;			return this;</b>
+<i>944</i>&nbsp;		}
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;		/**
+<i>947</i>&nbsp;		 * Specify whether the image should be written in BigTIFF format.
+<i>948</i>&nbsp;		 * @param doBigTiff if true, request that big-tiff is written
+<i>949</i>&nbsp;		 * @return this builder
+<i>950</i>&nbsp;		 */
+<i>951</i>&nbsp;		public Builder bigTiff(boolean doBigTiff) {
+<b class="nc"><i>952</i>&nbsp;			series.bigTiff = doBigTiff;</b>
+<b class="nc"><i>953</i>&nbsp;			return this;</b>
+<i>954</i>&nbsp;		}
+<i>955</i>&nbsp;
+<i>956</i>&nbsp;		/**
+<i>957</i>&nbsp;		 * Request the output compression type.
+<i>958</i>&nbsp;		 * @param compression
+<i>959</i>&nbsp;		 * @return this builder
+<i>960</i>&nbsp;		 */
+<i>961</i>&nbsp;		public Builder compression(final CompressionType compression) {
+<b class="nc"><i>962</i>&nbsp;			series.compression = compression;</b>
+<b class="nc"><i>963</i>&nbsp;			return this;</b>
+<i>964</i>&nbsp;		}
+<i>965</i>&nbsp;		
+<i>966</i>&nbsp;		/**
+<i>967</i>&nbsp;		 * Request the default lossy compression method. Not all servers support lossy compression 
+<i>968</i>&nbsp;		 * (e.g. non-RGB servers).
+<i>969</i>&nbsp;		 * @return this builder
+<i>970</i>&nbsp;		 */
+<i>971</i>&nbsp;		public Builder lossyCompression() {
+<b class="nc"><i>972</i>&nbsp;			series.compression = getDefaultLossyCompressionType(series.server);</b>
+<b class="nc"><i>973</i>&nbsp;			return this;</b>
+<i>974</i>&nbsp;		}
+<i>975</i>&nbsp;		
+<i>976</i>&nbsp;		/**
+<i>977</i>&nbsp;		 * Request the default lossless compression method.
+<i>978</i>&nbsp;		 * @return
+<i>979</i>&nbsp;		 */
+<i>980</i>&nbsp;		public Builder losslessCompression() {
+<b class="nc"><i>981</i>&nbsp;			series.compression = getDefaultLosslessCompressionType(series.server);</b>
+<b class="nc"><i>982</i>&nbsp;			return this;</b>
+<i>983</i>&nbsp;		}
+<i>984</i>&nbsp;		
+<i>985</i>&nbsp;		/**
+<i>986</i>&nbsp;		 * Parallelize tile export, if possible.
+<i>987</i>&nbsp;		 * 
+<i>988</i>&nbsp;		 * @return this builder
+<i>989</i>&nbsp;		 */
+<i>990</i>&nbsp;		public Builder parallelize() {
+<b class="nc"><i>991</i>&nbsp;			return parallelize(true);</b>
+<i>992</i>&nbsp;		}
+<i>993</i>&nbsp;
+<i>994</i>&nbsp;		/**
+<i>995</i>&nbsp;		 * Specify if tile export should be parallelized if possible.
+<i>996</i>&nbsp;		 * 
+<i>997</i>&nbsp;		 * @param doParallel
+<i>998</i>&nbsp;		 * @return
+<i>999</i>&nbsp;		 */
+<i>1000</i>&nbsp;		public Builder parallelize(boolean doParallel) {
+<b class="nc"><i>1001</i>&nbsp;			series.parallelExport = doParallel;</b>
+<b class="nc"><i>1002</i>&nbsp;			return this;</b>
+<i>1003</i>&nbsp;		}
+<i>1004</i>&nbsp;
+<i>1005</i>&nbsp;		/**
+<i>1006</i>&nbsp;		 * Request that all z-slices are exported.
+<i>1007</i>&nbsp;		 * @return this builder
+<i>1008</i>&nbsp;		 */
+<i>1009</i>&nbsp;		public Builder allZSlices() {
+<b class="nc"><i>1010</i>&nbsp;			return this.zSlices(0, series.server.nZSlices());</b>
+<i>1011</i>&nbsp;		}
+<i>1012</i>&nbsp;
+<i>1013</i>&nbsp;		/**
+<i>1014</i>&nbsp;		 * Specify the z-slice to export.
+<i>1015</i>&nbsp;		 * @param z
+<i>1016</i>&nbsp;		 * @return this builder
+<i>1017</i>&nbsp;		 */
+<i>1018</i>&nbsp;		public Builder zSlice(int z) {
+<b class="nc"><i>1019</i>&nbsp;			return this.zSlices(z, z+1);</b>
+<i>1020</i>&nbsp;		}
+<i>1021</i>&nbsp;
+<i>1022</i>&nbsp;		/**
+<i>1023</i>&nbsp;		 * Specify the start (inclusive) and end (exclusive) z-slices.
+<i>1024</i>&nbsp;		 * @param zStart
+<i>1025</i>&nbsp;		 * @param zEnd
+<i>1026</i>&nbsp;		 * @return this builder
+<i>1027</i>&nbsp;		 */
+<i>1028</i>&nbsp;		public Builder zSlices(int zStart, int zEnd) {
+<b class="nc"><i>1029</i>&nbsp;			if (zStart &lt; 0) {</b>
+<b class="nc"><i>1030</i>&nbsp;				logger.warn(&quot;First z-slice (&quot; + zStart + &quot;) is out of bounds. Will use &quot; + 0 + &quot; instead.&quot;);</b>
+<b class="nc"><i>1031</i>&nbsp;				zStart = 0;</b>
+<i>1032</i>&nbsp;			}
+<b class="nc"><i>1033</i>&nbsp;			if (zEnd &gt; series.server.nZSlices()) {</b>
+<b class="nc"><i>1034</i>&nbsp;				logger.warn(&quot;Last z-slice (&quot; + zEnd + &quot;) is out of bounds. Will use &quot; + series.server.nZSlices() + &quot; instead.&quot;);</b>
+<b class="nc"><i>1035</i>&nbsp;				zEnd = series.server.nZSlices();</b>
+<i>1036</i>&nbsp;			}
+<b class="nc"><i>1037</i>&nbsp;			series.zStart = zStart;</b>
+<b class="nc"><i>1038</i>&nbsp;			series.zEnd = zEnd;</b>
+<b class="nc"><i>1039</i>&nbsp;			return this;</b>
+<i>1040</i>&nbsp;		}
+<i>1041</i>&nbsp;
+<i>1042</i>&nbsp;		/**
+<i>1043</i>&nbsp;		 * Specify a single timepoint to be written from a time series.
+<i>1044</i>&nbsp;		 * @param t the index identifying the requested timepoint
+<i>1045</i>&nbsp;		 * @return this builder
+<i>1046</i>&nbsp;		 */
+<i>1047</i>&nbsp;		public Builder timePoint(int t) {
+<b class="nc"><i>1048</i>&nbsp;			return this.timePoints(t, t+1);</b>
+<i>1049</i>&nbsp;		}
+<i>1050</i>&nbsp;		
+<i>1051</i>&nbsp;		/**
+<i>1052</i>&nbsp;		 * Request that all timepoints of a time series will be written.
+<i>1053</i>&nbsp;		 * @return this builder
+<i>1054</i>&nbsp;		 */
+<i>1055</i>&nbsp;		public Builder allTimePoints() {
+<b class="nc"><i>1056</i>&nbsp;			return this.timePoints(0, series.server.nTimepoints());</b>
+<i>1057</i>&nbsp;		}
+<i>1058</i>&nbsp;
+<i>1059</i>&nbsp;		/**
+<i>1060</i>&nbsp;		 * Specify a range of timepoints to be written from a time series.
+<i>1061</i>&nbsp;		 * @param tStart first timepoint (inclusive)
+<i>1062</i>&nbsp;		 * @param tEnd last timepoint (exclusive)
+<i>1063</i>&nbsp;		 * @return this builder
+<i>1064</i>&nbsp;		 */
+<i>1065</i>&nbsp;		public Builder timePoints(int tStart, int tEnd) {
+<b class="nc"><i>1066</i>&nbsp;			if (tStart &lt; 0) {</b>
+<b class="nc"><i>1067</i>&nbsp;				logger.warn(&quot;First timepoint (&quot; + tStart + &quot;) is out of bounds. Will use &quot; + 0 + &quot; instead.&quot;);</b>
+<b class="nc"><i>1068</i>&nbsp;				tStart = 0;</b>
+<i>1069</i>&nbsp;			}
+<b class="nc"><i>1070</i>&nbsp;			if (tEnd &gt; series.server.nTimepoints()) {</b>
+<b class="nc"><i>1071</i>&nbsp;				logger.warn(&quot;Last timepoint (&quot; + tEnd + &quot;) is out of bounds. Will use &quot; + series.server.nTimepoints() + &quot; instead.&quot;);</b>
+<b class="nc"><i>1072</i>&nbsp;				tEnd = series.server.nTimepoints();</b>
+<i>1073</i>&nbsp;			}
+<b class="nc"><i>1074</i>&nbsp;			series.tStart = tStart;</b>
+<b class="nc"><i>1075</i>&nbsp;			series.tEnd = tEnd;</b>
+<b class="nc"><i>1076</i>&nbsp;			return this;</b>
+<i>1077</i>&nbsp;		}
+<i>1078</i>&nbsp;		
+<i>1079</i>&nbsp;		/**
+<i>1080</i>&nbsp;		 * Specify a series name
+<i>1081</i>&nbsp;		 * @param name
+<i>1082</i>&nbsp;		 * @return this builder
+<i>1083</i>&nbsp;		 */
+<i>1084</i>&nbsp;		public Builder name(String name) {
+<b class="nc"><i>1085</i>&nbsp;			series.name = name;</b>
+<b class="nc"><i>1086</i>&nbsp;			return this;</b>
+<i>1087</i>&nbsp;		}
+<i>1088</i>&nbsp;
+<i>1089</i>&nbsp;		/**
+<i>1090</i>&nbsp;		 * Define the region to export based on a bounding box.
+<i>1091</i>&nbsp;		 * 
+<i>1092</i>&nbsp;		 * @param x
+<i>1093</i>&nbsp;		 * @param y
+<i>1094</i>&nbsp;		 * @param width
+<i>1095</i>&nbsp;		 * @param height
+<i>1096</i>&nbsp;		 * @return this builder
+<i>1097</i>&nbsp;		 */
+<i>1098</i>&nbsp;		public Builder region(int x, int y, int width, int height) {
+<b class="nc"><i>1099</i>&nbsp;			series.x = x;</b>
+<b class="nc"><i>1100</i>&nbsp;			series.y = y;</b>
+<b class="nc"><i>1101</i>&nbsp;			series.width = width;</b>
+<b class="nc"><i>1102</i>&nbsp;			series.height = height;</b>
+<b class="nc"><i>1103</i>&nbsp;			return this;</b>
+<i>1104</i>&nbsp;		}
+<i>1105</i>&nbsp;
+<i>1106</i>&nbsp;		/**
+<i>1107</i>&nbsp;		 * Define the region to export, including the z-slice and time point.
+<i>1108</i>&nbsp;		 * 
+<i>1109</i>&nbsp;		 * @param region
+<i>1110</i>&nbsp;		 * @return this builder
+<i>1111</i>&nbsp;		 * 
+<i>1112</i>&nbsp;		 * @see #region(int, int, int, int)
+<i>1113</i>&nbsp;		 * @see #timePoint(int)
+<i>1114</i>&nbsp;		 * @see #zSlice(int)
+<i>1115</i>&nbsp;		 * @see #zSlices(int, int)
+<i>1116</i>&nbsp;		 */
+<i>1117</i>&nbsp;		public Builder region(ImageRegion region) {
+<b class="nc"><i>1118</i>&nbsp;			return this.region(region.getX(), region.getY(), region.getWidth(), region.getHeight()).zSlice(region.getZ()).timePoint(region.getT());</b>
+<i>1119</i>&nbsp;		}
+<i>1120</i>&nbsp;
+<i>1121</i>&nbsp;		/**
+<i>1122</i>&nbsp;		 * Define the requested tile size (width == height).
+<i>1123</i>&nbsp;		 * &lt;p&gt;
+<i>1124</i>&nbsp;		 * This is only a suggestion, and the OME reader may override it if the value is unsupported.
+<i>1125</i>&nbsp;		 * 
+<i>1126</i>&nbsp;		 * @param tileSize
+<i>1127</i>&nbsp;		 * @return this builder
+<i>1128</i>&nbsp;		 */
+<i>1129</i>&nbsp;		public Builder tileSize(int tileSize) {
+<b class="nc"><i>1130</i>&nbsp;			return this.tileSize(tileSize, tileSize);</b>
+<i>1131</i>&nbsp;		}
+<i>1132</i>&nbsp;
+<i>1133</i>&nbsp;		/**
+<i>1134</i>&nbsp;		 * Define the requested tile width and height.
+<i>1135</i>&nbsp;		 * &lt;p&gt;
+<i>1136</i>&nbsp;		 * This is only a suggestion, and the OME reader may override it if the value is unsupported.
+<i>1137</i>&nbsp;		 * 
+<i>1138</i>&nbsp;		 * @param tileWidth
+<i>1139</i>&nbsp;		 * @param tileHeight
+<i>1140</i>&nbsp;		 * @return this builder
+<i>1141</i>&nbsp;		 */
+<i>1142</i>&nbsp;		public Builder tileSize(int tileWidth, int tileHeight) {
+<b class="nc"><i>1143</i>&nbsp;			series.tileWidth = tileWidth;</b>
+<b class="nc"><i>1144</i>&nbsp;			series.tileHeight = tileHeight;</b>
+<b class="nc"><i>1145</i>&nbsp;			return this;</b>
+<i>1146</i>&nbsp;		}
+<i>1147</i>&nbsp;
+<i>1148</i>&nbsp;		/**
+<i>1149</i>&nbsp;		 * Specify downsample factors to use in the final pyramid.
+<i>1150</i>&nbsp;		 * &lt;p&gt;
+<i>1151</i>&nbsp;		 * Note that the downsample values provided will be sorted in ascending order.
+<i>1152</i>&nbsp;		 * @param downsamples
+<i>1153</i>&nbsp;		 * @return this builder
+<i>1154</i>&nbsp;		 */
+<i>1155</i>&nbsp;		public Builder downsamples(double... downsamples) {
+<b class="nc"><i>1156</i>&nbsp;			series.downsamples = downsamples;</b>
+<b class="nc"><i>1157</i>&nbsp;			return this;</b>
+<i>1158</i>&nbsp;		}
+<i>1159</i>&nbsp;		
+<i>1160</i>&nbsp;		/**
+<i>1161</i>&nbsp;		 * Downsample by factors of 2.
+<i>1162</i>&nbsp;		 * &lt;p&gt;
+<i>1163</i>&nbsp;		 * Note that the highest downsample value will depend on the tile size, 
+<i>1164</i>&nbsp;		 * so the tile size should be set first.
+<i>1165</i>&nbsp;		 * 
+<i>1166</i>&nbsp;		 * @return this builder
+<i>1167</i>&nbsp;		 * @see #scaledDownsampling(double)
+<i>1168</i>&nbsp;		 */
+<i>1169</i>&nbsp;		public Builder dyadicDownsampling() {
+<b class="nc"><i>1170</i>&nbsp;			return this.scaledDownsampling(1.0, 2.0);</b>
+<i>1171</i>&nbsp;		}
+<i>1172</i>&nbsp;		
+<i>1173</i>&nbsp;		/**
+<i>1174</i>&nbsp;		 * Downsample by specific increasing factor each time (e.g. if scale == 2, then downsamples will be 1, 2, 4, 8...).
+<i>1175</i>&nbsp;		 * &lt;p&gt;
+<i>1176</i>&nbsp;		 * Note that the highest downsample value will depend on the tile size, 
+<i>1177</i>&nbsp;		 * so the tile size should be set first.
+<i>1178</i>&nbsp;		 * @param scale 
+<i>1179</i>&nbsp;		 * 
+<i>1180</i>&nbsp;		 * @return this builder
+<i>1181</i>&nbsp;		 * @see #scaledDownsampling(double)
+<i>1182</i>&nbsp;		 */
+<i>1183</i>&nbsp;		public Builder scaledDownsampling(double scale) {
+<b class="nc"><i>1184</i>&nbsp;			return this.scaledDownsampling(1.0, scale);</b>
+<i>1185</i>&nbsp;		}
+<i>1186</i>&nbsp;
+<i>1187</i>&nbsp;		/**
+<i>1188</i>&nbsp;		 * Downsample by specific increasing factor each time, with a specified initial downsample value 
+<i>1189</i>&nbsp;		 * (e.g. if scale == 2, then downsamples will be minDownsample, minDownsample*2, minDownsample*4...).
+<i>1190</i>&nbsp;		 * &lt;p&gt;
+<i>1191</i>&nbsp;		 * Note that the highest downsample value will depend on the tile size, 
+<i>1192</i>&nbsp;		 * so the tile size should be set first.
+<i>1193</i>&nbsp;		 * 
+<i>1194</i>&nbsp;		 * @param minDownsample the starting downsample, defining the highest-resolution image (usually 1.0)
+<i>1195</i>&nbsp;		 * @param scale the scale used to define successive downsamples
+<i>1196</i>&nbsp;		 * @return this builder
+<i>1197</i>&nbsp;		 * @see #scaledDownsampling(double)
+<i>1198</i>&nbsp;		 */
+<i>1199</i>&nbsp;		public Builder scaledDownsampling(double minDownsample, double scale) {
+<i>1200</i>&nbsp;			// Calculate default downsamples, if we need to
+<i>1201</i>&nbsp;//			if (writer.downsamples == null) {
+<b class="nc"><i>1202</i>&nbsp;				List&lt;Double&gt; downsampleList = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>1203</i>&nbsp;				double nextDownsample = minDownsample;</b>
+<i>1204</i>&nbsp;				do {
+<b class="nc"><i>1205</i>&nbsp;					downsampleList.add(nextDownsample);</b>
+<b class="nc"><i>1206</i>&nbsp;					nextDownsample *= scale;</b>
+<b class="nc"><i>1207</i>&nbsp;				} while ((int)(series.width / nextDownsample) &gt; series.tileWidth &amp;&amp; (int)(series.height / nextDownsample) &gt; series.tileHeight);</b>
+<b class="nc"><i>1208</i>&nbsp;				series.downsamples = downsampleList.stream().mapToDouble(d -&gt; d).toArray();</b>
+<i>1209</i>&nbsp;//			}
+<b class="nc"><i>1210</i>&nbsp;			return this;</b>
+<i>1211</i>&nbsp;		}
+<i>1212</i>&nbsp;
+<i>1213</i>&nbsp;		/**
+<i>1214</i>&nbsp;		 * Override default of writing all channels in their original order to be able to specify which 
+<i>1215</i>&nbsp;		 * channels are output, and in which order.
+<i>1216</i>&nbsp;		 * @param channels zero-based channel indices for all channels that should be exported, in the desired export order.
+<i>1217</i>&nbsp;		 * @return this builder
+<i>1218</i>&nbsp;		 */
+<i>1219</i>&nbsp;		public Builder channels(int... channels) {
+<b class="nc"><i>1220</i>&nbsp;			series.channels = channels;</b>
+<b class="nc"><i>1221</i>&nbsp;			return this;</b>
+<i>1222</i>&nbsp;		}
+<i>1223</i>&nbsp;
+<i>1224</i>&nbsp;		/**
+<i>1225</i>&nbsp;		 * Create an {@link OMEPyramidSeries} to write the OME-TIFF.
+<i>1226</i>&nbsp;		 * @return the series
+<i>1227</i>&nbsp;		 */
+<i>1228</i>&nbsp;		public OMEPyramidSeries build() {
+<i>1229</i>&nbsp;			// Sanity check downsamples, and remove those that are too much
+<b class="nc"><i>1230</i>&nbsp;			Arrays.sort(series.downsamples);</b>
+<b class="nc"><i>1231</i>&nbsp;			int lastDownsample = 1;</b>
+<b class="nc"><i>1232</i>&nbsp;			while (lastDownsample &lt; series.downsamples.length &amp;&amp; </b>
+<i>1233</i>&nbsp;					series.width / series.downsamples[lastDownsample] &gt; 16 &amp;&amp;
+<i>1234</i>&nbsp;					series.height / series.downsamples[lastDownsample] &gt; 16) {
+<b class="nc"><i>1235</i>&nbsp;				lastDownsample++;</b>
+<i>1236</i>&nbsp;			}
+<b class="nc"><i>1237</i>&nbsp;			if (lastDownsample &lt; series.downsamples.length)</b>
+<b class="nc"><i>1238</i>&nbsp;				series.downsamples = Arrays.copyOf(series.downsamples, lastDownsample);</b>
+<i>1239</i>&nbsp;			
+<b class="nc"><i>1240</i>&nbsp;			return series;</b>
+<i>1241</i>&nbsp;		}
+<i>1242</i>&nbsp;
+<i>1243</i>&nbsp;	}
+<i>1244</i>&nbsp;
+<i>1245</i>&nbsp;
+<i>1246</i>&nbsp;
+<i>1247</i>&nbsp;	/**
+<i>1248</i>&nbsp;	 * Get all the available compression types (that we know of) for the OME TIFF.
+<i>1249</i>&nbsp;	 * @return
+<i>1250</i>&nbsp;	 */
+<i>1251</i>&nbsp;	static Collection&lt;String&gt; getAvailableCompressionTypes() {
+<b class="nc"><i>1252</i>&nbsp;		return Arrays.asList(</b>
+<i>1253</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_UNCOMPRESSED,
+<i>1254</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_JPEG,
+<i>1255</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_J2K,
+<i>1256</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_J2K_LOSSY,
+<i>1257</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_LZW,
+<i>1258</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_ZLIB
+<i>1259</i>&nbsp;				);
+<i>1260</i>&nbsp;	}
+<i>1261</i>&nbsp;
+<i>1262</i>&nbsp;	/**
+<i>1263</i>&nbsp;	 * Get a String representing the &#39;Uncompressed&#39; compression type.
+<i>1264</i>&nbsp;	 * @return
+<i>1265</i>&nbsp;	 */
+<i>1266</i>&nbsp;	static String getUncompressedType() {
+<b class="nc"><i>1267</i>&nbsp;		return PyramidOMETiffWriter.COMPRESSION_UNCOMPRESSED;</b>
+<i>1268</i>&nbsp;	}
+<i>1269</i>&nbsp;
+<i>1270</i>&nbsp;	/**
+<i>1271</i>&nbsp;	 * Check if a compression type is known to be lossy.
+<i>1272</i>&nbsp;	 * @param type
+<i>1273</i>&nbsp;	 * @return
+<i>1274</i>&nbsp;	 */
+<i>1275</i>&nbsp;	static boolean isLossyCompressionType(final String type) {
+<b class="nc"><i>1276</i>&nbsp;		return Arrays.asList(</b>
+<i>1277</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_JPEG, 
+<i>1278</i>&nbsp;				PyramidOMETiffWriter.COMPRESSION_J2K_LOSSY
+<b class="nc"><i>1279</i>&nbsp;				).contains(type);</b>
+<i>1280</i>&nbsp;	}
+<i>1281</i>&nbsp;
+<i>1282</i>&nbsp;	/**
+<i>1283</i>&nbsp;	 * Get the default lossless compression type for an ImageServer.
+<i>1284</i>&nbsp;	 * &lt;p&gt;
+<i>1285</i>&nbsp;	 * Currently, this always returns LZW because it is well-supported for TIFF.  
+<i>1286</i>&nbsp;	 * However this may change in the future.
+<i>1287</i>&nbsp;	 * 
+<i>1288</i>&nbsp;	 * @param server
+<i>1289</i>&nbsp;	 * @return
+<i>1290</i>&nbsp;	 */
+<i>1291</i>&nbsp;	static CompressionType getDefaultLosslessCompressionType(final ImageServer&lt;BufferedImage&gt; server) {
+<b class="nc"><i>1292</i>&nbsp;		if (server.getPixelType() == qupath.lib.images.servers.PixelType.UINT8)</b>
+<b class="nc"><i>1293</i>&nbsp;			return CompressionType.LZW;</b>
+<i>1294</i>&nbsp;		else
+<b class="nc"><i>1295</i>&nbsp;			return CompressionType.ZLIB;</b>
+<i>1296</i>&nbsp;	}
+<i>1297</i>&nbsp;	
+<i>1298</i>&nbsp;	/**
+<i>1299</i>&nbsp;	 * Get the default (possibly) lossy compression type for an ImageServer.
+<i>1300</i>&nbsp;	 * &lt;p&gt;
+<i>1301</i>&nbsp;	 * Currently, for an RGB server this will return JPEG while for another 8-bit or 16-bit 
+<i>1302</i>&nbsp;	 * image this will return J2K lossy compression.  Otherwise it returns {@link #getDefaultLosslessCompressionType(ImageServer)}. 
+<i>1303</i>&nbsp;	 * However this may change in the future.
+<i>1304</i>&nbsp;	 * 
+<i>1305</i>&nbsp;	 * @param server
+<i>1306</i>&nbsp;	 * @return
+<i>1307</i>&nbsp;	 */
+<i>1308</i>&nbsp;	static CompressionType getDefaultLossyCompressionType(final ImageServer&lt;BufferedImage&gt; server) {
+<b class="nc"><i>1309</i>&nbsp;		if (server.isRGB())</b>
+<b class="nc"><i>1310</i>&nbsp;			return CompressionType.JPEG;</b>
+<b class="nc"><i>1311</i>&nbsp;		if (server.getPixelType().getBitsPerPixel() &lt;= 16)</b>
+<b class="nc"><i>1312</i>&nbsp;			return CompressionType.J2K_LOSSY;</b>
+<i>1313</i>&nbsp;		// Don&#39;t try another lossy compression method...
+<b class="nc"><i>1314</i>&nbsp;		return getDefaultLosslessCompressionType(server);</b>
+<i>1315</i>&nbsp;	}
+<i>1316</i>&nbsp;	
+<i>1317</i>&nbsp;	/**
+<i>1318</i>&nbsp;	 * Static helper method to write an OME-TIFF pyramidal image for a whole image with the specified compression.
+<i>1319</i>&nbsp;	 * 
+<i>1320</i>&nbsp;	 * @param server
+<i>1321</i>&nbsp;	 * @param path
+<i>1322</i>&nbsp;	 * @param compression
+<i>1323</i>&nbsp;	 * @throws FormatException
+<i>1324</i>&nbsp;	 * @throws IOException
+<i>1325</i>&nbsp;	 */
+<i>1326</i>&nbsp;	public static void writeImage(ImageServer&lt;BufferedImage&gt; server, String path, CompressionType compression) throws FormatException, IOException {
+<b class="nc"><i>1327</i>&nbsp;		writeImage(server, path, compression, RegionRequest.createInstance(server), true, true);</b>
+<i>1328</i>&nbsp;	}
+<i>1329</i>&nbsp;	
+<i>1330</i>&nbsp;	/**
+<i>1331</i>&nbsp;	 * Static helper method to write an OME-TIFF pyramidal image for a defined region with the specified compression.
+<i>1332</i>&nbsp;	 * If region is null, the entire image will be written. If region is not null, it defines the bounding box of the exported 
+<i>1333</i>&nbsp;	 * pixels in addition to the z-slice and timepoint.
+<i>1334</i>&nbsp;	 * 
+<i>1335</i>&nbsp;	 * @param server image to write
+<i>1336</i>&nbsp;	 * @param path path to output file
+<i>1337</i>&nbsp;	 * @param compression image compression method
+<i>1338</i>&nbsp;	 * @param region the region to export. If this is a RegionRequest that defines a downsample other than the default for the server, this downsample will be used.
+<i>1339</i>&nbsp;	 * 
+<i>1340</i>&nbsp;	 * @throws FormatException
+<i>1341</i>&nbsp;	 * @throws IOException
+<i>1342</i>&nbsp;	 */
+<i>1343</i>&nbsp;	public static void writeImage(ImageServer&lt;BufferedImage&gt; server, String path, CompressionType compression, ImageRegion region) throws FormatException, IOException {
+<b class="nc"><i>1344</i>&nbsp;		if (region == null) {</b>
+<b class="nc"><i>1345</i>&nbsp;			writeImage(server, path, compression);</b>
+<i>1346</i>&nbsp;			return;
+<i>1347</i>&nbsp;		}
+<b class="nc"><i>1348</i>&nbsp;		writeImage(server, path, compression, region, false, false);</b>
+<i>1349</i>&nbsp;	}
+<i>1350</i>&nbsp;	
+<i>1351</i>&nbsp;	/**
+<i>1352</i>&nbsp;	 * Static helper method to write an OME-TIFF pyramidal image for a defined region with the specified compression, optionally including all 
+<i>1353</i>&nbsp;	 * z-slices or timepoints.
+<i>1354</i>&nbsp;	 * 
+<i>1355</i>&nbsp;	 * @param server image to write
+<i>1356</i>&nbsp;	 * @param path path to output file
+<i>1357</i>&nbsp;	 * @param compression image compression method
+<i>1358</i>&nbsp;	 * @param region the region to export. If this is a RegionRequest that defines a downsample other than the default for the server, this downsample will be used.
+<i>1359</i>&nbsp;	 * @param allZ if true, export all z-slices otherwise export slice defined by region (ignored if image is not a z-stack)
+<i>1360</i>&nbsp;	 * @param allT if true, export all timepoints otherwise export timepoint defined by region (ignored if image is not a timeseries)
+<i>1361</i>&nbsp;	 * 
+<i>1362</i>&nbsp;	 * @throws FormatException
+<i>1363</i>&nbsp;	 * @throws IOException
+<i>1364</i>&nbsp;	 */
+<i>1365</i>&nbsp;	public static void writeImage(ImageServer&lt;BufferedImage&gt; server, String path, CompressionType compression, ImageRegion region, boolean allZ, boolean allT) throws FormatException, IOException {
+<b class="nc"><i>1366</i>&nbsp;		if (region == null) {</b>
+<b class="nc"><i>1367</i>&nbsp;			writeImage(server, path, compression);</b>
+<i>1368</i>&nbsp;			return;
+<i>1369</i>&nbsp;		}
+<i>1370</i>&nbsp;		
+<b class="nc"><i>1371</i>&nbsp;		var builder = new Builder(server)</b>
+<b class="nc"><i>1372</i>&nbsp;				.compression(compression == null ? CompressionType.DEFAULT : compression)</b>
+<b class="nc"><i>1373</i>&nbsp;				.parallelize()</b>
+<b class="nc"><i>1374</i>&nbsp;				.region(region);</b>
+<i>1375</i>&nbsp;		
+<b class="nc"><i>1376</i>&nbsp;		double downsample = server.getDownsampleForResolution(0);</b>
+<b class="nc"><i>1377</i>&nbsp;		if (region instanceof RegionRequest) {</b>
+<b class="nc"><i>1378</i>&nbsp;			downsample = ((RegionRequest)region).getDownsample();</b>
+<i>1379</i>&nbsp;		}
+<i>1380</i>&nbsp;		
+<b class="nc"><i>1381</i>&nbsp;		int maxDimension = (int)(Math.max(region.getWidth(), region.getHeight())/downsample);</b>
+<b class="nc"><i>1382</i>&nbsp;		if (maxDimension &gt; MIN_SIZE_FOR_PYRAMID) {</b>
+<b class="nc"><i>1383</i>&nbsp;			builder.scaledDownsampling(downsample, 4);</b>
+<i>1384</i>&nbsp;		} else
+<b class="nc"><i>1385</i>&nbsp;			builder.downsamples(downsample);</b>
+<b class="nc"><i>1386</i>&nbsp;		if (maxDimension &gt; MIN_SIZE_FOR_TILING)</b>
+<b class="nc"><i>1387</i>&nbsp;			builder.tileSize(DEFAULT_TILE_SIZE);</b>
+<i>1388</i>&nbsp;		
+<b class="nc"><i>1389</i>&nbsp;		if (allZ)</b>
+<b class="nc"><i>1390</i>&nbsp;			builder.allZSlices();</b>
+<b class="nc"><i>1391</i>&nbsp;		if (allT)</b>
+<b class="nc"><i>1392</i>&nbsp;			builder.allTimePoints();</b>
+<i>1393</i>&nbsp;
+<b class="nc"><i>1394</i>&nbsp;		builder.build().writePyramid(path);</b>
+<i>1395</i>&nbsp;	}
+<i>1396</i>&nbsp;
+<i>1397</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,485 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: KaplanMeierData</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.stats.survival</a> ]
+</div>
+
+<h1>Coverage Summary for Class: KaplanMeierData (qupath.lib.analysis.stats.survival)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">KaplanMeierData</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 93)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">KaplanMeierData$KaplanMeierEvent</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 103)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.stats.survival;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.util.ArrayList;
+<i>27</i>&nbsp;import java.util.Arrays;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.Collections;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Structure used to store data related to generating Kaplan-Meier survival curves.
+<i>34</i>&nbsp; * 
+<i>35</i>&nbsp; * @author Pete Bankhead
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; */
+<i>38</i>&nbsp;public class KaplanMeierData {
+<i>39</i>&nbsp;
+<b class="nc"><i>40</i>&nbsp;	private List&lt;KaplanMeierEvent&gt; events = new ArrayList&lt;&gt;();</b>
+<i>41</i>&nbsp;	private String name;
+<i>42</i>&nbsp;	private double [] statisticCached;
+<i>43</i>&nbsp;	private double [] timesAllCached;
+<i>44</i>&nbsp;	private double [] timesEventsCached;
+<i>45</i>&nbsp;	private int [] atRiskCached;
+<i>46</i>&nbsp;	
+<i>47</i>&nbsp;	/**
+<i>48</i>&nbsp;	 * Create a new KaplanMeierData object with the specified display name.
+<i>49</i>&nbsp;	 * @param name
+<i>50</i>&nbsp;	 */
+<b class="nc"><i>51</i>&nbsp;	public KaplanMeierData(final String name) {</b>
+<b class="nc"><i>52</i>&nbsp;		this.name = name;</b>
+<i>53</i>&nbsp;	}
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;	/**
+<i>56</i>&nbsp;	 * Create a new KaplanMeierData object with the specified display name and events.
+<i>57</i>&nbsp;	 * @param name
+<i>58</i>&nbsp;	 * @param events
+<i>59</i>&nbsp;	 */	
+<i>60</i>&nbsp;	public KaplanMeierData(final String name, final Collection&lt;KaplanMeierEvent&gt; events) {
+<b class="nc"><i>61</i>&nbsp;		this(name);</b>
+<b class="nc"><i>62</i>&nbsp;		this.events.addAll(events);</b>
+<b class="nc"><i>63</i>&nbsp;		Collections.sort(this.events);</b>
+<i>64</i>&nbsp;	}
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;	/**
+<i>67</i>&nbsp;	 * Add a collection of events.
+<i>68</i>&nbsp;	 * @param events
+<i>69</i>&nbsp;	 * @return
+<i>70</i>&nbsp;	 */
+<i>71</i>&nbsp;	public KaplanMeierData addEvents(final Collection&lt;KaplanMeierEvent&gt; events) {
+<b class="nc"><i>72</i>&nbsp;		this.events.addAll(events);</b>
+<b class="nc"><i>73</i>&nbsp;		Collections.sort(this.events);</b>
+<b class="nc"><i>74</i>&nbsp;		return this;</b>
+<i>75</i>&nbsp;	}
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;	/**
+<i>78</i>&nbsp;	 * Insert a new event.
+<i>79</i>&nbsp;	 * @param time the time of the event (units are not specified, but should be consistent for all events added)
+<i>80</i>&nbsp;	 * @param censored if true the event is censored, if false the event is observed.
+<i>81</i>&nbsp;	 * @return
+<i>82</i>&nbsp;	 */
+<i>83</i>&nbsp;	public KaplanMeierData addEvent(final double time, final boolean censored) {
+<b class="nc"><i>84</i>&nbsp;		KaplanMeierEvent event = new KaplanMeierEvent(time, censored);</b>
+<b class="nc"><i>85</i>&nbsp;		int ind = Collections.binarySearch(events, event);</b>
+<b class="nc"><i>86</i>&nbsp;		if (ind &lt; 0)</b>
+<b class="nc"><i>87</i>&nbsp;			ind = -ind-1;</b>
+<b class="nc"><i>88</i>&nbsp;		events.add(ind, event);</b>
+<i>89</i>&nbsp;		// Earlier, lazier version of the code...
+<i>90</i>&nbsp;//		events.add(event);
+<i>91</i>&nbsp;//		Collections.sort(events);
+<b class="nc"><i>92</i>&nbsp;		resetCached();</b>
+<b class="nc"><i>93</i>&nbsp;		return this;</b>
+<i>94</i>&nbsp;	}
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;	/**
+<i>97</i>&nbsp;	 * Get the name of this data, generally used for display.
+<i>98</i>&nbsp;	 * @return
+<i>99</i>&nbsp;	 */
+<i>100</i>&nbsp;	public String getName() {
+<b class="nc"><i>101</i>&nbsp;		return name;</b>
+<i>102</i>&nbsp;	}
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;	/**
+<i>105</i>&nbsp;	 * Returns true if there are no events included.
+<i>106</i>&nbsp;	 * @return
+<i>107</i>&nbsp;	 */
+<i>108</i>&nbsp;	public boolean isEmpty() {
+<b class="nc"><i>109</i>&nbsp;		return this.events.isEmpty();</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;	private void resetCached() {
+<b class="nc"><i>113</i>&nbsp;		this.statisticCached = null;</b>
+<b class="nc"><i>114</i>&nbsp;		this.timesAllCached = null;</b>
+<b class="nc"><i>115</i>&nbsp;		this.atRiskCached = null;</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;	private void compute() {
+<i>120</i>&nbsp;		// Get the unique times
+<b class="nc"><i>121</i>&nbsp;		int n0 = events.size();</b>
+<b class="nc"><i>122</i>&nbsp;		timesAllCached = new double[n0 + 1];</b>
+<b class="nc"><i>123</i>&nbsp;		timesEventsCached = new double[n0 + 1];</b>
+<b class="nc"><i>124</i>&nbsp;		int ind = 0;</b>
+<b class="nc"><i>125</i>&nbsp;		double lastTimeAll = 0;</b>
+<b class="nc"><i>126</i>&nbsp;		int indEvents = 0;</b>
+<b class="nc"><i>127</i>&nbsp;		double lastTimeEvents = 0;</b>
+<b class="nc"><i>128</i>&nbsp;		for (KaplanMeierEvent event : events) {</b>
+<b class="nc"><i>129</i>&nbsp;			double time = event.getTimeToEvent();</b>
+<i>130</i>&nbsp;			// Handle everything
+<b class="nc"><i>131</i>&nbsp;			if (time &gt; lastTimeAll) {</b>
+<b class="nc"><i>132</i>&nbsp;				ind++;</b>
+<b class="nc"><i>133</i>&nbsp;				timesAllCached[ind] = time;</b>
+<b class="nc"><i>134</i>&nbsp;				lastTimeAll = time;</b>
+<i>135</i>&nbsp;			}
+<i>136</i>&nbsp;			// Handle uncensored events
+<b class="nc"><i>137</i>&nbsp;			if (!event.isCensored() &amp;&amp; time &gt; lastTimeEvents) {</b>
+<b class="nc"><i>138</i>&nbsp;				indEvents++;</b>
+<b class="nc"><i>139</i>&nbsp;				timesEventsCached[indEvents] = time;</b>
+<b class="nc"><i>140</i>&nbsp;				lastTimeEvents = time;</b>
+<i>141</i>&nbsp;			}
+<b class="nc"><i>142</i>&nbsp;		}</b>
+<i>143</i>&nbsp;		// Trim the arrays, if necessary - we must have multiple events at the same time
+<b class="nc"><i>144</i>&nbsp;		if (ind &lt; timesAllCached.length)</b>
+<b class="nc"><i>145</i>&nbsp;			timesAllCached = Arrays.copyOf(timesAllCached, ind+1);</b>
+<i>146</i>&nbsp;		// Trim the arrays, if necessary - we must have multiple events at the same time
+<b class="nc"><i>147</i>&nbsp;		if (indEvents+1 &lt; timesEventsCached.length)</b>
+<b class="nc"><i>148</i>&nbsp;			timesEventsCached = Arrays.copyOf(timesEventsCached, indEvents+1);</b>
+<i>149</i>&nbsp;
+<i>150</i>&nbsp;		// Compute statistic
+<i>151</i>&nbsp;		// (This is done in a particularly unoptimized way...)
+<b class="nc"><i>152</i>&nbsp;		statisticCached = new double[timesAllCached.length];</b>
+<b class="nc"><i>153</i>&nbsp;		atRiskCached = new int[timesAllCached.length];</b>
+<b class="nc"><i>154</i>&nbsp;		double lastProduct = 1;</b>
+<b class="nc"><i>155</i>&nbsp;		for (int i = 0; i &lt; timesAllCached.length; i++) {</b>
+<b class="nc"><i>156</i>&nbsp;			double t = timesAllCached[i];</b>
+<i>157</i>&nbsp;			// Update at risk
+<b class="nc"><i>158</i>&nbsp;			int ni = getAtRisk(t);</b>
+<b class="nc"><i>159</i>&nbsp;			atRiskCached[i] = ni;</b>
+<b class="nc"><i>160</i>&nbsp;			int di = getEventsAtTime(t);</b>
+<i>161</i>&nbsp;			// Update the statistic
+<b class="nc"><i>162</i>&nbsp;			lastProduct = lastProduct * ((double)(ni - di) / ni);</b>
+<b class="nc"><i>163</i>&nbsp;			statisticCached[i] = lastProduct;</b>
+<i>164</i>&nbsp;		}
+<i>165</i>&nbsp;	}
+<i>166</i>&nbsp;
+<i>167</i>&nbsp;	/**
+<i>168</i>&nbsp;	 * Get an unmodifiable list of all events.
+<i>169</i>&nbsp;	 * @return
+<i>170</i>&nbsp;	 */
+<i>171</i>&nbsp;	public List&lt;KaplanMeierEvent&gt; getEvents() {
+<b class="nc"><i>172</i>&nbsp;		return Collections.unmodifiableList(events);</b>
+<i>173</i>&nbsp;	}
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;	private void ensureComputed() {
+<b class="nc"><i>176</i>&nbsp;		if (timesAllCached == null)</b>
+<b class="nc"><i>177</i>&nbsp;			compute();</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Retrieve a sorted array containing all times where &#39;something happened&#39; (observed or censored).
+<i>182</i>&nbsp;	 * @return
+<i>183</i>&nbsp;	 * @see #getStatistic()
+<i>184</i>&nbsp;	 */
+<i>185</i>&nbsp;	public double[] getAllTimes() {
+<b class="nc"><i>186</i>&nbsp;		ensureComputed();</b>
+<b class="nc"><i>187</i>&nbsp;		return Arrays.copyOf(timesAllCached, timesAllCached.length);</b>
+<i>188</i>&nbsp;	}
+<i>189</i>&nbsp;
+<i>190</i>&nbsp;//	public double[] getEventTimes() {
+<i>191</i>&nbsp;//		ensureComputed();
+<i>192</i>&nbsp;//		return Arrays.copyOf(timesEventsCached, timesEventsCached.length);
+<i>193</i>&nbsp;//	}
+<i>194</i>&nbsp;//
+<i>195</i>&nbsp;//	public int[] getAtRiskNumber() {
+<i>196</i>&nbsp;//		ensureComputed();
+<i>197</i>&nbsp;//		return Arrays.copyOf(atRiskCached, atRiskCached.length);
+<i>198</i>&nbsp;//	}
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;	/**
+<i>201</i>&nbsp;	 * Retrieve a sorted array containing the value corresponding to a time from {@link #getAllTimes()}.
+<i>202</i>&nbsp;	 * @return
+<i>203</i>&nbsp;	 * @see #getAllTimes()
+<i>204</i>&nbsp;	 */
+<i>205</i>&nbsp;	public double[] getStatistic() {
+<b class="nc"><i>206</i>&nbsp;		ensureComputed();</b>
+<b class="nc"><i>207</i>&nbsp;		return Arrays.copyOf(statisticCached, statisticCached.length);</b>
+<i>208</i>&nbsp;	}
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;	/**
+<i>211</i>&nbsp;	 * Get the time of the last event, or -1 if there are no events.
+<i>212</i>&nbsp;	 * @return
+<i>213</i>&nbsp;	 */
+<i>214</i>&nbsp;	public double getMaxTime() {
+<b class="nc"><i>215</i>&nbsp;		if (events.isEmpty())</b>
+<b class="nc"><i>216</i>&nbsp;			return -1;</b>
+<b class="nc"><i>217</i>&nbsp;		return events.get(events.size()-1).getTimeToEvent();</b>
+<i>218</i>&nbsp;	}
+<i>219</i>&nbsp;
+<i>220</i>&nbsp;	//		private int getLastIndexForTime(final double t) {
+<i>221</i>&nbsp;	//			ensureComputed();
+<i>222</i>&nbsp;	//			int i = timesAllCached.length-1;
+<i>223</i>&nbsp;	//			while (i &gt; 0) {
+<i>224</i>&nbsp;	//				// TODO: Check if &gt; or &gt;=
+<i>225</i>&nbsp;	//				if (timesAllCached[i] &gt;= t)
+<i>226</i>&nbsp;	//					break;
+<i>227</i>&nbsp;	//				else
+<i>228</i>&nbsp;	//					i--;
+<i>229</i>&nbsp;	//			}
+<i>230</i>&nbsp;	//			return i;
+<i>231</i>&nbsp;	//		}
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;	/**
+<i>234</i>&nbsp;	 * Get the number at risk at a specified time. This includes events that occur precisely at the time specified.
+<i>235</i>&nbsp;	 * @param t
+<i>236</i>&nbsp;	 * @return
+<i>237</i>&nbsp;	 */
+<i>238</i>&nbsp;	public int getAtRisk(final double t) {
+<b class="nc"><i>239</i>&nbsp;		int n = events.size();</b>
+<b class="nc"><i>240</i>&nbsp;		for (KaplanMeierEvent event : events) {</b>
+<b class="nc"><i>241</i>&nbsp;			if (event.getTimeToEvent() &lt; t)</b>
+<b class="nc"><i>242</i>&nbsp;				n--;</b>
+<i>243</i>&nbsp;			else
+<i>244</i>&nbsp;				break;
+<b class="nc"><i>245</i>&nbsp;		}</b>
+<b class="nc"><i>246</i>&nbsp;		return n;</b>
+<i>247</i>&nbsp;	}
+<i>248</i>&nbsp;
+<i>249</i>&nbsp;	/**
+<i>250</i>&nbsp;	 * Get the number of events at a specified time (exactly).
+<i>251</i>&nbsp;	 * @param t
+<i>252</i>&nbsp;	 * @return
+<i>253</i>&nbsp;	 */
+<i>254</i>&nbsp;	public int getEventsAtTime(final double t) {
+<b class="nc"><i>255</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>256</i>&nbsp;		for (KaplanMeierEvent event : events) {</b>
+<b class="nc"><i>257</i>&nbsp;			if (event.getTimeToEvent() &lt; t)</b>
+<b class="nc"><i>258</i>&nbsp;				continue;</b>
+<b class="nc"><i>259</i>&nbsp;			if (event.getTimeToEvent() &gt; t)</b>
+<b class="nc"><i>260</i>&nbsp;				break;</b>
+<b class="nc"><i>261</i>&nbsp;			if (!event.isCensored()) {</b>
+<b class="nc"><i>262</i>&nbsp;				n++;</b>
+<i>263</i>&nbsp;			}
+<b class="nc"><i>264</i>&nbsp;		}</b>
+<b class="nc"><i>265</i>&nbsp;		return n;</b>
+<i>266</i>&nbsp;		
+<i>267</i>&nbsp;//		int n = 0;
+<i>268</i>&nbsp;//		for (KaplanMeierEvent event : events) {
+<i>269</i>&nbsp;//			if (event.getTimeToEvent() == t) {
+<i>270</i>&nbsp;//				//				if (Math.abs(event.getTimeToEvent() - t) &lt; 0.00001) {
+<i>271</i>&nbsp;//				if (!event.isCensored())
+<i>272</i>&nbsp;//					n++;
+<i>273</i>&nbsp;//			}
+<i>274</i>&nbsp;//		}
+<i>275</i>&nbsp;//		return n;
+<i>276</i>&nbsp;	}
+<i>277</i>&nbsp;
+<i>278</i>&nbsp;	//		public int getEventsPriorToTime(final double t) {
+<i>279</i>&nbsp;	//			int n = 0;
+<i>280</i>&nbsp;	//			for (KaplanMeierEvent event : events) {
+<i>281</i>&nbsp;	//				if (event.getTimeToEvent() &lt;= t) {
+<i>282</i>&nbsp;	//					if (!event.isCensored())
+<i>283</i>&nbsp;	//						n++;
+<i>284</i>&nbsp;	//				}
+<i>285</i>&nbsp;	//				else
+<i>286</i>&nbsp;	//					break;
+<i>287</i>&nbsp;	//			}
+<i>288</i>&nbsp;	//			return n;
+<i>289</i>&nbsp;	//		}
+<i>290</i>&nbsp;
+<i>291</i>&nbsp;	/**
+<i>292</i>&nbsp;	 * Get the number of events, either observed or censored.
+<i>293</i>&nbsp;	 * @return
+<i>294</i>&nbsp;	 */
+<i>295</i>&nbsp;	public int nEvents() {
+<b class="nc"><i>296</i>&nbsp;		return events.size();</b>
+<i>297</i>&nbsp;	}
+<i>298</i>&nbsp;
+<i>299</i>&nbsp;	/**
+<i>300</i>&nbsp;	 * Get the number of observed (not censored) events.
+<i>301</i>&nbsp;	 * @return
+<i>302</i>&nbsp;	 */
+<i>303</i>&nbsp;	public int nObserved() {
+<b class="nc"><i>304</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>305</i>&nbsp;		for (KaplanMeierEvent event : events) {</b>
+<b class="nc"><i>306</i>&nbsp;			if (!event.isCensored())</b>
+<b class="nc"><i>307</i>&nbsp;				n++;</b>
+<b class="nc"><i>308</i>&nbsp;		}</b>
+<b class="nc"><i>309</i>&nbsp;		return n;</b>
+<i>310</i>&nbsp;	}
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;	/**
+<i>313</i>&nbsp;	 * Get the number of censored events.
+<i>314</i>&nbsp;	 * @return
+<i>315</i>&nbsp;	 */
+<i>316</i>&nbsp;	public int nCensored() {
+<b class="nc"><i>317</i>&nbsp;		int n = 0;</b>
+<b class="nc"><i>318</i>&nbsp;		for (KaplanMeierEvent event : events) {</b>
+<b class="nc"><i>319</i>&nbsp;			if (event.isCensored())</b>
+<b class="nc"><i>320</i>&nbsp;				n++;</b>
+<b class="nc"><i>321</i>&nbsp;		}</b>
+<b class="nc"><i>322</i>&nbsp;		return n;</b>
+<i>323</i>&nbsp;	}
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;	@Override
+<i>326</i>&nbsp;	public String toString() {
+<b class="nc"><i>327</i>&nbsp;		return &quot;Kaplan-Meier: &quot; + name +&quot;, &quot; + events.size() + &quot; events (&quot; + nObserved() + &quot; observed, &quot; + nCensored() + &quot; censored)&quot;;</b>
+<i>328</i>&nbsp;	}
+<i>329</i>&nbsp;	
+<i>330</i>&nbsp;	
+<i>331</i>&nbsp;	
+<i>332</i>&nbsp;	/**
+<i>333</i>&nbsp;	 * Simple class to store event time and censored flag.
+<i>334</i>&nbsp;	 */
+<i>335</i>&nbsp;	public static class KaplanMeierEvent implements Comparable&lt;KaplanMeierEvent&gt; {
+<i>336</i>&nbsp;		
+<i>337</i>&nbsp;		private double timeToEvent;
+<i>338</i>&nbsp;		private boolean isCensored;
+<i>339</i>&nbsp;		
+<b class="nc"><i>340</i>&nbsp;		KaplanMeierEvent(final double timeToEvent, final boolean isCensored) {</b>
+<b class="nc"><i>341</i>&nbsp;			this.timeToEvent = timeToEvent;</b>
+<b class="nc"><i>342</i>&nbsp;			this.isCensored = isCensored;</b>
+<i>343</i>&nbsp;		}
+<i>344</i>&nbsp;		
+<i>345</i>&nbsp;		/**
+<i>346</i>&nbsp;		 * Get the stored time to event (units are unspecified).
+<i>347</i>&nbsp;		 * @return
+<i>348</i>&nbsp;		 */
+<i>349</i>&nbsp;		public double getTimeToEvent() {
+<b class="nc"><i>350</i>&nbsp;			return timeToEvent;</b>
+<i>351</i>&nbsp;		}
+<i>352</i>&nbsp;		
+<i>353</i>&nbsp;		/**
+<i>354</i>&nbsp;		 * Returns true if the event should be considered right-censored.
+<i>355</i>&nbsp;		 * @return
+<i>356</i>&nbsp;		 */
+<i>357</i>&nbsp;		public boolean isCensored() {
+<b class="nc"><i>358</i>&nbsp;			return isCensored;</b>
+<i>359</i>&nbsp;		}
+<i>360</i>&nbsp;
+<i>361</i>&nbsp;		@Override
+<i>362</i>&nbsp;		public int compareTo(KaplanMeierEvent event) {
+<b class="nc"><i>363</i>&nbsp;			int comp = Double.compare(timeToEvent, event.timeToEvent);</b>
+<b class="nc"><i>364</i>&nbsp;			if (comp == 0)</b>
+<b class="nc"><i>365</i>&nbsp;				return Boolean.compare(isCensored, event.isCensored);</b>
+<b class="nc"><i>366</i>&nbsp;			return comp;</b>
+<i>367</i>&nbsp;		}
+<i>368</i>&nbsp;		
+<i>369</i>&nbsp;		@Override
+<i>370</i>&nbsp;		public String toString() {
+<b class="nc"><i>371</i>&nbsp;			return &quot;KM Event: Time=&quot; + timeToEvent + &quot;, Censored=&quot; + isCensored;</b>
+<i>372</i>&nbsp;		}
+<i>373</i>&nbsp;		
+<i>374</i>&nbsp;	}
+<i>375</i>&nbsp;
+<i>376</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

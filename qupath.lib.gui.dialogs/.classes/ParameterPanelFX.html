@@ -1,0 +1,772 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ParameterPanelFX</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.dialogs</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ParameterPanelFX (qupath.lib.gui.dialogs)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ParameterPanelFX</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 37)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 218)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ParameterPanelFX$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ParameterPanelFX$ParameterSliderChangeListener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 36)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 43)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 258)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.dialogs;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.math.BigInteger;
+<i>27</i>&nbsp;import java.text.NumberFormat;
+<i>28</i>&nbsp;import java.util.ArrayList;
+<i>29</i>&nbsp;import java.util.Arrays;
+<i>30</i>&nbsp;import java.util.Collections;
+<i>31</i>&nbsp;import java.util.HashMap;
+<i>32</i>&nbsp;import java.util.List;
+<i>33</i>&nbsp;import java.util.Locale;
+<i>34</i>&nbsp;import java.util.Locale.Category;
+<i>35</i>&nbsp;import java.util.Map;
+<i>36</i>&nbsp;import java.util.Map.Entry;
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;import org.slf4j.Logger;
+<i>39</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import javafx.application.Platform;
+<i>42</i>&nbsp;import javafx.embed.swing.JFXPanel;
+<i>43</i>&nbsp;import javafx.geometry.Insets;
+<i>44</i>&nbsp;import javafx.scene.Node;
+<i>45</i>&nbsp;import javafx.scene.Parent;
+<i>46</i>&nbsp;import javafx.scene.Scene;
+<i>47</i>&nbsp;import javafx.scene.control.CheckBox;
+<i>48</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>49</i>&nbsp;import javafx.scene.control.Label;
+<i>50</i>&nbsp;import javafx.scene.control.Slider;
+<i>51</i>&nbsp;import javafx.scene.control.TextArea;
+<i>52</i>&nbsp;import javafx.scene.control.TextField;
+<i>53</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>54</i>&nbsp;import javafx.scene.layout.FlowPane;
+<i>55</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>56</i>&nbsp;import javafx.scene.layout.Pane;
+<i>57</i>&nbsp;import javafx.scene.layout.Priority;
+<i>58</i>&nbsp;import javafx.scene.text.Font;
+<i>59</i>&nbsp;import javafx.scene.text.FontWeight;
+<i>60</i>&nbsp;import javafx.stage.Stage;
+<i>61</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>62</i>&nbsp;import qupath.lib.gui.tools.PaneTools;
+<i>63</i>&nbsp;import qupath.lib.plugins.parameters.BooleanParameter;
+<i>64</i>&nbsp;import qupath.lib.plugins.parameters.ChoiceParameter;
+<i>65</i>&nbsp;import qupath.lib.plugins.parameters.DoubleParameter;
+<i>66</i>&nbsp;import qupath.lib.plugins.parameters.EmptyParameter;
+<i>67</i>&nbsp;import qupath.lib.plugins.parameters.IntParameter;
+<i>68</i>&nbsp;import qupath.lib.plugins.parameters.NumericParameter;
+<i>69</i>&nbsp;import qupath.lib.plugins.parameters.Parameter;
+<i>70</i>&nbsp;import qupath.lib.plugins.parameters.ParameterChangeListener;
+<i>71</i>&nbsp;import qupath.lib.plugins.parameters.ParameterList;
+<i>72</i>&nbsp;import qupath.lib.plugins.parameters.StringParameter;
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;/**
+<i>75</i>&nbsp; * A panel for displaying a list of parameters suitably to aid with creating JavaFX GUIs.
+<i>76</i>&nbsp; * 
+<i>77</i>&nbsp; * @author Pete Bankhead
+<i>78</i>&nbsp; *
+<i>79</i>&nbsp; */
+<i>80</i>&nbsp;public class ParameterPanelFX {
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;	private List&lt;ParameterChangeListener&gt; listeners = Collections.synchronizedList(new ArrayList&lt;&gt;());</b>
+<i>83</i>&nbsp;
+<b class="nc"><i>84</i>&nbsp;	private final static Logger logger = LoggerFactory.getLogger(ParameterPanelFX.class);</b>
+<i>85</i>&nbsp;	
+<b class="nc"><i>86</i>&nbsp;	private static int DEFAULT_NUMERIC_TEXT_COLS = 8;</b>
+<i>87</i>&nbsp;	
+<i>88</i>&nbsp;	private GridPane pane;
+<i>89</i>&nbsp;	private ParameterList params;
+<b class="nc"><i>90</i>&nbsp;	private Map&lt;Parameter&lt;?&gt;, Node&gt; map = new HashMap&lt;&gt;();</b>
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	// TODO: Check if font needs to be set everywhere?  For now it&#39;s just for titles...
+<b class="nc"><i>93</i>&nbsp;	private static Font font = Font.font(&quot;Arial&quot;);</b>
+<i>94</i>&nbsp;	
+<i>95</i>&nbsp;	/**
+<i>96</i>&nbsp;	 * Create a ParameterPanelFX.
+<i>97</i>&nbsp;	 * 
+<i>98</i>&nbsp;	 * @param params
+<i>99</i>&nbsp;	 */
+<i>100</i>&nbsp;	public ParameterPanelFX(final ParameterList params) {
+<b class="nc"><i>101</i>&nbsp;		this(params, new GridPane());</b>
+<i>102</i>&nbsp;	}
+<i>103</i>&nbsp;	
+<i>104</i>&nbsp;	/**
+<i>105</i>&nbsp;	 * Create a ParameterPanelFX using a specified GridPane.
+<i>106</i>&nbsp;	 * 
+<i>107</i>&nbsp;	 * @param params
+<i>108</i>&nbsp;	 * @param gridPane
+<i>109</i>&nbsp;	 */
+<i>110</i>&nbsp;	private ParameterPanelFX(final ParameterList params, final GridPane gridPane) {
+<b class="nc"><i>111</i>&nbsp;		super();</b>
+<b class="nc"><i>112</i>&nbsp;		this.params = params;</b>
+<b class="nc"><i>113</i>&nbsp;		this.pane = gridPane == null ? new GridPane() : gridPane;</b>
+<b class="nc"><i>114</i>&nbsp;		initialize();</b>
+<i>115</i>&nbsp;//		pane.setMinSize(pane.getPrefWidth(), pane.getPrefHeight());
+<b class="nc"><i>116</i>&nbsp;		pane.setVgap(4);</b>
+<b class="nc"><i>117</i>&nbsp;		pane.setHgap(4);</b>
+<i>118</i>&nbsp;//		pane.setMaxSize(pane.getPrefWidth(), pane.getPrefHeight());
+<i>119</i>&nbsp;//		System.err.println(&quot;Resizable: &quot; + pane.isResizable());
+<i>120</i>&nbsp;	}
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Get the {@link ParameterList} displaned in this panel.
+<i>124</i>&nbsp;	 * @return
+<i>125</i>&nbsp;	 */
+<i>126</i>&nbsp;	public ParameterList getParameters() {
+<b class="nc"><i>127</i>&nbsp;		return params;</b>
+<i>128</i>&nbsp;	}
+<i>129</i>&nbsp;	
+<i>130</i>&nbsp;	/**
+<i>131</i>&nbsp;	 * Get the {@link Pane} that can be displayed.
+<i>132</i>&nbsp;	 * @return
+<i>133</i>&nbsp;	 */
+<i>134</i>&nbsp;	public Pane getPane() {
+<b class="nc"><i>135</i>&nbsp;		return pane;</b>
+<i>136</i>&nbsp;	}
+<i>137</i>&nbsp;	
+<i>138</i>&nbsp;	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+<i>139</i>&nbsp;	private void initialize() {
+<i>140</i>&nbsp;//		for (Parameter&lt;?&gt; p : params.getParameterList()) {
+<b class="nc"><i>141</i>&nbsp;		for (Entry&lt;String, Parameter&lt;?&gt;&gt; entry : params.getParameters().entrySet()) {</b>
+<b class="nc"><i>142</i>&nbsp;			Parameter&lt;?&gt; p = entry.getValue();</b>
+<i>143</i>&nbsp;			// Don&#39;t show hidden parameters
+<b class="nc"><i>144</i>&nbsp;			if (p.isHidden())</b>
+<b class="nc"><i>145</i>&nbsp;				continue;</b>
+<b class="nc"><i>146</i>&nbsp;			if (p instanceof DoubleParameter)</b>
+<b class="nc"><i>147</i>&nbsp;				addDoubleParameter((DoubleParameter)p);</b>
+<b class="nc"><i>148</i>&nbsp;			else if (p instanceof IntParameter)</b>
+<b class="nc"><i>149</i>&nbsp;				addIntParameter((IntParameter)p);</b>
+<b class="nc"><i>150</i>&nbsp;			else if (p instanceof StringParameter)</b>
+<b class="nc"><i>151</i>&nbsp;				addStringParameter((StringParameter)p);</b>
+<b class="nc"><i>152</i>&nbsp;			else if (p instanceof EmptyParameter)</b>
+<b class="nc"><i>153</i>&nbsp;				addEmptyParameter((EmptyParameter)p);</b>
+<b class="nc"><i>154</i>&nbsp;			else if (p instanceof ChoiceParameter)</b>
+<b class="nc"><i>155</i>&nbsp;				addChoiceParameter((ChoiceParameter)p);</b>
+<b class="nc"><i>156</i>&nbsp;			else if (p instanceof BooleanParameter) {</b>
+<b class="nc"><i>157</i>&nbsp;				addBooleanParameter((BooleanParameter)p);</b>
+<i>158</i>&nbsp;			}
+<b class="nc"><i>159</i>&nbsp;		}</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Add a {@link ParameterChangeListener} to be notified as parameters are modified by the user.
+<i>164</i>&nbsp;	 * @param listener
+<i>165</i>&nbsp;	 * @see #removeParameterChangeListener(ParameterChangeListener)
+<i>166</i>&nbsp;	 */
+<i>167</i>&nbsp;	public void addParameterChangeListener(ParameterChangeListener listener) {
+<b class="nc"><i>168</i>&nbsp;		listeners.add(listener);</b>
+<i>169</i>&nbsp;	}
+<i>170</i>&nbsp;
+<i>171</i>&nbsp;	/**
+<i>172</i>&nbsp;	 * Remove a {@link ParameterChangeListener}.
+<i>173</i>&nbsp;	 * @param listener
+<i>174</i>&nbsp;	 * @see #addParameterChangeListener(ParameterChangeListener)
+<i>175</i>&nbsp;	 */
+<i>176</i>&nbsp;	public void removeParameterChangeListener(ParameterChangeListener listener) {
+<b class="nc"><i>177</i>&nbsp;		listeners.remove(listener);</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	
+<i>181</i>&nbsp;	private String getKey(Parameter&lt;?&gt; param) {
+<i>182</i>&nbsp;		// This is a rather clumsy workaround as the keys are not currently stored here...
+<b class="nc"><i>183</i>&nbsp;		for (Entry&lt;String, Parameter&lt;?&gt;&gt; entry : params.getParameters().entrySet()) {</b>
+<b class="nc"><i>184</i>&nbsp;			if (entry.getValue().equals(param))</b>
+<b class="nc"><i>185</i>&nbsp;				return entry.getKey();</b>
+<b class="nc"><i>186</i>&nbsp;		}</b>
+<b class="nc"><i>187</i>&nbsp;		return null;</b>
+<i>188</i>&nbsp;	}
+<i>189</i>&nbsp;	
+<i>190</i>&nbsp;	
+<i>191</i>&nbsp;	private void fireParameterChangedEvent(Parameter&lt;?&gt; param, boolean isAdjusting) {
+<b class="nc"><i>192</i>&nbsp;		String key = getKey(param);</b>
+<b class="nc"><i>193</i>&nbsp;		if (key != null) {</b>
+<b class="nc"><i>194</i>&nbsp;			for (ParameterChangeListener listener: listeners) {</b>
+<b class="nc"><i>195</i>&nbsp;				listener.parameterChanged(params, key, isAdjusting);</b>
+<b class="nc"><i>196</i>&nbsp;			}</b>
+<i>197</i>&nbsp;		}
+<i>198</i>&nbsp;	}
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;	private void addBooleanParameter(BooleanParameter param) {
+<b class="nc"><i>201</i>&nbsp;		addCheckBoxParameter(param);</b>
+<i>202</i>&nbsp;	}
+<i>203</i>&nbsp;	
+<i>204</i>&nbsp;	private void addDoubleParameter(DoubleParameter param) {
+<b class="nc"><i>205</i>&nbsp;		if (param.hasLowerAndUpperBounds())</b>
+<b class="nc"><i>206</i>&nbsp;			addSliderParameter(param);</b>
+<i>207</i>&nbsp;		else
+<b class="nc"><i>208</i>&nbsp;			addNumericTextField(param);</b>
+<i>209</i>&nbsp;	}
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;	private void addIntParameter(IntParameter param) {
+<b class="nc"><i>212</i>&nbsp;		if (param.hasLowerAndUpperBounds())</b>
+<b class="nc"><i>213</i>&nbsp;			addSliderParameter(param);</b>
+<i>214</i>&nbsp;		else
+<b class="nc"><i>215</i>&nbsp;			addNumericTextField(param);</b>
+<i>216</i>&nbsp;	}
+<i>217</i>&nbsp;	
+<i>218</i>&nbsp;	private void addNumericTextField(NumericParameter&lt;? extends Number&gt; param) {
+<b class="nc"><i>219</i>&nbsp;		TextField tf = getTextField(param, DEFAULT_NUMERIC_TEXT_COLS);</b>
+<b class="nc"><i>220</i>&nbsp;		if (param.getUnit() != null) {</b>
+<b class="nc"><i>221</i>&nbsp;			Pane panel = new FlowPane();</b>
+<b class="nc"><i>222</i>&nbsp;			panel.getChildren().add(tf);</b>
+<b class="nc"><i>223</i>&nbsp;			Label label = new Label(param.getUnit());</b>
+<b class="nc"><i>224</i>&nbsp;			label.setPadding(new Insets(0, 0, 0, 4));</b>
+<b class="nc"><i>225</i>&nbsp;			panel.getChildren().add(label);</b>
+<b class="nc"><i>226</i>&nbsp;			addParamComponent(param, param.getPrompt(), panel);</b>
+<b class="nc"><i>227</i>&nbsp;		} else {</b>
+<b class="nc"><i>228</i>&nbsp;			Pane panel = new Pane();</b>
+<b class="nc"><i>229</i>&nbsp;			panel.getChildren().add(tf);</b>
+<b class="nc"><i>230</i>&nbsp;			addParamComponent(param, param.getPrompt(), panel);</b>
+<i>231</i>&nbsp;		}
+<i>232</i>&nbsp;	}
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;	private void addStringParameter(StringParameter param) {
+<b class="nc"><i>235</i>&nbsp;		addParamComponent(param, param.getPrompt(), getTextField(param, 25));</b>
+<i>236</i>&nbsp;	}
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;	private void addEmptyParameter(EmptyParameter param) {
+<b class="nc"><i>239</i>&nbsp;		Label label = new Label(param.getPrompt());</b>
+<i>240</i>&nbsp;//		Text label = new Text(param.getPrompt());
+<b class="nc"><i>241</i>&nbsp;		if (param.isTitle()) {</b>
+<i>242</i>&nbsp;			// Cannot change font weight for default font (at least on macOS...) - need to change the font that&#39;s used
+<b class="nc"><i>243</i>&nbsp;			label.setFont(Font.font(font.getFamily(), FontWeight.BOLD, font.getSize()));</b>
+<i>244</i>&nbsp;//			label.setStyle(&quot;-fx-font-weight: bold;&quot;);
+<i>245</i>&nbsp;//			label.setStyle(&quot;-fx-font-size: 100%&quot;);
+<i>246</i>&nbsp;//			label.setEffect(new DropShadow());
+<b class="nc"><i>247</i>&nbsp;			if (!map.isEmpty())</b>
+<b class="nc"><i>248</i>&nbsp;				label.setPadding(new Insets(10, 0, 0, 0));</b>
+<i>249</i>&nbsp;		}
+<b class="nc"><i>250</i>&nbsp;		addParamComponent(param, null, label);</b>
+<i>251</i>&nbsp;	}
+<i>252</i>&nbsp;
+<i>253</i>&nbsp;	private void addChoiceParameter(ChoiceParameter&lt;Object&gt; param) {
+<b class="nc"><i>254</i>&nbsp;		ComboBox&lt;Object&gt; combo = new ComboBox&lt;&gt;();</b>
+<b class="nc"><i>255</i>&nbsp;		combo.getItems().setAll(param.getChoices());</b>
+<b class="nc"><i>256</i>&nbsp;		combo.getSelectionModel().select(param.getValueOrDefault());</b>
+<b class="nc"><i>257</i>&nbsp;		combo.setOnAction(e -&gt; {</b>
+<b class="nc"><i>258</i>&nbsp;			if (param.setValue(combo.getSelectionModel().getSelectedItem()))</b>
+<b class="nc"><i>259</i>&nbsp;				fireParameterChangedEvent(param, false);</b>
+<i>260</i>&nbsp;		});
+<b class="nc"><i>261</i>&nbsp;		combo.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>262</i>&nbsp;		addParamComponent(param, param.getPrompt(), combo);</b>
+<i>263</i>&nbsp;	}
+<i>264</i>&nbsp;	
+<i>265</i>&nbsp;	private void addCheckBoxParameter(BooleanParameter param) {
+<b class="nc"><i>266</i>&nbsp;		CheckBox cb = new CheckBox(param.getPrompt());</b>
+<b class="nc"><i>267</i>&nbsp;		cb.setSelected(param.getValueOrDefault());</b>
+<i>268</i>&nbsp;//		cb.setStyle(&quot;-fx-background-color: red;&quot;);
+<b class="nc"><i>269</i>&nbsp;		cb.setMinWidth(CheckBox.USE_COMPUTED_SIZE);</b>
+<b class="nc"><i>270</i>&nbsp;		cb.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>271</i>&nbsp;		cb.selectedProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>272</i>&nbsp;			if (param.setValue(cb.isSelected()))</b>
+<b class="nc"><i>273</i>&nbsp;				fireParameterChangedEvent(param, false);</b>
+<i>274</i>&nbsp;		});
+<b class="nc"><i>275</i>&nbsp;		addParamComponent(param, null, cb);</b>
+<i>276</i>&nbsp;	}
+<i>277</i>&nbsp;	
+<i>278</i>&nbsp;	private void addSliderParameter(IntParameter param) {
+<b class="nc"><i>279</i>&nbsp;		int min = (int)param.getLowerBound();</b>
+<b class="nc"><i>280</i>&nbsp;		int max = (int)(param.getUpperBound() + .5);</b>
+<b class="nc"><i>281</i>&nbsp;		Slider slider = new Slider(min, max, param.getValueOrDefault());</b>
+<b class="nc"><i>282</i>&nbsp;		TextField tf = new TextField();</b>
+<b class="nc"><i>283</i>&nbsp;		tf.setEditable(false);</b>
+<b class="nc"><i>284</i>&nbsp;		tf.setText(&quot;&quot;+slider.getValue());</b>
+<b class="nc"><i>285</i>&nbsp;		tf.setPrefColumnCount(DEFAULT_NUMERIC_TEXT_COLS);</b>
+<b class="nc"><i>286</i>&nbsp;		ParameterSliderChangeListener listener = new ParameterSliderChangeListener(slider, param, tf);</b>
+<b class="nc"><i>287</i>&nbsp;		slider.valueProperty().addListener((v, o, n) -&gt; listener.handleSliderUpdate());</b>
+<i>288</i>&nbsp;//		slider.setMinimumSize(new Dimension(slider.getPreferredSize().width, slider.getMinimumSize().height));
+<b class="nc"><i>289</i>&nbsp;		BorderPane panel = new BorderPane();</b>
+<b class="nc"><i>290</i>&nbsp;		panel.setCenter(slider);</b>
+<b class="nc"><i>291</i>&nbsp;		panel.setRight(tf);</b>
+<b class="nc"><i>292</i>&nbsp;		addParamComponent(param, param.getPrompt(), panel);</b>
+<i>293</i>&nbsp;	}
+<i>294</i>&nbsp;	
+<i>295</i>&nbsp;	
+<i>296</i>&nbsp;	private void addSliderParameter(DoubleParameter param) {
+<i>297</i>&nbsp;//		double lower = param.getLowerBound();
+<i>298</i>&nbsp;//		double higher = param.getUpperBound();
+<i>299</i>&nbsp;//		int sliderMax;
+<i>300</i>&nbsp;//		// Choose a sensible increment
+<i>301</i>&nbsp;//		if (higher - lower &gt; 1000)
+<i>302</i>&nbsp;//			sliderMax = (int)Math.round((higher - lower));
+<i>303</i>&nbsp;//		else if (higher - lower &gt; 100)
+<i>304</i>&nbsp;//			sliderMax = (int)Math.round((higher - lower) * 10);
+<i>305</i>&nbsp;//		else
+<i>306</i>&nbsp;//			sliderMax = (int)Math.round((higher - lower) * 100);
+<b class="nc"><i>307</i>&nbsp;		final Slider slider = new Slider(param.getLowerBound(), param.getUpperBound(),  param.getValueOrDefault());</b>
+<b class="nc"><i>308</i>&nbsp;		TextField tf = new TextField();</b>
+<b class="nc"><i>309</i>&nbsp;		tf.setPrefColumnCount(DEFAULT_NUMERIC_TEXT_COLS);</b>
+<b class="nc"><i>310</i>&nbsp;		setTextFieldFromNumber(tf, param.getValueOrDefault(), param.getUnit());</b>
+<b class="nc"><i>311</i>&nbsp;		tf.setEditable(false);</b>
+<b class="nc"><i>312</i>&nbsp;		ParameterSliderChangeListener listener = new ParameterSliderChangeListener(slider, param, tf);</b>
+<b class="nc"><i>313</i>&nbsp;		slider.valueProperty().addListener((v, o, n) -&gt; listener.handleSliderUpdate());</b>
+<i>314</i>&nbsp;//		slider.setMinimumSize(new Dimension(slider.getPreferredSize().width, slider.getMinimumSize().height));
+<b class="nc"><i>315</i>&nbsp;		BorderPane panel = new BorderPane();</b>
+<b class="nc"><i>316</i>&nbsp;		panel.setCenter(slider);</b>
+<b class="nc"><i>317</i>&nbsp;		panel.setRight(tf);</b>
+<b class="nc"><i>318</i>&nbsp;		addParamComponent(param, param.getPrompt(), panel);</b>
+<i>319</i>&nbsp;	}
+<i>320</i>&nbsp;	
+<i>321</i>&nbsp;	
+<i>322</i>&nbsp;	protected static void setTextFieldFromNumber(TextField text, Number value, String unit) {
+<i>323</i>&nbsp;		String s;
+<b class="nc"><i>324</i>&nbsp;		if (value == null)</b>
+<b class="nc"><i>325</i>&nbsp;			s = &quot;&quot;;</b>
+<i>326</i>&nbsp;		else  {
+<b class="nc"><i>327</i>&nbsp;			if (value instanceof Long || value instanceof BigInteger)</b>
+<b class="nc"><i>328</i>&nbsp;				s = String.format(&quot;%d&quot;, value.longValue());</b>
+<i>329</i>&nbsp;			else {
+<i>330</i>&nbsp;				// Try to use a sensible number of decimal places
+<b class="nc"><i>331</i>&nbsp;				double v = value.doubleValue();</b>
+<b class="nc"><i>332</i>&nbsp;				double log10 = Math.round(Math.log10(v));</b>
+<b class="nc"><i>333</i>&nbsp;				int ndp = (int)Math.max(4, -log10 + 2);</b>
+<b class="nc"><i>334</i>&nbsp;				s = GeneralTools.formatNumber(v, ndp);</b>
+<i>335</i>&nbsp;			}
+<b class="nc"><i>336</i>&nbsp;			if (unit != null)</b>
+<b class="nc"><i>337</i>&nbsp;				s += (&quot; &quot; + unit);</b>
+<i>338</i>&nbsp;		}
+<i>339</i>&nbsp;		// Only set the text if it&#39;s different - avoids some exceptions due to the complex interplay between listeners...
+<b class="nc"><i>340</i>&nbsp;		if (!text.getText().equals(s))</b>
+<b class="nc"><i>341</i>&nbsp;			text.setText(s);</b>
+<i>342</i>&nbsp;	}
+<i>343</i>&nbsp;	
+<i>344</i>&nbsp;	
+<i>345</i>&nbsp;	protected TextField getTextField(Parameter&lt;?&gt; param, int cols) {
+<b class="nc"><i>346</i>&nbsp;		TextField tf = new TextField();</b>
+<b class="nc"><i>347</i>&nbsp;		Object defaultVal = param.getValueOrDefault();</b>
+<b class="nc"><i>348</i>&nbsp;		if (defaultVal instanceof Number)</b>
+<b class="nc"><i>349</i>&nbsp;			tf.setText(NumberFormat.getInstance().format(defaultVal));</b>
+<b class="nc"><i>350</i>&nbsp;		else if (defaultVal != null)</b>
+<b class="nc"><i>351</i>&nbsp;			tf.setText(defaultVal.toString());</b>
+<i>352</i>&nbsp;		
+<b class="nc"><i>353</i>&nbsp;		if (cols &gt; 0)</b>
+<b class="nc"><i>354</i>&nbsp;			tf.setPrefColumnCount(cols);</b>
+<i>355</i>&nbsp;//		tf.addActionListener(new ParameterActionListener(tf, param));
+<i>356</i>&nbsp;		
+<b class="nc"><i>357</i>&nbsp;		tf.textProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>358</i>&nbsp;			if (n != null &amp;&amp; param.setStringLastValue(Locale.getDefault(Category.FORMAT), n)) {</b>
+<b class="nc"><i>359</i>&nbsp;				fireParameterChangedEvent(param, false);</b>
+<i>360</i>&nbsp;			}
+<i>361</i>&nbsp;		});
+<i>362</i>&nbsp;		// onKeyTyped wasn&#39;t causing property synchronisation of parameter values
+<i>363</i>&nbsp;//		tf.setOnKeyTyped(e -&gt; {
+<i>364</i>&nbsp;//			if (param.setStringLastValue(tf.getText()))
+<i>365</i>&nbsp;//				fireParameterChangedEvent(param, false);
+<i>366</i>&nbsp;//		});
+<b class="nc"><i>367</i>&nbsp;		return tf;</b>
+<i>368</i>&nbsp;	}
+<i>369</i>&nbsp;	
+<b class="nc"><i>370</i>&nbsp;	private int currentRow = 0;</b>
+<i>371</i>&nbsp;	
+<i>372</i>&nbsp;	// GridBagLayout version... TODO: Update for JavaFX
+<i>373</i>&nbsp;	private void addParamComponent(Parameter&lt;?&gt; parameter, String text, Node component) {
+<i>374</i>&nbsp;		
+<b class="nc"><i>375</i>&nbsp;		map.put(parameter, component);</b>
+<b class="nc"><i>376</i>&nbsp;		String help = parameter.getHelpText();</b>
+<i>377</i>&nbsp;
+<b class="nc"><i>378</i>&nbsp;		PaneTools.setFillWidth(Boolean.TRUE, component);</b>
+<b class="nc"><i>379</i>&nbsp;		PaneTools.setHGrowPriority(Priority.ALWAYS, component);</b>
+<i>380</i>&nbsp;
+<b class="nc"><i>381</i>&nbsp;		if (text == null) {</b>
+<b class="nc"><i>382</i>&nbsp;			PaneTools.addGridRow(pane, currentRow++, 0, help, component, component);</b>
+<i>383</i>&nbsp;		} else {
+<b class="nc"><i>384</i>&nbsp;			Label label = new Label(text);</b>
+<b class="nc"><i>385</i>&nbsp;			label.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>386</i>&nbsp;			label.setMinWidth(Label.USE_PREF_SIZE);</b>
+<b class="nc"><i>387</i>&nbsp;			label.setLabelFor(component);</b>
+<b class="nc"><i>388</i>&nbsp;			PaneTools.addGridRow(pane, currentRow++, 0, help, label, component);</b>
+<i>389</i>&nbsp;		}
+<i>390</i>&nbsp;	}
+<i>391</i>&nbsp;	
+<i>392</i>&nbsp;	/**
+<i>393</i>&nbsp;	 * Returns true if a parameter exists with the given key and is enabled (and is therefore editable).
+<i>394</i>&nbsp;	 * @param key
+<i>395</i>&nbsp;	 * @return
+<i>396</i>&nbsp;	 */
+<i>397</i>&nbsp;	public boolean getParameterEnabled(String key) {
+<b class="nc"><i>398</i>&nbsp;		return getParameterEnabled(params.getParameters().get(key));</b>
+<i>399</i>&nbsp;	}
+<i>400</i>&nbsp;	
+<i>401</i>&nbsp;	/**
+<i>402</i>&nbsp;	 * Returns true if a parameter is enabled (and is therefore editable).
+<i>403</i>&nbsp;	 * @param param
+<i>404</i>&nbsp;	 * @return
+<i>405</i>&nbsp;	 */
+<i>406</i>&nbsp;	public boolean getParameterEnabled(Parameter&lt;?&gt; param) {
+<b class="nc"><i>407</i>&nbsp;		Node comp = map.get(param);</b>
+<b class="nc"><i>408</i>&nbsp;		return comp != null &amp;&amp; !comp.isDisabled();</b>
+<i>409</i>&nbsp;	}
+<i>410</i>&nbsp;	
+<i>411</i>&nbsp;	/**
+<i>412</i>&nbsp;	 * Set the enabled status of a parameter by key, to determine if it can be edited.
+<i>413</i>&nbsp;	 * @param key
+<i>414</i>&nbsp;	 * @param enabled
+<i>415</i>&nbsp;	 */
+<i>416</i>&nbsp;	public void setParameterEnabled(String key, boolean enabled) {
+<b class="nc"><i>417</i>&nbsp;		setParameterEnabled(params.getParameters().get(key), enabled);</b>
+<i>418</i>&nbsp;	}
+<i>419</i>&nbsp;	
+<i>420</i>&nbsp;	/**
+<i>421</i>&nbsp;	 * Set the enabled status of a parameter, to determine if it can be edited.
+<i>422</i>&nbsp;	 * @param param
+<i>423</i>&nbsp;	 * @param enabled
+<i>424</i>&nbsp;	 */
+<i>425</i>&nbsp;	public void setParameterEnabled(Parameter&lt;?&gt; param, boolean enabled) {
+<b class="nc"><i>426</i>&nbsp;		Node comp = map.get(param);</b>
+<b class="nc"><i>427</i>&nbsp;		if (comp != null)</b>
+<b class="nc"><i>428</i>&nbsp;			setEnabledRecursively(comp, enabled);</b>
+<i>429</i>&nbsp;	}
+<i>430</i>&nbsp;	
+<i>431</i>&nbsp;	private static void setEnabledRecursively(Node comp, boolean enabled) {
+<b class="nc"><i>432</i>&nbsp;		comp.setDisable(!enabled);</b>
+<i>433</i>&nbsp;	}
+<i>434</i>&nbsp;	
+<i>435</i>&nbsp;	
+<i>436</i>&nbsp;	
+<i>437</i>&nbsp;	
+<i>438</i>&nbsp;	class ParameterSliderChangeListener {
+<i>439</i>&nbsp;		
+<i>440</i>&nbsp;		private Slider slider;
+<i>441</i>&nbsp;		private NumericParameter&lt;?&gt; param;
+<i>442</i>&nbsp;		private TextField text;
+<i>443</i>&nbsp;		
+<b class="nc"><i>444</i>&nbsp;		private boolean sliderChanging = false;</b>
+<b class="nc"><i>445</i>&nbsp;		private boolean textChanging = false;</b>
+<i>446</i>&nbsp;		
+<b class="nc"><i>447</i>&nbsp;		public ParameterSliderChangeListener(Slider slider, NumericParameter&lt;?&gt; param, TextField text) {</b>
+<b class="nc"><i>448</i>&nbsp;			this.slider = slider;</b>
+<b class="nc"><i>449</i>&nbsp;			this.param = param;</b>
+<b class="nc"><i>450</i>&nbsp;			this.text = text;</b>
+<i>451</i>&nbsp;			
+<b class="nc"><i>452</i>&nbsp;			this.text.setEditable(true);</b>
+<b class="nc"><i>453</i>&nbsp;			this.text.textProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>454</i>&nbsp;				handleTextUpdate();</b>
+<i>455</i>&nbsp;			});
+<i>456</i>&nbsp;		}
+<i>457</i>&nbsp;
+<i>458</i>&nbsp;		public void handleSliderUpdate() {
+<b class="nc"><i>459</i>&nbsp;			if (textChanging)</b>
+<i>460</i>&nbsp;				return;
+<b class="nc"><i>461</i>&nbsp;			sliderChanging = true;</b>
+<b class="nc"><i>462</i>&nbsp;			double val = slider.getValue();</b>
+<b class="nc"><i>463</i>&nbsp;			if (param.setDoubleLastValue(val)) {</b>
+<b class="nc"><i>464</i>&nbsp;				if (text != null) {</b>
+<b class="nc"><i>465</i>&nbsp;					setTextFieldFromNumber(text, param.getValueOrDefault(), param.getUnit());</b>
+<i>466</i>&nbsp;				}
+<b class="nc"><i>467</i>&nbsp;				fireParameterChangedEvent(param, slider.isValueChanging());</b>
+<i>468</i>&nbsp;			}
+<b class="nc"><i>469</i>&nbsp;			sliderChanging = false;</b>
+<i>470</i>&nbsp;		}
+<i>471</i>&nbsp;		
+<i>472</i>&nbsp;		void handleTextUpdate() {
+<b class="nc"><i>473</i>&nbsp;			if (sliderChanging)</b>
+<i>474</i>&nbsp;				return;
+<b class="nc"><i>475</i>&nbsp;			String s = text.getText();</b>
+<b class="nc"><i>476</i>&nbsp;			if (s == null || s.trim().length() == 0)</b>
+<i>477</i>&nbsp;				return;
+<i>478</i>&nbsp;//			System.out.println(&quot;Text: &quot; + s);
+<i>479</i>&nbsp;			try {
+<b class="nc"><i>480</i>&nbsp;				String unit = param.getUnit();</b>
+<b class="nc"><i>481</i>&nbsp;				if (unit != null)</b>
+<b class="nc"><i>482</i>&nbsp;					s = s.toLowerCase().replace(unit.toLowerCase(), &quot;&quot;).trim();</b>
+<b class="nc"><i>483</i>&nbsp;				if (s.length() == 0)</b>
+<i>484</i>&nbsp;					return;
+<b class="nc"><i>485</i>&nbsp;				double val = NumberFormat.getInstance().parse(s).doubleValue();</b>
+<i>486</i>&nbsp;//				double val = Double.parseDouble(s);
+<b class="nc"><i>487</i>&nbsp;				double previousValue = param.getValueOrDefault().doubleValue();</b>
+<b class="nc"><i>488</i>&nbsp;				if (Double.isNaN(val) || val == previousValue)</b>
+<i>489</i>&nbsp;					return;
+<i>490</i>&nbsp;				
+<i>491</i>&nbsp;//				double index = (val - param.getLowerBound()) / (param.getUpperBound() - param.getLowerBound()) * slider.getMax();
+<i>492</i>&nbsp;//				if (index &lt; 0)
+<i>493</i>&nbsp;//					index = 0;
+<i>494</i>&nbsp;//				if (index &gt; slider.getMax())
+<i>495</i>&nbsp;//					index = slider.getMax();
+<i>496</i>&nbsp;				
+<b class="nc"><i>497</i>&nbsp;				textChanging = true;</b>
+<b class="nc"><i>498</i>&nbsp;				param.setDoubleLastValue(val);</b>
+<b class="nc"><i>499</i>&nbsp;				slider.setValue(val);</b>
+<b class="nc"><i>500</i>&nbsp;				fireParameterChangedEvent(param, slider.isValueChanging());</b>
+<b class="nc"><i>501</i>&nbsp;				textChanging = false;</b>
+<b class="nc"><i>502</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>503</i>&nbsp;				logger.debug(&quot;Cannot parse number from {} - will keep default of {}&quot;, s, param.getValueOrDefault());</b>
+<i>504</i>&nbsp;//				e.printStackTrace();
+<i>505</i>&nbsp;			} finally {
+<b class="nc"><i>506</i>&nbsp;				textChanging = false;</b>
+<b class="nc"><i>507</i>&nbsp;			};</b>
+<i>508</i>&nbsp;		}
+<i>509</i>&nbsp;		
+<i>510</i>&nbsp;	}
+<i>511</i>&nbsp;	
+<i>512</i>&nbsp;	
+<i>513</i>&nbsp;	
+<i>514</i>&nbsp;	/**
+<i>515</i>&nbsp;	 * Set a numeric parameter value (either int or double).
+<i>516</i>&nbsp;	 * 
+<i>517</i>&nbsp;	 * The reason for using this method rather than setting the parameter value directly is that it ensures that
+<i>518</i>&nbsp;	 * any displayed components (text fields, sliders...) are updated accordingly.
+<i>519</i>&nbsp;	 * 
+<i>520</i>&nbsp;	 * @param key
+<i>521</i>&nbsp;	 * @param value
+<i>522</i>&nbsp;	 * @return
+<i>523</i>&nbsp;	 */
+<i>524</i>&nbsp;	public boolean setNumericParameterValue(final String key, Number value) {
+<i>525</i>&nbsp;		// Try to get a component to set
+<b class="nc"><i>526</i>&nbsp;		Parameter&lt;?&gt; parameterOrig = params.getParameters().get(key);</b>
+<b class="nc"><i>527</i>&nbsp;		if (parameterOrig == null || !(parameterOrig instanceof NumericParameter)) {</b>
+<b class="nc"><i>528</i>&nbsp;			logger.warn(&quot;Unable to set parameter {} with value {} - no numeric parameter found with that key&quot;, key, value);</b>
+<b class="nc"><i>529</i>&nbsp;			return false;			</b>
+<i>530</i>&nbsp;		}
+<b class="nc"><i>531</i>&nbsp;		NumericParameter&lt;?&gt; parameter = (NumericParameter&lt;?&gt;)parameterOrig;</b>
+<b class="nc"><i>532</i>&nbsp;		Node component = map.get(parameter);</b>
+<i>533</i>&nbsp;		// Occurs with hidden parameters
+<b class="nc"><i>534</i>&nbsp;		if (component == null) {</b>
+<b class="nc"><i>535</i>&nbsp;			parameter.setDoubleLastValue(value.doubleValue());</b>
+<b class="nc"><i>536</i>&nbsp;			return true;</b>
+<i>537</i>&nbsp;		}
+<b class="nc"><i>538</i>&nbsp;		if (component instanceof Parent) {</b>
+<b class="nc"><i>539</i>&nbsp;			for (Node comp : ((Parent)component).getChildrenUnmodifiable()) {</b>
+<b class="nc"><i>540</i>&nbsp;				if (comp instanceof TextField) {</b>
+<i>541</i>&nbsp;					// Only change the text if necessary
+<b class="nc"><i>542</i>&nbsp;					TextField textField = (TextField)comp;</b>
+<b class="nc"><i>543</i>&nbsp;					setTextFieldFromNumber(textField, value, parameter.getUnit());</b>
+<b class="nc"><i>544</i>&nbsp;					return true;</b>
+<i>545</i>&nbsp;				}
+<b class="nc"><i>546</i>&nbsp;			}</b>
+<i>547</i>&nbsp;		}
+<b class="nc"><i>548</i>&nbsp;		logger.warn(&quot;Unable to set parameter {} with value {} - no component found&quot;, key, value);		</b>
+<b class="nc"><i>549</i>&nbsp;		return false;</b>
+<i>550</i>&nbsp;	}
+<i>551</i>&nbsp;	
+<i>552</i>&nbsp;	
+<i>553</i>&nbsp;	
+<i>554</i>&nbsp;	/**
+<i>555</i>&nbsp;	 * Set the minimum and maximum value for a numeric parameter.
+<i>556</i>&nbsp;	 * 
+<i>557</i>&nbsp;	 * If the parameter is being displayed with a slider, the slider range will also be updated accordingly.
+<i>558</i>&nbsp;	 * 
+<i>559</i>&nbsp;	 * @param key
+<i>560</i>&nbsp;	 * @param minValue
+<i>561</i>&nbsp;	 * @param maxValue
+<i>562</i>&nbsp;	 * @return
+<i>563</i>&nbsp;	 */
+<i>564</i>&nbsp;	public boolean setNumericParameterValueRange(final String key, double minValue, double maxValue) {
+<i>565</i>&nbsp;		// Try to get a component to set
+<b class="nc"><i>566</i>&nbsp;		Parameter&lt;?&gt; parameterOrig = params.getParameters().get(key);</b>
+<b class="nc"><i>567</i>&nbsp;		if (parameterOrig == null || !(parameterOrig instanceof NumericParameter)) {</b>
+<b class="nc"><i>568</i>&nbsp;			logger.warn(&quot;Unable to set range for {} - no numeric parameter found with that key&quot;, key);</b>
+<b class="nc"><i>569</i>&nbsp;			return false;			</b>
+<i>570</i>&nbsp;		}
+<b class="nc"><i>571</i>&nbsp;		NumericParameter&lt;?&gt; parameter = (NumericParameter&lt;?&gt;)parameterOrig;</b>
+<i>572</i>&nbsp;		// Occurs with hidden parameters
+<i>573</i>&nbsp;		try {
+<b class="nc"><i>574</i>&nbsp;			parameter.setRange(minValue, maxValue);</b>
+<b class="nc"><i>575</i>&nbsp;			Node component = map.get(parameter);</b>
+<b class="nc"><i>576</i>&nbsp;			if (component instanceof Parent) {</b>
+<b class="nc"><i>577</i>&nbsp;				for (Node comp : ((Parent)component).getChildrenUnmodifiable()) {</b>
+<b class="nc"><i>578</i>&nbsp;					if (comp instanceof Slider) {</b>
+<i>579</i>&nbsp;						// Only change the text if necessary
+<b class="nc"><i>580</i>&nbsp;						Slider slider = (Slider)comp;</b>
+<b class="nc"><i>581</i>&nbsp;							slider.setMin(minValue);</b>
+<b class="nc"><i>582</i>&nbsp;							slider.setMax(maxValue);</b>
+<b class="nc"><i>583</i>&nbsp;							return true;</b>
+<i>584</i>&nbsp;					}
+<b class="nc"><i>585</i>&nbsp;				}</b>
+<i>586</i>&nbsp;			}
+<b class="nc"><i>587</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>588</i>&nbsp;			logger.warn(&quot;Unable to set range for {}: {}&quot;, parameter, e.getLocalizedMessage());							</b>
+<b class="nc"><i>589</i>&nbsp;		}</b>
+<b class="nc"><i>590</i>&nbsp;		return false;</b>
+<i>591</i>&nbsp;	}
+<i>592</i>&nbsp;	
+<i>593</i>&nbsp;	
+<i>594</i>&nbsp;	
+<i>595</i>&nbsp;	static void demoParameterPanel() {
+<i>596</i>&nbsp;		
+<b class="nc"><i>597</i>&nbsp;		new JFXPanel();</b>
+<b class="nc"><i>598</i>&nbsp;		if (!Platform.isFxApplicationThread()) {</b>
+<b class="nc"><i>599</i>&nbsp;			Platform.runLater(() -&gt; demoParameterPanel());</b>
+<i>600</i>&nbsp;			return;
+<i>601</i>&nbsp;		}
+<i>602</i>&nbsp;		
+<b class="nc"><i>603</i>&nbsp;		Stage frame = new Stage();</b>
+<b class="nc"><i>604</i>&nbsp;		frame.setTitle(&quot;Testing parameter panel&quot;);</b>
+<b class="nc"><i>605</i>&nbsp;		int k = 0;</b>
+<b class="nc"><i>606</i>&nbsp;		final ParameterList params = new ParameterList().</b>
+<b class="nc"><i>607</i>&nbsp;				addTitleParameter(&quot;Parameter list&quot;).</b>
+<b class="nc"><i>608</i>&nbsp;				addEmptyParameter(&quot;Here is a list of parameters that I am testing out&quot;).</b>
+<b class="nc"><i>609</i>&nbsp;				addIntParameter(Integer.toString(k++), &quot;Enter an int&quot;, 5, &quot;px&quot;, &quot;Unbounded int&quot;).</b>
+<b class="nc"><i>610</i>&nbsp;				addDoubleParameter(Integer.toString(k++), &quot;Enter a double&quot;, 5.2, &quot;microns&quot;, &quot;Unbounded double&quot;).</b>
+<b class="nc"><i>611</i>&nbsp;				addDoubleParameter(Integer.toString(k++), &quot;Enter a double in range&quot;, 5.2, null, 1, 10, &quot;Bounded double&quot;).</b>
+<b class="nc"><i>612</i>&nbsp;				addIntParameter(Integer.toString(k++), &quot;Enter an int in range&quot;, 5, null, 1, 10, &quot;Bounded int&quot;).</b>
+<b class="nc"><i>613</i>&nbsp;				addStringParameter(Integer.toString(k++), &quot;Enter a string&quot;, &quot;Default here&quot;).</b>
+<b class="nc"><i>614</i>&nbsp;				addChoiceParameter(Integer.toString(k++), &quot;Choose a choice&quot;, &quot;Two&quot;, Arrays.asList(&quot;One&quot;, &quot;Two&quot;, &quot;Three&quot;), &quot;Simple choice&quot;).</b>
+<b class="nc"><i>615</i>&nbsp;				addChoiceParameter(Integer.toString(k++), &quot;Choose a number choice&quot;, Integer.valueOf(2), Arrays.asList(1, 2, 3), &quot;Numeric choice&quot;).</b>
+<b class="nc"><i>616</i>&nbsp;				addBooleanParameter(Integer.toString(k++), &quot;Check me out&quot;, true);</b>
+<i>617</i>&nbsp;		
+<i>618</i>&nbsp;		
+<i>619</i>&nbsp;		
+<b class="nc"><i>620</i>&nbsp;		BorderPane borderPane = new BorderPane();</b>
+<b class="nc"><i>621</i>&nbsp;		ParameterPanelFX panel = new ParameterPanelFX(params);</b>
+<i>622</i>&nbsp;		
+<b class="nc"><i>623</i>&nbsp;		final TextArea textArea = new TextArea();</b>
+<b class="nc"><i>624</i>&nbsp;		for (Parameter&lt;?&gt; p : params.getParameters().values()) {</b>
+<b class="nc"><i>625</i>&nbsp;			textArea.setText(textArea.getText() + (p + &quot;\n&quot;));</b>
+<b class="nc"><i>626</i>&nbsp;		}</b>
+<b class="nc"><i>627</i>&nbsp;		panel.addParameterChangeListener(new ParameterChangeListener() {</b>
+<i>628</i>&nbsp;			@Override
+<i>629</i>&nbsp;			public void parameterChanged(ParameterList params, String key, boolean isAdjusting) {
+<b class="nc"><i>630</i>&nbsp;				textArea.setText(&quot;&quot;);</b>
+<b class="nc"><i>631</i>&nbsp;				for (Parameter&lt;?&gt; p : params.getParameters().values())</b>
+<b class="nc"><i>632</i>&nbsp;					textArea.setText(textArea.getText() + (p + &quot;\n&quot;));</b>
+<i>633</i>&nbsp;			}
+<i>634</i>&nbsp;		});
+<i>635</i>&nbsp;		
+<b class="nc"><i>636</i>&nbsp;		borderPane.setCenter(panel.getPane());</b>
+<b class="nc"><i>637</i>&nbsp;		borderPane.setBottom(textArea);</b>
+<i>638</i>&nbsp;		
+<b class="nc"><i>639</i>&nbsp;		frame.setScene(new Scene(borderPane));</b>
+<b class="nc"><i>640</i>&nbsp;		frame.show();</b>
+<i>641</i>&nbsp;	}
+<i>642</i>&nbsp;	
+<i>643</i>&nbsp;	
+<i>644</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

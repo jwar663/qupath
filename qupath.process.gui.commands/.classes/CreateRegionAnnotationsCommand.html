@@ -1,0 +1,441 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CreateRegionAnnotationsCommand</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.process.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CreateRegionAnnotationsCommand (qupath.process.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CreateRegionAnnotationsCommand</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    30%
+  </span>
+  <span class="absValue">
+    (3/ 10)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CreateRegionAnnotationsCommand$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateRegionAnnotationsCommand$RegionMaker</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 83)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateRegionAnnotationsCommand$RegionMaker$RegionLocation</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 6)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">CreateRegionAnnotationsCommand$RegionMaker$RegionUnits</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    6.7%
+  </span>
+  <span class="absValue">
+    (1/ 15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    2.8%
+  </span>
+  <span class="absValue">
+    (3/ 106)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.process.gui.commands;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import org.slf4j.Logger;
+<i>25</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;import javafx.collections.FXCollections;
+<i>28</i>&nbsp;import javafx.geometry.Insets;
+<i>29</i>&nbsp;import javafx.scene.Node;
+<i>30</i>&nbsp;import javafx.scene.Scene;
+<i>31</i>&nbsp;import javafx.scene.control.Button;
+<i>32</i>&nbsp;import javafx.scene.control.ComboBox;
+<i>33</i>&nbsp;import javafx.scene.control.Label;
+<i>34</i>&nbsp;import javafx.scene.control.TextField;
+<i>35</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>36</i>&nbsp;import javafx.scene.layout.GridPane;
+<i>37</i>&nbsp;import javafx.scene.layout.Pane;
+<i>38</i>&nbsp;import javafx.stage.Stage;
+<i>39</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>40</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>41</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>42</i>&nbsp;import qupath.lib.gui.viewer.QuPathViewer;
+<i>43</i>&nbsp;import qupath.lib.images.ImageData;
+<i>44</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>45</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>46</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>47</i>&nbsp;import qupath.lib.objects.classes.PathClass;
+<i>48</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory;
+<i>49</i>&nbsp;import qupath.lib.objects.classes.PathClassFactory.StandardPathClasses;
+<i>50</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>51</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;/**
+<i>54</i>&nbsp; * Command to help create annotations defining regions that will be further annotated for 
+<i>55</i>&nbsp; * algorithm training.
+<i>56</i>&nbsp; * 
+<i>57</i>&nbsp; * @author Pete Bankhead
+<i>58</i>&nbsp; *
+<i>59</i>&nbsp; */
+<i>60</i>&nbsp;public class CreateRegionAnnotationsCommand implements Runnable {
+<i>61</i>&nbsp;	
+<i>62</i>&nbsp;	private final QuPathGUI qupath;
+<i>63</i>&nbsp;	private Stage stage;
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;	/**
+<i>66</i>&nbsp;	 * Constructor.
+<i>67</i>&nbsp;	 * @param qupath
+<i>68</i>&nbsp;	 */
+<b class="fc"><i>69</i>&nbsp;	public CreateRegionAnnotationsCommand(final QuPathGUI qupath) {</b>
+<b class="fc"><i>70</i>&nbsp;		this.qupath = qupath;</b>
+<b class="fc"><i>71</i>&nbsp;	}</b>
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	@Override
+<i>74</i>&nbsp;	public void run() {
+<b class="nc"><i>75</i>&nbsp;		if (stage == null) {</b>
+<b class="nc"><i>76</i>&nbsp;			stage = new Stage();</b>
+<b class="nc"><i>77</i>&nbsp;			stage.initOwner(qupath.getStage());</b>
+<b class="nc"><i>78</i>&nbsp;			stage.setTitle(&quot;Create regions&quot;);</b>
+<b class="nc"><i>79</i>&nbsp;			stage.setScene(new Scene(RegionMaker.create(qupath).getPane()));</b>
+<i>80</i>&nbsp;		}
+<b class="nc"><i>81</i>&nbsp;		stage.show();</b>
+<b class="nc"><i>82</i>&nbsp;	}</b>
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	static class RegionMaker {
+<i>86</i>&nbsp;		
+<b class="nc"><i>87</i>&nbsp;		private final static Logger logger = LoggerFactory.getLogger(RegionMaker.class);</b>
+<i>88</i>&nbsp;		
+<b class="nc"><i>89</i>&nbsp;		public static enum RegionLocation {VIEW_CENTER, IMAGE_CENTER, RANDOM;</b>
+<i>90</i>&nbsp;			
+<i>91</i>&nbsp;			@Override
+<i>92</i>&nbsp;			public String toString() {
+<b class="nc"><i>93</i>&nbsp;				switch (this) {</b>
+<i>94</i>&nbsp;				case IMAGE_CENTER:
+<b class="nc"><i>95</i>&nbsp;					return &quot;Image center&quot;;</b>
+<i>96</i>&nbsp;				case RANDOM:
+<b class="nc"><i>97</i>&nbsp;					return &quot;Random&quot;;</b>
+<i>98</i>&nbsp;				case VIEW_CENTER:
+<b class="nc"><i>99</i>&nbsp;					return &quot;Viewer center&quot;;</b>
+<i>100</i>&nbsp;				default:
+<b class="nc"><i>101</i>&nbsp;					return &quot;Unknown&quot;;</b>
+<i>102</i>&nbsp;				}
+<i>103</i>&nbsp;			}
+<i>104</i>&nbsp;		
+<i>105</i>&nbsp;		};
+<i>106</i>&nbsp;		
+<b class="nc"><i>107</i>&nbsp;		public static enum RegionUnits {PIXELS, MICRONS;</b>
+<i>108</i>&nbsp;			
+<i>109</i>&nbsp;			@Override
+<i>110</i>&nbsp;			public String toString() {
+<b class="nc"><i>111</i>&nbsp;				switch (this) {</b>
+<i>112</i>&nbsp;				case PIXELS:
+<b class="nc"><i>113</i>&nbsp;					return &quot;Pixels&quot;;</b>
+<i>114</i>&nbsp;				case MICRONS:
+<b class="nc"><i>115</i>&nbsp;					return GeneralTools.micrometerSymbol();</b>
+<i>116</i>&nbsp;				default:
+<b class="nc"><i>117</i>&nbsp;					return &quot;Unknown&quot;;</b>
+<i>118</i>&nbsp;				}
+<i>119</i>&nbsp;			}
+<i>120</i>&nbsp;		
+<i>121</i>&nbsp;		};
+<i>122</i>&nbsp;		
+<i>123</i>&nbsp;		private QuPathGUI qupath;
+<i>124</i>&nbsp;		private QuPathViewer viewerDefault;
+<i>125</i>&nbsp;		
+<b class="nc"><i>126</i>&nbsp;		private GridPane pane = new GridPane();</b>
+<i>127</i>&nbsp;		
+<b class="nc"><i>128</i>&nbsp;		private TextField tfRegionWidth = new TextField(&quot;500&quot;);</b>
+<b class="nc"><i>129</i>&nbsp;		private TextField tfRegionHeight = new TextField(&quot;500&quot;);</b>
+<b class="nc"><i>130</i>&nbsp;		private ComboBox&lt;RegionUnits&gt; comboUnits = new ComboBox&lt;&gt;(FXCollections.observableArrayList(RegionUnits.values()));</b>
+<b class="nc"><i>131</i>&nbsp;		private ComboBox&lt;PathClass&gt; comboClassification = new ComboBox&lt;&gt;();</b>
+<b class="nc"><i>132</i>&nbsp;		private ComboBox&lt;RegionLocation&gt; comboLocation = new ComboBox&lt;&gt;(FXCollections.observableArrayList(RegionLocation.values()));</b>
+<i>133</i>&nbsp;		
+<b class="nc"><i>134</i>&nbsp;		private RegionMaker(final QuPathGUI qupath) {</b>
+<b class="nc"><i>135</i>&nbsp;			this.qupath = qupath;</b>
+<b class="nc"><i>136</i>&nbsp;			init();</b>
+<i>137</i>&nbsp;		}
+<i>138</i>&nbsp;		
+<i>139</i>&nbsp;		private void init() {
+<b class="nc"><i>140</i>&nbsp;			int row = 0;</b>
+<b class="nc"><i>141</i>&nbsp;			addLabelled(&quot;Width&quot;, tfRegionWidth, 0, row++, &quot;Define region width&quot;);</b>
+<b class="nc"><i>142</i>&nbsp;			addLabelled(&quot;Height&quot;, tfRegionHeight, 0, row++, &quot;Define region height&quot;);</b>
+<b class="nc"><i>143</i>&nbsp;			addLabelled(&quot;Size units&quot;, comboUnits, 0, row++, &quot;Choose the units used to define the region width &amp; height&quot;);</b>
+<b class="nc"><i>144</i>&nbsp;			addLabelled(&quot;Classification&quot;, comboClassification, 0, row++, &quot;Choose the default classification to be applied to the region&quot;);</b>
+<i>145</i>&nbsp;
+<b class="nc"><i>146</i>&nbsp;			if (qupath.getImageData() == null || !qupath.getImageData().getServer().getPixelCalibration().hasPixelSizeMicrons())</b>
+<b class="nc"><i>147</i>&nbsp;				comboUnits.getSelectionModel().select(RegionUnits.PIXELS);</b>
+<i>148</i>&nbsp;			else
+<b class="nc"><i>149</i>&nbsp;				comboUnits.getSelectionModel().select(RegionUnits.MICRONS);</b>
+<i>150</i>&nbsp;			
+<b class="nc"><i>151</i>&nbsp;			comboClassification.setItems(qupath.getAvailablePathClasses());</b>
+<b class="nc"><i>152</i>&nbsp;			if (comboClassification.getItems().contains(PathClassFactory.getPathClass(StandardPathClasses.REGION)))</b>
+<b class="nc"><i>153</i>&nbsp;				comboClassification.getSelectionModel().select(PathClassFactory.getPathClass(StandardPathClasses.REGION));</b>
+<i>154</i>&nbsp;			else
+<b class="nc"><i>155</i>&nbsp;				comboClassification.getSelectionModel().select(PathClassFactory.getPathClassUnclassified());</b>
+<i>156</i>&nbsp;			
+<b class="nc"><i>157</i>&nbsp;			comboLocation.getItems().setAll(RegionLocation.values());</b>
+<b class="nc"><i>158</i>&nbsp;			comboLocation.getSelectionModel().select(RegionLocation.VIEW_CENTER);</b>
+<b class="nc"><i>159</i>&nbsp;			addLabelled(&quot;Location&quot;, comboLocation, 0, row++, &quot;Choose the default location for the region&quot;);</b>
+<i>160</i>&nbsp;			
+<b class="nc"><i>161</i>&nbsp;			Button btnCreateAnnotation = new Button(&quot;Create region&quot;);</b>
+<b class="nc"><i>162</i>&nbsp;			btnCreateAnnotation.setOnAction(e -&gt; createAndAddRegion());</b>
+<b class="nc"><i>163</i>&nbsp;			pane.add(btnCreateAnnotation, 0, row++, 2, 1);</b>
+<i>164</i>&nbsp;			
+<b class="nc"><i>165</i>&nbsp;			pane.setVgap(5);</b>
+<b class="nc"><i>166</i>&nbsp;			pane.setHgap(5);</b>
+<b class="nc"><i>167</i>&nbsp;			pane.setPadding(new Insets(10));</b>
+<i>168</i>&nbsp;			
+<i>169</i>&nbsp;			// Set max values to aid resizing
+<b class="nc"><i>170</i>&nbsp;			btnCreateAnnotation.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>171</i>&nbsp;			comboClassification.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>172</i>&nbsp;			comboLocation.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>173</i>&nbsp;			comboUnits.setMaxWidth(Double.MAX_VALUE);</b>
+<i>174</i>&nbsp;			
+<i>175</i>&nbsp;			
+<i>176</i>&nbsp;		}
+<i>177</i>&nbsp;		
+<i>178</i>&nbsp;		
+<i>179</i>&nbsp;		public Pane getPane() {
+<b class="nc"><i>180</i>&nbsp;			return pane;</b>
+<i>181</i>&nbsp;		}
+<i>182</i>&nbsp;		
+<i>183</i>&nbsp;		
+<i>184</i>&nbsp;		private void createAndAddRegion() {
+<b class="nc"><i>185</i>&nbsp;			QuPathViewer viewer = viewerDefault == null ? qupath.getViewer() : viewerDefault;</b>
+<b class="nc"><i>186</i>&nbsp;			if (viewer == null) {</b>
+<b class="nc"><i>187</i>&nbsp;				logger.error(&quot;Create region&quot;, &quot;Cannot create region - no viewer specified!&quot;);</b>
+<i>188</i>&nbsp;				return;
+<i>189</i>&nbsp;			}
+<b class="nc"><i>190</i>&nbsp;			ImageData&lt;?&gt; imageData = viewer.getImageData();</b>
+<b class="nc"><i>191</i>&nbsp;			if (imageData == null) {</b>
+<b class="nc"><i>192</i>&nbsp;				Dialogs.showNoImageError(&quot;Create region&quot;);</b>
+<i>193</i>&nbsp;				return;
+<i>194</i>&nbsp;			}
+<i>195</i>&nbsp;			
+<i>196</i>&nbsp;			// Parse the user input
+<b class="nc"><i>197</i>&nbsp;			double width = Double.parseDouble(tfRegionWidth.getText());</b>
+<b class="nc"><i>198</i>&nbsp;			double height = tfRegionHeight.getText().isEmpty() ? width : Double.parseDouble(tfRegionHeight.getText());</b>
+<b class="nc"><i>199</i>&nbsp;			RegionUnits requestedUnits = comboUnits.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>200</i>&nbsp;			PathClass pathClass = comboClassification.getSelectionModel().getSelectedItem();</b>
+<b class="nc"><i>201</i>&nbsp;			if (pathClass == PathClassFactory.getPathClassUnclassified())</b>
+<b class="nc"><i>202</i>&nbsp;				pathClass = null;</b>
+<b class="nc"><i>203</i>&nbsp;			RegionLocation location = comboLocation.getSelectionModel().getSelectedItem();</b>
+<i>204</i>&nbsp;			
+<i>205</i>&nbsp;			// Calibrate the width &amp; height according to pixel size... if necessary
+<b class="nc"><i>206</i>&nbsp;			if (requestedUnits == RegionUnits.MICRONS) {</b>
+<b class="nc"><i>207</i>&nbsp;				PixelCalibration cal = imageData.getServer().getPixelCalibration();</b>
+<b class="nc"><i>208</i>&nbsp;				double pixelWidthMicrons = cal.getPixelWidthMicrons();</b>
+<b class="nc"><i>209</i>&nbsp;				double pixelHeightMicrons = cal.getPixelHeightMicrons();</b>
+<b class="nc"><i>210</i>&nbsp;				if (!Double.isFinite(pixelWidthMicrons + pixelHeightMicrons)) {</b>
+<b class="nc"><i>211</i>&nbsp;					Dialogs.showErrorMessage(&quot;Create region&quot;, &quot;Pixel size not available! Please switch to creating the region in pixels instead.&quot;);</b>
+<i>212</i>&nbsp;					return;
+<i>213</i>&nbsp;				}
+<b class="nc"><i>214</i>&nbsp;				width /= pixelWidthMicrons;</b>
+<b class="nc"><i>215</i>&nbsp;				height /= pixelHeightMicrons;</b>
+<i>216</i>&nbsp;			}
+<i>217</i>&nbsp;			
+<i>218</i>&nbsp;			// Check the pixels are in range
+<b class="nc"><i>219</i>&nbsp;			if (width &gt; viewer.getServerWidth() || height &gt; viewer.getServerHeight()) {</b>
+<b class="nc"><i>220</i>&nbsp;				Dialogs.showErrorMessage(&quot;Create region&quot;, String.format(&quot;Requested size %.1f x %.1f must be smaller than image size %d x %d!&quot;,</b>
+<b class="nc"><i>221</i>&nbsp;						width, height, viewer.getServerWidth(), viewer.getServerHeight()));</b>
+<i>222</i>&nbsp;				return;
+<i>223</i>&nbsp;			}
+<i>224</i>&nbsp;			
+<i>225</i>&nbsp;			// Determine starting location
+<i>226</i>&nbsp;			double x;
+<i>227</i>&nbsp;			double y;
+<b class="nc"><i>228</i>&nbsp;			switch (location) {</b>
+<i>229</i>&nbsp;			case IMAGE_CENTER:
+<b class="nc"><i>230</i>&nbsp;				x = (imageData.getServer().getWidth() - width) / 2.0;</b>
+<b class="nc"><i>231</i>&nbsp;				y = (imageData.getServer().getHeight() - height) / 2.0;</b>
+<b class="nc"><i>232</i>&nbsp;				break;</b>
+<i>233</i>&nbsp;			case RANDOM:
+<b class="nc"><i>234</i>&nbsp;				x = Math.random() * viewer.getServerWidth() - width;</b>
+<b class="nc"><i>235</i>&nbsp;				y = Math.random() * viewer.getServerHeight() - height;</b>
+<b class="nc"><i>236</i>&nbsp;				break;</b>
+<i>237</i>&nbsp;			case VIEW_CENTER:
+<b class="nc"><i>238</i>&nbsp;				x = viewer.getCenterPixelX() - width / 2.0;</b>
+<b class="nc"><i>239</i>&nbsp;				y = viewer.getCenterPixelY() - height / 2.0;</b>
+<b class="nc"><i>240</i>&nbsp;				break;</b>
+<i>241</i>&nbsp;			default:
+<b class="nc"><i>242</i>&nbsp;				Dialogs.showErrorMessage(&quot;Create region&quot;, &quot;Unknowing location &quot; + location);</b>
+<i>243</i>&nbsp;				return;
+<i>244</i>&nbsp;			}
+<i>245</i>&nbsp;			
+<i>246</i>&nbsp;			// Create an annotation
+<b class="nc"><i>247</i>&nbsp;			PathObject annotation = PathObjects.createAnnotationObject(</b>
+<b class="nc"><i>248</i>&nbsp;					ROIs.createRectangleROI(x, y, width, height, ImagePlane.getPlane(viewer.getZPosition(), viewer.getTPosition())),</b>
+<i>249</i>&nbsp;					pathClass);
+<b class="nc"><i>250</i>&nbsp;			imageData.getHierarchy().addPathObject(annotation);</b>
+<i>251</i>&nbsp;		}
+<i>252</i>&nbsp;		
+<i>253</i>&nbsp;		
+<i>254</i>&nbsp;		
+<i>255</i>&nbsp;		private void addLabelled(String labelText, Node node, int col, int row, String help) {
+<b class="nc"><i>256</i>&nbsp;			Label label = new Label(labelText);</b>
+<b class="nc"><i>257</i>&nbsp;			label.setLabelFor(node);</b>
+<b class="nc"><i>258</i>&nbsp;			if (help != null) {</b>
+<b class="nc"><i>259</i>&nbsp;				Tooltip tip = new Tooltip(help);</b>
+<b class="nc"><i>260</i>&nbsp;				Tooltip.install(label, tip);</b>
+<b class="nc"><i>261</i>&nbsp;				Tooltip.install(node, tip);</b>
+<i>262</i>&nbsp;			}
+<b class="nc"><i>263</i>&nbsp;			pane.add(label, col, row);</b>
+<b class="nc"><i>264</i>&nbsp;			pane.add(node, col+1, row);</b>
+<i>265</i>&nbsp;		}
+<i>266</i>&nbsp;		
+<i>267</i>&nbsp;		public static RegionMaker create(final QuPathGUI qupath) {
+<b class="nc"><i>268</i>&nbsp;			return new RegionMaker(qupath);</b>
+<i>269</i>&nbsp;		}
+<i>270</i>&nbsp;		
+<i>271</i>&nbsp;		
+<i>272</i>&nbsp;	}
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

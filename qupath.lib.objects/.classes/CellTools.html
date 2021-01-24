@@ -1,0 +1,394 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CellTools</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.objects</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CellTools (qupath.lib.objects)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CellTools</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 148)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.objects;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.ArrayList;
+<i>25</i>&nbsp;import java.util.Collection;
+<i>26</i>&nbsp;import java.util.Collections;
+<i>27</i>&nbsp;import java.util.HashMap;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;import java.util.Map;
+<i>30</i>&nbsp;import java.util.stream.Collectors;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;import org.locationtech.jts.algorithm.Centroid;
+<i>33</i>&nbsp;import org.locationtech.jts.geom.Envelope;
+<i>34</i>&nbsp;import org.locationtech.jts.geom.Geometry;
+<i>35</i>&nbsp;import org.locationtech.jts.geom.util.AffineTransformation;
+<i>36</i>&nbsp;import org.locationtech.jts.index.strtree.STRtree;
+<i>37</i>&nbsp;import org.locationtech.jts.simplify.VWSimplifier;
+<i>38</i>&nbsp;import org.slf4j.Logger;
+<i>39</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;import qupath.lib.analysis.DelaunayTools;
+<i>42</i>&nbsp;import qupath.lib.roi.GeometryTools;
+<i>43</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;/**
+<i>46</i>&nbsp; * Helper class for working with {@linkplain PathObject PathObjects} that represent cells.
+<i>47</i>&nbsp; * 
+<i>48</i>&nbsp; * @author Pete Bankhead
+<i>49</i>&nbsp; */
+<b class="nc"><i>50</i>&nbsp;public class CellTools {</b>
+<i>51</i>&nbsp;	
+<b class="nc"><i>52</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(CellTools.class);</b>
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	
+<i>55</i>&nbsp;	/**
+<i>56</i>&nbsp;	 * Constrain a cell boundary to fall within a maximum region, determined by scaling the nucleus ROI by a fixed scale factor 
+<i>57</i>&nbsp;	 * about its centroid.
+<i>58</i>&nbsp;	 * This can be used to create more biologically plausible cell boundaries in cases where the initial boundary estimates may be 
+<i>59</i>&nbsp;	 * too large.
+<i>60</i>&nbsp;	 * 
+<i>61</i>&nbsp;	 * @param cell original cell object
+<i>62</i>&nbsp;	 * @param nucleusScaleFactor scale factor by which the nucleus should be expanded to defined maximum cell size
+<i>63</i>&nbsp;	 * @param keepMeasurements if true, retain the measurements of the original cell if creating a new cell; if false, discard existing measurements
+<i>64</i>&nbsp;	 * @return the updated cell object, or the original cell object either if its boundary falls within the specified limit or it lacks both boundary and nucleus ROIs
+<i>65</i>&nbsp;	 */
+<i>66</i>&nbsp;	public static PathCellObject constrainCellByScaledNucleus(PathCellObject cell, double nucleusScaleFactor, boolean keepMeasurements) {
+<b class="nc"><i>67</i>&nbsp;		  var roi = cell.getROI();</b>
+<b class="nc"><i>68</i>&nbsp;		  var roiNucleus = cell.getNucleusROI();</b>
+<b class="nc"><i>69</i>&nbsp;		  if (roi == null || roiNucleus == null)</b>
+<b class="nc"><i>70</i>&nbsp;		    return cell;</b>
+<b class="nc"><i>71</i>&nbsp;		  var geom = roi.getGeometry();</b>
+<b class="nc"><i>72</i>&nbsp;		  var geomNucleus = roiNucleus.getGeometry();</b>
+<b class="nc"><i>73</i>&nbsp;		  var centroid = geomNucleus.getCentroid();</b>
+<b class="nc"><i>74</i>&nbsp;		  var transform = AffineTransformation.scaleInstance(</b>
+<b class="nc"><i>75</i>&nbsp;				  nucleusScaleFactor, nucleusScaleFactor, centroid.getX(), centroid.getY());</b>
+<b class="nc"><i>76</i>&nbsp;		  var geomNucleusExpanded = transform.transform(geomNucleus);</b>
+<b class="nc"><i>77</i>&nbsp;		  if (geomNucleusExpanded.covers(geom))</b>
+<b class="nc"><i>78</i>&nbsp;		    return cell;</b>
+<b class="nc"><i>79</i>&nbsp;		  geom = geom.intersection(geomNucleusExpanded);</b>
+<b class="nc"><i>80</i>&nbsp;		  geom = GeometryTools.ensurePolygonal(geom);</b>
+<b class="nc"><i>81</i>&nbsp;		  roi = GeometryTools.geometryToROI(geom, roi.getImagePlane());</b>
+<b class="nc"><i>82</i>&nbsp;		  return (PathCellObject)PathObjects.createCellObject(</b>
+<b class="nc"><i>83</i>&nbsp;		          roi, roiNucleus, cell.getPathClass(), keepMeasurements ? cell.getMeasurementList() : null</b>
+<i>84</i>&nbsp;		          );
+<i>85</i>&nbsp;	}
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;	/**
+<i>88</i>&nbsp;	 * Adjust cell boundary ROIs to be non-overlapping, by assigning overlaps to the cell with the closest nucleus.
+<i>89</i>&nbsp;	 * Results are returned as a new list of cells.
+<i>90</i>&nbsp;	 * @param cells input cells
+<i>91</i>&nbsp;	 * @return a new list of cells, potentially containing some of the original cells and other adjusted cells
+<i>92</i>&nbsp;	 */
+<i>93</i>&nbsp;	public static List&lt;PathObject&gt; constrainCellOverlaps(Collection&lt;? extends PathObject&gt; cells) {
+<b class="nc"><i>94</i>&nbsp;		var map = new HashMap&lt;PathObject, Geometry&gt;();</b>
+<b class="nc"><i>95</i>&nbsp;		for (var cell : cells) {</b>
+<b class="nc"><i>96</i>&nbsp;			if (!cell.isCell()) {</b>
+<b class="nc"><i>97</i>&nbsp;				logger.warn(&quot;{} is not a cell - will be skipped!&quot;, cell);</b>
+<b class="nc"><i>98</i>&nbsp;				continue;</b>
+<i>99</i>&nbsp;			}
+<b class="nc"><i>100</i>&nbsp;			map.put(cell, cell.getROI().getGeometry());</b>
+<b class="nc"><i>101</i>&nbsp; 		}</b>
+<b class="nc"><i>102</i>&nbsp;		return detectionsToCells(map);</b>
+<i>103</i>&nbsp;	}
+<i>104</i>&nbsp;	
+<i>105</i>&nbsp;	/**
+<i>106</i>&nbsp;	 * Create cell objects by expanding the (nucleus) ROIs from existing detections to approximate the full cell boundary.
+<i>107</i>&nbsp;	 * 
+<i>108</i>&nbsp;	 * @param detections the detection objects from which to create the cells; these define the nuclei
+<i>109</i>&nbsp;	 * @param distance the maximum distance (in pixels) to expand each nucleus
+<i>110</i>&nbsp;	 * @param nucleusScale the maximum size of the cell relative to the nucleus (ignored if &amp;le; 1).
+<i>111</i>&nbsp;	 * @return cell objects derived from the supplied detections. This may have fewer entries if not all detections could be used successfully.
+<i>112</i>&nbsp;	 */
+<i>113</i>&nbsp;	public static List&lt;PathObject&gt; detectionsToCells(Collection&lt;? extends PathObject&gt; detections, double distance, double nucleusScale) {
+<i>114</i>&nbsp;		
+<b class="nc"><i>115</i>&nbsp;		var transform = new AffineTransformation();</b>
+<i>116</i>&nbsp;		
+<b class="nc"><i>117</i>&nbsp;		var map = new HashMap&lt;PathObject, Geometry&gt;();</b>
+<b class="nc"><i>118</i>&nbsp;		for (var detection : detections) {</b>
+<b class="nc"><i>119</i>&nbsp;			var roiNucleus = PathObjectTools.getROI(detection, true);</b>
+<b class="nc"><i>120</i>&nbsp;			var geomNucleus = roiNucleus.getGeometry();</b>
+<b class="nc"><i>121</i>&nbsp;			var geomCell = estimateCellBoundary(geomNucleus, distance, nucleusScale, transform);</b>
+<b class="nc"><i>122</i>&nbsp;			map.put(detection, geomCell);</b>
+<b class="nc"><i>123</i>&nbsp;		}</b>
+<b class="nc"><i>124</i>&nbsp;		return detectionsToCells(map);</b>
+<i>125</i>&nbsp;	}
+<i>126</i>&nbsp;	
+<i>127</i>&nbsp;	/**
+<i>128</i>&nbsp;	 * Estimate a cell boundary using {@link Geometry} objects.
+<i>129</i>&nbsp;	 * This avoids the need to create {@link ROI} or {@link PathObject} first.
+<i>130</i>&nbsp;	 * 
+<i>131</i>&nbsp;	 * @param geomNucleus {@link Geometry} representing the cell nucleus
+<i>132</i>&nbsp;	 * @param distance distance to expand the nucleus, in pixels
+<i>133</i>&nbsp;	 * @param nucleusScale optional maximum expansion distance defined in terms of scaling the nucleus ROI about its centroid; ignored if &amp;le; 1
+<i>134</i>&nbsp;	 * @return a {@link Geometry} providing a cell boundary estimate
+<i>135</i>&nbsp;	 */
+<i>136</i>&nbsp;	public static Geometry estimateCellBoundary(Geometry geomNucleus, double distance, double nucleusScale) {
+<b class="nc"><i>137</i>&nbsp;		return estimateCellBoundary(geomNucleus, distance, nucleusScale, new AffineTransformation());</b>
+<i>138</i>&nbsp;	}
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	private static Geometry estimateCellBoundary(Geometry geomNucleus, double distance, double nucleusScale, AffineTransformation transform) {
+<b class="nc"><i>141</i>&nbsp;		var geomCell = geomNucleus.buffer(distance);</b>
+<b class="nc"><i>142</i>&nbsp;		if (nucleusScale &gt; 1) {</b>
+<b class="nc"><i>143</i>&nbsp;			var geomNucleusHull = geomNucleus.convexHull();</b>
+<b class="nc"><i>144</i>&nbsp;			var centroid = new Centroid(geomNucleusHull).getCentroid();</b>
+<b class="nc"><i>145</i>&nbsp;			double x = centroid.getX();</b>
+<b class="nc"><i>146</i>&nbsp;			double y = centroid.getY();</b>
+<b class="nc"><i>147</i>&nbsp;			transform.setToTranslation(-x, -y);</b>
+<b class="nc"><i>148</i>&nbsp;			transform.scale(nucleusScale, nucleusScale);</b>
+<b class="nc"><i>149</i>&nbsp;			transform.translate(x, y);</b>
+<b class="nc"><i>150</i>&nbsp;			var geomNucleusExpanded = transform.transform(geomNucleusHull);</b>
+<b class="nc"><i>151</i>&nbsp;			if (!geomNucleusExpanded.covers(geomCell))</b>
+<b class="nc"><i>152</i>&nbsp;				geomCell = GeometryTools.attemptOperation(geomCell, g -&gt; g.intersection(geomNucleusExpanded));</b>
+<b class="nc"><i>153</i>&nbsp;			if (geomNucleusHull.getNumGeometries() == 1 &amp;&amp; geomCell.getNumGeometries() == 1 &amp;&amp; !geomCell.covers(geomNucleusHull))</b>
+<b class="nc"><i>154</i>&nbsp;				geomCell = GeometryTools.attemptOperation(geomCell, g -&gt; g.union(geomNucleusHull));</b>
+<i>155</i>&nbsp;		}
+<b class="nc"><i>156</i>&nbsp;		return geomCell;</b>
+<i>157</i>&nbsp;	}
+<i>158</i>&nbsp;	
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	/**
+<i>161</i>&nbsp;	 * Convert detections to cells, using pre-computed boundary geometry estimates.
+<i>162</i>&nbsp;	 * This purpose of this method is to apply an additional Voronoi constraint to refine the estimates.
+<i>163</i>&nbsp;	 * @param cellBoundaryMap
+<i>164</i>&nbsp;	 * @return
+<i>165</i>&nbsp;	 */
+<i>166</i>&nbsp;	private static List&lt;PathObject&gt; detectionsToCells(Map&lt;PathObject, Geometry&gt; cellBoundaryMap) {
+<i>167</i>&nbsp;		
+<i>168</i>&nbsp;		// Creating a large, dense triangulation can be very slow
+<i>169</i>&nbsp;		// Here, we create a spatial cache with a mapping to the preferred expanded Geometry
+<b class="nc"><i>170</i>&nbsp;		int max = 500;</b>
+<b class="nc"><i>171</i>&nbsp;		if (cellBoundaryMap.size() &gt; max) {</b>
+<b class="nc"><i>172</i>&nbsp;			var cache = new STRtree(max);</b>
+<b class="nc"><i>173</i>&nbsp;			var envelopes = new HashMap&lt;PathObject, Envelope&gt;();</b>
+<b class="nc"><i>174</i>&nbsp;			var geometries = new HashMap&lt;PathObject, Geometry&gt;();</b>
+<b class="nc"><i>175</i>&nbsp;			var nucleusGeometries = new HashMap&lt;PathObject, Geometry&gt;();</b>
+<b class="nc"><i>176</i>&nbsp;			for (var entry : cellBoundaryMap.entrySet()) {</b>
+<b class="nc"><i>177</i>&nbsp;				var detection = entry.getKey();</b>
+<b class="nc"><i>178</i>&nbsp;				var roi = PathObjectTools.getROI(detection, true);</b>
+<b class="nc"><i>179</i>&nbsp;				var geomNucleus = roi.getGeometry();</b>
+<b class="nc"><i>180</i>&nbsp;				var geomCell = entry.getValue();</b>
+<b class="nc"><i>181</i>&nbsp;				var env = geomCell.getEnvelopeInternal();</b>
+<b class="nc"><i>182</i>&nbsp;				envelopes.put(detection, env);</b>
+<b class="nc"><i>183</i>&nbsp;				geometries.put(detection, geomCell);</b>
+<b class="nc"><i>184</i>&nbsp;				nucleusGeometries.put(detection, geomNucleus);</b>
+<b class="nc"><i>185</i>&nbsp;				cache.insert(env, detection);</b>
+<b class="nc"><i>186</i>&nbsp;			}</b>
+<b class="nc"><i>187</i>&nbsp;			cache.build();</b>
+<b class="nc"><i>188</i>&nbsp;			var items = cache.itemsTree();</b>
+<b class="nc"><i>189</i>&nbsp;			return detectionsToCellsSubtree(cache, items, cellBoundaryMap, envelopes);</b>
+<i>190</i>&nbsp;		} else
+<b class="nc"><i>191</i>&nbsp;			return detectionsToCells(cellBoundaryMap.keySet(), cellBoundaryMap.keySet(), cellBoundaryMap);</b>
+<i>192</i>&nbsp;	}
+<i>193</i>&nbsp;	
+<i>194</i>&nbsp;	
+<i>195</i>&nbsp;	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+<i>196</i>&nbsp;	private static List&lt;PathObject&gt; detectionsToCellsSubtree(STRtree tree, List&lt;?&gt; list, Map&lt;PathObject, Geometry&gt; cellBoundaryMap, Map&lt;PathObject, Envelope&gt; envelopes) {
+<b class="nc"><i>197</i>&nbsp;		if (list.isEmpty())</b>
+<b class="nc"><i>198</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>199</i>&nbsp;		var first = list.get(0);</b>
+<i>200</i>&nbsp;		
+<b class="nc"><i>201</i>&nbsp;		boolean doParallel = true;</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;		if (first instanceof PathObject) {</b>
+<b class="nc"><i>204</i>&nbsp;			var env = new Envelope();</b>
+<b class="nc"><i>205</i>&nbsp;			var pathObjects = (Collection&lt;PathObject&gt;)list;</b>
+<b class="nc"><i>206</i>&nbsp;			for (var pathObject : pathObjects)</b>
+<b class="nc"><i>207</i>&nbsp;				env.expandToInclude(envelopes.get(pathObject));</b>
+<b class="nc"><i>208</i>&nbsp;			var allObjects = (List&lt;PathObject&gt;)tree.query(env);</b>
+<i>209</i>&nbsp;			try {
+<b class="nc"><i>210</i>&nbsp;				return detectionsToCells(pathObjects, allObjects, cellBoundaryMap);</b>
+<b class="nc"><i>211</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>212</i>&nbsp;				logger.error(&quot;Error converting detections to cells: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>213</i>&nbsp;				return Collections.emptyList();</b>
+<i>214</i>&nbsp;			}
+<b class="nc"><i>215</i>&nbsp;		} else if (first instanceof List) {</b>
+<b class="nc"><i>216</i>&nbsp;			if (doParallel) {</b>
+<b class="nc"><i>217</i>&nbsp;				return list.parallelStream()</b>
+<b class="nc"><i>218</i>&nbsp;						.map(sublist -&gt; detectionsToCellsSubtree(tree, (List)sublist, cellBoundaryMap, envelopes))</b>
+<b class="nc"><i>219</i>&nbsp;						.flatMap(Collection::stream)</b>
+<b class="nc"><i>220</i>&nbsp;						.collect(Collectors.toList());</b>
+<i>221</i>&nbsp;			} else {
+<b class="nc"><i>222</i>&nbsp;				var cells = new ArrayList&lt;PathObject&gt;();</b>
+<b class="nc"><i>223</i>&nbsp;				for (var sublist : list)</b>
+<b class="nc"><i>224</i>&nbsp;					cells.addAll(detectionsToCellsSubtree(tree, (List)sublist, cellBoundaryMap, envelopes));</b>
+<b class="nc"><i>225</i>&nbsp;				return cells;</b>
+<i>226</i>&nbsp;			}
+<i>227</i>&nbsp;		} else
+<b class="nc"><i>228</i>&nbsp;			throw new IllegalArgumentException(&quot;Expected a list of PathObjects or a list of lists, but got a list of &quot; + first.getClass());</b>
+<i>229</i>&nbsp;	}
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	
+<i>232</i>&nbsp;	private static List&lt;PathObject&gt; detectionsToCells(Collection&lt;PathObject&gt; detections, Collection&lt;PathObject&gt; allDetections, Map&lt;PathObject, Geometry&gt; cellBoundaryMap) {
+<i>233</i>&nbsp;		
+<b class="nc"><i>234</i>&nbsp;		var subdivision = DelaunayTools.newBuilder(allDetections)</b>
+<b class="nc"><i>235</i>&nbsp;			.preferNucleus(true)</b>
+<b class="nc"><i>236</i>&nbsp;			.roiBounds(2.0, 1)</b>
+<b class="nc"><i>237</i>&nbsp;			.build();</b>
+<i>238</i>&nbsp;		
+<b class="nc"><i>239</i>&nbsp;		var cells = new ArrayList&lt;PathObject&gt;();</b>
+<b class="nc"><i>240</i>&nbsp;		var faces = subdivision.getVoronoiFaces();</b>
+<b class="nc"><i>241</i>&nbsp;		for (var detection : detections) {</b>
+<b class="nc"><i>242</i>&nbsp;			var face = faces.get(detection);</b>
+<b class="nc"><i>243</i>&nbsp;			var bounds = cellBoundaryMap.get(detection);</b>
+<b class="nc"><i>244</i>&nbsp;			if (face == null || bounds == null) {</b>
+<b class="nc"><i>245</i>&nbsp;				logger.warn(&quot;Missing boundary information for {} - will skip&quot;, detection);</b>
+<b class="nc"><i>246</i>&nbsp;				continue;</b>
+<i>247</i>&nbsp;			}
+<b class="nc"><i>248</i>&nbsp;			var geomCell = face;</b>
+<i>249</i>&nbsp;			try {
+<b class="nc"><i>250</i>&nbsp;				geomCell = GeometryTools.ensurePolygonal(face.intersection(bounds));</b>
+<b class="nc"><i>251</i>&nbsp;				geomCell = VWSimplifier.simplify(geomCell, 1.0);</b>
+<b class="nc"><i>252</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>253</i>&nbsp;				if (face.getArea() &gt; bounds.getArea()) {</b>
+<b class="nc"><i>254</i>&nbsp;					geomCell = bounds;</b>
+<b class="nc"><i>255</i>&nbsp;					logger.warn(&quot;Error computing intersection between cell boundary and Voronoi face - will use bounds result: &quot; + e.getLocalizedMessage(), e);</b>
+<i>256</i>&nbsp;				} else
+<b class="nc"><i>257</i>&nbsp;					logger.warn(&quot;Error computing intersection between cell boundary and Voronoi face - will use Voronoi result: &quot; + e.getLocalizedMessage(), e);</b>
+<b class="nc"><i>258</i>&nbsp;			}</b>
+<b class="nc"><i>259</i>&nbsp;			var roiNucleus = PathObjectTools.getROI(detection, true);</b>
+<b class="nc"><i>260</i>&nbsp;			var roiCell = roiNucleus;</b>
+<b class="nc"><i>261</i>&nbsp;			if (geomCell.isEmpty()) {</b>
+<b class="nc"><i>262</i>&nbsp;				logger.warn(&quot;Unable to create cell ROI for {} - I&#39;ll use the nucleus ROI instead&quot;, detection);</b>
+<i>263</i>&nbsp;			} else {
+<b class="nc"><i>264</i>&nbsp;				var geomNucleus = roiNucleus.getGeometry();</b>
+<b class="nc"><i>265</i>&nbsp;				if (!geomCell.covers(geomNucleus)) {</b>
+<i>266</i>&nbsp;					try {
+<b class="nc"><i>267</i>&nbsp;						geomNucleus = geomCell.intersection(geomNucleus);</b>
+<b class="nc"><i>268</i>&nbsp;						roiNucleus = GeometryTools.geometryToROI(geomNucleus, roiNucleus.getImagePlane());</b>
+<b class="nc"><i>269</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>270</i>&nbsp;						logger.debug(&quot;Error constraining nucleus to cell: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>271</i>&nbsp;					}</b>
+<i>272</i>&nbsp;				}
+<b class="nc"><i>273</i>&nbsp;				roiCell = GeometryTools.geometryToROI(geomCell, roiNucleus.getImagePlane());</b>
+<i>274</i>&nbsp;			}
+<b class="nc"><i>275</i>&nbsp;			cells.add(PathObjects.createCellObject(roiCell, roiNucleus, detection.getPathClass(), detection.getMeasurementList()));</b>
+<b class="nc"><i>276</i>&nbsp;		}</b>
+<b class="nc"><i>277</i>&nbsp;		return cells;</b>
+<i>278</i>&nbsp;	}
+<i>279</i>&nbsp;	
+<i>280</i>&nbsp;	
+<i>281</i>&nbsp;	
+<i>282</i>&nbsp;	/**
+<i>283</i>&nbsp;	 * Constrain a cell boundary to fall within a maximum region, determined by buffering the convex hull of the nucleus ROI by a fixed distance.
+<i>284</i>&nbsp;	 * This can be used to create more biologically plausible cell boundaries in cases where the initial boundary estimates may be 
+<i>285</i>&nbsp;	 * too large.
+<i>286</i>&nbsp;	 * 
+<i>287</i>&nbsp;	 * @param cell original cell object
+<i>288</i>&nbsp;	 * @param distance distance (in pixels) by which the nucleus should be expanded to defined maximum cell size
+<i>289</i>&nbsp;	 * @param keepMeasurements if true, retain the measurements of the original cell if creating a new cell; if false, discard existing measurements
+<i>290</i>&nbsp;	 * @return the updated cell object, or the original cell object either if its boundary falls within the specified limit or it lacks both boundary and nucleus ROIs
+<i>291</i>&nbsp;	 */
+<i>292</i>&nbsp;	public static PathCellObject constrainCellByNucleusDistance(PathCellObject cell, double distance, boolean keepMeasurements) {
+<b class="nc"><i>293</i>&nbsp;		  var roi = cell.getROI();</b>
+<b class="nc"><i>294</i>&nbsp;		  var roiNucleus = cell.getNucleusROI();</b>
+<b class="nc"><i>295</i>&nbsp;		  if (roi == null || roiNucleus == null || distance &lt;= 0)</b>
+<b class="nc"><i>296</i>&nbsp;		    return cell;</b>
+<b class="nc"><i>297</i>&nbsp;		  var geom = roi.getGeometry();</b>
+<b class="nc"><i>298</i>&nbsp;		  var geomNucleus = roiNucleus.getGeometry().convexHull();</b>
+<b class="nc"><i>299</i>&nbsp;		  var geomNucleusExpanded = geomNucleus.buffer(distance);</b>
+<b class="nc"><i>300</i>&nbsp;		  if (geomNucleusExpanded.covers(geom))</b>
+<b class="nc"><i>301</i>&nbsp;		    return cell;</b>
+<b class="nc"><i>302</i>&nbsp;		  geom = geom.intersection(geomNucleusExpanded);</b>
+<b class="nc"><i>303</i>&nbsp;		  geom = GeometryTools.ensurePolygonal(geom);</b>
+<b class="nc"><i>304</i>&nbsp;		  roi = GeometryTools.geometryToROI(geom, roi.getImagePlane());</b>
+<b class="nc"><i>305</i>&nbsp;		  return (PathCellObject)PathObjects.createCellObject(</b>
+<b class="nc"><i>306</i>&nbsp;		          roi, roiNucleus, cell.getPathClass(), keepMeasurements ? cell.getMeasurementList() : null</b>
+<i>307</i>&nbsp;		          );
+<i>308</i>&nbsp;	}
+<i>309</i>&nbsp;	
+<i>310</i>&nbsp;
+<i>311</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

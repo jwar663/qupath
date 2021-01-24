@@ -1,0 +1,716 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ColorDeconvolutionStains</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.color</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ColorDeconvolutionStains (qupath.lib.color)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ColorDeconvolutionStains</td>
+<td class="coverageStat">
+  <span class="percent">
+    20.7%
+  </span>
+  <span class="absValue">
+    (6/ 29)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.3%
+  </span>
+  <span class="absValue">
+    (39/ 175)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ColorDeconvolutionStains$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ColorDeconvolutionStains$DefaultColorDeconvolutionStains</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/ 7)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    29.4%
+  </span>
+  <span class="absValue">
+    (10/ 34)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25.1%
+  </span>
+  <span class="absValue">
+    (46/ 183)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.color;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.Externalizable;
+<i>27</i>&nbsp;import java.io.IOException;
+<i>28</i>&nbsp;import java.io.ObjectInput;
+<i>29</i>&nbsp;import java.io.ObjectOutput;
+<i>30</i>&nbsp;import java.text.NumberFormat;
+<i>31</i>&nbsp;import java.util.ArrayList;
+<i>32</i>&nbsp;import java.util.Collection;
+<i>33</i>&nbsp;import java.util.Locale;
+<i>34</i>&nbsp;import java.util.Map;
+<i>35</i>&nbsp;import java.util.StringTokenizer;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import org.slf4j.Logger;
+<i>38</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;import qupath.lib.color.StainVector.DefaultStains;
+<i>41</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;/**
+<i>45</i>&nbsp; * Helper class for storing stain vectors and maximum channel values to be used for color deconvolution.
+<i>46</i>&nbsp; * &lt;p&gt;
+<i>47</i>&nbsp; * The maximum channel values are the RGB values corresponding to pixels that have no staining of any kind
+<i>48</i>&nbsp; * (i.e. all light has passed through... the pixel should look close to white).
+<i>49</i>&nbsp; * By default, these are 255.
+<i>50</i>&nbsp; * 
+<i>51</i>&nbsp; * @author Pete Bankhead
+<i>52</i>&nbsp; *
+<i>53</i>&nbsp; */
+<i>54</i>&nbsp;public class ColorDeconvolutionStains implements Externalizable {
+<i>55</i>&nbsp;	
+<i>56</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>57</i>&nbsp;	
+<b class="fc"><i>58</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ColorDeconvolutionStains.class);</b>
+<i>59</i>&nbsp;
+<b class="fc"><i>60</i>&nbsp;	private static int version = 1;</b>
+<i>61</i>&nbsp;	
+<i>62</i>&nbsp;	/**
+<i>63</i>&nbsp;	 * Default name (and spelling) for hematoxylin stain
+<i>64</i>&nbsp;	 */
+<i>65</i>&nbsp;	public static final String HEMATOXYLIN = &quot;Hematoxylin&quot;;
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	/**
+<i>68</i>&nbsp;	 * Default name for eosin stain
+<i>69</i>&nbsp;	 */
+<i>70</i>&nbsp;	public static final String EOSIN = &quot;Eosin&quot;;
+<i>71</i>&nbsp;	
+<i>72</i>&nbsp;	/**
+<i>73</i>&nbsp;	 * Default name for DAB stain
+<i>74</i>&nbsp;	 */
+<i>75</i>&nbsp;	public static final String DAB = &quot;DAB&quot;;
+<i>76</i>&nbsp;	
+<b class="fc"><i>77</i>&nbsp;	private static String[] HEMATOXYLIN_SPELLINGS = {&quot;haematoxylin&quot;, &quot;hematoxylin&quot;, &quot;haem&quot;, &quot;h&quot;};</b>
+<b class="fc"><i>78</i>&nbsp;	private static String[] EOSIN_SPELLINGS = {&quot;eosin&quot;, &quot;eos&quot;, &quot;e&quot;};</b>
+<b class="fc"><i>79</i>&nbsp;	private static String[] DAB_SPELLINGS = {&quot;dab&quot;, &quot;d&quot;};</b>
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	/**
+<i>82</i>&nbsp;	 * Enum for common stain defaults.
+<i>83</i>&nbsp;	 * &lt;p&gt;
+<i>84</i>&nbsp;	 * TODO: Switch to using an interface and permitting alternatives
+<i>85</i>&nbsp;	 */
+<b class="fc"><i>86</i>&nbsp;	public enum DefaultColorDeconvolutionStains {</b>
+<i>87</i>&nbsp;		/**
+<i>88</i>&nbsp;		 * Hematoxylin and eosin
+<i>89</i>&nbsp;		 */
+<b class="fc"><i>90</i>&nbsp;		H_E(&quot;H&amp;E&quot;),</b>
+<i>91</i>&nbsp;		
+<i>92</i>&nbsp;		/**
+<i>93</i>&nbsp;		 * Hematoxylin and DAB
+<i>94</i>&nbsp;		 */
+<b class="fc"><i>95</i>&nbsp;		H_DAB(&quot;H-DAB&quot;);</b>
+<i>96</i>&nbsp;		
+<i>97</i>&nbsp;		private String name;
+<i>98</i>&nbsp;		
+<b class="fc"><i>99</i>&nbsp;		DefaultColorDeconvolutionStains(String name) {</b>
+<b class="fc"><i>100</i>&nbsp;			this.name = name;</b>
+<b class="fc"><i>101</i>&nbsp;		};</b>
+<i>102</i>&nbsp;		@Override
+<i>103</i>&nbsp;		public String toString() {
+<b class="nc"><i>104</i>&nbsp;			return name;</b>
+<i>105</i>&nbsp;		}
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;//	public static enum StainType {H_E, H_DAB, OTHER};
+<i>109</i>&nbsp;//	
+<i>110</i>&nbsp;//	private StainType type;
+<i>111</i>&nbsp;	private String name;
+<i>112</i>&nbsp;	private StainVector stain1, stain2, stain3;
+<i>113</i>&nbsp;	private double maxRed, maxGreen, maxBlue;
+<i>114</i>&nbsp;	
+<b class="fc"><i>115</i>&nbsp;	transient private double[][] matInverse = null;</b>
+<i>116</i>&nbsp;	
+<i>117</i>&nbsp;	/**
+<i>118</i>&nbsp;	 * Create a ColorDeconvolutionStains for a default stain combination, and default max values (255 for all channels).
+<i>119</i>&nbsp;	 * 
+<i>120</i>&nbsp;	 * @param stains
+<i>121</i>&nbsp;	 * @return
+<i>122</i>&nbsp;	 */
+<i>123</i>&nbsp;	public static ColorDeconvolutionStains makeDefaultColorDeconvolutionStains(DefaultColorDeconvolutionStains stains) {
+<b class="fc"><i>124</i>&nbsp;		switch(stains) {</b>
+<i>125</i>&nbsp;		case H_E:
+<b class="fc"><i>126</i>&nbsp;			return new ColorDeconvolutionStains(&quot;H&amp;E default&quot;,</b>
+<b class="fc"><i>127</i>&nbsp;												StainVector.makeDefaultStainVector(StainVector.DefaultStains.HEMATOXYLIN),</b>
+<b class="fc"><i>128</i>&nbsp;												StainVector.makeDefaultStainVector(StainVector.DefaultStains.EOSIN),</b>
+<i>129</i>&nbsp;												255, 255, 255);
+<i>130</i>&nbsp;		case H_DAB:
+<b class="fc"><i>131</i>&nbsp;			return new ColorDeconvolutionStains(&quot;H-DAB default&quot;,</b>
+<b class="fc"><i>132</i>&nbsp;												StainVector.makeDefaultStainVector(StainVector.DefaultStains.HEMATOXYLIN),</b>
+<b class="fc"><i>133</i>&nbsp;												StainVector.makeDefaultStainVector(StainVector.DefaultStains.DAB),</b>
+<i>134</i>&nbsp;												255, 255, 255);
+<i>135</i>&nbsp;		}
+<b class="nc"><i>136</i>&nbsp;		return null;</b>
+<i>137</i>&nbsp;	}
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	
+<i>140</i>&nbsp;	/**
+<i>141</i>&nbsp;	 * Create a new ColorDeconvolutionStains object, with all settings the same except one of the stains has been changed.
+<i>142</i>&nbsp;	 * &lt;p&gt;
+<i>143</i>&nbsp;	 * If the third stain was a residual, it will also be regenerated (i.e. it won&#39;t remain the same residual... which would be wrong,
+<i>144</i>&nbsp;	 * as it would be orthogonal to the old stain rather than the new one).
+<i>145</i>&nbsp;	 * 
+<i>146</i>&nbsp;	 * @param stains
+<i>147</i>&nbsp;	 * @param stainNew
+<i>148</i>&nbsp;	 * @param stainNumber
+<i>149</i>&nbsp;	 * @return
+<i>150</i>&nbsp;	 */
+<i>151</i>&nbsp;	private static ColorDeconvolutionStains makeModifiedStains(ColorDeconvolutionStains stains, StainVector stainNew, int stainNumber) {
+<b class="nc"><i>152</i>&nbsp;		StainVector[] stainVectors = new StainVector[3];</b>
+<b class="nc"><i>153</i>&nbsp;		stainVectors[0] = stains.getStain(1);</b>
+<b class="nc"><i>154</i>&nbsp;		stainVectors[1] = stains.getStain(2);</b>
+<b class="nc"><i>155</i>&nbsp;		stainVectors[2] = stains.getStain(3);</b>
+<b class="nc"><i>156</i>&nbsp;		stainVectors[stainNumber - 1] = stainNew;</b>
+<b class="nc"><i>157</i>&nbsp;		if (stainVectors[2].isResidual())</b>
+<b class="nc"><i>158</i>&nbsp;			stainVectors[2] = null;</b>
+<b class="nc"><i>159</i>&nbsp;		return new ColorDeconvolutionStains(stains.getName(), stainVectors[0], stainVectors[1], stainVectors[2], stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue());</b>
+<i>160</i>&nbsp;	}
+<i>161</i>&nbsp;	
+<i>162</i>&nbsp;	/**
+<i>163</i>&nbsp;	 * Check if the name of a StainVector is &quot;haematoxylin&quot;, &quot;hematoxylin&quot;, &quot;haem&quot; or &quot;h&quot; (ignoring case)
+<i>164</i>&nbsp;	 * 
+<i>165</i>&nbsp;	 * @param stain
+<i>166</i>&nbsp;	 * @return
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;	public static boolean isHematoxylin(final StainVector stain) {
+<b class="nc"><i>169</i>&nbsp;		String name = stain.getName();</b>
+<b class="nc"><i>170</i>&nbsp;		if (name == null)</b>
+<b class="nc"><i>171</i>&nbsp;			return false;</b>
+<b class="nc"><i>172</i>&nbsp;		name = name.toLowerCase().trim();</b>
+<b class="nc"><i>173</i>&nbsp;		for (String s : HEMATOXYLIN_SPELLINGS) {</b>
+<b class="nc"><i>174</i>&nbsp;			if (s.equals(name))</b>
+<b class="nc"><i>175</i>&nbsp;				return true;</b>
+<i>176</i>&nbsp;		}		
+<b class="nc"><i>177</i>&nbsp;		return false;</b>
+<i>178</i>&nbsp;	}
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Check if the name of a StainVector is &quot;eosin&quot;, &quot;eos&quot; or &quot;e&quot; (ignoring case)
+<i>182</i>&nbsp;	 * 
+<i>183</i>&nbsp;	 * @param stain
+<i>184</i>&nbsp;	 * @return
+<i>185</i>&nbsp;	 */
+<i>186</i>&nbsp;	public static boolean isEosin(final StainVector stain) {
+<b class="nc"><i>187</i>&nbsp;		String name = stain.getName();</b>
+<b class="nc"><i>188</i>&nbsp;		if (name == null)</b>
+<b class="nc"><i>189</i>&nbsp;			return false;</b>
+<b class="nc"><i>190</i>&nbsp;		name = name.toLowerCase().trim();</b>
+<b class="nc"><i>191</i>&nbsp;		for (String s : EOSIN_SPELLINGS) {</b>
+<b class="nc"><i>192</i>&nbsp;			if (s.equals(name))</b>
+<b class="nc"><i>193</i>&nbsp;				return true;</b>
+<i>194</i>&nbsp;		}		
+<b class="nc"><i>195</i>&nbsp;		return false;</b>
+<i>196</i>&nbsp;	}
+<i>197</i>&nbsp;	
+<i>198</i>&nbsp;	/**
+<i>199</i>&nbsp;	 * Check if the name of a StainVector is &quot;dab&quot; or &quot;d&quot; (ignoring case)
+<i>200</i>&nbsp;	 * 
+<i>201</i>&nbsp;	 * @param stain
+<i>202</i>&nbsp;	 * @return
+<i>203</i>&nbsp;	 */
+<i>204</i>&nbsp;	public static boolean isDAB(final StainVector stain) {
+<b class="nc"><i>205</i>&nbsp;		String name = stain.getName();</b>
+<b class="nc"><i>206</i>&nbsp;		if (name == null)</b>
+<b class="nc"><i>207</i>&nbsp;			return false;</b>
+<b class="nc"><i>208</i>&nbsp;		name = name.toLowerCase().trim();</b>
+<b class="nc"><i>209</i>&nbsp;		for (String s : DAB_SPELLINGS) {</b>
+<b class="nc"><i>210</i>&nbsp;			if (s.equals(name))</b>
+<b class="nc"><i>211</i>&nbsp;				return true;</b>
+<i>212</i>&nbsp;		}		
+<b class="nc"><i>213</i>&nbsp;		return false;</b>
+<i>214</i>&nbsp;	}
+<i>215</i>&nbsp;	
+<i>216</i>&nbsp;	/**
+<i>217</i>&nbsp;	 * Check if we have H&amp;amp;E staining, by checking the names of the first two stains and confirming that the third stain is a residual.
+<i>218</i>&nbsp;	 * Note the order of the stains must be 1-Hematoxylin, 2-Eosin, 3-residual (missing)
+<i>219</i>&nbsp;	 * @return
+<i>220</i>&nbsp;	 */
+<i>221</i>&nbsp;	public boolean isH_E() {
+<b class="nc"><i>222</i>&nbsp;		return stain3.isResidual() &amp;&amp; isHematoxylin(stain1) &amp;&amp; isEosin(stain2);</b>
+<i>223</i>&nbsp;	}
+<i>224</i>&nbsp;
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;	 * Check if we have H-DAB staining, by checking the names of the first two stains and confirming that the third stain is a residual.
+<i>227</i>&nbsp;	 * Note the order of the stains must be 1-Hematoxylin, 2-DAB, 3-residual (missing)
+<i>228</i>&nbsp;	 * @return
+<i>229</i>&nbsp;	 */
+<i>230</i>&nbsp;	public boolean isH_DAB() {
+<b class="nc"><i>231</i>&nbsp;		return isHematoxylin(stain1) &amp;&amp; isDAB(stain2); // &amp;&amp; stain3.isResidual();</b>
+<i>232</i>&nbsp;	}
+<i>233</i>&nbsp;	
+<i>234</i>&nbsp;	
+<i>235</i>&nbsp;	/**
+<i>236</i>&nbsp;	 * Create a new stains object, identical to this one but for one StainVector having been changed.
+<i>237</i>&nbsp;	 * 
+<i>238</i>&nbsp;	 * @param stainNew
+<i>239</i>&nbsp;	 * @param stainNumber
+<i>240</i>&nbsp;	 * @return
+<i>241</i>&nbsp;	 */
+<i>242</i>&nbsp;	public ColorDeconvolutionStains changeStain(StainVector stainNew, int stainNumber) {
+<b class="nc"><i>243</i>&nbsp;		return makeModifiedStains(this, stainNew, stainNumber);</b>
+<i>244</i>&nbsp;	}
+<i>245</i>&nbsp;
+<i>246</i>&nbsp;	/**
+<i>247</i>&nbsp;	 * Create a new stains object with the same StainVectors but a new name.
+<i>248</i>&nbsp;	 * 
+<i>249</i>&nbsp;	 * @param name
+<i>250</i>&nbsp;	 * @return
+<i>251</i>&nbsp;	 */
+<i>252</i>&nbsp;	public ColorDeconvolutionStains changeName(String name) {
+<b class="nc"><i>253</i>&nbsp;		return new ColorDeconvolutionStains(name, getStain(1), getStain(2), getStain(3), getMaxRed(), getMaxGreen(), getMaxBlue());</b>
+<i>254</i>&nbsp;	}
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;	/**
+<i>257</i>&nbsp;	 * Create a new stains object with the same StainVectors but new max (background) values.
+<i>258</i>&nbsp;	 * 
+<i>259</i>&nbsp;	 * @param maxRed
+<i>260</i>&nbsp;	 * @param maxGreen
+<i>261</i>&nbsp;	 * @param maxBlue
+<i>262</i>&nbsp;	 * @return
+<i>263</i>&nbsp;	 */
+<i>264</i>&nbsp;	public ColorDeconvolutionStains changeMaxValues(double maxRed, double maxGreen, double maxBlue) {
+<b class="nc"><i>265</i>&nbsp;		return new ColorDeconvolutionStains(getName(), getStain(1), getStain(2), getStain(3), maxRed, maxGreen, maxBlue);</b>
+<i>266</i>&nbsp;	}
+<i>267</i>&nbsp;
+<i>268</i>&nbsp;	/**
+<i>269</i>&nbsp;	 * Constructor for ColorDeconvolutionStains with three stain vectors.
+<i>270</i>&nbsp;	 * @param name
+<i>271</i>&nbsp;	 * @param stain1
+<i>272</i>&nbsp;	 * @param stain2
+<i>273</i>&nbsp;	 * @param stain3
+<i>274</i>&nbsp;	 * @param maxRed background (white) value for red channel
+<i>275</i>&nbsp;	 * @param maxGreen background (white) value for green channel
+<i>276</i>&nbsp;	 * @param maxBlue background (white) value for blue channel
+<i>277</i>&nbsp;	 */
+<b class="fc"><i>278</i>&nbsp;	public ColorDeconvolutionStains(String name, StainVector stain1, StainVector stain2, StainVector stain3, double maxRed, double maxGreen, double maxBlue) {</b>
+<b class="fc"><i>279</i>&nbsp;		this.name = name;</b>
+<b class="fc"><i>280</i>&nbsp;		this.stain1 = stain1;</b>
+<b class="fc"><i>281</i>&nbsp;		this.stain2 = stain2;</b>
+<b class="fc"><i>282</i>&nbsp;		if (stain3 == null &amp;&amp; stain1 != null &amp;&amp; stain2 != null)</b>
+<b class="fc"><i>283</i>&nbsp;			this.stain3 = StainVector.makeResidualStainVector(stain1, stain2);</b>
+<i>284</i>&nbsp;		else
+<b class="nc"><i>285</i>&nbsp;			this.stain3 = stain3;</b>
+<b class="fc"><i>286</i>&nbsp;		this.maxRed = maxRed;</b>
+<b class="fc"><i>287</i>&nbsp;		this.maxGreen = maxGreen;</b>
+<b class="fc"><i>288</i>&nbsp;		this.maxBlue = maxBlue;</b>
+<b class="fc"><i>289</i>&nbsp;	}</b>
+<i>290</i>&nbsp;	
+<i>291</i>&nbsp;	/**
+<i>292</i>&nbsp;	 * Constructor for ColorDeconvolutionStains with two stain vectors.
+<i>293</i>&nbsp;	 * @param name
+<i>294</i>&nbsp;	 * @param stain1
+<i>295</i>&nbsp;	 * @param stain2
+<i>296</i>&nbsp;	 * @param maxRed background (white) value for red channel
+<i>297</i>&nbsp;	 * @param maxGreen background (white) value for green channel
+<i>298</i>&nbsp;	 * @param maxBlue background (white) value for blue channel
+<i>299</i>&nbsp;	 */
+<i>300</i>&nbsp;	public ColorDeconvolutionStains(String name, StainVector stain1, StainVector stain2, double maxRed, double maxGreen, double maxBlue) {
+<b class="fc"><i>301</i>&nbsp;		this(name, stain1, stain2, null, maxRed, maxGreen, maxBlue);</b>
+<b class="fc"><i>302</i>&nbsp;	}</b>
+<i>303</i>&nbsp;	
+<i>304</i>&nbsp;	/**
+<i>305</i>&nbsp;	 * Default constructor, for Externalizable. Should not be used directly.
+<i>306</i>&nbsp;	 */
+<b class="nc"><i>307</i>&nbsp;	public ColorDeconvolutionStains() {}</b>
+<i>308</i>&nbsp;
+<i>309</i>&nbsp;	/**
+<i>310</i>&nbsp;	 * Get a specified color deconvolution stain vector, where n should be 1, 2 or 3 
+<i>311</i>&nbsp;	 * (because color deconvolution on a 3-channel image can recover [to some extent] up to 3 stains).
+<i>312</i>&nbsp;	 * &lt;p&gt;
+<i>313</i>&nbsp;	 * If only 2 stains are set (i.e. stain1 and stain2), then a third stain is computed
+<i>314</i>&nbsp;	 * orthogonal to the first two, with the name &#39;residual&#39;.
+<i>315</i>&nbsp;	 * 
+<i>316</i>&nbsp;	 * @param n
+<i>317</i>&nbsp;	 * @return The requested stain vector, or null if n is out of range or the stain was not set.
+<i>318</i>&nbsp;	 */
+<i>319</i>&nbsp;	public StainVector getStain(int n) {
+<b class="fc"><i>320</i>&nbsp;		if (n == 1)</b>
+<b class="fc"><i>321</i>&nbsp;			return stain1;</b>
+<b class="fc"><i>322</i>&nbsp;		if (n == 2)</b>
+<b class="fc"><i>323</i>&nbsp;			return stain2;</b>
+<b class="fc"><i>324</i>&nbsp;		if (n == 3) {</b>
+<b class="fc"><i>325</i>&nbsp;			return stain3;</b>
+<i>326</i>&nbsp;		}
+<b class="nc"><i>327</i>&nbsp;		if (n == 0)</b>
+<b class="nc"><i>328</i>&nbsp;			logger.error(&quot;Stains are not zero-based! Do you mean you want stain 1?&quot;);</b>
+<b class="nc"><i>329</i>&nbsp;		return null;</b>
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;	
+<i>332</i>&nbsp;	/**
+<i>333</i>&nbsp;	 * Get a collection of all the stains.
+<i>334</i>&nbsp;	 * @param includeResidual if true, include residual stains in the list. If false, only include non-residual stains.
+<i>335</i>&nbsp;	 * @return a collection of stains.
+<i>336</i>&nbsp;	 */
+<i>337</i>&nbsp;	public Collection&lt;StainVector&gt; getStains(boolean includeResidual) {
+<b class="nc"><i>338</i>&nbsp;		var list = new ArrayList&lt;StainVector&gt;();</b>
+<b class="nc"><i>339</i>&nbsp;		for (int s = 1; s &lt;= 3; s++) {</b>
+<b class="nc"><i>340</i>&nbsp;			var stain = getStain(s);</b>
+<b class="nc"><i>341</i>&nbsp;			if (includeResidual || !stain.isResidual())</b>
+<b class="nc"><i>342</i>&nbsp;				list.add(stain);</b>
+<i>343</i>&nbsp;		}
+<b class="nc"><i>344</i>&nbsp;		return list;</b>
+<i>345</i>&nbsp;	}
+<i>346</i>&nbsp;	
+<i>347</i>&nbsp;	/**
+<i>348</i>&nbsp;	 * Get the stains name.
+<i>349</i>&nbsp;	 * @return
+<i>350</i>&nbsp;	 */
+<i>351</i>&nbsp;	public String getName() {
+<b class="nc"><i>352</i>&nbsp;		return name;</b>
+<i>353</i>&nbsp;	}
+<i>354</i>&nbsp;	
+<i>355</i>&nbsp;	/**
+<i>356</i>&nbsp;	 * Get the number for a specific stain (1, 2 or 3).
+<i>357</i>&nbsp;	 * @param stain
+<i>358</i>&nbsp;	 * @return
+<i>359</i>&nbsp;	 */
+<i>360</i>&nbsp;	public int getStainNumber(StainVector stain) {
+<b class="nc"><i>361</i>&nbsp;		if (stain1.equals(stain))</b>
+<b class="nc"><i>362</i>&nbsp;			return 1;</b>
+<b class="nc"><i>363</i>&nbsp;		if (stain2.equals(stain))</b>
+<b class="nc"><i>364</i>&nbsp;			return 2;</b>
+<b class="nc"><i>365</i>&nbsp;		if (stain3.equals(stain))</b>
+<b class="nc"><i>366</i>&nbsp;			return 3;</b>
+<b class="nc"><i>367</i>&nbsp;		return -1;</b>
+<i>368</i>&nbsp;	}
+<i>369</i>&nbsp;	
+<i>370</i>&nbsp;	/**
+<i>371</i>&nbsp;	 * Get the maximum value for the red channel (default = 255).
+<i>372</i>&nbsp;	 * 
+<i>373</i>&nbsp;	 * @return
+<i>374</i>&nbsp;	 */
+<i>375</i>&nbsp;	public double getMaxRed() {
+<b class="nc"><i>376</i>&nbsp;		return maxRed;</b>
+<i>377</i>&nbsp;	}
+<i>378</i>&nbsp;
+<i>379</i>&nbsp;	/**
+<i>380</i>&nbsp;	 * Get the maximum value for the green channel (default = 255).
+<i>381</i>&nbsp;	 * 
+<i>382</i>&nbsp;	 * @return
+<i>383</i>&nbsp;	 */
+<i>384</i>&nbsp;	public double getMaxGreen() {
+<b class="nc"><i>385</i>&nbsp;		return maxGreen;</b>
+<i>386</i>&nbsp;	}
+<i>387</i>&nbsp;
+<i>388</i>&nbsp;	/**
+<i>389</i>&nbsp;	 * Get the maximum value for the blue channel (default = 255).
+<i>390</i>&nbsp;	 * 
+<i>391</i>&nbsp;	 * @return
+<i>392</i>&nbsp;	 */
+<i>393</i>&nbsp;	public double getMaxBlue() {
+<b class="nc"><i>394</i>&nbsp;		return maxBlue;</b>
+<i>395</i>&nbsp;	}
+<i>396</i>&nbsp;
+<i>397</i>&nbsp;	
+<i>398</i>&nbsp;	/**
+<i>399</i>&nbsp;	 * Get matrix inverse, as useful for color deconvolution.
+<i>400</i>&nbsp;	 * See static ColorDeconvolution classes for usage.
+<i>401</i>&nbsp;	 * 
+<i>402</i>&nbsp;	 * @return
+<i>403</i>&nbsp;	 */
+<i>404</i>&nbsp;	public double[][] getMatrixInverse() {
+<i>405</i>&nbsp;		// Create if we don&#39;t have one already
+<b class="fc"><i>406</i>&nbsp;		if (matInverse == null) {</b>
+<b class="fc"><i>407</i>&nbsp;			double[][] stainMat = new double[][]{</b>
+<b class="fc"><i>408</i>&nbsp;					getStain(1).getArray(),</b>
+<b class="fc"><i>409</i>&nbsp;					getStain(2).getArray(),</b>
+<b class="fc"><i>410</i>&nbsp;					getStain(3).getArray()};</b>
+<b class="fc"><i>411</i>&nbsp;			ColorDeconvMatrix3x3 mat3x3 = new ColorDeconvMatrix3x3(stainMat);</b>
+<b class="fc"><i>412</i>&nbsp;			matInverse = mat3x3.inverse();</b>
+<i>413</i>&nbsp;		}
+<b class="fc"><i>414</i>&nbsp;		return matInverse;</b>
+<i>415</i>&nbsp;	}
+<i>416</i>&nbsp;	
+<i>417</i>&nbsp;	
+<i>418</i>&nbsp;	@Override
+<i>419</i>&nbsp;	public String toString() {
+<b class="nc"><i>420</i>&nbsp;		return &quot;Color deconvolution stains: &quot; + stain1 + &quot;, &quot; + stain2 + &quot;, &quot; + stain3;</b>
+<i>421</i>&nbsp;	}
+<i>422</i>&nbsp;
+<i>423</i>&nbsp;
+<i>424</i>&nbsp;	/**
+<i>425</i>&nbsp;	 * Get a String representation of the stains and background.
+<i>426</i>&nbsp;	 * @param stains
+<i>427</i>&nbsp;	 * @param nDecimalPlaces
+<i>428</i>&nbsp;	 * @return
+<i>429</i>&nbsp;	 * 
+<i>430</i>&nbsp;	 * @see #parseColorDeconvolutionStainsArg(String)
+<i>431</i>&nbsp;	 */
+<i>432</i>&nbsp;	public static String getColorDeconvolutionStainsAsString(final ColorDeconvolutionStains stains, final int nDecimalPlaces) {
+<b class="nc"><i>433</i>&nbsp;		if (stains == null)</b>
+<b class="nc"><i>434</i>&nbsp;			return &quot;&quot;;</b>
+<i>435</i>&nbsp;		
+<b class="nc"><i>436</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>437</i>&nbsp;		sb.append(&quot;{&quot;);</b>
+<b class="nc"><i>438</i>&nbsp;		sb.append(&quot;\&quot;Name&quot;).append(&quot;\&quot; : \&quot;&quot;).append(stains.getName()).append(&quot;\&quot;, &quot;);</b>
+<b class="nc"><i>439</i>&nbsp;		for (int i = 1; i &lt;= 3; i++) {</b>
+<b class="nc"><i>440</i>&nbsp;			StainVector stain = stains.getStain(i);</b>
+<i>441</i>&nbsp;			// No need to add the residual stain
+<b class="nc"><i>442</i>&nbsp;			if (i == 3 &amp;&amp; stain.isResidual())</b>
+<b class="nc"><i>443</i>&nbsp;				continue;</b>
+<b class="nc"><i>444</i>&nbsp;			sb.append(&quot;\&quot;Stain &quot;).append(i).append(&quot;\&quot; : \&quot;&quot;).append(stain.getName()).append(&quot;\&quot;, &quot;);</b>
+<b class="nc"><i>445</i>&nbsp;			sb.append(&quot;\&quot;Values &quot;).append(i).append(&quot;\&quot; : \&quot;&quot;).append(stain.arrayAsString(Locale.US, nDecimalPlaces)).append(&quot;\&quot;, &quot;);</b>
+<i>446</i>&nbsp;		}
+<b class="nc"><i>447</i>&nbsp;		sb.append(&quot;\&quot;Background\&quot; : \&quot;&quot;);</b>
+<i>448</i>&nbsp;		
+<b class="nc"><i>449</i>&nbsp;		sb.append(&quot; &quot;).append(GeneralTools.arrayToString(Locale.US, new double[]{stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue()}, nDecimalPlaces));</b>
+<i>450</i>&nbsp;//		sb.append(String.format( &quot;%.Nf %.Nf %.Nf&quot;.replace(&quot;N&quot;, Integer.toString(nDecimalPlaces)), stains.getMaxRed(), stains.getMaxGreen(), stains.getMaxBlue()));
+<i>451</i>&nbsp;//		sb.append(stains.getMaxRed()).append(&quot; &quot;);
+<i>452</i>&nbsp;//		sb.append(stains.getMaxGreen()).append(&quot; &quot;);
+<i>453</i>&nbsp;//		sb.append(stains.getMaxBlue());
+<b class="nc"><i>454</i>&nbsp;		sb.append(&quot;\&quot;}&quot;);</b>
+<i>455</i>&nbsp;		
+<b class="nc"><i>456</i>&nbsp;		return sb.toString();</b>
+<i>457</i>&nbsp;	}
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;	/**
+<i>460</i>&nbsp;	 * Parse color deconvolution stains from a JSON String, with keys &#39;Stain 1&#39;, &#39;Stain 2&#39;, (optionally) &#39;Stain 3&#39; and &#39;Background&#39;.
+<i>461</i>&nbsp;	 * @param s
+<i>462</i>&nbsp;	 * @return
+<i>463</i>&nbsp;	 * 
+<i>464</i>&nbsp;	 * @see #getColorDeconvolutionStainsAsString(ColorDeconvolutionStains, int)
+<i>465</i>&nbsp;	 */
+<i>466</i>&nbsp;	public static ColorDeconvolutionStains parseColorDeconvolutionStainsArg(final String s) {
+<i>467</i>&nbsp;		
+<b class="nc"><i>468</i>&nbsp;		Map&lt;String, String&gt; map = GeneralTools.parseArgStringValues(s);</b>
+<b class="nc"><i>469</i>&nbsp;		if (map.isEmpty())</b>
+<b class="nc"><i>470</i>&nbsp;			return null;</b>
+<i>471</i>&nbsp;		
+<b class="nc"><i>472</i>&nbsp;		StainVector stain1 = parseStainVector(Locale.US, map.get(&quot;Stain 1&quot;), map.get(&quot;Values 1&quot;));</b>
+<b class="nc"><i>473</i>&nbsp;		StainVector stain2 = parseStainVector(Locale.US, map.get(&quot;Stain 2&quot;), map.get(&quot;Values 2&quot;));</b>
+<b class="nc"><i>474</i>&nbsp;		StainVector stain3 = null;</b>
+<b class="nc"><i>475</i>&nbsp;		if (map.containsKey(&quot;Stain 3&quot;))</b>
+<b class="nc"><i>476</i>&nbsp;			stain3 = parseStainVector(Locale.US, map.get(&quot;Stain 3&quot;), map.get(&quot;Values 3&quot;));</b>
+<i>477</i>&nbsp;		
+<b class="nc"><i>478</i>&nbsp;		double[] background = parseStainValues(Locale.US, map.get(&quot;Background&quot;));</b>
+<i>479</i>&nbsp;		
+<b class="nc"><i>480</i>&nbsp;		return new ColorDeconvolutionStains(map.get(&quot;Name&quot;), stain1, stain2, stain3, background[0], background[1], background[2]);</b>
+<i>481</i>&nbsp;	}
+<i>482</i>&nbsp;	
+<i>483</i>&nbsp;	
+<i>484</i>&nbsp;	/**
+<i>485</i>&nbsp;	 * Parse a stain vector from a string containing three numbers separated by spaces.
+<i>486</i>&nbsp;	 * @param locale
+<i>487</i>&nbsp;	 * @param name
+<i>488</i>&nbsp;	 * @param s
+<i>489</i>&nbsp;	 * @return
+<i>490</i>&nbsp;	 */
+<i>491</i>&nbsp;	private static StainVector parseStainVector(Locale locale, String name, String s) {
+<b class="nc"><i>492</i>&nbsp;		if (s == null)</b>
+<b class="nc"><i>493</i>&nbsp;			return null;</b>
+<b class="nc"><i>494</i>&nbsp;		s = s.trim();</b>
+<b class="nc"><i>495</i>&nbsp;		if (s.length() == 0)</b>
+<b class="nc"><i>496</i>&nbsp;			return null;</b>
+<b class="nc"><i>497</i>&nbsp;		if (s.length() == 1) {</b>
+<b class="nc"><i>498</i>&nbsp;			s = s.toLowerCase();</b>
+<b class="nc"><i>499</i>&nbsp;			if (s.equals(&quot;h&quot;))</b>
+<b class="nc"><i>500</i>&nbsp;				return StainVector.makeDefaultStainVector(DefaultStains.HEMATOXYLIN);</b>
+<b class="nc"><i>501</i>&nbsp;			else if (s.equals(&quot;e&quot;))</b>
+<b class="nc"><i>502</i>&nbsp;				return StainVector.makeDefaultStainVector(DefaultStains.EOSIN);</b>
+<b class="nc"><i>503</i>&nbsp;			else if (s.equals(&quot;d&quot;))</b>
+<b class="nc"><i>504</i>&nbsp;				return StainVector.makeDefaultStainVector(DefaultStains.DAB);</b>
+<i>505</i>&nbsp;		}
+<b class="nc"><i>506</i>&nbsp;		double[] vector = parseStainValues(locale, s);</b>
+<b class="nc"><i>507</i>&nbsp;		if (vector != null)</b>
+<b class="nc"><i>508</i>&nbsp;			return StainVector.createStainVector(name, vector[0], vector[1], vector[2]);</b>
+<i>509</i>&nbsp;		// If we got here, we didn&#39;t find 3 numbers
+<b class="nc"><i>510</i>&nbsp;		return null;</b>
+<i>511</i>&nbsp;	}
+<i>512</i>&nbsp;	
+<i>513</i>&nbsp;	/**
+<i>514</i>&nbsp;	 * Parses 3 values, suitable for use as a stain vector
+<i>515</i>&nbsp;	 * @param locale 
+<i>516</i>&nbsp;	 * @param s
+<i>517</i>&nbsp;	 * @return
+<i>518</i>&nbsp;	 */
+<i>519</i>&nbsp;	public static double[] parseStainValues(Locale locale, String s) {
+<i>520</i>&nbsp;		// Try to parse the stain vector
+<b class="nc"><i>521</i>&nbsp;		double[] vector = new double[3];</b>
+<b class="nc"><i>522</i>&nbsp;		StringTokenizer tokenizer = new StringTokenizer(s, &quot; \t\n\r\f[]&quot;);</b>
+<b class="nc"><i>523</i>&nbsp;		int i = 0;</b>
+<b class="nc"><i>524</i>&nbsp;		while (tokenizer.hasMoreTokens()) {</b>
+<b class="nc"><i>525</i>&nbsp;			String token = tokenizer.nextToken();</b>
+<b class="nc"><i>526</i>&nbsp;			if (token.endsWith(&quot;,&quot;))</b>
+<b class="nc"><i>527</i>&nbsp;				token = token.substring(0, token.length()-1);</b>
+<i>528</i>&nbsp;			try {
+<b class="nc"><i>529</i>&nbsp;				vector[i] = NumberFormat.getInstance(locale).parse(token).doubleValue();// Double.parseDouble(token);</b>
+<b class="nc"><i>530</i>&nbsp;			} catch (Exception e) {</b>
+<i>531</i>&nbsp;//				// Try this as a last resort...?
+<b class="nc"><i>532</i>&nbsp;				vector[i] = Double.parseDouble(token);				</b>
+<i>533</i>&nbsp;//				if (token.contains(&quot;,&quot;) &amp;&amp; !token.contains(&quot;.&quot;)) {
+<i>534</i>&nbsp;//					String newToken = token.replace(&quot;,&quot;, &quot;.&quot;);
+<i>535</i>&nbsp;//					vector[i] = Double.parseDouble(newToken);				
+<i>536</i>&nbsp;//					logger.warn(&quot;Using emergency stain vector parsing! {} was replaced with {}&quot;, token, newToken);
+<i>537</i>&nbsp;//				}
+<b class="nc"><i>538</i>&nbsp;			}</b>
+<b class="nc"><i>539</i>&nbsp;			i++;</b>
+<i>540</i>&nbsp;			// If we got here, we found 3 numbers
+<b class="nc"><i>541</i>&nbsp;			if (i == 3)</b>
+<b class="nc"><i>542</i>&nbsp;				return vector;</b>
+<b class="nc"><i>543</i>&nbsp;		}</b>
+<i>544</i>&nbsp;		
+<i>545</i>&nbsp;//		Matcher matcher = StainVector.pattern.matcher(s);
+<i>546</i>&nbsp;//		double[] vector = new double[3];
+<i>547</i>&nbsp;//		int i = 0;
+<i>548</i>&nbsp;//		while (matcher.find()) {
+<i>549</i>&nbsp;//			vector[i] = Double.parseDouble(matcher.group());
+<i>550</i>&nbsp;//			i++;
+<i>551</i>&nbsp;//			// If we got here, we found 3 numbers
+<i>552</i>&nbsp;//			if (i == 3)
+<i>553</i>&nbsp;//				return vector;
+<i>554</i>&nbsp;//		}
+<i>555</i>&nbsp;		// If we got here, we didn&#39;t find 3 numbers
+<b class="nc"><i>556</i>&nbsp;		return null;</b>
+<i>557</i>&nbsp;	}
+<i>558</i>&nbsp;	
+<i>559</i>&nbsp;	
+<i>560</i>&nbsp;	
+<i>561</i>&nbsp;	
+<i>562</i>&nbsp;	@Override
+<i>563</i>&nbsp;	public void writeExternal(ObjectOutput out) throws IOException {
+<b class="nc"><i>564</i>&nbsp;		out.writeInt(version);</b>
+<b class="nc"><i>565</i>&nbsp;		out.writeObject(getColorDeconvolutionStainsAsString(this, 8));</b>
+<b class="nc"><i>566</i>&nbsp;	}</b>
+<i>567</i>&nbsp;
+<i>568</i>&nbsp;
+<i>569</i>&nbsp;	@Override
+<i>570</i>&nbsp;	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+<b class="nc"><i>571</i>&nbsp;		int version = in.readInt();</b>
+<b class="nc"><i>572</i>&nbsp;		if (version != 1)</b>
+<b class="nc"><i>573</i>&nbsp;			logger.error(&quot;{} unsupported version number: {}&quot;, getClass().getSimpleName(), version);</b>
+<i>574</i>&nbsp;		
+<b class="nc"><i>575</i>&nbsp;		Object o = in.readObject();</b>
+<b class="nc"><i>576</i>&nbsp;		if (o instanceof String) {</b>
+<b class="nc"><i>577</i>&nbsp;			ColorDeconvolutionStains stains = parseColorDeconvolutionStainsArg((String)o);</b>
+<b class="nc"><i>578</i>&nbsp;			name = stains.name;</b>
+<b class="nc"><i>579</i>&nbsp;			stain1 = stains.stain1;</b>
+<b class="nc"><i>580</i>&nbsp;			stain2 = stains.stain2;</b>
+<b class="nc"><i>581</i>&nbsp;			stain3 = stains.stain3;</b>
+<b class="nc"><i>582</i>&nbsp;			maxRed = stains.maxRed;</b>
+<b class="nc"><i>583</i>&nbsp;			maxGreen = stains.maxGreen;</b>
+<b class="nc"><i>584</i>&nbsp;			maxBlue = stains.maxBlue;</b>
+<i>585</i>&nbsp;		}
+<b class="nc"><i>586</i>&nbsp;	}</b>
+<i>587</i>&nbsp;	
+<i>588</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

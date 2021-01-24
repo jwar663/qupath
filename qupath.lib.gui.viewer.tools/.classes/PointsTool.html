@@ -1,0 +1,402 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PointsTool</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.viewer.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PointsTool (qupath.lib.gui.viewer.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PointsTool</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    9.1%
+  </span>
+  <span class="absValue">
+    (1/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0.8%
+  </span>
+  <span class="absValue">
+    (1/ 127)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.viewer.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.geom.Point2D;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.List;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import javafx.scene.Cursor;
+<i>31</i>&nbsp;import javafx.scene.input.MouseButton;
+<i>32</i>&nbsp;import javafx.scene.input.MouseEvent;
+<i>33</i>&nbsp;import qupath.lib.geom.Point2;
+<i>34</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>35</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>36</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>37</i>&nbsp;import qupath.lib.objects.PathObjectTools;
+<i>38</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>39</i>&nbsp;import qupath.lib.objects.PathROIObject;
+<i>40</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>41</i>&nbsp;import qupath.lib.regions.ImagePlane;
+<i>42</i>&nbsp;import qupath.lib.roi.PointsROI;
+<i>43</i>&nbsp;import qupath.lib.roi.ROIs;
+<i>44</i>&nbsp;import qupath.lib.roi.RoiEditor;
+<i>45</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;/**
+<i>48</i>&nbsp; * PathTool for adding points to point objects.
+<i>49</i>&nbsp; * 
+<i>50</i>&nbsp; * @author Pete Bankhead
+<i>51</i>&nbsp; *
+<i>52</i>&nbsp; */
+<b class="fc"><i>53</i>&nbsp;public class PointsTool extends AbstractPathTool {</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;	private PointsROI getCurrentPoints() {
+<b class="nc"><i>56</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>57</i>&nbsp;		PathObject currentObject = viewer.getSelectedObject();</b>
+<b class="nc"><i>58</i>&nbsp;		if (currentObject == null)</b>
+<b class="nc"><i>59</i>&nbsp;			return null;</b>
+<b class="nc"><i>60</i>&nbsp;		return (currentObject.getROI() instanceof PointsROI) ? (PointsROI)currentObject.getROI() : null;</b>
+<i>61</i>&nbsp;	}
+<i>62</i>&nbsp;	
+<i>63</i>&nbsp;	/**
+<i>64</i>&nbsp;	 * Return false.
+<i>65</i>&nbsp;	 * @return
+<i>66</i>&nbsp;	 */
+<i>67</i>&nbsp;	@Override
+<i>68</i>&nbsp;	protected boolean requestPixelSnapping() {
+<b class="nc"><i>69</i>&nbsp;		return false;</b>
+<i>70</i>&nbsp;	}
+<i>71</i>&nbsp;	
+<i>72</i>&nbsp;	@Override
+<i>73</i>&nbsp;	public void mouseReleased(MouseEvent e) {
+<b class="nc"><i>74</i>&nbsp;		super.mouseReleased(e);</b>
+<b class="nc"><i>75</i>&nbsp;		if (e.getButton() != MouseButton.PRIMARY || e.isConsumed()) {</b>
+<b class="nc"><i>76</i>&nbsp;            return;</b>
+<i>77</i>&nbsp;        }
+<i>78</i>&nbsp;		
+<b class="nc"><i>79</i>&nbsp;		PointsROI points = getCurrentPoints();</b>
+<b class="nc"><i>80</i>&nbsp;		if (points == null)</b>
+<b class="nc"><i>81</i>&nbsp;			return;</b>
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>84</i>&nbsp;		RoiEditor editor = viewer.getROIEditor();</b>
+<b class="nc"><i>85</i>&nbsp;		editor.resetActiveHandle();</b>
+<i>86</i>&nbsp;		
+<b class="nc"><i>87</i>&nbsp;		var currentObject = viewer.getSelectedObject();</b>
+<b class="nc"><i>88</i>&nbsp;		viewer.getHierarchy().updateObject(currentObject, false);</b>
+<i>89</i>&nbsp;//		viewer.getHierarchy().fireHierarchyChangedEvent(this, vcurrentObject);
+<i>90</i>&nbsp;
+<i>91</i>&nbsp;//		// Find out the coordinates in the image domain &amp; update the adjustment
+<i>92</i>&nbsp;//		Point2D p = viewer.componentPointToImagePoint(e.getX(), e.getY(), null, false);
+<i>93</i>&nbsp;//		points.finishAdjusting(p.getX(), p.getY(), e.isShiftDown());
+<i>94</i>&nbsp;//		points.resetMeasurements();
+<b class="nc"><i>95</i>&nbsp;	}</b>
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	@Override
+<i>99</i>&nbsp;	public void mouseDragged(MouseEvent e) {
+<b class="nc"><i>100</i>&nbsp;		super.mouseDragged(e);</b>
+<b class="nc"><i>101</i>&nbsp;		if (!e.isPrimaryButtonDown() || e.isConsumed()) {</b>
+<b class="nc"><i>102</i>&nbsp;            return;</b>
+<i>103</i>&nbsp;        }
+<i>104</i>&nbsp;		
+<b class="nc"><i>105</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>106</i>&nbsp;		RoiEditor editor = viewer.getROIEditor();</b>
+<b class="nc"><i>107</i>&nbsp;		if (!(editor.getROI() instanceof PointsROI) || !editor.hasActiveHandle())</b>
+<b class="nc"><i>108</i>&nbsp;			return;</b>
+<i>109</i>&nbsp;		
+<b class="nc"><i>110</i>&nbsp;		PointsROI points = getCurrentPoints();</b>
+<i>111</i>&nbsp;		
+<i>112</i>&nbsp;		// Find out the coordinates in the image domain &amp; update the adjustment
+<b class="nc"><i>113</i>&nbsp;		Point2D pAdjusting = mouseLocationToImage(e, true, requestPixelSnapping());</b>
+<i>114</i>&nbsp;//		double radius = PointsROI.defaultPointRadiusProperty().get();
+<b class="nc"><i>115</i>&nbsp;		PointsROI points2 = (PointsROI)editor.setActiveHandlePosition(pAdjusting.getX(), pAdjusting.getY(), 0.25, e.isShiftDown());</b>
+<b class="nc"><i>116</i>&nbsp;		if (points2 == points)</b>
+<b class="nc"><i>117</i>&nbsp;			return;</b>
+<i>118</i>&nbsp;		
+<b class="nc"><i>119</i>&nbsp;		PathROIObject currentObject = (PathROIObject)viewer.getSelectedObject();</b>
+<b class="nc"><i>120</i>&nbsp;		currentObject.setROI(points2);</b>
+<b class="nc"><i>121</i>&nbsp;		viewer.repaint();</b>
+<i>122</i>&nbsp;		
+<i>123</i>&nbsp;//		viewer.getHierarchy().fireHierarchyChangedEvent(this, currentObject);
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;//		//		points.updateAdjustment(pAdjusting.getX(), pAdjusting.getY(), e.isShiftDown());
+<i>126</i>&nbsp;//		
+<i>127</i>&nbsp;////		Point2 p = points.getNearest(pAdjusting.getX(), pAdjusting.getY(), radius);
+<i>128</i>&nbsp;//		if (p == null) {
+<i>129</i>&nbsp;//		} else {
+<i>130</i>&nbsp;//			p.setLocation(pAdjusting.getX(), pAdjusting.getY());
+<i>131</i>&nbsp;////			points.resetMeasurements();
+<i>132</i>&nbsp;//			viewer.repaint();
+<i>133</i>&nbsp;//		}
+<b class="nc"><i>134</i>&nbsp;	}</b>
+<i>135</i>&nbsp;	
+<i>136</i>&nbsp;	
+<i>137</i>&nbsp;	private ROI removeNearbyPoint(PointsROI points, double x, double y, double distance) {
+<b class="nc"><i>138</i>&nbsp;		if (points == null)</b>
+<b class="nc"><i>139</i>&nbsp;			return points;</b>
+<b class="nc"><i>140</i>&nbsp;		Point2 p = points.getNearest(x, y, distance);</b>
+<b class="nc"><i>141</i>&nbsp;		return removePoint(points, p);</b>
+<i>142</i>&nbsp;	}
+<i>143</i>&nbsp;	
+<i>144</i>&nbsp;	
+<i>145</i>&nbsp;	/**
+<i>146</i>&nbsp;	 * Alt-clicks remove the selected point, or selects a new &#39;family&#39; of points (i.e. a different object) if
+<i>147</i>&nbsp;	 * a point from the current object isn&#39;t clicked.
+<i>148</i>&nbsp;	 * 
+<i>149</i>&nbsp;	 * @param x
+<i>150</i>&nbsp;	 * @param y
+<i>151</i>&nbsp;	 * @param currentObject
+<i>152</i>&nbsp;	 * @return
+<i>153</i>&nbsp;	 */
+<i>154</i>&nbsp;	private boolean handleAltClick(double x, double y, PathObject currentObject) {
+<b class="nc"><i>155</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>156</i>&nbsp;		var viewerPlane = viewer.getImagePlane();</b>
+<b class="nc"><i>157</i>&nbsp;		PathObjectHierarchy hierarchy = viewer.getHierarchy();</b>
+<b class="nc"><i>158</i>&nbsp;		double distance = PathPrefs.pointRadiusProperty().get();</b>
+<i>159</i>&nbsp;		// Remove a point if the current selection has one
+<b class="nc"><i>160</i>&nbsp;		if (currentObject != null &amp;&amp; PathObjectTools.hasPointROI(currentObject)) {</b>
+<b class="nc"><i>161</i>&nbsp;			PointsROI points = (PointsROI)currentObject.getROI();</b>
+<b class="nc"><i>162</i>&nbsp;			if (points.getImagePlane().equals(viewerPlane)) {</b>
+<b class="nc"><i>163</i>&nbsp;				ROI points2 = removeNearbyPoint(points, x, y, distance);</b>
+<b class="nc"><i>164</i>&nbsp;				if (points != points2) {</b>
+<b class="nc"><i>165</i>&nbsp;					((PathROIObject)currentObject).setROI(points2);</b>
+<b class="nc"><i>166</i>&nbsp;					hierarchy.updateObject(currentObject, false);</b>
+<i>167</i>&nbsp;	//				hierarchy.fireHierarchyChangedEvent(this, currentObject);
+<b class="nc"><i>168</i>&nbsp;					return true;</b>
+<i>169</i>&nbsp;				}
+<i>170</i>&nbsp;			}
+<i>171</i>&nbsp;		}
+<i>172</i>&nbsp;		
+<i>173</i>&nbsp;		// Activate a points object if there is one
+<b class="nc"><i>174</i>&nbsp;		for (PathObject pathObject : hierarchy.getPointObjects(PathObject.class)) {</b>
+<i>175</i>&nbsp;			// Don&#39;t check the current object again
+<b class="nc"><i>176</i>&nbsp;			if (pathObject == currentObject || !pathObject.getROI().getImagePlane().equals(viewerPlane))</b>
+<b class="nc"><i>177</i>&nbsp;				continue;</b>
+<i>178</i>&nbsp;			// See if we&#39;ve almost clicked on a point
+<b class="nc"><i>179</i>&nbsp;			if (((PointsROI)pathObject.getROI()).getNearest(x, y, distance) != null) {</b>
+<b class="nc"><i>180</i>&nbsp;				viewer.setSelectedObject(pathObject);</b>
+<i>181</i>&nbsp;//				hierarchy.getSelectionModel().setSelectedPathObject(pathObject);
+<b class="nc"><i>182</i>&nbsp;				return true;</b>
+<i>183</i>&nbsp;			}
+<b class="nc"><i>184</i>&nbsp;		}</b>
+<i>185</i>&nbsp;		// Select nothing
+<b class="nc"><i>186</i>&nbsp;		viewer.setSelectedObject(null);</b>
+<i>187</i>&nbsp;		
+<b class="nc"><i>188</i>&nbsp;		return true;</b>
+<i>189</i>&nbsp;	}
+<i>190</i>&nbsp;	
+<i>191</i>&nbsp;	
+<i>192</i>&nbsp;	@Override
+<i>193</i>&nbsp;	public void mousePressed(MouseEvent e) {
+<b class="nc"><i>194</i>&nbsp;		super.mousePressed(e);</b>
+<b class="nc"><i>195</i>&nbsp;		if (!e.isPrimaryButtonDown() || e.isConsumed()) {</b>
+<b class="nc"><i>196</i>&nbsp;            return;</b>
+<i>197</i>&nbsp;        }
+<i>198</i>&nbsp;		
+<i>199</i>&nbsp;		// Get a server, if we can
+<b class="nc"><i>200</i>&nbsp;		var viewer = getViewer();</b>
+<b class="nc"><i>201</i>&nbsp;		ImageServer&lt;?&gt; server = viewer.getServer();</b>
+<b class="nc"><i>202</i>&nbsp;		if (server == null)</b>
+<b class="nc"><i>203</i>&nbsp;			return;</b>
+<i>204</i>&nbsp;		
+<b class="nc"><i>205</i>&nbsp;		var viewerPlane = viewer.getImagePlane();</b>
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;		// Find out the coordinates in the image domain
+<b class="nc"><i>208</i>&nbsp;		Point2D p = mouseLocationToImage(e, false, requestPixelSnapping());</b>
+<b class="nc"><i>209</i>&nbsp;		double xx = p.getX();</b>
+<b class="nc"><i>210</i>&nbsp;		double yy = p.getY();</b>
+<i>211</i>&nbsp;
+<i>212</i>&nbsp;		// If we are outside the image, ignore click
+<b class="nc"><i>213</i>&nbsp;		if (xx &lt; 0 || yy &lt; 0 || xx &gt;= server.getWidth() || yy &gt;= server.getHeight())</b>
+<b class="nc"><i>214</i>&nbsp;			return;</b>
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;		// See if we have a selected ROI
+<b class="nc"><i>217</i>&nbsp;		PathObject currentObjectTemp = viewer.getSelectedObject();</b>
+<b class="nc"><i>218</i>&nbsp;		if (!(currentObjectTemp == null || currentObjectTemp instanceof PathROIObject))</b>
+<b class="nc"><i>219</i>&nbsp;			return;</b>
+<b class="nc"><i>220</i>&nbsp;		PathROIObject currentObject = (PathROIObject)currentObjectTemp;</b>
+<b class="nc"><i>221</i>&nbsp;		ROI currentROI = currentObject == null ? null : currentObject.getROI();</b>
+<i>222</i>&nbsp;		
+<b class="nc"><i>223</i>&nbsp;		RoiEditor editor = viewer.getROIEditor();</b>
+<b class="nc"><i>224</i>&nbsp;		double radius = PathPrefs.pointRadiusProperty().get();</b>
+<i>225</i>&nbsp;		
+<b class="nc"><i>226</i>&nbsp;		ROI points = null;</b>
+<b class="nc"><i>227</i>&nbsp;		if (currentROI != null &amp;&amp; currentROI.isPoint() &amp;&amp; (currentROI.isEmpty() || currentROI.getImagePlane().equals(viewerPlane)))</b>
+<b class="nc"><i>228</i>&nbsp;			points = currentROI;</b>
+<i>229</i>&nbsp;		
+<i>230</i>&nbsp;		// If Alt is pressed, try to delete a point
+<b class="nc"><i>231</i>&nbsp;		if (e.isAltDown()) {</b>
+<b class="nc"><i>232</i>&nbsp;			handleAltClick(xx, yy, currentObject);</b>
+<i>233</i>&nbsp;		} 
+<i>234</i>&nbsp;		// Create a new ROI if we&#39;ve got Alt &amp; Shift pressed - or we just don&#39;t have a point ROI
+<b class="nc"><i>235</i>&nbsp;		else if (points == null || (!PathPrefs.multipointToolProperty().get() &amp;&amp; !editor.grabHandle(xx, yy, radius, e.isShiftDown()))</b>
+<b class="nc"><i>236</i>&nbsp;				|| (e.isShiftDown() &amp;&amp; e.getClickCount() &gt; 1)) {</b>
+<i>237</i>&nbsp;			// PathPoints is effectively ready from the start - don&#39;t need to finalize
+<b class="nc"><i>238</i>&nbsp;			points = ROIs.createPointsROI(xx, yy, viewerPlane);</b>
+<i>239</i>&nbsp;			
+<b class="nc"><i>240</i>&nbsp;			currentObject = (PathROIObject)PathObjects.createAnnotationObject(points,  PathPrefs.autoSetAnnotationClassProperty().get());</b>
+<b class="nc"><i>241</i>&nbsp;			viewer.getHierarchy().addPathObject(currentObject);</b>
+<b class="nc"><i>242</i>&nbsp;			viewer.setSelectedObject(currentObject);</b>
+<i>243</i>&nbsp;			
+<i>244</i>&nbsp;//			viewer.createAnnotationObject(points);
+<b class="nc"><i>245</i>&nbsp;			editor.setROI(points);</b>
+<b class="nc"><i>246</i>&nbsp;			editor.grabHandle(xx, yy, radius, e.isShiftDown());</b>
+<b class="nc"><i>247</i>&nbsp;		} else if (points != null) {</b>
+<i>248</i>&nbsp;			// Add point to current ROI, or adjust the position of a nearby point
+<b class="nc"><i>249</i>&nbsp;			ImagePlane plane = points == null || points.isEmpty() ? viewerPlane : points.getImagePlane();</b>
+<b class="nc"><i>250</i>&nbsp;			ROI points2 = addPoint(points, xx, yy, radius, plane);</b>
+<b class="nc"><i>251</i>&nbsp;			if (points2 == points) {</b>
+<i>252</i>&nbsp;				// If we didn&#39;t add a point, try to grab a handle
+<b class="nc"><i>253</i>&nbsp;				if (!editor.grabHandle(xx, yy, radius, e.isShiftDown()))</b>
+<b class="nc"><i>254</i>&nbsp;					return;</b>
+<b class="nc"><i>255</i>&nbsp;				points2 = (PointsROI)editor.setActiveHandlePosition(xx, yy, 0.25, e.isShiftDown());</b>
+<i>256</i>&nbsp;			} else {
+<b class="nc"><i>257</i>&nbsp;				editor.setROI(points2);</b>
+<b class="nc"><i>258</i>&nbsp;				editor.grabHandle(xx, yy, radius, e.isShiftDown());</b>
+<i>259</i>&nbsp;			}
+<b class="nc"><i>260</i>&nbsp;			if (points2 != points) {</b>
+<b class="nc"><i>261</i>&nbsp;				currentObject.setROI(points2);</b>
+<b class="nc"><i>262</i>&nbsp;				viewer.getHierarchy().updateObject(currentObject, true);</b>
+<i>263</i>&nbsp;//				viewer.getHierarchy().fireHierarchyChangedEvent(this, currentObject);
+<i>264</i>&nbsp;			}
+<i>265</i>&nbsp;		}
+<b class="nc"><i>266</i>&nbsp;		viewer.repaint();</b>
+<b class="nc"><i>267</i>&nbsp;	}</b>
+<i>268</i>&nbsp;	
+<i>269</i>&nbsp;	
+<i>270</i>&nbsp;	@Override
+<i>271</i>&nbsp;	public void mouseMoved(MouseEvent e) {
+<b class="nc"><i>272</i>&nbsp;		super.mouseMoved(e);</b>
+<b class="nc"><i>273</i>&nbsp;		ensureCursorType(Cursor.CROSSHAIR);</b>
+<b class="nc"><i>274</i>&nbsp;	}</b>
+<i>275</i>&nbsp;	
+<i>276</i>&nbsp;	
+<i>277</i>&nbsp;	
+<i>278</i>&nbsp;	
+<i>279</i>&nbsp;	/**
+<i>280</i>&nbsp;	 * Add a point only if it has a separation of at least minimumSeparation from all other points
+<i>281</i>&nbsp;	 * currently stored, otherwise do nothing.
+<i>282</i>&nbsp;	 * 
+<i>283</i>&nbsp;	 * @param x
+<i>284</i>&nbsp;	 * @param y
+<i>285</i>&nbsp;	 * @param minimumSeparation
+<i>286</i>&nbsp;	 */
+<i>287</i>&nbsp;	private ROI addPoint(final ROI points, final double x, final double y, final double minimumSeparation, final ImagePlane plane) {
+<i>288</i>&nbsp;		// Can&#39;t add NaN points
+<b class="nc"><i>289</i>&nbsp;		if (Double.isNaN(x + y))</b>
+<b class="nc"><i>290</i>&nbsp;			return points;</b>
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;		List&lt;Point2&gt; pointsList = points.getAllPoints();</b>
+<b class="nc"><i>293</i>&nbsp;		if (minimumSeparation &gt; 0) {</b>
+<i>294</i>&nbsp;			// Test for separation
+<b class="nc"><i>295</i>&nbsp;			double threshold = minimumSeparation*minimumSeparation;</b>
+<b class="nc"><i>296</i>&nbsp;			for (Point2 p : pointsList)</b>
+<b class="nc"><i>297</i>&nbsp;				if (p.distanceSq(x, y) &lt; threshold)</b>
+<b class="nc"><i>298</i>&nbsp;					return points;</b>
+<i>299</i>&nbsp;		}
+<b class="nc"><i>300</i>&nbsp;		List&lt;Point2&gt; pointsList2 = new ArrayList&lt;&gt;(pointsList);</b>
+<b class="nc"><i>301</i>&nbsp;		pointsList2.add(new Point2(x, y));</b>
+<b class="nc"><i>302</i>&nbsp;		return ROIs.createPointsROI(pointsList2, plane);</b>
+<i>303</i>&nbsp;	}
+<i>304</i>&nbsp;	
+<i>305</i>&nbsp;	
+<i>306</i>&nbsp;	
+<i>307</i>&nbsp;	private ROI removePoint(final ROI points, final Point2 point) {
+<b class="nc"><i>308</i>&nbsp;		if (point == null)</b>
+<b class="nc"><i>309</i>&nbsp;			return points;</b>
+<b class="nc"><i>310</i>&nbsp;		List&lt;Point2&gt; pointsList = new ArrayList&lt;&gt;(points.getAllPoints());</b>
+<b class="nc"><i>311</i>&nbsp;		if (pointsList.remove(point)) {</b>
+<b class="nc"><i>312</i>&nbsp;			return ROIs.createPointsROI(pointsList, ImagePlane.getPlaneWithChannel(points.getC(), points.getZ(), points.getT()));</b>
+<i>313</i>&nbsp;		}
+<b class="nc"><i>314</i>&nbsp;		return points;</b>
+<i>315</i>&nbsp;	}
+<i>316</i>&nbsp;	
+<i>317</i>&nbsp;	
+<i>318</i>&nbsp;
+<i>319</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

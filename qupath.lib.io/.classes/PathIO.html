@@ -1,0 +1,583 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathIO</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.io</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathIO (qupath.lib.io)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathIO</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 175)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.io;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.BufferedInputStream;
+<i>27</i>&nbsp;import java.io.BufferedOutputStream;
+<i>28</i>&nbsp;import java.io.EOFException;
+<i>29</i>&nbsp;import java.io.File;
+<i>30</i>&nbsp;import java.io.FileInputStream;
+<i>31</i>&nbsp;import java.io.FileNotFoundException;
+<i>32</i>&nbsp;import java.io.FileOutputStream;
+<i>33</i>&nbsp;import java.io.IOException;
+<i>34</i>&nbsp;import java.io.InputStream;
+<i>35</i>&nbsp;import java.io.ObjectInputStream;
+<i>36</i>&nbsp;import java.io.ObjectOutputStream;
+<i>37</i>&nbsp;import java.io.OutputStream;
+<i>38</i>&nbsp;import java.io.Serializable;
+<i>39</i>&nbsp;import java.nio.file.Files;
+<i>40</i>&nbsp;import java.util.HashMap;
+<i>41</i>&nbsp;import java.util.Locale;
+<i>42</i>&nbsp;import java.util.Map;
+<i>43</i>&nbsp;import java.util.Locale.Category;
+<i>44</i>&nbsp;import java.util.Map.Entry;
+<i>45</i>&nbsp;import org.slf4j.Logger;
+<i>46</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import qupath.lib.color.ColorDeconvolutionStains;
+<i>49</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>50</i>&nbsp;import qupath.lib.images.ImageData;
+<i>51</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>52</i>&nbsp;import qupath.lib.images.servers.ImageServerProvider;
+<i>53</i>&nbsp;import qupath.lib.objects.hierarchy.PathObjectHierarchy;
+<i>54</i>&nbsp;import qupath.lib.plugins.workflow.Workflow;
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;/**
+<i>57</i>&nbsp; * Primary class for loading/saving ImageData objects.
+<i>58</i>&nbsp; * 
+<i>59</i>&nbsp; * @author Pete Bankhead
+<i>60</i>&nbsp; *
+<i>61</i>&nbsp; */
+<i>62</i>&nbsp;public class PathIO {
+<i>63</i>&nbsp;	
+<b class="nc"><i>64</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathIO.class);</b>
+<i>65</i>&nbsp;		
+<b class="nc"><i>66</i>&nbsp;	private PathIO() {}</b>
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	
+<i>69</i>&nbsp;	
+<i>70</i>&nbsp;	/**
+<i>71</i>&nbsp;	 * Read the server path from a serialized file, if present.  This is assumed to be the first line within the file.
+<i>72</i>&nbsp;	 * @param file
+<i>73</i>&nbsp;	 * @return The server path that is stored within the file, or null if no path could be found.
+<i>74</i>&nbsp;	 * @throws IOException 
+<i>75</i>&nbsp;	 * @throws FileNotFoundException 
+<i>76</i>&nbsp;	 * @throws ClassNotFoundException 
+<i>77</i>&nbsp;	 */
+<i>78</i>&nbsp;	public static String readSerializedServerPath(final File file) throws FileNotFoundException, IOException, ClassNotFoundException {
+<b class="nc"><i>79</i>&nbsp;		String serverPath = null;</b>
+<b class="nc"><i>80</i>&nbsp;		try (FileInputStream fileIn = new FileInputStream(file)) {</b>
+<b class="nc"><i>81</i>&nbsp;			ObjectInputStream inStream = new ObjectInputStream(new BufferedInputStream(fileIn));</b>
+<i>82</i>&nbsp;			// Check the first line, then read the server path if it is valid
+<b class="nc"><i>83</i>&nbsp;			String firstLine = inStream.readUTF();</b>
+<b class="nc"><i>84</i>&nbsp;			if (firstLine.startsWith(&quot;Data file version&quot;)) {</b>
+<b class="nc"><i>85</i>&nbsp;				serverPath = (String)inStream.readObject();</b>
+<b class="nc"><i>86</i>&nbsp;				serverPath = serverPath.substring(&quot;Image path: &quot;.length()).trim();</b>
+<i>87</i>&nbsp;			}
+<b class="nc"><i>88</i>&nbsp;		}</b>
+<b class="nc"><i>89</i>&nbsp;		return serverPath;</b>
+<i>90</i>&nbsp;	}
+<i>91</i>&nbsp;	
+<i>92</i>&nbsp;	private static &lt;T&gt; ImageData&lt;T&gt; readImageDataSerialized(final File file, ImageData&lt;T&gt; imageData, ImageServer&lt;T&gt; server, Class&lt;T&gt; cls) throws FileNotFoundException, IOException {
+<b class="nc"><i>93</i>&nbsp;		if (file == null)</b>
+<b class="nc"><i>94</i>&nbsp;			return null;</b>
+<b class="nc"><i>95</i>&nbsp;		logger.info(&quot;Reading data from {}...&quot;, file.getName());</b>
+<b class="nc"><i>96</i>&nbsp;		try (FileInputStream stream = new FileInputStream(file)) {</b>
+<b class="nc"><i>97</i>&nbsp;			imageData = readImageDataSerialized(stream, imageData, server, cls);	</b>
+<i>98</i>&nbsp;			// Set the last saved path (actually the path from which this was opened)
+<b class="nc"><i>99</i>&nbsp;			if (imageData != null)</b>
+<b class="nc"><i>100</i>&nbsp;				imageData.setLastSavedPath(file.getAbsolutePath(), true);</b>
+<b class="nc"><i>101</i>&nbsp;			return imageData;</b>
+<i>102</i>&nbsp;//		} catch (IOException e) {
+<i>103</i>&nbsp;//			logger.error(&quot;Error reading ImageData from file&quot;, e);
+<i>104</i>&nbsp;//			return null;
+<b class="nc"><i>105</i>&nbsp;		}</b>
+<i>106</i>&nbsp;	}
+<i>107</i>&nbsp;	
+<i>108</i>&nbsp;	@SuppressWarnings(&quot;unchecked&quot;)
+<i>109</i>&nbsp;	private static &lt;T&gt; ImageData&lt;T&gt; readImageDataSerialized(final InputStream stream, ImageData&lt;T&gt; imageData, ImageServer&lt;T&gt; server, Class&lt;T&gt; cls) throws IOException {
+<i>110</i>&nbsp;		
+<b class="nc"><i>111</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<b class="nc"><i>112</i>&nbsp;		Locale locale = Locale.getDefault(Category.FORMAT);</b>
+<b class="nc"><i>113</i>&nbsp;		boolean localeChanged = false;</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;		try (ObjectInputStream inStream = new ObjectInputStream(new BufferedInputStream(stream))) {</b>
+<b class="nc"><i>116</i>&nbsp;			String serverPath = null;</b>
+<b class="nc"><i>117</i>&nbsp;			PathObjectHierarchy hierarchy = null;</b>
+<b class="nc"><i>118</i>&nbsp;			ImageData.ImageType imageType = null;</b>
+<b class="nc"><i>119</i>&nbsp;			ColorDeconvolutionStains stains = null;</b>
+<b class="nc"><i>120</i>&nbsp;			Workflow workflow = null;</b>
+<b class="nc"><i>121</i>&nbsp;			Map&lt;String, Object&gt; propertyMap = null;</b>
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;			String firstLine = inStream.readUTF();</b>
+<i>124</i>&nbsp;			//				int versionNumber = -1;
+<b class="nc"><i>125</i>&nbsp;			if (!firstLine.startsWith(&quot;Data file version&quot;)) {</b>
+<b class="nc"><i>126</i>&nbsp;				logger.error(&quot;Input stream does not contain valid QuPath data!&quot;);</b>
+<i>127</i>&nbsp;			}
+<i>128</i>&nbsp;			//				else {
+<i>129</i>&nbsp;			//					// Could try to parse version number... although frankly, at this time, we don&#39;t really care...
+<i>130</i>&nbsp;			//					try {
+<i>131</i>&nbsp;			//						versionNumber = NumberFormat.getInstance(Locale.US).parse(firstLine.substring(&quot;Data file version&quot;.length()).trim()).intValue();
+<i>132</i>&nbsp;			//					} catch (Exception e) {
+<i>133</i>&nbsp;			//						logger.warn(&quot;Unable to parse version number from {}&quot;, firstLine);
+<i>134</i>&nbsp;			//					}
+<i>135</i>&nbsp;			//				}
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;			serverPath = (String)inStream.readObject();</b>
+<b class="nc"><i>138</i>&nbsp;			serverPath = serverPath.substring(&quot;Image path: &quot;.length()).trim();</b>
+<i>139</i>&nbsp;
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;			while (true) {
+<i>142</i>&nbsp;				//					logger.debug(&quot;Starting read: &quot; + inStream.available());
+<i>143</i>&nbsp;				try {
+<i>144</i>&nbsp;					// Try to read a relevant object from the stream
+<b class="nc"><i>145</i>&nbsp;					Object input = inStream.readObject();</b>
+<b class="nc"><i>146</i>&nbsp;					logger.debug(&quot;Read: {}&quot;, input);</b>
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;					// If we have a Locale, then set it
+<b class="nc"><i>149</i>&nbsp;					if (input instanceof Locale) {</b>
+<b class="nc"><i>150</i>&nbsp;						if (input != locale) {</b>
+<b class="nc"><i>151</i>&nbsp;							Locale.setDefault(Category.FORMAT, (Locale)input);</b>
+<b class="nc"><i>152</i>&nbsp;							localeChanged = true;</b>
+<i>153</i>&nbsp;						}
+<b class="nc"><i>154</i>&nbsp;					} else if (input instanceof PathObjectHierarchy)</b>
+<b class="nc"><i>155</i>&nbsp;						hierarchy = (PathObjectHierarchy)input;</b>
+<b class="nc"><i>156</i>&nbsp;					else if (input instanceof ImageData.ImageType)</b>
+<b class="nc"><i>157</i>&nbsp;						imageType = (ImageData.ImageType)input;</b>
+<b class="nc"><i>158</i>&nbsp;					else if (input instanceof String &amp;&amp; &quot;EOF&quot;.equals(input))  {</b>
+<i>159</i>&nbsp;						//							if (serverPath == null) // serverPath should be first string
+<i>160</i>&nbsp;						//								serverPath = (String)input;
+<i>161</i>&nbsp;						//							else if (&quot;EOF&quot;.equals(input)) {
+<b class="nc"><i>162</i>&nbsp;						break;</b>
+<i>163</i>&nbsp;						//							}
+<i>164</i>&nbsp;					}
+<b class="nc"><i>165</i>&nbsp;					else if (input instanceof ColorDeconvolutionStains)</b>
+<b class="nc"><i>166</i>&nbsp;						stains = (ColorDeconvolutionStains)input;</b>
+<b class="nc"><i>167</i>&nbsp;					else if (input instanceof Workflow)</b>
+<b class="nc"><i>168</i>&nbsp;						workflow = (Workflow)input;</b>
+<b class="nc"><i>169</i>&nbsp;					else if (input instanceof Map)</b>
+<b class="nc"><i>170</i>&nbsp;						propertyMap = (Map&lt;String, Object&gt;)input;</b>
+<b class="nc"><i>171</i>&nbsp;					else if (input == null) {</b>
+<b class="nc"><i>172</i>&nbsp;						logger.debug(&quot;Null object will be skipped&quot;);</b>
+<i>173</i>&nbsp;					} else
+<b class="nc"><i>174</i>&nbsp;						logger.warn(&quot;Unsupported object of class {} will be skipped: {}&quot;, input.getClass().getName(), input);</b>
+<i>175</i>&nbsp;
+<b class="nc"><i>176</i>&nbsp;				} catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>177</i>&nbsp;					logger.error(&quot;Unable to find class&quot;, e);</b>
+<b class="nc"><i>178</i>&nbsp;				} catch (EOFException e) {</b>
+<i>179</i>&nbsp;					// Try to recover from EOFExceptions - we may already have enough info
+<b class="nc"><i>180</i>&nbsp;					logger.error(&quot;Reached end of file...&quot;);</b>
+<b class="nc"><i>181</i>&nbsp;					if (hierarchy == null)</b>
+<b class="nc"><i>182</i>&nbsp;						e.printStackTrace();</b>
+<b class="nc"><i>183</i>&nbsp;					break;</b>
+<b class="nc"><i>184</i>&nbsp;				}</b>
+<i>185</i>&nbsp;			}
+<i>186</i>&nbsp;
+<i>187</i>&nbsp;			// Create an entirely new ImageData if necessary
+<b class="nc"><i>188</i>&nbsp;			if (imageData == null || !(imageData.getServer().equals(server) || imageData.getServerPath().equals(serverPath))) {</b>
+<i>189</i>&nbsp;				// Create a new server if we need to
+<b class="nc"><i>190</i>&nbsp;				if (server == null) {</b>
+<i>191</i>&nbsp;					try {
+<b class="nc"><i>192</i>&nbsp;						server = ImageServerProvider.buildServer(serverPath, cls);</b>
+<b class="nc"><i>193</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>194</i>&nbsp;						logger.error(e.getLocalizedMessage());</b>
+<b class="nc"><i>195</i>&nbsp;					};</b>
+<b class="nc"><i>196</i>&nbsp;					if (server == null) {</b>
+<b class="nc"><i>197</i>&nbsp;						logger.error(&quot;Warning: Unable to create server for path &quot; + serverPath);</b>
+<i>198</i>&nbsp;						//							throw new RuntimeException(&quot;Warning: Unable to create server for path &quot; + serverPath);
+<i>199</i>&nbsp;					}
+<i>200</i>&nbsp;				}
+<i>201</i>&nbsp;				// TODO: Make this less clumsy... but for now we need to ensure we have a fully-initialized hierarchy (which deserialization alone doesn&#39;t achieve)
+<b class="nc"><i>202</i>&nbsp;				PathObjectHierarchy hierarchy2 = new PathObjectHierarchy();</b>
+<b class="nc"><i>203</i>&nbsp;				hierarchy2.setHierarchy(hierarchy);</b>
+<b class="nc"><i>204</i>&nbsp;				hierarchy = hierarchy2;</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;				imageData = new ImageData&lt;&gt;(server, hierarchy, imageType);</b>
+<b class="nc"><i>207</i>&nbsp;			} else {</b>
+<b class="nc"><i>208</i>&nbsp;				if (imageType != null)</b>
+<b class="nc"><i>209</i>&nbsp;					imageData.setImageType(imageType);</b>
+<i>210</i>&nbsp;				// Set the new hierarchy
+<b class="nc"><i>211</i>&nbsp;				imageData.getHierarchy().setHierarchy(hierarchy);</b>
+<i>212</i>&nbsp;			}
+<i>213</i>&nbsp;			// Set the other properties we have just read
+<b class="nc"><i>214</i>&nbsp;			if (workflow != null) {</b>
+<b class="nc"><i>215</i>&nbsp;				imageData.getHistoryWorkflow().clear();</b>
+<b class="nc"><i>216</i>&nbsp;				imageData.getHistoryWorkflow().addSteps(workflow.getSteps());</b>
+<i>217</i>&nbsp;			}
+<b class="nc"><i>218</i>&nbsp;			if (stains != null) {</b>
+<b class="nc"><i>219</i>&nbsp;				imageData.setColorDeconvolutionStains(stains);</b>
+<i>220</i>&nbsp;			}
+<b class="nc"><i>221</i>&nbsp;			if (propertyMap != null) {</b>
+<b class="nc"><i>222</i>&nbsp;				for (Entry&lt;String, Object&gt; entry : propertyMap.entrySet())</b>
+<b class="nc"><i>223</i>&nbsp;					imageData.setProperty(entry.getKey(), entry.getValue());</b>
+<i>224</i>&nbsp;			}
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;			long endTime = System.currentTimeMillis();</b>
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;			//				if (hierarchy == null) {
+<i>229</i>&nbsp;			//					logger.error(String.format(&quot;%s does not contain a valid QUPath object hierarchy!&quot;, file.getAbsolutePath()));
+<i>230</i>&nbsp;			//					return null;
+<i>231</i>&nbsp;			//				}
+<b class="nc"><i>232</i>&nbsp;			logger.debug(String.format(&quot;Hierarchy with %d object(s) read in %.2f seconds&quot;, hierarchy.nObjects(), (endTime - startTime)/1000.));</b>
+<i>233</i>&nbsp;
+<b class="nc"><i>234</i>&nbsp;		} catch (ClassNotFoundException e1) {</b>
+<b class="nc"><i>235</i>&nbsp;			logger.warn(&quot;Class not found reading image data&quot;, e1);</b>
+<i>236</i>&nbsp;		} finally {
+<b class="nc"><i>237</i>&nbsp;			if (localeChanged)</b>
+<b class="nc"><i>238</i>&nbsp;				Locale.setDefault(Category.FORMAT, locale);</b>
+<b class="nc"><i>239</i>&nbsp;		}</b>
+<b class="nc"><i>240</i>&nbsp;		return imageData;</b>
+<i>241</i>&nbsp;	}
+<i>242</i>&nbsp;	
+<i>243</i>&nbsp;	
+<i>244</i>&nbsp;//	/**
+<i>245</i>&nbsp;//	 * Test if a specified file can be identified as a zip file.
+<i>246</i>&nbsp;//	 * 
+<i>247</i>&nbsp;//	 * Zip &#39;magic number&#39; contents are tested rather than file extension.
+<i>248</i>&nbsp;//	 * 
+<i>249</i>&nbsp;//	 * @param file
+<i>250</i>&nbsp;//	 * @return
+<i>251</i>&nbsp;//	 */
+<i>252</i>&nbsp;//	public static boolean isZipFile(final File file) {
+<i>253</i>&nbsp;//		if (!file.canRead() || file.length() &lt; 4)
+<i>254</i>&nbsp;//			return false;
+<i>255</i>&nbsp;//		
+<i>256</i>&nbsp;//		try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+<i>257</i>&nbsp;//			int zipTest = in.readInt();
+<i>258</i>&nbsp;//			in.close();
+<i>259</i>&nbsp;//			return zipTest == 0x504b0304;
+<i>260</i>&nbsp;//		} catch (IOException e) {
+<i>261</i>&nbsp;//			return false;
+<i>262</i>&nbsp;//		}
+<i>263</i>&nbsp;//	}
+<i>264</i>&nbsp;	
+<i>265</i>&nbsp;	/**
+<i>266</i>&nbsp;	 * Read ImageData from an InputStream into an existing ImageData object, or creating a new one if required.
+<i>267</i>&nbsp;	 * 
+<i>268</i>&nbsp;	 * @param stream
+<i>269</i>&nbsp;	 * @param imageData
+<i>270</i>&nbsp;	 * @param server an ImageServer to use rather than any that might be stored within the serialized data.  Should be null to use the serialized path to build a new server.
+<i>271</i>&nbsp;	 * 								The main purpose of this is to make it possible to open ImageData where the original image location has been moved, so the
+<i>272</i>&nbsp;	 * 								stored path is no longer accurate.
+<i>273</i>&nbsp;	 * @param cls
+<i>274</i>&nbsp;	 * @return
+<i>275</i>&nbsp;	 * @throws IOException
+<i>276</i>&nbsp;	 */
+<i>277</i>&nbsp;	public static &lt;T&gt; ImageData&lt;T&gt; readImageData(final InputStream stream, ImageData&lt;T&gt; imageData, ImageServer&lt;T&gt; server, Class&lt;T&gt; cls) throws IOException {
+<b class="nc"><i>278</i>&nbsp;		return readImageDataSerialized(stream, imageData, server, cls);</b>
+<i>279</i>&nbsp;	}
+<i>280</i>&nbsp;
+<i>281</i>&nbsp;	
+<i>282</i>&nbsp;	/**
+<i>283</i>&nbsp;	 * Read ImageData from a File into an existing ImageData object, or create a new one if required.
+<i>284</i>&nbsp;	 * @param &lt;T&gt; 
+<i>285</i>&nbsp;	 * 
+<i>286</i>&nbsp;	 * @param file
+<i>287</i>&nbsp;	 * @param imageData
+<i>288</i>&nbsp;	 * @param server an ImageServer to use rather than any that might be stored within the serialized data.  Should be null to use the serialized path to build a new server.
+<i>289</i>&nbsp;	 * 								The main purpose of this is to make it possible to open ImageData where the original image location has been moved, so the
+<i>290</i>&nbsp;	 * 								stored path is no longer accurate.
+<i>291</i>&nbsp;	 * @param cls 
+<i>292</i>&nbsp;	 * @return
+<i>293</i>&nbsp;	 * @throws IOException 
+<i>294</i>&nbsp;	 */
+<i>295</i>&nbsp;	public static &lt;T&gt; ImageData&lt;T&gt; readImageData(final File file, ImageData&lt;T&gt; imageData, ImageServer&lt;T&gt; server, Class&lt;T&gt; cls) throws IOException {
+<b class="nc"><i>296</i>&nbsp;		return readImageDataSerialized(file, imageData, server, cls);</b>
+<i>297</i>&nbsp;	}
+<i>298</i>&nbsp;	
+<i>299</i>&nbsp;	
+<i>300</i>&nbsp;	/**
+<i>301</i>&nbsp;	 * Write (binary) file containing ImageData for later use.
+<i>302</i>&nbsp;	 * 
+<i>303</i>&nbsp;	 * @param file
+<i>304</i>&nbsp;	 * @param imageData
+<i>305</i>&nbsp;	 * @throws FileNotFoundException 
+<i>306</i>&nbsp;	 * @throws IOException 
+<i>307</i>&nbsp;	 */
+<i>308</i>&nbsp;	public static void writeImageData(final File file, final ImageData&lt;?&gt; imageData) throws FileNotFoundException, IOException {
+<b class="nc"><i>309</i>&nbsp;		File backup = null;</b>
+<i>310</i>&nbsp;		
+<i>311</i>&nbsp;		// Backup any existing file... just in case of disaster
+<b class="nc"><i>312</i>&nbsp;		if (file.exists()) {</b>
+<b class="nc"><i>313</i>&nbsp;			File fileCopy = new File(file.toURI());</b>
+<b class="nc"><i>314</i>&nbsp;			backup = new File(fileCopy.getAbsolutePath() + &quot;.backup&quot;);</b>
+<b class="nc"><i>315</i>&nbsp;			fileCopy.renameTo(backup);</b>
+<i>316</i>&nbsp;		}
+<i>317</i>&nbsp;		
+<i>318</i>&nbsp;		// Write the data
+<b class="nc"><i>319</i>&nbsp;		try (var stream = new FileOutputStream(file)) {</b>
+<b class="nc"><i>320</i>&nbsp;			writeImageDataSerialized(stream, imageData);</b>
+<i>321</i>&nbsp;			
+<i>322</i>&nbsp;			// Remember the saved path
+<b class="nc"><i>323</i>&nbsp;			imageData.setLastSavedPath(file.getAbsolutePath(), true);</b>
+<b class="nc"><i>324</i>&nbsp;		}</b>
+<i>325</i>&nbsp;		
+<i>326</i>&nbsp;		// Delete the backup file
+<b class="nc"><i>327</i>&nbsp;		if (backup != null &amp;&amp; !backup.equals(file))</b>
+<b class="nc"><i>328</i>&nbsp;			backup.delete();</b>
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;	}
+<i>331</i>&nbsp;	
+<i>332</i>&nbsp;	/**
+<i>333</i>&nbsp;	 * Serialize an ImageData object to an output stream.
+<i>334</i>&nbsp;	 * @param stream
+<i>335</i>&nbsp;	 * @param imageData
+<i>336</i>&nbsp;	 * @throws IOException
+<i>337</i>&nbsp;	 */
+<i>338</i>&nbsp;	public static void writeImageData(final OutputStream stream, final ImageData&lt;?&gt; imageData) throws IOException {
+<b class="nc"><i>339</i>&nbsp;		writeImageDataSerialized(stream, imageData);</b>
+<i>340</i>&nbsp;	}
+<i>341</i>&nbsp;	
+<i>342</i>&nbsp;
+<i>343</i>&nbsp;	private static void writeImageDataSerialized(final OutputStream stream, final ImageData&lt;?&gt; imageData) throws IOException {
+<i>344</i>&nbsp;				
+<b class="nc"><i>345</i>&nbsp;		try (OutputStream outputStream = new BufferedOutputStream(stream)) {</b>
+<b class="nc"><i>346</i>&nbsp;			long startTime = System.currentTimeMillis();</b>
+<i>347</i>&nbsp;			
+<b class="nc"><i>348</i>&nbsp;			ObjectOutputStream outStream = new ObjectOutputStream(outputStream);</b>
+<i>349</i>&nbsp;			
+<i>350</i>&nbsp;			// Write the identifier
+<i>351</i>&nbsp;			// Version 1.0 was the first...
+<i>352</i>&nbsp;			// Version 2 switched to integers, and includes Locale information
+<b class="nc"><i>353</i>&nbsp;			outStream.writeUTF(&quot;Data file version 2&quot;);</b>
+<i>354</i>&nbsp;			
+<i>355</i>&nbsp;			// Try to write a backwards-compatible image path
+<b class="nc"><i>356</i>&nbsp;			var server = imageData.getServer();</b>
+<b class="nc"><i>357</i>&nbsp;			var uris = server.getURIs();</b>
+<i>358</i>&nbsp;			String path;
+<b class="nc"><i>359</i>&nbsp;			if (uris.size() == 1) {</b>
+<b class="nc"><i>360</i>&nbsp;				var uri = uris.iterator().next();</b>
+<b class="nc"><i>361</i>&nbsp;				var serverPath = GeneralTools.toPath(uri);</b>
+<b class="nc"><i>362</i>&nbsp;				if (serverPath != null &amp;&amp; Files.exists(serverPath))</b>
+<b class="nc"><i>363</i>&nbsp;					path = serverPath.toFile().getAbsolutePath();</b>
+<i>364</i>&nbsp;				else
+<b class="nc"><i>365</i>&nbsp;					path = uri.toString();</b>
+<b class="nc"><i>366</i>&nbsp;			} else</b>
+<b class="nc"><i>367</i>&nbsp;				path = server.getPath();</b>
+<b class="nc"><i>368</i>&nbsp;			outStream.writeObject(&quot;Image path: &quot; + path);</b>
+<i>369</i>&nbsp;			
+<i>370</i>&nbsp;			// Write the current locale
+<b class="nc"><i>371</i>&nbsp;			outStream.writeObject(Locale.getDefault(Category.FORMAT));</b>
+<i>372</i>&nbsp;			
+<i>373</i>&nbsp;			// Write the rest of the main image metadata
+<b class="nc"><i>374</i>&nbsp;			outStream.writeObject(imageData.getImageType());</b>
+<b class="nc"><i>375</i>&nbsp;			outStream.writeObject(imageData.getColorDeconvolutionStains());</b>
+<b class="nc"><i>376</i>&nbsp;			outStream.writeObject(imageData.getHistoryWorkflow());</b>
+<i>377</i>&nbsp;			
+<i>378</i>&nbsp;			// Write the rest of the main image metadata
+<b class="nc"><i>379</i>&nbsp;			PathObjectHierarchy hierarchy = imageData.getHierarchy();</b>
+<b class="nc"><i>380</i>&nbsp;			logger.info(String.format(&quot;Writing object hierarchy with %d object(s)...&quot;, hierarchy.nObjects()));</b>
+<b class="nc"><i>381</i>&nbsp;			outStream.writeObject(hierarchy);</b>
+<i>382</i>&nbsp;			
+<i>383</i>&nbsp;			// Write any remaining (serializable) properties
+<b class="nc"><i>384</i>&nbsp;			Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>385</i>&nbsp;			for (Entry&lt;String, Object&gt; entry : imageData.getProperties().entrySet()) {</b>
+<b class="nc"><i>386</i>&nbsp;				if (entry.getValue() instanceof Serializable)</b>
+<b class="nc"><i>387</i>&nbsp;					map.put(entry.getKey(), entry.getValue());</b>
+<i>388</i>&nbsp;				else
+<b class="nc"><i>389</i>&nbsp;					logger.error(&quot;Property not serializable and will not be saved!  Key: &quot; + entry.getKey() + &quot;, Value: &quot; + entry.getValue());</b>
+<b class="nc"><i>390</i>&nbsp;			}</b>
+<b class="nc"><i>391</i>&nbsp;			if (map != null)</b>
+<b class="nc"><i>392</i>&nbsp;				outStream.writeObject(map);</b>
+<i>393</i>&nbsp;			
+<i>394</i>&nbsp;			// Write EOF marker
+<b class="nc"><i>395</i>&nbsp;			outStream.writeObject(&quot;EOF&quot;);</b>
+<i>396</i>&nbsp;			
+<b class="nc"><i>397</i>&nbsp;			long endTime = System.currentTimeMillis();</b>
+<b class="nc"><i>398</i>&nbsp;			logger.info(String.format(&quot;Image data written in %.2f seconds&quot;, (endTime - startTime)/1000.));</b>
+<b class="nc"><i>399</i>&nbsp;		}</b>
+<i>400</i>&nbsp;	}
+<i>401</i>&nbsp;	
+<i>402</i>&nbsp;	/**
+<i>403</i>&nbsp;	 * Read a hierarchy from a .qpdata file.
+<i>404</i>&nbsp;	 * 
+<i>405</i>&nbsp;	 * @param file
+<i>406</i>&nbsp;	 * @return
+<i>407</i>&nbsp;	 * @throws IOException 
+<i>408</i>&nbsp;	 * @throws FileNotFoundException 
+<i>409</i>&nbsp;	 */
+<i>410</i>&nbsp;	public static PathObjectHierarchy readHierarchy(final File file) throws FileNotFoundException, IOException {
+<b class="nc"><i>411</i>&nbsp;		logger.info(&quot;Reading hierarchy from {}...&quot;, file.getName());</b>
+<b class="nc"><i>412</i>&nbsp;		try (FileInputStream stream = new FileInputStream(file)) {</b>
+<b class="nc"><i>413</i>&nbsp;			var hierarchy = readHierarchy(stream);			</b>
+<b class="nc"><i>414</i>&nbsp;			if (hierarchy == null)</b>
+<b class="nc"><i>415</i>&nbsp;				logger.error(&quot;Unable to find object hierarchy in &quot; + file);</b>
+<b class="nc"><i>416</i>&nbsp;			return hierarchy;</b>
+<b class="nc"><i>417</i>&nbsp;		}</b>
+<i>418</i>&nbsp;	}
+<i>419</i>&nbsp;	
+<i>420</i>&nbsp;	/**
+<i>421</i>&nbsp;	 * Read a PathObjectHierarchy from a saved data file (omitting all other contents).
+<i>422</i>&nbsp;	 * 
+<i>423</i>&nbsp;	 * @param fileIn
+<i>424</i>&nbsp;	 * @return
+<i>425</i>&nbsp;	 * @throws IOException 
+<i>426</i>&nbsp;	 */
+<i>427</i>&nbsp;	public static PathObjectHierarchy readHierarchy(final InputStream fileIn) throws IOException {
+<i>428</i>&nbsp;
+<b class="nc"><i>429</i>&nbsp;		Locale locale = Locale.getDefault(Category.FORMAT);</b>
+<b class="nc"><i>430</i>&nbsp;		boolean localeChanged = false;</b>
+<i>431</i>&nbsp;
+<b class="nc"><i>432</i>&nbsp;		try (ObjectInputStream inStream = new ObjectInputStream(new BufferedInputStream(fileIn))) {</b>
+<b class="nc"><i>433</i>&nbsp;			if (!inStream.readUTF().startsWith(&quot;Data file version&quot;)) {</b>
+<b class="nc"><i>434</i>&nbsp;				logger.error(&quot;Input stream is not from a valid QuPath data file!&quot;);</b>
+<i>435</i>&nbsp;			}
+<i>436</i>&nbsp;			while (true) {
+<i>437</i>&nbsp;				//					logger.debug(&quot;Starting read: &quot; + inStream.available());
+<i>438</i>&nbsp;				try {
+<i>439</i>&nbsp;					// Try to read a relevant object from the stream
+<b class="nc"><i>440</i>&nbsp;					Object input = inStream.readObject();</b>
+<b class="nc"><i>441</i>&nbsp;					logger.debug(&quot;Read: {}&quot;, input);</b>
+<i>442</i>&nbsp;
+<i>443</i>&nbsp;					// Set locale - may be needed (although probably isn&#39;t...)
+<b class="nc"><i>444</i>&nbsp;					if (input instanceof Locale) {</b>
+<b class="nc"><i>445</i>&nbsp;						if (input != locale) {</b>
+<b class="nc"><i>446</i>&nbsp;							Locale.setDefault(Category.FORMAT, (Locale)input);</b>
+<b class="nc"><i>447</i>&nbsp;							localeChanged = true;</b>
+<i>448</i>&nbsp;						}
+<b class="nc"><i>449</i>&nbsp;					} else if (input instanceof PathObjectHierarchy) {</b>
+<i>450</i>&nbsp;						/* This would ideally be unnecessary, but it&#39;s needed to ensure that the PathObjectHierarchy
+<i>451</i>&nbsp;						 * has been property initialized.  We can&#39;t count on the deserialized hierarchy being immediately functional.
+<i>452</i>&nbsp;						 */
+<b class="nc"><i>453</i>&nbsp;						PathObjectHierarchy hierarchy = new PathObjectHierarchy();</b>
+<b class="nc"><i>454</i>&nbsp;						hierarchy.setHierarchy((PathObjectHierarchy)input);</b>
+<b class="nc"><i>455</i>&nbsp;						return hierarchy;</b>
+<i>456</i>&nbsp;					}
+<i>457</i>&nbsp;
+<b class="nc"><i>458</i>&nbsp;				} catch (ClassNotFoundException e) {</b>
+<b class="nc"><i>459</i>&nbsp;					logger.error(&quot;Unable to find class&quot;, e);</b>
+<b class="nc"><i>460</i>&nbsp;				} catch (EOFException e) {</b>
+<b class="nc"><i>461</i>&nbsp;					logger.error(&quot;Reached end of file unexpectedly...&quot;);</b>
+<b class="nc"><i>462</i>&nbsp;				}</b>
+<i>463</i>&nbsp;			}
+<b class="nc"><i>464</i>&nbsp;		} finally {</b>
+<b class="nc"><i>465</i>&nbsp;			if (localeChanged)</b>
+<b class="nc"><i>466</i>&nbsp;				Locale.setDefault(Category.FORMAT, locale);</b>
+<b class="nc"><i>467</i>&nbsp;		}</b>
+<i>468</i>&nbsp;	}
+<i>469</i>&nbsp;
+<i>470</i>&nbsp;	
+<i>471</i>&nbsp;	
+<i>472</i>&nbsp;//	private static boolean serializePathObject(File file, PathObject pathObject) {
+<i>473</i>&nbsp;//		boolean success = false;
+<i>474</i>&nbsp;//		if (file == null)
+<i>475</i>&nbsp;//			return false;
+<i>476</i>&nbsp;//		BufferedOutputStream outputStream = null;
+<i>477</i>&nbsp;//		try {
+<i>478</i>&nbsp;//			logger.info(&quot;Writing {}&quot;, pathObject);
+<i>479</i>&nbsp;//			FileOutputStream fileOutMain = new FileOutputStream(file);
+<i>480</i>&nbsp;//			outputStream = new BufferedOutputStream(fileOutMain);
+<i>481</i>&nbsp;//			ObjectOutputStream outStream = new ObjectOutputStream(outputStream);
+<i>482</i>&nbsp;//			outStream.writeObject(pathObject);
+<i>483</i>&nbsp;//			outStream.close();
+<i>484</i>&nbsp;//			success = true;
+<i>485</i>&nbsp;//		} catch (IOException e) {
+<i>486</i>&nbsp;//			e.printStackTrace();
+<i>487</i>&nbsp;//		} finally {
+<i>488</i>&nbsp;//			if (outputStream != null)
+<i>489</i>&nbsp;//				try {
+<i>490</i>&nbsp;//					outputStream.close();
+<i>491</i>&nbsp;//				} catch (IOException e) {
+<i>492</i>&nbsp;//					// TODO Auto-generated catch block
+<i>493</i>&nbsp;//					e.printStackTrace();
+<i>494</i>&nbsp;//				}
+<i>495</i>&nbsp;//		}
+<i>496</i>&nbsp;//		return success;
+<i>497</i>&nbsp;//	}
+<i>498</i>&nbsp;	
+<i>499</i>&nbsp;	
+<i>500</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

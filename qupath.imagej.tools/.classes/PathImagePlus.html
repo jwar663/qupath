@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: PathImagePlus</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.tools</a> ]
+</div>
+
+<h1>Coverage Summary for Class: PathImagePlus (qupath.imagej.tools)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">PathImagePlus</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.tools;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import org.slf4j.Logger;
+<i>27</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import ij.ImagePlus;
+<i>30</i>&nbsp;import ij.measure.Calibration;
+<i>31</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>32</i>&nbsp;import qupath.lib.images.PathImage;
+<i>33</i>&nbsp;import qupath.lib.images.servers.PixelCalibration;
+<i>34</i>&nbsp;import qupath.lib.regions.ImageRegion;
+<i>35</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;/**
+<i>38</i>&nbsp; * PathImage implementation backed by an ImageJ ImagePlus object.
+<i>39</i>&nbsp; * 
+<i>40</i>&nbsp; * @author Pete Bankhead
+<i>41</i>&nbsp; *
+<i>42</i>&nbsp; */
+<i>43</i>&nbsp;class PathImagePlus implements PathImage&lt;ImagePlus&gt; {
+<i>44</i>&nbsp;	
+<b class="nc"><i>45</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(PathImagePlus.class);</b>
+<i>46</i>&nbsp;	
+<b class="nc"><i>47</i>&nbsp;	transient private ImagePlus imp = null;</b>
+<i>48</i>&nbsp;	private RegionRequest request;
+<i>49</i>&nbsp;	
+<i>50</i>&nbsp;	private PixelCalibration calibration;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;	
+<i>53</i>&nbsp;	/**
+<i>54</i>&nbsp;	 * Create a PathImage for which the image will be read lazily.
+<i>55</i>&nbsp;	 * 
+<i>56</i>&nbsp;	 * @param request
+<i>57</i>&nbsp;	 * @param imp
+<i>58</i>&nbsp;	 */
+<b class="nc"><i>59</i>&nbsp;	PathImagePlus(RegionRequest request, ImagePlus imp) {</b>
+<b class="nc"><i>60</i>&nbsp;		this.request = request;		</b>
+<b class="nc"><i>61</i>&nbsp;		this.imp = imp;</b>
+<b class="nc"><i>62</i>&nbsp;		logger.trace(&quot;Creating PathImage for {} and request {}&quot;, imp, request);</b>
+<i>63</i>&nbsp;	}
+<i>64</i>&nbsp;	
+<i>65</i>&nbsp;//	protected void setImagePlusOrigin(ImagePlus imp) {
+<i>66</i>&nbsp;//		if (imp == null || request == null)
+<i>67</i>&nbsp;//			return;
+<i>68</i>&nbsp;//		double downsampleFactor = getDownsampleFactor();
+<i>69</i>&nbsp;////		IJ.log(&quot;Computed downsample factor: &quot; + downsampleFactor);
+<i>70</i>&nbsp;//		Calibration cal = imp.getCalibration();
+<i>71</i>&nbsp;//		cal.xOrigin = -bounds.x / downsampleFactor;
+<i>72</i>&nbsp;//		cal.yOrigin = -bounds.y / downsampleFactor;
+<i>73</i>&nbsp;//	}
+<i>74</i>&nbsp;	
+<i>75</i>&nbsp;	
+<i>76</i>&nbsp;	@Override
+<i>77</i>&nbsp;	public double getDownsampleFactor() {
+<b class="nc"><i>78</i>&nbsp;		return request.getDownsample();</b>
+<i>79</i>&nbsp;	}
+<i>80</i>&nbsp;	
+<i>81</i>&nbsp;	@Override
+<i>82</i>&nbsp;	public ImagePlus getImage() {
+<b class="nc"><i>83</i>&nbsp;		return imp;</b>
+<i>84</i>&nbsp;	}
+<i>85</i>&nbsp;	
+<i>86</i>&nbsp;	@Override
+<i>87</i>&nbsp;	public PixelCalibration getPixelCalibration() {
+<b class="nc"><i>88</i>&nbsp;		if (calibration == null) {</b>
+<b class="nc"><i>89</i>&nbsp;			var builder =  new PixelCalibration.Builder();</b>
+<b class="nc"><i>90</i>&nbsp;			Calibration cal = getImage().getCalibration();</b>
+<b class="nc"><i>91</i>&nbsp;			if (isMicrons(cal.getXUnit()) &amp;&amp; isMicrons(cal.getYUnit())) {</b>
+<b class="nc"><i>92</i>&nbsp;				builder.pixelSizeMicrons(cal.pixelWidth, cal.pixelHeight);</b>
+<i>93</i>&nbsp;			}
+<b class="nc"><i>94</i>&nbsp;			if (isMicrons(cal.getZUnit())) {</b>
+<b class="nc"><i>95</i>&nbsp;				builder.zSpacingMicrons(cal.pixelDepth);				</b>
+<i>96</i>&nbsp;			}
+<b class="nc"><i>97</i>&nbsp;			calibration = builder.build();</b>
+<i>98</i>&nbsp;		}
+<b class="nc"><i>99</i>&nbsp;		return calibration;</b>
+<i>100</i>&nbsp;	}
+<i>101</i>&nbsp;	
+<i>102</i>&nbsp;	private static boolean isMicrons(String unit) {
+<b class="nc"><i>103</i>&nbsp;		if (unit == null)</b>
+<b class="nc"><i>104</i>&nbsp;			return false;</b>
+<b class="nc"><i>105</i>&nbsp;		unit = unit.toLowerCase();</b>
+<b class="nc"><i>106</i>&nbsp;		if (unit.startsWith(GeneralTools.micrometerSymbol()) || unit.equals(&quot;um&quot;) || unit.startsWith(&quot;micron&quot;))</b>
+<b class="nc"><i>107</i>&nbsp;			return true;</b>
+<b class="nc"><i>108</i>&nbsp;		return false;</b>
+<i>109</i>&nbsp;	}
+<i>110</i>&nbsp;
+<i>111</i>&nbsp;	@Override
+<i>112</i>&nbsp;	public ImageRegion getImageRegion() {
+<b class="nc"><i>113</i>&nbsp;		return request;</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;	
+<i>116</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

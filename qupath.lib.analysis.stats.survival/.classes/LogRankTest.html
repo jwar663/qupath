@@ -1,0 +1,305 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: LogRankTest</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.analysis.stats.survival</a> ]
+</div>
+
+<h1>Coverage Summary for Class: LogRankTest (qupath.lib.analysis.stats.survival)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LogRankTest</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 33)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LogRankTest$LogRankResult</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 28)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 61)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.analysis.stats.survival;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+<i>27</i>&nbsp;import org.slf4j.Logger;
+<i>28</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>31</i>&nbsp;
+<i>32</i>&nbsp;/**
+<i>33</i>&nbsp; * Helper class to apply a log-rank test.
+<i>34</i>&nbsp; * 
+<i>35</i>&nbsp; * @author Pete Bankhead
+<i>36</i>&nbsp; *
+<i>37</i>&nbsp; */
+<b class="nc"><i>38</i>&nbsp;public class LogRankTest {</b>
+<i>39</i>&nbsp;
+<b class="nc"><i>40</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(LogRankTest.class);</b>
+<i>41</i>&nbsp;
+<b class="nc"><i>42</i>&nbsp;	private static ChiSquaredDistribution chi2 = new ChiSquaredDistribution(1);</b>
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;	/**
+<i>45</i>&nbsp;	 * Compare KaplanMeier objects using log-rank test.
+<i>46</i>&nbsp;	 * 
+<i>47</i>&nbsp;	 * @param km1
+<i>48</i>&nbsp;	 * @param km2
+<i>49</i>&nbsp;	 * @return
+<i>50</i>&nbsp;	 */
+<i>51</i>&nbsp;	public static LogRankResult computeLogRankTest(final KaplanMeierData km1, final KaplanMeierData km2) {
+<i>52</i>&nbsp;
+<b class="nc"><i>53</i>&nbsp;		if (km1.isEmpty() || km2.isEmpty())</b>
+<b class="nc"><i>54</i>&nbsp;			return new LogRankResult();</b>
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;		// Get times from both groups
+<b class="nc"><i>57</i>&nbsp;		KaplanMeierData kmMerged = new KaplanMeierData(&quot;Temp&quot;, km1.getEvents()).addEvents(km2.getEvents());</b>
+<b class="nc"><i>58</i>&nbsp;		double[] timesEventsMerged = kmMerged.getAllTimes();//.getEventTimes();</b>
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;		// Loop through all the event times
+<b class="nc"><i>61</i>&nbsp;		double d1 = 0;</b>
+<b class="nc"><i>62</i>&nbsp;		double d2 = 0;</b>
+<b class="nc"><i>63</i>&nbsp;		double e1 = 0;</b>
+<b class="nc"><i>64</i>&nbsp;		double e2 = 0;</b>
+<b class="nc"><i>65</i>&nbsp;		for (int j = 0; j &lt; timesEventsMerged.length; j++) {</b>
+<b class="nc"><i>66</i>&nbsp;			double t = timesEventsMerged[j];</b>
+<b class="nc"><i>67</i>&nbsp;			double n1j = km1.getAtRisk(t);</b>
+<b class="nc"><i>68</i>&nbsp;			double n2j = km2.getAtRisk(t);</b>
+<i>69</i>&nbsp;
+<b class="nc"><i>70</i>&nbsp;			double d1j = km1.getEventsAtTime(t);</b>
+<b class="nc"><i>71</i>&nbsp;			double d2j = km2.getEventsAtTime(t);</b>
+<b class="nc"><i>72</i>&nbsp;			d1 += d1j;</b>
+<b class="nc"><i>73</i>&nbsp;			d2 += d2j;</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;			double pd = (d1j + d2j) / (n1j + n2j);</b>
+<b class="nc"><i>76</i>&nbsp;			e1 += pd * n1j;</b>
+<b class="nc"><i>77</i>&nbsp;			e2 += pd * n2j;</b>
+<i>78</i>&nbsp;		}
+<b class="nc"><i>79</i>&nbsp;		double stat = (d1-e1)*(d1-e1)/e1 + (d2-e2)*(d2-e2)/e2;</b>
+<i>80</i>&nbsp;		double logRankPValue;
+<b class="nc"><i>81</i>&nbsp;		if (stat &lt; 0)</b>
+<b class="nc"><i>82</i>&nbsp;			logRankPValue = 1 - chi2.cumulativeProbability(-stat);</b>
+<i>83</i>&nbsp;		else
+<b class="nc"><i>84</i>&nbsp;			logRankPValue = 1 - chi2.cumulativeProbability(stat);</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;		double hazardRatio = (d1/e1)/(d2/e2);</b>
+<b class="nc"><i>87</i>&nbsp;		double hazardSE = Math.sqrt(1/e1 + 1/e2);</b>
+<b class="nc"><i>88</i>&nbsp;		double hazardLog = Math.log(hazardRatio);</b>
+<b class="nc"><i>89</i>&nbsp;		double hazardLower = Math.exp(hazardLog - 1.96*hazardSE);</b>
+<b class="nc"><i>90</i>&nbsp;		double hazardUpper = Math.exp(hazardLog + 1.96*hazardSE);</b>
+<i>91</i>&nbsp;		//			logger.info(&quot;Log ranks: {} AND {}; HAZARD: {} ({} - {})&quot;, logRankInitial, logRankAgain, hazardRatio, hazardLower, hazardUpper);
+<b class="nc"><i>92</i>&nbsp;		logger.trace(String.format(&quot;Log rank: %.4f\tHAZARD: %.3f (%.3f - %.3f)&quot;, logRankPValue, hazardRatio, hazardLower, hazardUpper));</b>
+<i>93</i>&nbsp;
+<b class="nc"><i>94</i>&nbsp;		return new LogRankResult(logRankPValue, hazardRatio, hazardLower, hazardUpper);</b>
+<i>95</i>&nbsp;	}
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	
+<i>98</i>&nbsp;	
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	
+<i>101</i>&nbsp;	/**
+<i>102</i>&nbsp;	 * Simple structure used to manage the result of a log rank test.
+<i>103</i>&nbsp;	 * 
+<i>104</i>&nbsp;	 * @author Pete Bankhead
+<i>105</i>&nbsp;	 *
+<i>106</i>&nbsp;	 */
+<i>107</i>&nbsp;	public static class LogRankResult {
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;		final double pValue;
+<i>110</i>&nbsp;		final double hazardRatio;
+<i>111</i>&nbsp;		final double hazardRatioLowerConfidence;
+<i>112</i>&nbsp;		final double hazardRatioUpperConfidence;
+<i>113</i>&nbsp;
+<b class="nc"><i>114</i>&nbsp;		LogRankResult() {</b>
+<b class="nc"><i>115</i>&nbsp;			this.pValue = Double.NaN;</b>
+<b class="nc"><i>116</i>&nbsp;			this.hazardRatio = Double.NaN;</b>
+<b class="nc"><i>117</i>&nbsp;			this.hazardRatioLowerConfidence = Double.NaN;</b>
+<b class="nc"><i>118</i>&nbsp;			this.hazardRatioUpperConfidence = Double.NaN;</b>
+<i>119</i>&nbsp;		}
+<i>120</i>&nbsp;
+<b class="nc"><i>121</i>&nbsp;		LogRankResult(final double pValue, final double hazardRatio, final double hazardRatioLowerConfidence, final double hazardRatioUpperConfidence) {</b>
+<b class="nc"><i>122</i>&nbsp;			this.pValue = pValue;</b>
+<b class="nc"><i>123</i>&nbsp;			this.hazardRatio = hazardRatio;</b>
+<b class="nc"><i>124</i>&nbsp;			this.hazardRatioLowerConfidence = hazardRatioLowerConfidence;</b>
+<b class="nc"><i>125</i>&nbsp;			this.hazardRatioUpperConfidence = hazardRatioUpperConfidence;</b>
+<i>126</i>&nbsp;		}
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;		/**
+<i>129</i>&nbsp;		 * Returns a presentable representation of the log-rank test result, including hazard ratio and confidence interval.
+<i>130</i>&nbsp;		 * @return 
+<i>131</i>&nbsp;		 */
+<i>132</i>&nbsp;		public String getResultString() {
+<b class="nc"><i>133</i>&nbsp;			if (Double.isNaN(pValue))</b>
+<b class="nc"><i>134</i>&nbsp;				return &quot;-&quot;;</b>
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;			String pValueString;
+<i>137</i>&nbsp;			int maxDecimalPlaces;
+<b class="nc"><i>138</i>&nbsp;			if (pValue &gt; 1e-3)</b>
+<b class="nc"><i>139</i>&nbsp;				maxDecimalPlaces = 4;					</b>
+<b class="nc"><i>140</i>&nbsp;			else if (pValue &gt; 1e-4)</b>
+<b class="nc"><i>141</i>&nbsp;				maxDecimalPlaces = 5;					</b>
+<b class="nc"><i>142</i>&nbsp;			else if (pValue &gt; 1e-5)</b>
+<b class="nc"><i>143</i>&nbsp;				maxDecimalPlaces = 6;					</b>
+<b class="nc"><i>144</i>&nbsp;			else if (pValue &gt; 1e-6)</b>
+<b class="nc"><i>145</i>&nbsp;				maxDecimalPlaces = 7;					</b>
+<i>146</i>&nbsp;			else
+<b class="nc"><i>147</i>&nbsp;				maxDecimalPlaces = 8;					</b>
+<i>148</i>&nbsp;			//		}
+<b class="nc"><i>149</i>&nbsp;			pValueString = GeneralTools.formatNumber(pValue, maxDecimalPlaces);</b>
+<i>150</i>&nbsp;
+<b class="nc"><i>151</i>&nbsp;			return String.format(&quot;%s (%.2f; %.2f-%.2f)&quot;, pValueString, hazardRatio, hazardRatioLowerConfidence, hazardRatioUpperConfidence);</b>
+<i>152</i>&nbsp;		}
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;		/**
+<i>155</i>&nbsp;		 * Returns true if the p-value is not NaN.
+<i>156</i>&nbsp;		 * @return
+<i>157</i>&nbsp;		 */
+<i>158</i>&nbsp;		public boolean isValid() {
+<b class="nc"><i>159</i>&nbsp;			return !Double.isNaN(pValue);</b>
+<i>160</i>&nbsp;		}
+<i>161</i>&nbsp;
+<i>162</i>&nbsp;		/**
+<i>163</i>&nbsp;		 * Get the calculated p-value.
+<i>164</i>&nbsp;		 * @return
+<i>165</i>&nbsp;		 */
+<i>166</i>&nbsp;		public double getPValue() {
+<b class="nc"><i>167</i>&nbsp;			return pValue;</b>
+<i>168</i>&nbsp;		}
+<i>169</i>&nbsp;
+<i>170</i>&nbsp;		/**
+<i>171</i>&nbsp;		 * Get the calculated hazard ratio.
+<i>172</i>&nbsp;		 * @return
+<i>173</i>&nbsp;		 */
+<i>174</i>&nbsp;		public double getHazardRatio() {
+<b class="nc"><i>175</i>&nbsp;			return hazardRatio;</b>
+<i>176</i>&nbsp;		}
+<i>177</i>&nbsp;
+<i>178</i>&nbsp;		/**
+<i>179</i>&nbsp;		 * Get the lower bound of the hazard ratio confidence interval.
+<i>180</i>&nbsp;		 * @return
+<i>181</i>&nbsp;		 */
+<i>182</i>&nbsp;		public double getHazardRatioLowerConfidence() {
+<b class="nc"><i>183</i>&nbsp;			return hazardRatioLowerConfidence;</b>
+<i>184</i>&nbsp;		}
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;		/**
+<i>187</i>&nbsp;		 * Get the upper bound of the hazard ratio confidence interval.
+<i>188</i>&nbsp;		 * @return
+<i>189</i>&nbsp;		 */
+<i>190</i>&nbsp;		public double getHazardRatioUpperConfidence() {
+<b class="nc"><i>191</i>&nbsp;			return hazardRatioUpperConfidence;</b>
+<i>192</i>&nbsp;		}
+<i>193</i>&nbsp;
+<i>194</i>&nbsp;	}
+<i>195</i>&nbsp;	
+<i>196</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

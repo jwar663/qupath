@@ -1,0 +1,436 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: RegionRequest</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.regions</a> ]
+</div>
+
+<h1>Coverage Summary for Class: RegionRequest (qupath.lib.regions)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegionRequest</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    29.2%
+  </span>
+  <span class="absValue">
+    (7/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    34.9%
+  </span>
+  <span class="absValue">
+    (29/ 83)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.regions;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.text.DecimalFormat;
+<i>27</i>&nbsp;import java.util.ArrayList;
+<i>28</i>&nbsp;import java.util.Collection;
+<i>29</i>&nbsp;import java.util.HashMap;
+<i>30</i>&nbsp;import java.util.List;
+<i>31</i>&nbsp;import java.util.Map;
+<i>32</i>&nbsp;import java.util.Objects;
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;import org.slf4j.Logger;
+<i>35</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>38</i>&nbsp;import qupath.lib.roi.interfaces.ROI;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;/**
+<i>41</i>&nbsp; * Class for defining an image region that can also be used to request these region from an {@link ImageServer}.
+<i>42</i>&nbsp; * &lt;p&gt;
+<i>43</i>&nbsp; * In addition to the information contained within an {@link ImageRegion}, also contains the path to the image
+<i>44</i>&nbsp; * (and optionally an additional image name stored within it) and a downsample value.
+<i>45</i>&nbsp; * 
+<i>46</i>&nbsp; * @author Pete Bankhead
+<i>47</i>&nbsp; *
+<i>48</i>&nbsp; */
+<i>49</i>&nbsp;public class RegionRequest extends ImageRegion {
+<i>50</i>&nbsp;	
+<b class="fc"><i>51</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(RegionRequest.class);</b>
+<i>52</i>&nbsp;	
+<b class="fc"><i>53</i>&nbsp;	private static DecimalFormat df = new DecimalFormat(&quot;#.##&quot;);</b>
+<i>54</i>&nbsp;	
+<b class="fc"><i>55</i>&nbsp;	private static Map&lt;String, String&gt; strings = new HashMap&lt;&gt;();</b>
+<i>56</i>&nbsp;	
+<i>57</i>&nbsp;	private final String path;
+<i>58</i>&nbsp;	
+<i>59</i>&nbsp;	private final double downsample;
+<i>60</i>&nbsp;	
+<i>61</i>&nbsp;	@Override
+<i>62</i>&nbsp;	public String toString() {
+<b class="nc"><i>63</i>&nbsp;		String prefix = path;</b>
+<b class="nc"><i>64</i>&nbsp;		return prefix + &quot;: x=&quot; + getX() + &quot;, y=&quot; + getY() + &quot;, w=&quot; + getWidth() + &quot;, h=&quot; + getHeight() + &quot;, z=&quot; + getZ() + &quot;, t=&quot; + getT() + &quot;, downsample=&quot; + df.format(downsample);</b>
+<i>65</i>&nbsp;	}
+<i>66</i>&nbsp;	
+<i>67</i>&nbsp;	
+<i>68</i>&nbsp;	RegionRequest(String path, double downsample, int x, int y, int width, int height, int z, int t) {
+<b class="fc"><i>69</i>&nbsp;		super(x, y, width, height, z, t);</b>
+<i>70</i>&nbsp;		// Using String.intern() can be a performance issue, so use a map instead
+<b class="fc"><i>71</i>&nbsp;		String interned = strings.putIfAbsent(path, path);</b>
+<b class="fc"><i>72</i>&nbsp;		if (interned == null)</b>
+<b class="fc"><i>73</i>&nbsp;			interned = path;</b>
+<b class="fc"><i>74</i>&nbsp;		this.path = path;</b>
+<b class="fc"><i>75</i>&nbsp;		if (!Double.isFinite(downsample))</b>
+<b class="nc"><i>76</i>&nbsp;			logger.warn(&quot;Invalid downsample value {}! This will be an error in future versions.&quot;, downsample);</b>
+<b class="fc"><i>77</i>&nbsp;		this.downsample = downsample;</b>
+<b class="fc"><i>78</i>&nbsp;	}</b>
+<i>79</i>&nbsp;	
+<i>80</i>&nbsp;	/**
+<i>81</i>&nbsp;	 * Create a request for the full width and height of an {@link ImageServer}, for the default plane (first z-slice, time point) 
+<i>82</i>&nbsp;	 * and first resolution level downsample (usually 1, but not always).
+<i>83</i>&nbsp;	 * @param server
+<i>84</i>&nbsp;	 * @return
+<i>85</i>&nbsp;	 */
+<i>86</i>&nbsp;	public static RegionRequest createInstance(ImageServer&lt;?&gt; server) {
+<b class="nc"><i>87</i>&nbsp;		return createInstance(server, server.getDownsampleForResolution(0));</b>
+<i>88</i>&nbsp;	}
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	/**
+<i>91</i>&nbsp;	 * Create a request for the full width and height of an {@link ImageServer}, for the default plane (first z-slice, time point).
+<i>92</i>&nbsp;	 * @param server
+<i>93</i>&nbsp;	 * @param downsample
+<i>94</i>&nbsp;	 * @return
+<i>95</i>&nbsp;	 */
+<i>96</i>&nbsp;	public static RegionRequest createInstance(ImageServer&lt;?&gt; server, double downsample) {
+<b class="nc"><i>97</i>&nbsp;		return createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight());</b>
+<i>98</i>&nbsp;	}
+<i>99</i>&nbsp;	
+<i>100</i>&nbsp;	/**
+<i>101</i>&nbsp;	 * Create requests for the full width and height of an {@link ImageServer}, for all planes (z-slices and time points).
+<i>102</i>&nbsp;	 * @param server
+<i>103</i>&nbsp;	 * @param downsample
+<i>104</i>&nbsp;	 * @return
+<i>105</i>&nbsp;	 */
+<i>106</i>&nbsp;	public static List&lt;RegionRequest&gt; createAllRequests(ImageServer&lt;?&gt; server, double downsample) {
+<b class="nc"><i>107</i>&nbsp;		List&lt;RegionRequest&gt; requests = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>108</i>&nbsp;		for (int t = 0; t &lt; server.nTimepoints(); t++) {</b>
+<b class="nc"><i>109</i>&nbsp;			for (int z = 0; z &lt; server.nZSlices(); z++) {</b>
+<b class="nc"><i>110</i>&nbsp;				requests.add(RegionRequest.createInstance(server.getPath(), downsample, 0, 0, server.getWidth(), server.getHeight(), z, t));</b>
+<i>111</i>&nbsp;			}			
+<i>112</i>&nbsp;		}
+<b class="nc"><i>113</i>&nbsp;		return requests;</b>
+<i>114</i>&nbsp;	}
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;	/**
+<i>117</i>&nbsp;	 * Create a request that contains the pixels of the specified {@link ROI}.
+<i>118</i>&nbsp;	 * This is calculated using the {@link ROI} bounding box.
+<i>119</i>&nbsp;	 * @param path
+<i>120</i>&nbsp;	 * @param downsample
+<i>121</i>&nbsp;	 * @param roi
+<i>122</i>&nbsp;	 * @return
+<i>123</i>&nbsp;	 */
+<i>124</i>&nbsp;	public static RegionRequest createInstance(String path, double downsample, ROI roi) {
+<b class="nc"><i>125</i>&nbsp;		return createInstance(path, downsample, ImageRegion.createInstance(roi));</b>
+<i>126</i>&nbsp;	}
+<i>127</i>&nbsp;	
+<i>128</i>&nbsp;	/**
+<i>129</i>&nbsp;	 * Create a request that contains the pixels of the specified {@link ROI}s.
+<i>130</i>&nbsp;	 * This is calculated using the {@link ROI} bounding boxes.
+<i>131</i>&nbsp;	 * @param path
+<i>132</i>&nbsp;	 * @param downsample
+<i>133</i>&nbsp;	 * @param rois
+<i>134</i>&nbsp;	 * @return
+<i>135</i>&nbsp;	 * @throws IllegalArgumentException if the {@link ROI}s do not all fall on the same {@link ImagePlane}.
+<i>136</i>&nbsp;	 */
+<i>137</i>&nbsp;	public static RegionRequest createInstance(String path, double downsample, Collection&lt;? extends ROI&gt; rois) {
+<b class="nc"><i>138</i>&nbsp;		return createInstance(path, downsample, ImageRegion.createInstance(rois));</b>
+<i>139</i>&nbsp;	}
+<i>140</i>&nbsp;	
+<i>141</i>&nbsp;	/**
+<i>142</i>&nbsp;	 * Create a request that matches another request but with a different path.
+<i>143</i>&nbsp;	 * @param path
+<i>144</i>&nbsp;	 * @param request
+<i>145</i>&nbsp;	 * @return
+<i>146</i>&nbsp;	 */
+<i>147</i>&nbsp;	public static RegionRequest createInstance(String path, RegionRequest request) {
+<b class="nc"><i>148</i>&nbsp;		return createInstance(path, request.getDownsample(), request);</b>
+<i>149</i>&nbsp;	}
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;	/**
+<i>152</i>&nbsp;	 * Create a request corresponding to a specified {@link ImageRegion}.
+<i>153</i>&nbsp;	 * This may also be used to construct a request based on an existing request, but changing either the path or downsample.
+<i>154</i>&nbsp;	 * @param path
+<i>155</i>&nbsp;	 * @param downsample
+<i>156</i>&nbsp;	 * @param region
+<i>157</i>&nbsp;	 * @return
+<i>158</i>&nbsp;	 */
+<i>159</i>&nbsp;	public static RegionRequest createInstance(String path, double downsample, ImageRegion region) {
+<b class="nc"><i>160</i>&nbsp;		return new RegionRequest(path, downsample, region.getX(), region.getY(), region.getWidth(), region.getHeight(), region.getZ(), region.getT());</b>
+<i>161</i>&nbsp;	}
+<i>162</i>&nbsp;	
+<i>163</i>&nbsp;	/**
+<i>164</i>&nbsp;	 * Create a request for a region specified in terms of its bounding box, z-slice and time point.
+<i>165</i>&nbsp;	 * @param path
+<i>166</i>&nbsp;	 * @param downsample
+<i>167</i>&nbsp;	 * @param x
+<i>168</i>&nbsp;	 * @param y
+<i>169</i>&nbsp;	 * @param width
+<i>170</i>&nbsp;	 * @param height
+<i>171</i>&nbsp;	 * @param z
+<i>172</i>&nbsp;	 * @param t
+<i>173</i>&nbsp;	 * @return
+<i>174</i>&nbsp;	 */
+<i>175</i>&nbsp;	public static RegionRequest createInstance(String path, double downsample, int x, int y, int width, int height, int z, int t) {
+<b class="fc"><i>176</i>&nbsp;		return new RegionRequest(path, downsample, x, y, width, height, z, t);</b>
+<i>177</i>&nbsp;	}
+<i>178</i>&nbsp;	
+<i>179</i>&nbsp;	/**
+<i>180</i>&nbsp;	 * Create a request for a region specified in terms of its bounding box, using the first z-slice and time point.
+<i>181</i>&nbsp;	 * @param path
+<i>182</i>&nbsp;	 * @param downsample
+<i>183</i>&nbsp;	 * @param x
+<i>184</i>&nbsp;	 * @param y
+<i>185</i>&nbsp;	 * @param width
+<i>186</i>&nbsp;	 * @param height
+<i>187</i>&nbsp;	 * @return
+<i>188</i>&nbsp;	 */
+<i>189</i>&nbsp;	public static RegionRequest createInstance(String path, double downsample, int x, int y, int width, int height) {
+<b class="nc"><i>190</i>&nbsp;		return createInstance(path, downsample, x, y, width, height, 0, 0);</b>
+<i>191</i>&nbsp;	}
+<i>192</i>&nbsp;	
+<i>193</i>&nbsp;	/**
+<i>194</i>&nbsp;	 * Returns true if the region specified by this request overlaps with that of another request.
+<i>195</i>&nbsp;	 * The test includes insuring that they refer to the same image by checking the paths are the same.
+<i>196</i>&nbsp;	 * 
+<i>197</i>&nbsp;	 * @param request
+<i>198</i>&nbsp;	 * @return
+<i>199</i>&nbsp;	 */
+<i>200</i>&nbsp;	public boolean overlapsRequest(RegionRequest request) {
+<b class="nc"><i>201</i>&nbsp;		if (path.equals(request.getPath()))</b>
+<b class="nc"><i>202</i>&nbsp;			return path.equals(request.getPath()) &amp;&amp;</b>
+<b class="nc"><i>203</i>&nbsp;					super.intersects(request);</b>
+<b class="nc"><i>204</i>&nbsp;		return false;</b>
+<i>205</i>&nbsp;	}
+<i>206</i>&nbsp;
+<i>207</i>&nbsp;	/**
+<i>208</i>&nbsp;	 * Get the requested ImageServer path, used as an identifier.
+<i>209</i>&nbsp;	 * @return
+<i>210</i>&nbsp;	 * 
+<i>211</i>&nbsp;	 * @see ImageServer#getPath()
+<i>212</i>&nbsp;	 */
+<i>213</i>&nbsp;	public String getPath() {
+<b class="fc"><i>214</i>&nbsp;		return path;</b>
+<i>215</i>&nbsp;	}
+<i>216</i>&nbsp;	
+<i>217</i>&nbsp;	/**
+<i>218</i>&nbsp;	 * Get the requested downsample factor, defining the resolution at which pixels should be returned.
+<i>219</i>&nbsp;	 * @return
+<i>220</i>&nbsp;	 */
+<i>221</i>&nbsp;	public double getDownsample() {
+<b class="fc"><i>222</i>&nbsp;		return downsample;</b>
+<i>223</i>&nbsp;	}
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;	/**
+<i>226</i>&nbsp;	 * Intersect to the specified 2D region, ignoring z and t.
+<i>227</i>&nbsp;	 * @param region the region defining the x, y, width and height of the maximum permitted bounding box.
+<i>228</i>&nbsp;	 * @return the clipped {@link RegionRequest}, which may be this if no clipping is required.
+<i>229</i>&nbsp;	 */
+<i>230</i>&nbsp;	public RegionRequest intersect2D(ImageRegion region) {
+<b class="nc"><i>231</i>&nbsp;		if (getX() &gt;= region.getX() &amp;&amp; getY() &gt;= region.getY() &amp;&amp; getMaxY() &lt;= region.getMaxY() &amp;&amp; getMaxX() &lt;= region.getMaxX())</b>
+<b class="nc"><i>232</i>&nbsp;			return this;</b>
+<b class="nc"><i>233</i>&nbsp;		int x = Math.max(getMinX(), region.getMinX());</b>
+<b class="nc"><i>234</i>&nbsp;		int y = Math.max(getMinY(), region.getMinY());</b>
+<b class="nc"><i>235</i>&nbsp;		int x2 = Math.min(getMaxX(), region.getMaxX());</b>
+<b class="nc"><i>236</i>&nbsp;		int y2 = Math.min(getMaxY(), region.getMaxY());</b>
+<b class="nc"><i>237</i>&nbsp;		return RegionRequest.createInstance(</b>
+<b class="nc"><i>238</i>&nbsp;				getPath(),</b>
+<b class="nc"><i>239</i>&nbsp;				getDownsample(),</b>
+<b class="nc"><i>240</i>&nbsp;				x, y, Math.max(x2-x, 0), Math.max(y2-y, 0),</b>
+<b class="nc"><i>241</i>&nbsp;				getZ(), getT());</b>
+<i>242</i>&nbsp;	}
+<i>243</i>&nbsp;	
+<i>244</i>&nbsp;	/**
+<i>245</i>&nbsp;	 * Intersect to the specified 2D region.
+<i>246</i>&nbsp;	 * @param x x-coordinate of the second region&#39;s bounding box
+<i>247</i>&nbsp;	 * @param y y-coordinate of the second region&#39;s bounding box
+<i>248</i>&nbsp;	 * @param width width of the second region&#39;s bounding box
+<i>249</i>&nbsp;	 * @param height height of the second region&#39;s bounding box
+<i>250</i>&nbsp;	 * @return the clipped {@link RegionRequest}, which may be this if no clipping is required.
+<i>251</i>&nbsp;	 */
+<i>252</i>&nbsp;	public RegionRequest intersect2D(int x, int y, int width, int height) {
+<b class="nc"><i>253</i>&nbsp;		return intersect2D(ImageRegion.createInstance(x, y, width, height, getZ(), getT()));</b>
+<i>254</i>&nbsp;	}
+<i>255</i>&nbsp;	
+<i>256</i>&nbsp;	/**
+<i>257</i>&nbsp;	 * Create a {@link RegionRequest} equivalent to this one with the updated z value.
+<i>258</i>&nbsp;	 * @param z requested z position
+<i>259</i>&nbsp;	 * @return {@link RegionRequest} with the specified z value (may be this object unchanged).
+<i>260</i>&nbsp;	 */
+<i>261</i>&nbsp;	public RegionRequest updateZ(int z) {
+<b class="nc"><i>262</i>&nbsp;		if (getZ() == z)</b>
+<b class="nc"><i>263</i>&nbsp;			return this;</b>
+<b class="nc"><i>264</i>&nbsp;		return RegionRequest.createInstance(getPath(), getDownsample(), getX(), getY(), getWidth(), getHeight(), z, getT());</b>
+<i>265</i>&nbsp;	}
+<i>266</i>&nbsp;	
+<i>267</i>&nbsp;	/**
+<i>268</i>&nbsp;	 * Create a {@link RegionRequest} equivalent to this one with the updated t value.
+<i>269</i>&nbsp;	 * @param t requested t position
+<i>270</i>&nbsp;	 * @return {@link RegionRequest} with the specified t value (may be this object unchanged).
+<i>271</i>&nbsp;	 */
+<i>272</i>&nbsp;	public RegionRequest updateT(int t) {
+<b class="nc"><i>273</i>&nbsp;		if (getT() == t)</b>
+<b class="nc"><i>274</i>&nbsp;			return this;</b>
+<b class="nc"><i>275</i>&nbsp;		return RegionRequest.createInstance(getPath(), getDownsample(), getX(), getY(), getWidth(), getHeight(), getZ(), t);</b>
+<i>276</i>&nbsp;	}
+<i>277</i>&nbsp;	
+<i>278</i>&nbsp;	/**
+<i>279</i>&nbsp;	 * Create a {@link RegionRequest} equivalent to this one with the updated downsample value.
+<i>280</i>&nbsp;	 * @param downsample requested downsample position
+<i>281</i>&nbsp;	 * @return {@link RegionRequest} with the specified downsample value (may be this object unchanged).
+<i>282</i>&nbsp;	 */
+<i>283</i>&nbsp;	public RegionRequest updateDownsample(double downsample) {
+<b class="nc"><i>284</i>&nbsp;		if (getDownsample() == downsample)</b>
+<b class="nc"><i>285</i>&nbsp;			return this;</b>
+<b class="nc"><i>286</i>&nbsp;		return RegionRequest.createInstance(getPath(), downsample, getX(), getY(), getWidth(), getHeight(), getZ(), getT());</b>
+<i>287</i>&nbsp;	}
+<i>288</i>&nbsp;	
+<i>289</i>&nbsp;	/**
+<i>290</i>&nbsp;	 * Create a {@link RegionRequest} equivalent to this one with the updated path.
+<i>291</i>&nbsp;	 * @param path requested path position
+<i>292</i>&nbsp;	 * @return {@link RegionRequest} with the specified path value (may be this object unchanged).
+<i>293</i>&nbsp;	 */
+<i>294</i>&nbsp;	public RegionRequest updatePath(String path) {
+<b class="nc"><i>295</i>&nbsp;		Objects.requireNonNull(path);</b>
+<b class="nc"><i>296</i>&nbsp;		if (getPath().equals(path))</b>
+<b class="nc"><i>297</i>&nbsp;			return this;</b>
+<b class="nc"><i>298</i>&nbsp;		return RegionRequest.createInstance(path, getDownsample(), getX(), getY(), getWidth(), getHeight(), getZ(), getT());</b>
+<i>299</i>&nbsp;	}
+<i>300</i>&nbsp;	
+<i>301</i>&nbsp;	/**
+<i>302</i>&nbsp;	 * Add symmetric padding to the x and y dimensions of a request.
+<i>303</i>&nbsp;	 * @param xPad padding to add along the x dimension; the width will be adjusted by {@code xPad * 2}
+<i>304</i>&nbsp;	 * @param yPad padding to add along the y dimension; the height will be adjusted by {@code yPad * 2}
+<i>305</i>&nbsp;	 * @return {@link RegionRequest} with the specified padding (may be this object unchanged if the padding is zero).
+<i>306</i>&nbsp;	 */
+<i>307</i>&nbsp;	public RegionRequest pad2D(int xPad, int yPad) {
+<b class="nc"><i>308</i>&nbsp;		if (xPad == 0 &amp;&amp; yPad == 0)</b>
+<b class="nc"><i>309</i>&nbsp;			return this;</b>
+<b class="nc"><i>310</i>&nbsp;		return RegionRequest.createInstance(getPath(), getDownsample(), getX()-xPad, getY()-yPad, getWidth()+xPad*2, getHeight()+yPad*2, getZ(), getT());</b>
+<i>311</i>&nbsp;	}
+<i>312</i>&nbsp;	
+<i>313</i>&nbsp;
+<i>314</i>&nbsp;
+<i>315</i>&nbsp;	/* (non-Javadoc)
+<i>316</i>&nbsp;	 * @see java.lang.Object#hashCode()
+<i>317</i>&nbsp;	 */
+<i>318</i>&nbsp;	@Override
+<i>319</i>&nbsp;	public int hashCode() {
+<b class="fc"><i>320</i>&nbsp;		final int prime = 31;</b>
+<b class="fc"><i>321</i>&nbsp;		int result = super.hashCode();</b>
+<i>322</i>&nbsp;		long temp;
+<b class="fc"><i>323</i>&nbsp;		temp = Double.doubleToLongBits(downsample);</b>
+<b class="fc"><i>324</i>&nbsp;		result = prime * result + (int) (temp ^ (temp &gt;&gt;&gt; 32));</b>
+<b class="fc"><i>325</i>&nbsp;		result = prime * result + ((path == null) ? 0 : path.hashCode());</b>
+<b class="fc"><i>326</i>&nbsp;		return result;</b>
+<i>327</i>&nbsp;	}
+<i>328</i>&nbsp;
+<i>329</i>&nbsp;
+<i>330</i>&nbsp;	/* (non-Javadoc)
+<i>331</i>&nbsp;	 * @see java.lang.Object#equals(java.lang.Object)
+<i>332</i>&nbsp;	 */
+<i>333</i>&nbsp;	@Override
+<i>334</i>&nbsp;	public boolean equals(Object obj) {
+<b class="fc"><i>335</i>&nbsp;		if (this == obj)</b>
+<b class="nc"><i>336</i>&nbsp;			return true;</b>
+<b class="fc"><i>337</i>&nbsp;		if (!super.equals(obj))</b>
+<b class="nc"><i>338</i>&nbsp;			return false;</b>
+<b class="fc"><i>339</i>&nbsp;		if (getClass() != obj.getClass())</b>
+<b class="nc"><i>340</i>&nbsp;			return false;</b>
+<b class="fc"><i>341</i>&nbsp;		RegionRequest other = (RegionRequest) obj;</b>
+<b class="fc"><i>342</i>&nbsp;		if (Double.doubleToLongBits(downsample) != Double</b>
+<b class="fc"><i>343</i>&nbsp;				.doubleToLongBits(other.downsample))</b>
+<b class="nc"><i>344</i>&nbsp;			return false;</b>
+<b class="fc"><i>345</i>&nbsp;		if (path == null) {</b>
+<b class="nc"><i>346</i>&nbsp;			if (other.path != null)</b>
+<b class="nc"><i>347</i>&nbsp;				return false;</b>
+<b class="fc"><i>348</i>&nbsp;		} else if (!path.equals(other.path))</b>
+<b class="nc"><i>349</i>&nbsp;			return false;</b>
+<b class="fc"><i>350</i>&nbsp;		return true;</b>
+<i>351</i>&nbsp;	}
+<i>352</i>&nbsp;	
+<i>353</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

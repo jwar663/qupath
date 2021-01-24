@@ -1,0 +1,1709 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BioFormatsImageServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers.bioformats</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BioFormatsImageServer (qupath.lib.images.servers.bioformats)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BioFormatsImageServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    76%
+  </span>
+  <span class="absValue">
+    (19/ 25)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.6%
+  </span>
+  <span class="absValue">
+    (245/ 475)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">BioFormatsImageServer$BioFormatsArgs</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    76.9%
+  </span>
+  <span class="absValue">
+    (20/ 26)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BioFormatsImageServer$BioFormatsReaderManager</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (11/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.4%
+  </span>
+  <span class="absValue">
+    (85/ 128)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BioFormatsImageServer$BioFormatsReaderManager$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BioFormatsImageServer$BioFormatsReaderManager$LocalReaderWrapper</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/ 7)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">BioFormatsImageServer$BioFormatsReaderManager$ReaderCleaner</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (4/ 10)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    85.1%
+  </span>
+  <span class="absValue">
+    (40/ 47)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55.9%
+  </span>
+  <span class="absValue">
+    (363/ 649)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.images.servers.bioformats;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.image.BandedSampleModel;
+<i>27</i>&nbsp;import java.awt.image.BufferedImage;
+<i>28</i>&nbsp;import java.awt.image.ColorModel;
+<i>29</i>&nbsp;import java.awt.image.ComponentSampleModel;
+<i>30</i>&nbsp;import java.awt.image.DataBuffer;
+<i>31</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>32</i>&nbsp;import java.awt.image.DataBufferDouble;
+<i>33</i>&nbsp;import java.awt.image.DataBufferFloat;
+<i>34</i>&nbsp;import java.awt.image.DataBufferInt;
+<i>35</i>&nbsp;import java.awt.image.DataBufferShort;
+<i>36</i>&nbsp;import java.awt.image.DataBufferUShort;
+<i>37</i>&nbsp;import java.awt.image.PixelInterleavedSampleModel;
+<i>38</i>&nbsp;import java.awt.image.SampleModel;
+<i>39</i>&nbsp;import java.awt.image.WritableRaster;
+<i>40</i>&nbsp;import java.io.File;
+<i>41</i>&nbsp;import java.io.IOException;
+<i>42</i>&nbsp;import java.lang.ref.Cleaner;
+<i>43</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>44</i>&nbsp;import java.net.URI;
+<i>45</i>&nbsp;import java.net.URISyntaxException;
+<i>46</i>&nbsp;import java.nio.ByteBuffer;
+<i>47</i>&nbsp;import java.nio.ByteOrder;
+<i>48</i>&nbsp;import java.nio.DoubleBuffer;
+<i>49</i>&nbsp;import java.nio.FloatBuffer;
+<i>50</i>&nbsp;import java.nio.IntBuffer;
+<i>51</i>&nbsp;import java.nio.ShortBuffer;
+<i>52</i>&nbsp;import java.nio.file.Files;
+<i>53</i>&nbsp;import java.nio.file.Path;
+<i>54</i>&nbsp;import java.nio.file.Paths;
+<i>55</i>&nbsp;import java.util.ArrayList;
+<i>56</i>&nbsp;import java.util.Arrays;
+<i>57</i>&nbsp;import java.util.Collection;
+<i>58</i>&nbsp;import java.util.Collections;
+<i>59</i>&nbsp;import java.util.HashMap;
+<i>60</i>&nbsp;import java.util.HashSet;
+<i>61</i>&nbsp;import java.util.LinkedHashMap;
+<i>62</i>&nbsp;import java.util.List;
+<i>63</i>&nbsp;import java.util.Map;
+<i>64</i>&nbsp;import java.util.Set;
+<i>65</i>&nbsp;import java.util.WeakHashMap;
+<i>66</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>67</i>&nbsp;import javax.imageio.ImageIO;
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;import org.slf4j.Logger;
+<i>70</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;import ome.units.UNITS;
+<i>73</i>&nbsp;import ome.units.quantity.Length;
+<i>74</i>&nbsp;import picocli.CommandLine;
+<i>75</i>&nbsp;import picocli.CommandLine.Option;
+<i>76</i>&nbsp;import picocli.CommandLine.Unmatched;
+<i>77</i>&nbsp;import loci.common.DataTools;
+<i>78</i>&nbsp;import loci.common.services.DependencyException;
+<i>79</i>&nbsp;import loci.common.services.ServiceException;
+<i>80</i>&nbsp;import loci.formats.ClassList;
+<i>81</i>&nbsp;import loci.formats.FormatException;
+<i>82</i>&nbsp;import loci.formats.FormatTools;
+<i>83</i>&nbsp;import loci.formats.IFormatReader;
+<i>84</i>&nbsp;import loci.formats.ImageReader;
+<i>85</i>&nbsp;import loci.formats.Memoizer;
+<i>86</i>&nbsp;import loci.formats.MetadataTools;
+<i>87</i>&nbsp;import loci.formats.gui.AWTImageTools;
+<i>88</i>&nbsp;import loci.formats.in.DynamicMetadataOptions;
+<i>89</i>&nbsp;import loci.formats.in.MetadataOptions;
+<i>90</i>&nbsp;import loci.formats.meta.DummyMetadata;
+<i>91</i>&nbsp;import loci.formats.meta.IMetadata;
+<i>92</i>&nbsp;import loci.formats.meta.MetadataStore;
+<i>93</i>&nbsp;import loci.formats.ome.OMEPyramidStore;
+<i>94</i>&nbsp;import loci.formats.ome.OMEXMLMetadata;
+<i>95</i>&nbsp;import qupath.lib.color.ColorModelFactory;
+<i>96</i>&nbsp;import qupath.lib.common.ColorTools;
+<i>97</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>98</i>&nbsp;import qupath.lib.images.servers.AbstractTileableImageServer;
+<i>99</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>100</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.DefaultImageServerBuilder;
+<i>101</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>102</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>103</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata.ImageResolutionLevel;
+<i>104</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>105</i>&nbsp;import qupath.lib.images.servers.TileRequest;
+<i>106</i>&nbsp;import qupath.lib.images.servers.bioformats.BioFormatsImageServer.BioFormatsReaderManager.LocalReaderWrapper;
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;/**
+<i>109</i>&nbsp; * QuPath ImageServer that uses the Bio-Formats library to read image data.
+<i>110</i>&nbsp; * &lt;p&gt;
+<i>111</i>&nbsp; * See http://www.openmicroscopy.org/site/products/bio-formats
+<i>112</i>&nbsp; * &lt;p&gt;
+<i>113</i>&nbsp; * See also https://docs.openmicroscopy.org/bio-formats/6.5.1/developers/matlab-dev.html#improving-reading-performance
+<i>114</i>&nbsp; * 
+<i>115</i>&nbsp; * @author Pete Bankhead
+<i>116</i>&nbsp; *
+<i>117</i>&nbsp; */
+<b class="fc"><i>118</i>&nbsp;public class BioFormatsImageServer extends AbstractTileableImageServer {</b>
+<i>119</i>&nbsp;	
+<b class="fc"><i>120</i>&nbsp;	private static final Logger logger = LoggerFactory.getLogger(BioFormatsImageServer.class);</b>
+<i>121</i>&nbsp;	
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Define a maximum memoization file size above which parallelization is disabled. 
+<i>124</i>&nbsp;	 * This is necessary to avoid creating multiple readers that are too large (e.g. sometimes 
+<i>125</i>&nbsp;	 * a memoization file can be over 1GB...)
+<i>126</i>&nbsp;	 */
+<b class="fc"><i>127</i>&nbsp;	private static long MAX_PARALLELIZATION_MEMO_SIZE = 1024L * 1024L * 16L;</b>
+<i>128</i>&nbsp;	
+<i>129</i>&nbsp;	/**
+<i>130</i>&nbsp;	 * The original URI requested for this server.
+<i>131</i>&nbsp;	 */
+<i>132</i>&nbsp;	private URI uri;
+<i>133</i>&nbsp;	
+<i>134</i>&nbsp;	/**
+<i>135</i>&nbsp;	 * Minimum tile size - smaller values will be ignored.
+<i>136</i>&nbsp;	 */
+<b class="fc"><i>137</i>&nbsp;	private static int MIN_TILE_SIZE = 32;</b>
+<i>138</i>&nbsp;	
+<i>139</i>&nbsp;	/**
+<i>140</i>&nbsp;	 * Maximum tile size - larger values will be ignored.
+<i>141</i>&nbsp;	 */
+<b class="fc"><i>142</i>&nbsp;	private static int MAX_TILE_SIZE = 4096;</b>
+<i>143</i>&nbsp;	
+<i>144</i>&nbsp;	/**
+<i>145</i>&nbsp;	 * Image names (in lower case) normally associated with &#39;extra&#39; images, but probably not representing the main image in the file.
+<i>146</i>&nbsp;	 */
+<b class="fc"><i>147</i>&nbsp;	private static Collection&lt;String&gt; extraImageNames = new HashSet&lt;&gt;(</b>
+<b class="fc"><i>148</i>&nbsp;			Arrays.asList(&quot;overview&quot;, &quot;label&quot;, &quot;thumbnail&quot;, &quot;macro&quot;, &quot;macro image&quot;, &quot;macro mask image&quot;, &quot;label image&quot;, &quot;overview image&quot;, &quot;thumbnail image&quot;));</b>
+<i>149</i>&nbsp;	
+<i>150</i>&nbsp;	/**
+<i>151</i>&nbsp;	 * Original metadata, populated when reading the file.
+<i>152</i>&nbsp;	 */
+<i>153</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>154</i>&nbsp;	
+<i>155</i>&nbsp;	/**
+<i>156</i>&nbsp;	 * Arguments passed to constructor.
+<i>157</i>&nbsp;	 */
+<i>158</i>&nbsp;	private String[] args;
+<i>159</i>&nbsp;	
+<i>160</i>&nbsp;	/**
+<i>161</i>&nbsp;	 * Path to the base image file - will be the same as path, unless the path encodes the name of a specific series, in which case this refers to the file without the series included
+<i>162</i>&nbsp;	 */
+<i>163</i>&nbsp;	private String filePath;
+<i>164</i>&nbsp;	
+<i>165</i>&nbsp;	/**
+<i>166</i>&nbsp;	 * Fix issue related to VSI images having (wrong) z-slices
+<i>167</i>&nbsp;	 */
+<i>168</i>&nbsp;//	private boolean doChannelZCorrectionVSI = false;
+<i>169</i>&nbsp;	
+<i>170</i>&nbsp;	/**
+<i>171</i>&nbsp;	 * A map linking an identifier (image name) to series number for &#39;full&#39; images.
+<i>172</i>&nbsp;	 */
+<b class="fc"><i>173</i>&nbsp;	private Map&lt;String, ServerBuilder&lt;BufferedImage&gt;&gt; imageMap = null;</b>
+<i>174</i>&nbsp;	
+<i>175</i>&nbsp;	/**
+<i>176</i>&nbsp;	 * A map linking an identifier (image name) to series number for additional images, e.g. thumbnails or macro images.
+<i>177</i>&nbsp;	 */
+<b class="fc"><i>178</i>&nbsp;	private Map&lt;String, Integer&gt; associatedImageMap = null;</b>
+<i>179</i>&nbsp;	
+<i>180</i>&nbsp;	/**
+<i>181</i>&nbsp;	 * Numeric identifier for the image (there might be more than one in the file)
+<i>182</i>&nbsp;	 */
+<b class="fc"><i>183</i>&nbsp;	private int series = 0;</b>
+<i>184</i>&nbsp;	
+<i>185</i>&nbsp;	/**
+<i>186</i>&nbsp;	 * Format for the current reader.
+<i>187</i>&nbsp;	 */
+<i>188</i>&nbsp;	private String format;
+<i>189</i>&nbsp;	
+<i>190</i>&nbsp;	/**
+<i>191</i>&nbsp;	 * QuPath-specific options for how the image server should behave, such as using parallelization or memoization.
+<i>192</i>&nbsp;	 */
+<i>193</i>&nbsp;	private BioFormatsServerOptions options;
+<i>194</i>&nbsp;		
+<i>195</i>&nbsp;	/**
+<i>196</i>&nbsp;	 * Manager to help keep multithreading under control.
+<i>197</i>&nbsp;	 */
+<b class="fc"><i>198</i>&nbsp;	private static BioFormatsReaderManager manager = new BioFormatsReaderManager();</b>
+<i>199</i>&nbsp;	
+<i>200</i>&nbsp;	/**
+<i>201</i>&nbsp;	 * ColorModel to use with all BufferedImage requests.
+<i>202</i>&nbsp;	 */
+<i>203</i>&nbsp;	private ColorModel colorModel;
+<i>204</i>&nbsp;	
+<i>205</i>&nbsp;	/**
+<i>206</i>&nbsp;	 * Primary reader for the current server.
+<i>207</i>&nbsp;	 */
+<i>208</i>&nbsp;	private LocalReaderWrapper readerWrapper;
+<i>209</i>&nbsp;	
+<i>210</i>&nbsp;	/**
+<i>211</i>&nbsp;	 * Primary metadata store.
+<i>212</i>&nbsp;	 */
+<i>213</i>&nbsp;	private OMEPyramidStore meta;
+<i>214</i>&nbsp;	
+<i>215</i>&nbsp;	/**
+<i>216</i>&nbsp;	 * Cached path
+<i>217</i>&nbsp;	 */
+<i>218</i>&nbsp;	private String path;
+<i>219</i>&nbsp;	
+<i>220</i>&nbsp;	/**
+<i>221</i>&nbsp;	 * Specific options used by some Bio-Formats readers, e.g. Map.of(&quot;zeissczi.autostitch&quot;, &quot;false&quot;)
+<i>222</i>&nbsp;	 */
+<b class="fc"><i>223</i>&nbsp;	private Map&lt;String, String&gt; readerOptions = new LinkedHashMap&lt;&gt;();</b>
+<i>224</i>&nbsp;	
+<i>225</i>&nbsp;//	/**
+<i>226</i>&nbsp;//	 * Try to parallelize multichannel requests (experimental!)
+<i>227</i>&nbsp;//	 */
+<i>228</i>&nbsp;//	private boolean parallelizeMultichannel = true;
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;	
+<i>231</i>&nbsp;	/**
+<i>232</i>&nbsp;	 * Create an ImageServer using the Bio-Formats library.
+<i>233</i>&nbsp;	 * &lt;p&gt;
+<i>234</i>&nbsp;	 * This requires an &lt;i&gt;absolute&lt;/i&gt; URI, where an integer fragment can be used to define the series number.
+<i>235</i>&nbsp;	 * 
+<i>236</i>&nbsp;	 * @param uri for the image that should be opened; this might include a sub-image as a query or fragment.
+<i>237</i>&nbsp;	 * @param args optional arguments
+<i>238</i>&nbsp;	 * @throws FormatException
+<i>239</i>&nbsp;	 * @throws IOException
+<i>240</i>&nbsp;	 * @throws DependencyException
+<i>241</i>&nbsp;	 * @throws ServiceException
+<i>242</i>&nbsp;	 * @throws URISyntaxException 
+<i>243</i>&nbsp;	 */
+<i>244</i>&nbsp;	public BioFormatsImageServer(final URI uri, String...args) throws FormatException, IOException, DependencyException, ServiceException, URISyntaxException {
+<b class="fc"><i>245</i>&nbsp;		this(uri, BioFormatsServerOptions.getInstance(), args);</b>
+<b class="fc"><i>246</i>&nbsp;	}</b>
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	
+<i>249</i>&nbsp;	BioFormatsImageServer(URI uri, final BioFormatsServerOptions options, String...args) throws FormatException, IOException, DependencyException, ServiceException, URISyntaxException {
+<b class="fc"><i>250</i>&nbsp;		super();</b>
+<i>251</i>&nbsp;		
+<b class="fc"><i>252</i>&nbsp;		long startTime = System.currentTimeMillis();</b>
+<i>253</i>&nbsp;
+<b class="fc"><i>254</i>&nbsp;		this.options = options;</b>
+<i>255</i>&nbsp;		
+<i>256</i>&nbsp;		// Create variables for metadata
+<b class="fc"><i>257</i>&nbsp;		int width = 0, height = 0, nChannels = 1, nZSlices = 1, nTimepoints = 1, tileWidth = 0, tileHeight = 0;</b>
+<b class="fc"><i>258</i>&nbsp;		double pixelWidth = Double.NaN, pixelHeight = Double.NaN, zSpacing = Double.NaN, magnification = Double.NaN;</b>
+<b class="fc"><i>259</i>&nbsp;		TimeUnit timeUnit = null;</b>
+<i>260</i>&nbsp;		
+<i>261</i>&nbsp;		// See if there is a series name embedded in the path (temporarily the way things were done in v0.2.0-m1 and v0.2.0-m2)
+<i>262</i>&nbsp;		// Add it to the args if so
+<b class="fc"><i>263</i>&nbsp;		if (args.length == 0) {</b>
+<b class="fc"><i>264</i>&nbsp;			if (uri.getFragment() != null) {</b>
+<b class="nc"><i>265</i>&nbsp;				args = new String[] {&quot;--series&quot;, uri.getFragment()};</b>
+<b class="fc"><i>266</i>&nbsp;			} else if (uri.getQuery() != null) {</b>
+<i>267</i>&nbsp;				// Queries supported name=image-name or series=series-number... only one or the other!
+<b class="nc"><i>268</i>&nbsp;				String query = uri.getQuery();</b>
+<b class="nc"><i>269</i>&nbsp;				String seriesQuery = &quot;series=&quot;;</b>
+<b class="nc"><i>270</i>&nbsp;				String nameQuery = &quot;name=&quot;;</b>
+<b class="nc"><i>271</i>&nbsp;				if (query.startsWith(seriesQuery)) {</b>
+<b class="nc"><i>272</i>&nbsp;					args = new String[] {&quot;--series&quot;, query.substring(seriesQuery.length())};</b>
+<b class="nc"><i>273</i>&nbsp;				} else if (query.startsWith(nameQuery)) {</b>
+<b class="nc"><i>274</i>&nbsp;					args = new String[] {&quot;--name&quot;, query.substring(nameQuery.length())};</b>
+<i>275</i>&nbsp;				}
+<i>276</i>&nbsp;			}
+<b class="fc"><i>277</i>&nbsp;			uri = new URI(uri.getScheme(), uri.getHost(), uri.getPath(), null);</b>
+<i>278</i>&nbsp;		}
+<b class="fc"><i>279</i>&nbsp;		this.uri = uri;</b>
+<i>280</i>&nbsp;		
+<i>281</i>&nbsp;		// Parse the arguments
+<b class="fc"><i>282</i>&nbsp;		var bfArgs = BioFormatsArgs.parse(args);</b>
+<b class="fc"><i>283</i>&nbsp;		readerOptions.putAll(options.getReaderOptions());</b>
+<b class="fc"><i>284</i>&nbsp;		if (bfArgs.readerOptions != null)</b>
+<b class="fc"><i>285</i>&nbsp;			readerOptions.putAll(bfArgs.readerOptions);</b>
+<i>286</i>&nbsp;		
+<i>287</i>&nbsp;		// Try to parse args, extracting the series if present
+<b class="fc"><i>288</i>&nbsp;		int seriesIndex = bfArgs.series;</b>
+<b class="fc"><i>289</i>&nbsp;		String requestedSeriesName = bfArgs.seriesName;</b>
+<b class="fc"><i>290</i>&nbsp;		if (requestedSeriesName.isBlank())</b>
+<b class="fc"><i>291</i>&nbsp;			requestedSeriesName = null;</b>
+<i>292</i>&nbsp;		
+<i>293</i>&nbsp;		// This appears to work more reliably than converting to a File
+<b class="fc"><i>294</i>&nbsp;		filePath = Paths.get(uri).toString();</b>
+<i>295</i>&nbsp;
+<i>296</i>&nbsp;		// Create a reader &amp; extract the metadata
+<b class="fc"><i>297</i>&nbsp;		readerWrapper = manager.getPrimaryReaderWrapper(options, filePath, readerOptions);</b>
+<b class="fc"><i>298</i>&nbsp;		IFormatReader reader = readerWrapper.getReader();</b>
+<b class="fc"><i>299</i>&nbsp;		meta = (OMEPyramidStore)reader.getMetadataStore();</b>
+<i>300</i>&nbsp;
+<i>301</i>&nbsp;		// Populate the image server list if we have more than one image
+<b class="fc"><i>302</i>&nbsp;		int largestSeries = -1;</b>
+<b class="fc"><i>303</i>&nbsp;		int firstSeries = -1;</b>
+<b class="fc"><i>304</i>&nbsp;		long mostPixels = -1L;</b>
+<b class="fc"><i>305</i>&nbsp;		long firstPixels = -1L;</b>
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;		// If we have more than one series, we need to construct maps of &#39;analyzable&#39; &amp; associated images
+<b class="fc"><i>308</i>&nbsp;		synchronized(reader) {</b>
+<b class="fc"><i>309</i>&nbsp;			int nImages = meta.getImageCount();</b>
+<b class="fc"><i>310</i>&nbsp;			imageMap = new LinkedHashMap&lt;&gt;(nImages);</b>
+<b class="fc"><i>311</i>&nbsp;			associatedImageMap = new LinkedHashMap&lt;&gt;(nImages);</b>
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;			// Loop through series to find out whether we have multiresolution images, or associated images (e.g. thumbnails)
+<b class="fc"><i>314</i>&nbsp;			for (int s = 0; s &lt; nImages; s++) {</b>
+<b class="fc"><i>315</i>&nbsp;				String name = &quot;Series &quot; + s;</b>
+<b class="fc"><i>316</i>&nbsp;				String originalImageName = getImageName(s);</b>
+<b class="fc"><i>317</i>&nbsp;				if (originalImageName == null)</b>
+<b class="nc"><i>318</i>&nbsp;					originalImageName = &quot;&quot;;</b>
+<i>319</i>&nbsp;				
+<b class="fc"><i>320</i>&nbsp;				String imageName = originalImageName;</b>
+<i>321</i>&nbsp;				try {
+<b class="fc"><i>322</i>&nbsp;					if (!imageName.isEmpty())</b>
+<b class="fc"><i>323</i>&nbsp;						name += &quot; (&quot; + imageName + &quot;)&quot;;</b>
+<i>324</i>&nbsp;
+<i>325</i>&nbsp;					// Set this to be the series, if necessary
+<b class="fc"><i>326</i>&nbsp;					long sizeX = meta.getPixelsSizeX(s).getNumberValue().longValue();</b>
+<b class="fc"><i>327</i>&nbsp;					long sizeY = meta.getPixelsSizeY(s).getNumberValue().longValue();</b>
+<b class="fc"><i>328</i>&nbsp;					long sizeC = meta.getPixelsSizeC(s).getNumberValue().longValue();</b>
+<b class="fc"><i>329</i>&nbsp;					long sizeZ = meta.getPixelsSizeZ(s).getNumberValue().longValue();</b>
+<b class="fc"><i>330</i>&nbsp;					long sizeT = meta.getPixelsSizeT(s).getNumberValue().longValue();</b>
+<i>331</i>&nbsp;
+<i>332</i>&nbsp;					// Check the resolutions
+<i>333</i>&nbsp;					//						int nResolutions = meta.getResolutionCount(s);
+<i>334</i>&nbsp;					//						for (int r = 1; r &lt; nResolutions; r++) {
+<i>335</i>&nbsp;					//							int sizeXR = meta.getResolutionSizeX(s, r).getValue();
+<i>336</i>&nbsp;					//							int sizeYR = meta.getResolutionSizeY(s, r).getValue();
+<i>337</i>&nbsp;					//							if (sizeXR &lt;= 0 || sizeYR &lt;= 0 || sizeXR &gt; sizeX || sizeYR &gt; sizeY)
+<i>338</i>&nbsp;					//								throw new IllegalArgumentException(&quot;Resolution &quot; + r + &quot; size &quot; + sizeXR + &quot; x &quot; + sizeYR + &quot; invalid!&quot;);
+<i>339</i>&nbsp;					//						}
+<i>340</i>&nbsp;					// It seems we can&#39;t get the resolutions from the metadata object... instead we need to set the series of the reader
+<b class="fc"><i>341</i>&nbsp;					reader.setSeries(s);</b>
+<b class="fc"><i>342</i>&nbsp;					assert reader.getSizeX() == sizeX;</b>
+<b class="fc"><i>343</i>&nbsp;					assert reader.getSizeY() == sizeY;</b>
+<b class="fc"><i>344</i>&nbsp;					int nResolutions = reader.getResolutionCount();</b>
+<b class="fc"><i>345</i>&nbsp;					for (int r = 1; r &lt; nResolutions; r++) {</b>
+<b class="nc"><i>346</i>&nbsp;						reader.setResolution(r);</b>
+<b class="nc"><i>347</i>&nbsp;						int sizeXR = reader.getSizeX();</b>
+<b class="nc"><i>348</i>&nbsp;						int sizeYR = reader.getSizeY();</b>
+<b class="nc"><i>349</i>&nbsp;						if (sizeXR &lt;= 0 || sizeYR &lt;= 0 || sizeXR &gt; sizeX || sizeYR &gt; sizeY)</b>
+<b class="nc"><i>350</i>&nbsp;							throw new IllegalArgumentException(&quot;Resolution &quot; + r + &quot; size &quot; + sizeXR + &quot; x &quot; + sizeYR + &quot; invalid!&quot;);</b>
+<i>351</i>&nbsp;					}
+<i>352</i>&nbsp;
+<i>353</i>&nbsp;					// If we got this far, we have an image we can add
+<b class="fc"><i>354</i>&nbsp;					if (reader.getResolutionCount() == 1 &amp;&amp; (</b>
+<b class="fc"><i>355</i>&nbsp;							extraImageNames.contains(originalImageName.toLowerCase()) || extraImageNames.contains(name.toLowerCase().trim()))) {</b>
+<b class="nc"><i>356</i>&nbsp;						logger.debug(&quot;Adding associated image {} (thumbnail={})&quot;, name, reader.isThumbnailSeries());</b>
+<b class="nc"><i>357</i>&nbsp;						associatedImageMap.put(name, s);</b>
+<i>358</i>&nbsp;					} else {
+<b class="fc"><i>359</i>&nbsp;						if (imageMap.containsKey(name))</b>
+<b class="nc"><i>360</i>&nbsp;							logger.warn(&quot;Duplicate image called {} - only the first will be used&quot;, name);</b>
+<i>361</i>&nbsp;						else {
+<b class="fc"><i>362</i>&nbsp;							if (firstSeries &lt; 0) {</b>
+<b class="fc"><i>363</i>&nbsp;								firstSeries = s;</b>
+<b class="fc"><i>364</i>&nbsp;								firstPixels = sizeX * sizeY * sizeZ * sizeT;</b>
+<i>365</i>&nbsp;							}
+<b class="fc"><i>366</i>&nbsp;							imageMap.put(name, DefaultImageServerBuilder.createInstance(</b>
+<i>367</i>&nbsp;									BioFormatsServerBuilder.class, null, uri,
+<b class="fc"><i>368</i>&nbsp;									new BioFormatsArgs(s, readerOptions).backToArgs()</b>
+<i>369</i>&nbsp;									));
+<i>370</i>&nbsp;						}
+<i>371</i>&nbsp;					}
+<i>372</i>&nbsp;
+<b class="fc"><i>373</i>&nbsp;					if (seriesIndex &lt; 0) {</b>
+<b class="fc"><i>374</i>&nbsp;						if (requestedSeriesName == null) {</b>
+<b class="fc"><i>375</i>&nbsp;							long nPixels = sizeX * sizeY * sizeZ * sizeT;</b>
+<b class="fc"><i>376</i>&nbsp;							if (nPixels &gt; mostPixels) {</b>
+<b class="fc"><i>377</i>&nbsp;								largestSeries = s;</b>
+<b class="fc"><i>378</i>&nbsp;								mostPixels = nPixels;</b>
+<i>379</i>&nbsp;							}
+<b class="fc"><i>380</i>&nbsp;						} else if (requestedSeriesName.equals(name) || requestedSeriesName.equals(getImageName(s)) || requestedSeriesName.contentEquals(meta.getImageName(s))) {</b>
+<b class="nc"><i>381</i>&nbsp;							seriesIndex = s;</b>
+<i>382</i>&nbsp;						}
+<i>383</i>&nbsp;					}
+<b class="fc"><i>384</i>&nbsp;					logger.debug(&quot;Found image &#39;{}&#39;, size: {} x {} x {} x {} x {} (xyczt)&quot;, imageName, sizeX, sizeY, sizeC, sizeZ, sizeT);</b>
+<b class="nc"><i>385</i>&nbsp;				} catch (Exception e) {</b>
+<i>386</i>&nbsp;					// We don&#39;t want to log this prominently if we&#39;re requesting a different series anyway
+<b class="nc"><i>387</i>&nbsp;					if ((seriesIndex &lt; 0 || seriesIndex == s) &amp;&amp; (requestedSeriesName == null || requestedSeriesName.equals(imageName)))</b>
+<b class="nc"><i>388</i>&nbsp;						logger.warn(&quot;Error attempting to read series &quot; + s + &quot; (&quot; + imageName + &quot;) - will be skipped&quot;, e);</b>
+<i>389</i>&nbsp;					else
+<b class="nc"><i>390</i>&nbsp;						logger.trace(&quot;Error attempting to read series &quot; + s + &quot; (&quot; + imageName + &quot;) - will be skipped&quot;, e);</b>
+<b class="fc"><i>391</i>&nbsp;				}</b>
+<i>392</i>&nbsp;			}
+<i>393</i>&nbsp;
+<i>394</i>&nbsp;			// If we have just one image in the image list, then reset to none - we can&#39;t switch
+<b class="fc"><i>395</i>&nbsp;			if (imageMap.size() == 1 &amp;&amp; seriesIndex &lt; 0) {</b>
+<b class="fc"><i>396</i>&nbsp;				seriesIndex = firstSeries;</b>
+<i>397</i>&nbsp;//					imageMap.clear();
+<b class="fc"><i>398</i>&nbsp;			} else if (imageMap.size() &gt; 1) {</b>
+<i>399</i>&nbsp;				// Set default series index, if we need to
+<b class="nc"><i>400</i>&nbsp;				if (seriesIndex &lt; 0) {</b>
+<i>401</i>&nbsp;					// Choose the first series unless it is substantially smaller than the largest series (e.g. it&#39;s a label or macro image)
+<b class="nc"><i>402</i>&nbsp;					if (mostPixels &gt; firstPixels * 4L)</b>
+<b class="nc"><i>403</i>&nbsp;						seriesIndex = largestSeries; // imageMap.values().iterator().next();</b>
+<i>404</i>&nbsp;					else
+<b class="nc"><i>405</i>&nbsp;						seriesIndex = firstSeries;</b>
+<i>406</i>&nbsp;				}
+<i>407</i>&nbsp;				// If we have more than one image, ensure that we have the image name correctly encoded in the path
+<b class="nc"><i>408</i>&nbsp;				uri = new URI(uri.getScheme(), uri.getHost(), uri.getPath(), Integer.toString(seriesIndex));</b>
+<i>409</i>&nbsp;			}
+<i>410</i>&nbsp;
+<b class="fc"><i>411</i>&nbsp;			if (seriesIndex &lt; 0)</b>
+<b class="nc"><i>412</i>&nbsp;				throw new IOException(&quot;Unable to find any valid images within &quot; + uri);</b>
+<i>413</i>&nbsp;
+<i>414</i>&nbsp;			// Store the series we are actually using
+<b class="fc"><i>415</i>&nbsp;			this.series = seriesIndex;</b>
+<b class="fc"><i>416</i>&nbsp;			reader.setSeries(series);</b>
+<i>417</i>&nbsp;
+<i>418</i>&nbsp;			// Get the format in case we need it
+<b class="fc"><i>419</i>&nbsp;			format = reader.getFormat();</b>
+<b class="fc"><i>420</i>&nbsp;			logger.debug(&quot;Reading format: {}&quot;, format);</b>
+<i>421</i>&nbsp;
+<i>422</i>&nbsp;			// Try getting the magnification
+<i>423</i>&nbsp;			try {
+<b class="fc"><i>424</i>&nbsp;				String objectiveID = meta.getObjectiveSettingsID(series);</b>
+<b class="nc"><i>425</i>&nbsp;				int objectiveIndex = -1;</b>
+<b class="nc"><i>426</i>&nbsp;				int instrumentIndex = -1;</b>
+<b class="nc"><i>427</i>&nbsp;				int nInstruments = meta.getInstrumentCount();</b>
+<b class="nc"><i>428</i>&nbsp;				for (int i = 0; i &lt; nInstruments; i++) {</b>
+<b class="nc"><i>429</i>&nbsp;					int nObjectives = meta.getObjectiveCount(i);</b>
+<b class="nc"><i>430</i>&nbsp;					for (int o = 0; 0 &lt; nObjectives; o++) {</b>
+<b class="nc"><i>431</i>&nbsp;						if (objectiveID.equals(meta.getObjectiveID(i, o))) {</b>
+<b class="nc"><i>432</i>&nbsp;							instrumentIndex = i;</b>
+<b class="nc"><i>433</i>&nbsp;							objectiveIndex = o;</b>
+<b class="nc"><i>434</i>&nbsp;							break;</b>
+<i>435</i>&nbsp;						}
+<i>436</i>&nbsp;					}	    		
+<i>437</i>&nbsp;				}
+<b class="nc"><i>438</i>&nbsp;				if (instrumentIndex &lt; 0) {</b>
+<b class="nc"><i>439</i>&nbsp;					logger.warn(&quot;Cannot find objective for ref {}&quot;, objectiveID);</b>
+<i>440</i>&nbsp;				} else {
+<b class="nc"><i>441</i>&nbsp;					Double magnificationObject = meta.getObjectiveNominalMagnification(instrumentIndex, objectiveIndex);</b>
+<b class="nc"><i>442</i>&nbsp;					if (magnificationObject == null) {</b>
+<b class="nc"><i>443</i>&nbsp;						logger.warn(&quot;Nominal objective magnification missing for {}:{}&quot;, instrumentIndex, objectiveIndex);</b>
+<i>444</i>&nbsp;					} else
+<b class="nc"><i>445</i>&nbsp;						magnification = magnificationObject;		    		</b>
+<i>446</i>&nbsp;				}
+<b class="fc"><i>447</i>&nbsp;			} catch (Exception e) {</b>
+<b class="fc"><i>448</i>&nbsp;				logger.debug(&quot;Unable to parse magnification: {}&quot;, e.getLocalizedMessage());</b>
+<b class="nc"><i>449</i>&nbsp;			}</b>
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;			// Get the dimensions for the requested series
+<i>452</i>&nbsp;			// The first resolution is the highest, i.e. the largest image
+<b class="fc"><i>453</i>&nbsp;			width = reader.getSizeX();</b>
+<b class="fc"><i>454</i>&nbsp;			height = reader.getSizeY();</b>
+<b class="fc"><i>455</i>&nbsp;			tileWidth = reader.getOptimalTileWidth();</b>
+<b class="fc"><i>456</i>&nbsp;			tileHeight = reader.getOptimalTileHeight();</b>
+<b class="fc"><i>457</i>&nbsp;			nChannels = reader.getSizeC();</b>
+<i>458</i>&nbsp;
+<i>459</i>&nbsp;			// Make sure tile sizes are within range
+<b class="fc"><i>460</i>&nbsp;			if (tileWidth &lt;= 0)</b>
+<b class="nc"><i>461</i>&nbsp;				tileWidth = 256;</b>
+<b class="fc"><i>462</i>&nbsp;			if (tileHeight &lt;= 0)</b>
+<b class="nc"><i>463</i>&nbsp;				tileHeight = 256;</b>
+<b class="fc"><i>464</i>&nbsp;			if (tileWidth &gt; width)</b>
+<b class="nc"><i>465</i>&nbsp;				tileWidth = width;</b>
+<b class="fc"><i>466</i>&nbsp;			if (tileHeight &gt; height)</b>
+<b class="nc"><i>467</i>&nbsp;				tileHeight = height;</b>
+<i>468</i>&nbsp;
+<i>469</i>&nbsp;			// Prepared to set channel colors
+<b class="fc"><i>470</i>&nbsp;			List&lt;ImageChannel&gt; channels = new ArrayList&lt;&gt;();</b>
+<i>471</i>&nbsp;
+<b class="fc"><i>472</i>&nbsp;			nZSlices = reader.getSizeZ();</b>
+<i>473</i>&nbsp;//			// Workaround bug whereby VSI channels can also be replicated as z-slices
+<i>474</i>&nbsp;//			if (options.requestChannelZCorrectionVSI() &amp;&amp; nZSlices == nChannels &amp;&amp; nChannels &gt; 1 &amp;&amp; &quot;CellSens VSI&quot;.equals(format)) {
+<i>475</i>&nbsp;//				doChannelZCorrectionVSI = true;
+<i>476</i>&nbsp;//				nZSlices = 1;
+<i>477</i>&nbsp;//			}
+<b class="fc"><i>478</i>&nbsp;			nTimepoints = reader.getSizeT();</b>
+<i>479</i>&nbsp;
+<i>480</i>&nbsp;			PixelType pixelType;
+<b class="fc"><i>481</i>&nbsp;			switch (reader.getPixelType()) {</b>
+<i>482</i>&nbsp;				case FormatTools.BIT:
+<b class="nc"><i>483</i>&nbsp;					logger.warn(&quot;Pixel type is BIT! This is not currently supported by QuPath.&quot;);</b>
+<b class="nc"><i>484</i>&nbsp;					pixelType = PixelType.UINT8;</b>
+<b class="nc"><i>485</i>&nbsp;					break;</b>
+<i>486</i>&nbsp;				case FormatTools.INT8:
+<b class="nc"><i>487</i>&nbsp;					logger.warn(&quot;Pixel type is INT8! This is not currently supported by QuPath.&quot;);</b>
+<b class="nc"><i>488</i>&nbsp;					pixelType = PixelType.INT8;</b>
+<b class="nc"><i>489</i>&nbsp;					break;</b>
+<i>490</i>&nbsp;				case FormatTools.UINT8:
+<b class="nc"><i>491</i>&nbsp;					pixelType = PixelType.UINT8;</b>
+<b class="nc"><i>492</i>&nbsp;					break;</b>
+<i>493</i>&nbsp;				case FormatTools.INT16:
+<b class="nc"><i>494</i>&nbsp;					pixelType = PixelType.INT16;</b>
+<b class="nc"><i>495</i>&nbsp;					break;</b>
+<i>496</i>&nbsp;				case FormatTools.UINT16:
+<b class="fc"><i>497</i>&nbsp;					pixelType = PixelType.UINT16;</b>
+<b class="fc"><i>498</i>&nbsp;					break;</b>
+<i>499</i>&nbsp;				case FormatTools.INT32:
+<b class="nc"><i>500</i>&nbsp;					pixelType = PixelType.INT32;</b>
+<b class="nc"><i>501</i>&nbsp;					break;</b>
+<i>502</i>&nbsp;				case FormatTools.UINT32:
+<b class="nc"><i>503</i>&nbsp;					logger.warn(&quot;Pixel type is UINT32! This is not currently supported by QuPath.&quot;);</b>
+<b class="nc"><i>504</i>&nbsp;					pixelType = PixelType.UINT32;</b>
+<b class="nc"><i>505</i>&nbsp;					break;</b>
+<i>506</i>&nbsp;				case FormatTools.FLOAT:
+<b class="nc"><i>507</i>&nbsp;					pixelType = PixelType.FLOAT32;</b>
+<b class="nc"><i>508</i>&nbsp;					break;</b>
+<i>509</i>&nbsp;				case FormatTools.DOUBLE:
+<b class="nc"><i>510</i>&nbsp;					pixelType = PixelType.FLOAT64;</b>
+<b class="nc"><i>511</i>&nbsp;					break;</b>
+<i>512</i>&nbsp;				default:
+<b class="nc"><i>513</i>&nbsp;					throw new IllegalArgumentException(&quot;Unsupported pixel type &quot; + reader.getPixelType());</b>
+<i>514</i>&nbsp;			}
+<i>515</i>&nbsp;			
+<i>516</i>&nbsp;			// Determine min/max values if we can
+<b class="fc"><i>517</i>&nbsp;			int bpp = reader.getBitsPerPixel();</b>
+<b class="fc"><i>518</i>&nbsp;			Number minValue = null;</b>
+<b class="fc"><i>519</i>&nbsp;			Number maxValue = null;</b>
+<b class="fc"><i>520</i>&nbsp;			if (bpp &lt; pixelType.getBitsPerPixel()) {</b>
+<b class="nc"><i>521</i>&nbsp;				if (pixelType.isSignedInteger()) {</b>
+<b class="nc"><i>522</i>&nbsp;					minValue = -(int)Math.pow(2, bpp-1);</b>
+<b class="nc"><i>523</i>&nbsp;					maxValue = (int)(Math.pow(2, bpp-1) - 1);</b>
+<b class="nc"><i>524</i>&nbsp;				} else if (pixelType.isUnsignedInteger()) {</b>
+<b class="nc"><i>525</i>&nbsp;					maxValue = (int)(Math.pow(2, bpp) - 1);</b>
+<i>526</i>&nbsp;				}
+<i>527</i>&nbsp;			}
+<i>528</i>&nbsp;			
+<b class="fc"><i>529</i>&nbsp;			boolean isRGB = reader.isRGB() &amp;&amp; pixelType == PixelType.UINT8;</b>
+<i>530</i>&nbsp;			// Remove alpha channel
+<b class="fc"><i>531</i>&nbsp;			if (isRGB &amp;&amp; nChannels == 4) {</b>
+<b class="nc"><i>532</i>&nbsp;				logger.warn(&quot;Removing alpha channel&quot;);</b>
+<b class="nc"><i>533</i>&nbsp;				nChannels = 3;</b>
+<b class="fc"><i>534</i>&nbsp;			} else if (nChannels != 3)</b>
+<b class="fc"><i>535</i>&nbsp;				isRGB = false;</b>
+<i>536</i>&nbsp;
+<i>537</i>&nbsp;			// Try to read the default display colors for each channel from the file
+<b class="fc"><i>538</i>&nbsp;			if (isRGB) {</b>
+<b class="nc"><i>539</i>&nbsp;				channels.addAll(ImageChannel.getDefaultRGBChannels());</b>
+<i>540</i>&nbsp;			}
+<i>541</i>&nbsp;			else {
+<b class="fc"><i>542</i>&nbsp;				for (int c = 0; c &lt; nChannels; c++) {</b>
+<b class="fc"><i>543</i>&nbsp;					ome.xml.model.primitives.Color color = null;</b>
+<b class="fc"><i>544</i>&nbsp;					String channelName = null;</b>
+<i>545</i>&nbsp;					try {
+<b class="fc"><i>546</i>&nbsp;						channelName = meta.getChannelName(series, c);</b>
+<b class="fc"><i>547</i>&nbsp;						color = meta.getChannelColor(series, c);</b>
+<b class="nc"><i>548</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>549</i>&nbsp;						logger.warn(&quot;Unable to parse color&quot;, e);</b>
+<b class="fc"><i>550</i>&nbsp;					}</b>
+<b class="fc"><i>551</i>&nbsp;					Integer channelColor = null;</b>
+<b class="fc"><i>552</i>&nbsp;					if (color != null)</b>
+<b class="nc"><i>553</i>&nbsp;						channelColor = ColorTools.makeRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());</b>
+<i>554</i>&nbsp;					else {
+<i>555</i>&nbsp;						// Select next available default color, or white (for grayscale) if only one channel
+<b class="fc"><i>556</i>&nbsp;						if (nChannels == 1)</b>
+<b class="nc"><i>557</i>&nbsp;							channelColor = ColorTools.makeRGB(255, 255, 255);</b>
+<i>558</i>&nbsp;						else
+<b class="fc"><i>559</i>&nbsp;							channelColor = ImageChannel.getDefaultChannelColor(c);</b>
+<i>560</i>&nbsp;					}
+<b class="fc"><i>561</i>&nbsp;					if (channelName == null || channelName.isBlank())</b>
+<b class="fc"><i>562</i>&nbsp;						channelName = &quot;Channel &quot; + (c + 1);</b>
+<b class="fc"><i>563</i>&nbsp;					channels.add(ImageChannel.getInstance(channelName, channelColor));</b>
+<i>564</i>&nbsp;				}
+<i>565</i>&nbsp;				// Update RGB status if needed - sometimes we might really have an RGB image, but the Bio-Formats flag doesn&#39;t show this - 
+<i>566</i>&nbsp;				// and we want to take advantage of the optimizations where we can
+<b class="fc"><i>567</i>&nbsp;				if (nChannels == 3 &amp;&amp; </b>
+<i>568</i>&nbsp;						pixelType == PixelType.UINT8 &amp;&amp;
+<b class="nc"><i>569</i>&nbsp;						channels.equals(ImageChannel.getDefaultRGBChannels())</b>
+<i>570</i>&nbsp;						) {
+<b class="nc"><i>571</i>&nbsp;					isRGB = true;</b>
+<b class="nc"><i>572</i>&nbsp;					colorModel = ColorModel.getRGBdefault();</b>
+<i>573</i>&nbsp;				} else {
+<b class="fc"><i>574</i>&nbsp;					colorModel = ColorModelFactory.createColorModel(pixelType, channels);</b>
+<i>575</i>&nbsp;				}
+<i>576</i>&nbsp;			}
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;			// Try parsing pixel sizes in micrometers
+<i>579</i>&nbsp;			double[] timepoints;
+<i>580</i>&nbsp;			try {
+<b class="fc"><i>581</i>&nbsp;				Length xSize = meta.getPixelsPhysicalSizeX(series);</b>
+<b class="fc"><i>582</i>&nbsp;				Length ySize = meta.getPixelsPhysicalSizeY(series);</b>
+<b class="fc"><i>583</i>&nbsp;				if (xSize != null &amp;&amp; ySize != null) {</b>
+<b class="nc"><i>584</i>&nbsp;					pixelWidth = xSize.value(UNITS.MICROMETER).doubleValue();</b>
+<b class="nc"><i>585</i>&nbsp;					pixelHeight = ySize.value(UNITS.MICROMETER).doubleValue();</b>
+<i>586</i>&nbsp;				} else {
+<b class="fc"><i>587</i>&nbsp;					pixelWidth = Double.NaN;</b>
+<b class="fc"><i>588</i>&nbsp;					pixelHeight = Double.NaN;			    		</b>
+<i>589</i>&nbsp;				}
+<i>590</i>&nbsp;				// If we have multiple z-slices, parse the spacing
+<b class="fc"><i>591</i>&nbsp;				if (nZSlices &gt; 1) {</b>
+<b class="nc"><i>592</i>&nbsp;					Length zSize = meta.getPixelsPhysicalSizeZ(series);</b>
+<b class="nc"><i>593</i>&nbsp;					if (zSize != null)</b>
+<b class="nc"><i>594</i>&nbsp;						zSpacing = zSize.value(UNITS.MICROMETER).doubleValue();</b>
+<i>595</i>&nbsp;					else
+<b class="nc"><i>596</i>&nbsp;						zSpacing = Double.NaN;</b>
+<i>597</i>&nbsp;				}
+<i>598</i>&nbsp;				// TODO: Check the Bioformats TimeStamps
+<b class="fc"><i>599</i>&nbsp;				if (nTimepoints &gt; 1) {</b>
+<b class="nc"><i>600</i>&nbsp;					logger.warn(&quot;Time stamps read from Bioformats have not been fully verified &amp; should not be relied upon&quot;);</b>
+<i>601</i>&nbsp;					// Here, we don&#39;t try to separate timings by z-slice &amp; channel...
+<b class="nc"><i>602</i>&nbsp;					int lastTimepoint = -1;</b>
+<b class="nc"><i>603</i>&nbsp;					int count = 0;</b>
+<b class="nc"><i>604</i>&nbsp;					timepoints = new double[nTimepoints];</b>
+<b class="nc"><i>605</i>&nbsp;					logger.debug(&quot;PLANE COUNT: &quot; + meta.getPlaneCount(series));</b>
+<b class="nc"><i>606</i>&nbsp;					for (int plane = 0; plane &lt; meta.getPlaneCount(series); plane++) {</b>
+<b class="nc"><i>607</i>&nbsp;						int timePoint = meta.getPlaneTheT(series, plane).getValue();</b>
+<b class="nc"><i>608</i>&nbsp;						logger.debug(&quot;Checking &quot; + timePoint);</b>
+<b class="nc"><i>609</i>&nbsp;						if (timePoint != lastTimepoint) {</b>
+<b class="nc"><i>610</i>&nbsp;							timepoints[count] = meta.getPlaneDeltaT(series, plane).value(UNITS.SECOND).doubleValue();</b>
+<b class="nc"><i>611</i>&nbsp;							logger.debug(String.format(&quot;Timepoint %d: %.3f seconds&quot;, count, timepoints[count]));</b>
+<b class="nc"><i>612</i>&nbsp;							lastTimepoint = timePoint;</b>
+<b class="nc"><i>613</i>&nbsp;							count++;</b>
+<i>614</i>&nbsp;						}
+<i>615</i>&nbsp;					}
+<b class="nc"><i>616</i>&nbsp;					timeUnit = TimeUnit.SECONDS;</b>
+<b class="nc"><i>617</i>&nbsp;				} else {</b>
+<b class="fc"><i>618</i>&nbsp;					timepoints = new double[0];</b>
+<i>619</i>&nbsp;				}
+<b class="nc"><i>620</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>621</i>&nbsp;				logger.error(&quot;Error parsing metadata&quot;, e);</b>
+<b class="nc"><i>622</i>&nbsp;				pixelWidth = Double.NaN;</b>
+<b class="nc"><i>623</i>&nbsp;				pixelHeight = Double.NaN;</b>
+<b class="nc"><i>624</i>&nbsp;				zSpacing = Double.NaN;</b>
+<b class="nc"><i>625</i>&nbsp;				timepoints = null;</b>
+<b class="nc"><i>626</i>&nbsp;				timeUnit = null;</b>
+<b class="fc"><i>627</i>&nbsp;			}</b>
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;			// Loop through the series &amp; determine downsamples
+<b class="fc"><i>630</i>&nbsp;			int nResolutions = reader.getResolutionCount();</b>
+<b class="fc"><i>631</i>&nbsp;			var resolutionBuilder = new ImageResolutionLevel.Builder(width, height)</b>
+<b class="fc"><i>632</i>&nbsp;					.addFullResolutionLevel();</b>
+<i>633</i>&nbsp;
+<i>634</i>&nbsp;			// I have seen czi files where the resolutions are not read correctly &amp; this results in an IndexOutOfBoundsException
+<b class="fc"><i>635</i>&nbsp;			for (int i = 1; i &lt; nResolutions; i++) {</b>
+<b class="nc"><i>636</i>&nbsp;				reader.setResolution(i);</b>
+<i>637</i>&nbsp;				try {
+<b class="nc"><i>638</i>&nbsp;					int w = reader.getSizeX();</b>
+<b class="nc"><i>639</i>&nbsp;					int h = reader.getSizeY();</b>
+<b class="nc"><i>640</i>&nbsp;					if (w &lt;= 0 || h &lt;= 0) {</b>
+<b class="nc"><i>641</i>&nbsp;						logger.warn(&quot;Invalid resolution size {} x {}! Will skip this level, but something seems wrong...&quot;, w, h);</b>
+<b class="nc"><i>642</i>&nbsp;						continue;</b>
+<i>643</i>&nbsp;					}
+<i>644</i>&nbsp;					// In some VSI images, the calculated downsamples for width &amp; height can be wildly discordant, 
+<i>645</i>&nbsp;					// and we are better off using defaults
+<b class="nc"><i>646</i>&nbsp;					if (&quot;CellSens VSI&quot;.equals(format)) {</b>
+<b class="nc"><i>647</i>&nbsp;						double downsampleX = (double)width / w;</b>
+<b class="nc"><i>648</i>&nbsp;						double downsampleY = (double)height / h;</b>
+<b class="nc"><i>649</i>&nbsp;						double downsample = Math.pow(2, i);</b>
+<b class="nc"><i>650</i>&nbsp;						if (!GeneralTools.almostTheSame(downsampleX, downsampleY, 0.01)) {</b>
+<b class="nc"><i>651</i>&nbsp;							logger.warn(&quot;Non-matching downsamples calculated for level {} ({} and {}); will use {} instead&quot;, i, downsampleX, downsampleY, downsample);</b>
+<b class="nc"><i>652</i>&nbsp;							resolutionBuilder.addLevel(downsample, w, h);</b>
+<b class="nc"><i>653</i>&nbsp;							continue;</b>
+<i>654</i>&nbsp;						}
+<i>655</i>&nbsp;					}
+<b class="nc"><i>656</i>&nbsp;					resolutionBuilder.addLevel(w, h);</b>
+<b class="nc"><i>657</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>658</i>&nbsp;					logger.warn(&quot;Error attempting to extract resolution &quot; + i + &quot; for &quot; + getImageName(series), e);					</b>
+<b class="nc"><i>659</i>&nbsp;					break;</b>
+<b class="nc"><i>660</i>&nbsp;				}</b>
+<i>661</i>&nbsp;			}
+<i>662</i>&nbsp;			
+<i>663</i>&nbsp;			// Generate a suitable name for this image
+<b class="fc"><i>664</i>&nbsp;			String imageName = getFile().getName();</b>
+<b class="fc"><i>665</i>&nbsp;			String shortName = getImageName(seriesIndex);</b>
+<b class="fc"><i>666</i>&nbsp;			if (shortName == null || shortName.isBlank()) {</b>
+<b class="nc"><i>667</i>&nbsp;				if (imageMap.size() &gt; 1)</b>
+<b class="nc"><i>668</i>&nbsp;					imageName = imageName + &quot; - Series &quot; + seriesIndex;</b>
+<b class="fc"><i>669</i>&nbsp;			} else if (!imageName.equals(shortName))</b>
+<b class="nc"><i>670</i>&nbsp;				imageName = imageName + &quot; - &quot; + shortName;</b>
+<i>671</i>&nbsp;
+<b class="fc"><i>672</i>&nbsp;			this.args = args;</b>
+<i>673</i>&nbsp;			
+<i>674</i>&nbsp;			// Set metadata
+<b class="fc"><i>675</i>&nbsp;			path = createID();</b>
+<b class="fc"><i>676</i>&nbsp;			ImageServerMetadata.Builder builder = new ImageServerMetadata.Builder(</b>
+<b class="fc"><i>677</i>&nbsp;					getClass(), path, width, height).</b>
+<i>678</i>&nbsp;//					args(args).
+<b class="fc"><i>679</i>&nbsp;					minValue(minValue).</b>
+<b class="fc"><i>680</i>&nbsp;					maxValue(maxValue).</b>
+<b class="fc"><i>681</i>&nbsp;					name(imageName).</b>
+<b class="fc"><i>682</i>&nbsp;					channels(channels).</b>
+<b class="fc"><i>683</i>&nbsp;					sizeZ(nZSlices).</b>
+<b class="fc"><i>684</i>&nbsp;					sizeT(nTimepoints).</b>
+<b class="fc"><i>685</i>&nbsp;					levels(resolutionBuilder.build()).</b>
+<b class="fc"><i>686</i>&nbsp;					pixelType(pixelType).</b>
+<b class="fc"><i>687</i>&nbsp;					rgb(isRGB);</b>
+<i>688</i>&nbsp;
+<b class="fc"><i>689</i>&nbsp;			if (Double.isFinite(magnification))</b>
+<b class="nc"><i>690</i>&nbsp;				builder = builder.magnification(magnification);</b>
+<i>691</i>&nbsp;
+<b class="fc"><i>692</i>&nbsp;			if (timeUnit != null)</b>
+<b class="nc"><i>693</i>&nbsp;				builder = builder.timepoints(timeUnit, timepoints);</b>
+<i>694</i>&nbsp;
+<b class="fc"><i>695</i>&nbsp;			if (Double.isFinite(pixelWidth + pixelHeight))</b>
+<b class="nc"><i>696</i>&nbsp;				builder = builder.pixelSizeMicrons(pixelWidth, pixelHeight);</b>
+<i>697</i>&nbsp;
+<b class="fc"><i>698</i>&nbsp;			if (Double.isFinite(zSpacing))</b>
+<b class="nc"><i>699</i>&nbsp;				builder = builder.zSpacingMicrons(zSpacing);</b>
+<i>700</i>&nbsp;
+<i>701</i>&nbsp;			// Check the tile size if it is reasonable
+<b class="fc"><i>702</i>&nbsp;			if (tileWidth &gt;= MIN_TILE_SIZE &amp;&amp; tileWidth &lt;= MAX_TILE_SIZE &amp;&amp; tileHeight &gt;= MIN_TILE_SIZE &amp;&amp; tileHeight &lt;= MAX_TILE_SIZE)</b>
+<b class="fc"><i>703</i>&nbsp;				builder.preferredTileSize(tileWidth, tileHeight);</b>
+<b class="fc"><i>704</i>&nbsp;			originalMetadata = builder.build();</b>
+<b class="fc"><i>705</i>&nbsp;		}</b>
+<i>706</i>&nbsp;
+<i>707</i>&nbsp;		// Bioformats can use ImageIO for JPEG decoding, and permitting the disk-based cache can slow it down... so here we turn it off
+<i>708</i>&nbsp;		// TODO: Document - or improve - the setting of ImageIO disk cache
+<b class="fc"><i>709</i>&nbsp;		ImageIO.setUseCache(false);</b>
+<i>710</i>&nbsp;
+<b class="fc"><i>711</i>&nbsp;		long endTime = System.currentTimeMillis();</b>
+<b class="fc"><i>712</i>&nbsp;		logger.debug(String.format(&quot;Initialization time: %d ms&quot;, endTime-startTime));</b>
+<b class="fc"><i>713</i>&nbsp;	}</b>
+<i>714</i>&nbsp;	
+<i>715</i>&nbsp;	
+<i>716</i>&nbsp;	/**
+<i>717</i>&nbsp;	 * Get the image name for a series, making sure to remove any trailing null terminators.
+<i>718</i>&nbsp;	 * &lt;p&gt;
+<i>719</i>&nbsp;	 * See https://github.com/qupath/qupath/issues/573
+<i>720</i>&nbsp;	 * @param series
+<i>721</i>&nbsp;	 * @return
+<i>722</i>&nbsp;	 */
+<i>723</i>&nbsp;	private String getImageName(int series) {
+<b class="fc"><i>724</i>&nbsp;		 String name = meta.getImageName(series);</b>
+<b class="fc"><i>725</i>&nbsp;		 if (name == null)</b>
+<b class="nc"><i>726</i>&nbsp;			 return null;</b>
+<b class="fc"><i>727</i>&nbsp;		 while (name.endsWith(&quot;\0&quot;))</b>
+<b class="nc"><i>728</i>&nbsp;			 name = name.substring(0, name.length()-1);</b>
+<b class="fc"><i>729</i>&nbsp;		 return name;</b>
+<i>730</i>&nbsp;	}
+<i>731</i>&nbsp;	
+<i>732</i>&nbsp;	/**
+<i>733</i>&nbsp;	 * Get the format String, as returned by Bio-Formats {@code IFormatReader.getFormat()}.
+<i>734</i>&nbsp;	 * @return
+<i>735</i>&nbsp;	 */
+<i>736</i>&nbsp;	public String getFormat() {
+<b class="fc"><i>737</i>&nbsp;		return format;</b>
+<i>738</i>&nbsp;	}
+<i>739</i>&nbsp;	
+<i>740</i>&nbsp;	@Override
+<i>741</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="fc"><i>742</i>&nbsp;		return Collections.singletonList(uri);</b>
+<i>743</i>&nbsp;	}
+<i>744</i>&nbsp;	
+<i>745</i>&nbsp;	@Override
+<i>746</i>&nbsp;	public String createID() {
+<b class="fc"><i>747</i>&nbsp;		String id = getClass().getSimpleName() + &quot;: &quot; + uri.toString();</b>
+<b class="fc"><i>748</i>&nbsp;		if (args.length &gt; 0) {</b>
+<b class="fc"><i>749</i>&nbsp;			id += &quot;[&quot; + String.join(&quot;, &quot;, args) + &quot;]&quot;;</b>
+<i>750</i>&nbsp;		}
+<b class="fc"><i>751</i>&nbsp;		return id;</b>
+<i>752</i>&nbsp;	}
+<i>753</i>&nbsp;	
+<i>754</i>&nbsp;	/**
+<i>755</i>&nbsp;	 * Returns a builder capable of creating a server like this one.
+<i>756</i>&nbsp;	 */
+<i>757</i>&nbsp;	@Override
+<i>758</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>759</i>&nbsp;		return DefaultImageServerBuilder.createInstance(BioFormatsServerBuilder.class, getMetadata(), uri, args);</b>
+<i>760</i>&nbsp;	}
+<i>761</i>&nbsp;	
+<i>762</i>&nbsp;	/**
+<i>763</i>&nbsp;	 * Returns true if the reader accepts parallel tile requests, without synchronization.
+<i>764</i>&nbsp;	 * &lt;p&gt;
+<i>765</i>&nbsp;	 * This is true if parallelization is requested, and any memoization file is &#39;small enough&#39;.
+<i>766</i>&nbsp;	 * The idea is that larger memoization files indicate more heavyweight readers, and these need 
+<i>767</i>&nbsp;	 * to be kept restricted to reduce the risk of memory errors.
+<i>768</i>&nbsp;	 * 
+<i>769</i>&nbsp;	 * @return
+<i>770</i>&nbsp;	 */
+<i>771</i>&nbsp;	public boolean willParallelize() {
+<b class="fc"><i>772</i>&nbsp;		return options.requestParallelization() &amp;&amp; (getWidth() &gt; getPreferredTileWidth() || getHeight() &gt; getPreferredTileHeight()) &amp;&amp; manager.getMemoizationFileSize(filePath) &lt;= MAX_PARALLELIZATION_MEMO_SIZE;</b>
+<i>773</i>&nbsp;	}
+<i>774</i>&nbsp;	
+<i>775</i>&nbsp;	int getPreferredTileWidth() {
+<b class="fc"><i>776</i>&nbsp;		return getMetadata().getPreferredTileWidth();</b>
+<i>777</i>&nbsp;	}
+<i>778</i>&nbsp;
+<i>779</i>&nbsp;	int getPreferredTileHeight() {
+<b class="fc"><i>780</i>&nbsp;		return getMetadata().getPreferredTileHeight();</b>
+<i>781</i>&nbsp;	}
+<i>782</i>&nbsp;
+<i>783</i>&nbsp;	
+<i>784</i>&nbsp;	/**
+<i>785</i>&nbsp;	 * Get a IFormatReader for use by the current thread.
+<i>786</i>&nbsp;	 * &lt;p&gt;
+<i>787</i>&nbsp;	 * If willParallelize() returns false, then the global reader will be provided.
+<i>788</i>&nbsp;	 * 
+<i>789</i>&nbsp;	 * @return
+<i>790</i>&nbsp;	 */
+<i>791</i>&nbsp;	private IFormatReader getReader() {
+<i>792</i>&nbsp;		try {
+<b class="fc"><i>793</i>&nbsp;			if (willParallelize())</b>
+<b class="fc"><i>794</i>&nbsp;				return manager.getReaderForThread(options, filePath, readerOptions);</b>
+<i>795</i>&nbsp;			else
+<b class="nc"><i>796</i>&nbsp;				return readerWrapper.getReader();</b>
+<b class="nc"><i>797</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>798</i>&nbsp;			logger.error(&quot;Error requesting image reader&quot;, e);</b>
+<b class="nc"><i>799</i>&nbsp;			return null;</b>
+<i>800</i>&nbsp;		}
+<i>801</i>&nbsp;	}
+<i>802</i>&nbsp;	
+<i>803</i>&nbsp;//	IFormatReader getPrimaryReader() throws DependencyException, ServiceException, FormatException, IOException {
+<i>804</i>&nbsp;//		return manager.getPrimaryReader(this, this.filePath);
+<i>805</i>&nbsp;//	}
+<i>806</i>&nbsp;	
+<i>807</i>&nbsp;	/**
+<i>808</i>&nbsp;	 * Get the series index, as used by Bio-Formats.
+<i>809</i>&nbsp;	 * @return
+<i>810</i>&nbsp;	 */
+<i>811</i>&nbsp;	public int getSeries() {
+<b class="nc"><i>812</i>&nbsp;		return series;</b>
+<i>813</i>&nbsp;	}
+<i>814</i>&nbsp;	
+<i>815</i>&nbsp;
+<i>816</i>&nbsp;	@Override
+<i>817</i>&nbsp;	public BufferedImage readTile(TileRequest tileRequest) throws IOException {
+<b class="fc"><i>818</i>&nbsp;		int level = tileRequest.getLevel();</b>
+<i>819</i>&nbsp;
+<b class="fc"><i>820</i>&nbsp;		int tileX = tileRequest.getTileX();</b>
+<b class="fc"><i>821</i>&nbsp;		int tileY = tileRequest.getTileY();</b>
+<b class="fc"><i>822</i>&nbsp;		int tileWidth = tileRequest.getTileWidth();</b>
+<b class="fc"><i>823</i>&nbsp;		int tileHeight = tileRequest.getTileHeight();</b>
+<b class="fc"><i>824</i>&nbsp;		int z = tileRequest.getZ();</b>
+<b class="fc"><i>825</i>&nbsp;		int t = tileRequest.getT();</b>
+<i>826</i>&nbsp;
+<b class="fc"><i>827</i>&nbsp;		IFormatReader ipReader = getReader();</b>
+<b class="fc"><i>828</i>&nbsp;		if (ipReader == null) {</b>
+<b class="nc"><i>829</i>&nbsp;			throw new IOException(&quot;Reader is null - was the image already closed? &quot; + filePath);</b>
+<i>830</i>&nbsp;		}
+<i>831</i>&nbsp;
+<i>832</i>&nbsp;		// Check if this is non-zero
+<b class="fc"><i>833</i>&nbsp;		if (tileWidth &lt;= 0 || tileHeight &lt;= 0) {</b>
+<b class="nc"><i>834</i>&nbsp;			throw new IOException(&quot;Unable to request pixels for region with downsampled size &quot; + tileWidth + &quot; x &quot; + tileHeight);</b>
+<i>835</i>&nbsp;		}
+<i>836</i>&nbsp;
+<b class="fc"><i>837</i>&nbsp;		byte[][] bytes = null;</b>
+<i>838</i>&nbsp;		int effectiveC;
+<b class="fc"><i>839</i>&nbsp;		int sizeC = nChannels();</b>
+<b class="fc"><i>840</i>&nbsp;		int length = 0;</b>
+<b class="fc"><i>841</i>&nbsp;		ByteOrder order = ByteOrder.BIG_ENDIAN;</b>
+<i>842</i>&nbsp;		boolean interleaved;
+<i>843</i>&nbsp;		int pixelType;
+<b class="fc"><i>844</i>&nbsp;		boolean normalizeFloats = false;</b>
+<i>845</i>&nbsp;
+<b class="fc"><i>846</i>&nbsp;		synchronized(ipReader) {</b>
+<b class="fc"><i>847</i>&nbsp;			ipReader.setSeries(series);</b>
+<b class="fc"><i>848</i>&nbsp;			ipReader.setResolution(level);</b>
+<b class="fc"><i>849</i>&nbsp;			order = ipReader.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN;</b>
+<b class="fc"><i>850</i>&nbsp;			interleaved = ipReader.isInterleaved();</b>
+<b class="fc"><i>851</i>&nbsp;			pixelType = ipReader.getPixelType();</b>
+<b class="fc"><i>852</i>&nbsp;			normalizeFloats = ipReader.isNormalized();</b>
+<i>853</i>&nbsp;
+<i>854</i>&nbsp;			// Single-channel &amp; RGB images are straightforward... nothing more to do
+<b class="fc"><i>855</i>&nbsp;			if ((ipReader.isRGB() &amp;&amp; isRGB()) || nChannels() == 1) {</b>
+<i>856</i>&nbsp;				// Read the image - or at least the first channel
+<b class="nc"><i>857</i>&nbsp;				int ind = ipReader.getIndex(z, 0, t);</b>
+<i>858</i>&nbsp;				try {
+<b class="nc"><i>859</i>&nbsp;					byte[] bytesSimple = ipReader.openBytes(ind, tileX, tileY, tileWidth, tileHeight);</b>
+<b class="nc"><i>860</i>&nbsp;					return AWTImageTools.openImage(bytesSimple, ipReader, tileWidth, tileHeight);</b>
+<b class="nc"><i>861</i>&nbsp;				} catch (Exception e) {</b>
+<b class="nc"><i>862</i>&nbsp;					logger.error(&quot;Error opening image &quot; + ind + &quot; for &quot; + tileRequest.getRegionRequest(), e);</b>
+<i>863</i>&nbsp;				}
+<i>864</i>&nbsp;			}
+<i>865</i>&nbsp;			// Read bytes for all the required channels
+<b class="fc"><i>866</i>&nbsp;			effectiveC = ipReader.getEffectiveSizeC();</b>
+<b class="fc"><i>867</i>&nbsp;			bytes = new byte[effectiveC][];</b>
+<i>868</i>&nbsp;			try {
+<b class="fc"><i>869</i>&nbsp;				for (int c = 0; c &lt; effectiveC; c++) {</b>
+<b class="fc"><i>870</i>&nbsp;					int ind = ipReader.getIndex(z, c, t);</b>
+<b class="fc"><i>871</i>&nbsp;					bytes[c] = ipReader.openBytes(ind, tileX, tileY, tileWidth, tileHeight);</b>
+<b class="fc"><i>872</i>&nbsp;					length = bytes[c].length;</b>
+<i>873</i>&nbsp;				}
+<b class="nc"><i>874</i>&nbsp;			} catch (FormatException e) {</b>
+<b class="nc"><i>875</i>&nbsp;				throw new IOException(e);</b>
+<b class="fc"><i>876</i>&nbsp;			}</b>
+<b class="fc"><i>877</i>&nbsp;		}</b>
+<i>878</i>&nbsp;
+<i>879</i>&nbsp;		DataBuffer dataBuffer;
+<b class="fc"><i>880</i>&nbsp;		switch (pixelType) {</b>
+<i>881</i>&nbsp;		case (FormatTools.UINT8):
+<b class="nc"><i>882</i>&nbsp;			dataBuffer = new DataBufferByte(bytes, length);</b>
+<b class="nc"><i>883</i>&nbsp;		break;</b>
+<i>884</i>&nbsp;		case (FormatTools.UINT16):
+<b class="fc"><i>885</i>&nbsp;			length /= 2;</b>
+<b class="fc"><i>886</i>&nbsp;			short[][] array = new short[bytes.length][length];</b>
+<b class="fc"><i>887</i>&nbsp;			for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="fc"><i>888</i>&nbsp;				ShortBuffer buffer = ByteBuffer.wrap(bytes[i]).order(order).asShortBuffer();</b>
+<b class="fc"><i>889</i>&nbsp;				array[i] = new short[buffer.limit()];</b>
+<b class="fc"><i>890</i>&nbsp;				buffer.get(array[i]);</b>
+<i>891</i>&nbsp;			}
+<b class="fc"><i>892</i>&nbsp;			dataBuffer = new DataBufferUShort(array, length);</b>
+<b class="fc"><i>893</i>&nbsp;			break;</b>
+<i>894</i>&nbsp;		case (FormatTools.INT16):
+<b class="nc"><i>895</i>&nbsp;			length /= 2;</b>
+<b class="nc"><i>896</i>&nbsp;			short[][] shortArray = new short[bytes.length][length];</b>
+<b class="nc"><i>897</i>&nbsp;			for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="nc"><i>898</i>&nbsp;				ShortBuffer buffer = ByteBuffer.wrap(bytes[i]).order(order).asShortBuffer();</b>
+<b class="nc"><i>899</i>&nbsp;				shortArray[i] = new short[buffer.limit()];</b>
+<b class="nc"><i>900</i>&nbsp;				buffer.get(shortArray[i]);</b>
+<i>901</i>&nbsp;			}
+<b class="nc"><i>902</i>&nbsp;			dataBuffer = new DataBufferShort(shortArray, length);</b>
+<b class="nc"><i>903</i>&nbsp;			break;</b>
+<i>904</i>&nbsp;		case (FormatTools.INT32):
+<b class="nc"><i>905</i>&nbsp;			length /= 4;</b>
+<b class="nc"><i>906</i>&nbsp;			int[][] intArray = new int[bytes.length][length];</b>
+<b class="nc"><i>907</i>&nbsp;				for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="nc"><i>908</i>&nbsp;					IntBuffer buffer = ByteBuffer.wrap(bytes[i]).order(order).asIntBuffer();</b>
+<b class="nc"><i>909</i>&nbsp;					intArray[i] = new int[buffer.limit()];</b>
+<b class="nc"><i>910</i>&nbsp;					buffer.get(intArray[i]);</b>
+<i>911</i>&nbsp;				}
+<b class="nc"><i>912</i>&nbsp;			dataBuffer = new DataBufferInt(intArray, length);</b>
+<b class="nc"><i>913</i>&nbsp;			break;</b>
+<i>914</i>&nbsp;		case (FormatTools.FLOAT):
+<b class="nc"><i>915</i>&nbsp;			length /= 4;</b>
+<b class="nc"><i>916</i>&nbsp;			float[][] floatArray = new float[bytes.length][length];</b>
+<b class="nc"><i>917</i>&nbsp;			for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="nc"><i>918</i>&nbsp;				FloatBuffer buffer = ByteBuffer.wrap(bytes[i]).order(order).asFloatBuffer();</b>
+<b class="nc"><i>919</i>&nbsp;				floatArray[i] = new float[buffer.limit()];</b>
+<b class="nc"><i>920</i>&nbsp;				buffer.get(floatArray[i]);</b>
+<b class="nc"><i>921</i>&nbsp;				if (normalizeFloats)</b>
+<b class="nc"><i>922</i>&nbsp;					floatArray[i] = DataTools.normalizeFloats(floatArray[i]);</b>
+<i>923</i>&nbsp;			}
+<b class="nc"><i>924</i>&nbsp;			dataBuffer = new DataBufferFloat(floatArray, length);</b>
+<b class="nc"><i>925</i>&nbsp;			break;</b>
+<i>926</i>&nbsp;		case (FormatTools.DOUBLE):
+<b class="nc"><i>927</i>&nbsp;			length /= 8;</b>
+<b class="nc"><i>928</i>&nbsp;			double[][] doubleArray = new double[bytes.length][length];</b>
+<b class="nc"><i>929</i>&nbsp;			for (int i = 0; i &lt; bytes.length; i++) {</b>
+<b class="nc"><i>930</i>&nbsp;				DoubleBuffer buffer = ByteBuffer.wrap(bytes[i]).order(order).asDoubleBuffer();</b>
+<b class="nc"><i>931</i>&nbsp;				doubleArray[i] = new double[buffer.limit()];</b>
+<b class="nc"><i>932</i>&nbsp;				buffer.get(doubleArray[i]);</b>
+<b class="nc"><i>933</i>&nbsp;				if (normalizeFloats)</b>
+<b class="nc"><i>934</i>&nbsp;					doubleArray[i] = DataTools.normalizeDoubles(doubleArray[i]);</b>
+<i>935</i>&nbsp;			}
+<b class="nc"><i>936</i>&nbsp;			dataBuffer = new DataBufferDouble(doubleArray, length);</b>
+<b class="nc"><i>937</i>&nbsp;			break;</b>
+<i>938</i>&nbsp;		// TODO: Consider conversion to closest supported pixel type
+<i>939</i>&nbsp;		case FormatTools.BIT:
+<i>940</i>&nbsp;		case FormatTools.INT8:
+<i>941</i>&nbsp;		case FormatTools.UINT32:
+<i>942</i>&nbsp;		default:
+<b class="nc"><i>943</i>&nbsp;			throw new UnsupportedOperationException(&quot;Unsupported pixel type &quot; + pixelType);</b>
+<i>944</i>&nbsp;		}
+<i>945</i>&nbsp;
+<i>946</i>&nbsp;		SampleModel sampleModel;
+<i>947</i>&nbsp;
+<b class="fc"><i>948</i>&nbsp;		if (effectiveC == 1 &amp;&amp; sizeC &gt; 1) {</b>
+<i>949</i>&nbsp;			// Handle channels stored in the same plane
+<b class="nc"><i>950</i>&nbsp;			int[] offsets = new int[sizeC];</b>
+<b class="nc"><i>951</i>&nbsp;			if (interleaved) {</b>
+<b class="nc"><i>952</i>&nbsp;				for (int b = 0; b &lt; sizeC; b++)</b>
+<b class="nc"><i>953</i>&nbsp;					offsets[b] = b;</b>
+<b class="nc"><i>954</i>&nbsp;				sampleModel = new PixelInterleavedSampleModel(dataBuffer.getDataType(), tileWidth, tileHeight, sizeC, sizeC*tileWidth, offsets);</b>
+<i>955</i>&nbsp;			} else {
+<b class="nc"><i>956</i>&nbsp;				for (int b = 0; b &lt; sizeC; b++)</b>
+<b class="nc"><i>957</i>&nbsp;					offsets[b] = b * tileWidth * tileHeight;</b>
+<b class="nc"><i>958</i>&nbsp;				sampleModel = new ComponentSampleModel(dataBuffer.getDataType(), tileWidth, tileHeight, 1, tileWidth, offsets);</b>
+<i>959</i>&nbsp;			}
+<b class="nc"><i>960</i>&nbsp;		} else {</b>
+<i>961</i>&nbsp;			// Merge channels on different planes
+<b class="fc"><i>962</i>&nbsp;			sampleModel = new BandedSampleModel(dataBuffer.getDataType(), tileWidth, tileHeight, sizeC);</b>
+<i>963</i>&nbsp;		}
+<i>964</i>&nbsp;
+<b class="fc"><i>965</i>&nbsp;		WritableRaster raster = WritableRaster.createWritableRaster(sampleModel, dataBuffer, null);</b>
+<b class="fc"><i>966</i>&nbsp;		return new BufferedImage(colorModel, raster, false, null);</b>
+<i>967</i>&nbsp;	}
+<i>968</i>&nbsp;	
+<i>969</i>&nbsp;	
+<i>970</i>&nbsp;	@Override
+<i>971</i>&nbsp;	public String getServerType() {
+<b class="fc"><i>972</i>&nbsp;		return &quot;Bio-Formats&quot;;</b>
+<i>973</i>&nbsp;	}
+<i>974</i>&nbsp;	
+<i>975</i>&nbsp;	@Override
+<i>976</i>&nbsp;	public synchronized void close() throws Exception {
+<b class="fc"><i>977</i>&nbsp;		super.close();</b>
+<b class="fc"><i>978</i>&nbsp;	}</b>
+<i>979</i>&nbsp;
+<i>980</i>&nbsp;	boolean containsSubImages() {
+<b class="nc"><i>981</i>&nbsp;		return imageMap != null &amp;&amp; !imageMap.isEmpty();</b>
+<i>982</i>&nbsp;	}
+<i>983</i>&nbsp;
+<i>984</i>&nbsp;	/**
+<i>985</i>&nbsp;	 * Get the MetadataStore, as used by Bio-Formats. This can be used to query metadata values not otherwise accessible.
+<i>986</i>&nbsp;	 * @return
+<i>987</i>&nbsp;	 */
+<i>988</i>&nbsp;	public OMEPyramidStore getMetadataStore() {
+<b class="nc"><i>989</i>&nbsp;		return meta;</b>
+<i>990</i>&nbsp;	}
+<i>991</i>&nbsp;	
+<i>992</i>&nbsp;	/**
+<i>993</i>&nbsp;	 * Retrieve a string representation of the metadata OME-XML.
+<i>994</i>&nbsp;	 * 
+<i>995</i>&nbsp;	 * @return
+<i>996</i>&nbsp;	 */
+<i>997</i>&nbsp;	public String dumpMetadata() {
+<i>998</i>&nbsp;		try {
+<b class="nc"><i>999</i>&nbsp;			OMEXMLMetadata metadata = (OMEXMLMetadata)getMetadataStore();</b>
+<b class="nc"><i>1000</i>&nbsp;			return metadata.dumpXML();</b>
+<b class="nc"><i>1001</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>1002</i>&nbsp;			logger.error(&quot;Unable to dump metadata&quot;, e);</b>
+<i>1003</i>&nbsp;		}
+<b class="nc"><i>1004</i>&nbsp;		return null;</b>
+<i>1005</i>&nbsp;	}
+<i>1006</i>&nbsp;
+<i>1007</i>&nbsp;	
+<i>1008</i>&nbsp;	@Override
+<i>1009</i>&nbsp;	public List&lt;String&gt; getAssociatedImageList() {
+<b class="fc"><i>1010</i>&nbsp;		if (associatedImageMap == null || associatedImageMap.isEmpty())</b>
+<b class="fc"><i>1011</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>1012</i>&nbsp;		return new ArrayList&lt;&gt;(associatedImageMap.keySet());</b>
+<i>1013</i>&nbsp;	}
+<i>1014</i>&nbsp;
+<i>1015</i>&nbsp;	@Override
+<i>1016</i>&nbsp;	public BufferedImage getAssociatedImage(String name) {
+<b class="nc"><i>1017</i>&nbsp;		if (associatedImageMap == null || !associatedImageMap.containsKey(name))</b>
+<b class="nc"><i>1018</i>&nbsp;			throw new IllegalArgumentException(&quot;No associated image with name &#39;&quot; + name + &quot;&#39; for &quot; + getPath());</b>
+<b class="nc"><i>1019</i>&nbsp;		IFormatReader reader = getReader();</b>
+<b class="nc"><i>1020</i>&nbsp;		synchronized (reader) {</b>
+<b class="nc"><i>1021</i>&nbsp;			int series = reader.getSeries();</b>
+<i>1022</i>&nbsp;			try {
+<b class="nc"><i>1023</i>&nbsp;				reader.setSeries(associatedImageMap.get(name));</b>
+<b class="nc"><i>1024</i>&nbsp;				int nResolutions = reader.getResolutionCount();</b>
+<b class="nc"><i>1025</i>&nbsp;				if (nResolutions &gt; 0) {</b>
+<b class="nc"><i>1026</i>&nbsp;					reader.setResolution(0);</b>
+<i>1027</i>&nbsp;				}
+<i>1028</i>&nbsp;				// TODO: Handle color transforms here, or in the display of labels/macro images - in case this isn&#39;t RGB
+<b class="nc"><i>1029</i>&nbsp;				byte[] bytesSimple = reader.openBytes(reader.getIndex(0, 0, 0));</b>
+<b class="nc"><i>1030</i>&nbsp;				return AWTImageTools.openImage(bytesSimple, reader, reader.getSizeX(), reader.getSizeY());</b>
+<i>1031</i>&nbsp;//				return AWTImageTools.autoscale(img);
+<b class="nc"><i>1032</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>1033</i>&nbsp;				logger.error(&quot;Error reading associated image&quot; + name, e);</b>
+<i>1034</i>&nbsp;			} finally {
+<b class="nc"><i>1035</i>&nbsp;				reader.setSeries(series);</b>
+<b class="nc"><i>1036</i>&nbsp;			}</b>
+<b class="nc"><i>1037</i>&nbsp;		}</b>
+<b class="nc"><i>1038</i>&nbsp;		return null;</b>
+<i>1039</i>&nbsp;	}
+<i>1040</i>&nbsp;	
+<i>1041</i>&nbsp;	
+<i>1042</i>&nbsp;	/**
+<i>1043</i>&nbsp;	 * Get the underlying file.
+<i>1044</i>&nbsp;	 * 
+<i>1045</i>&nbsp;	 * @return
+<i>1046</i>&nbsp;	 */
+<i>1047</i>&nbsp;	public File getFile() {
+<b class="fc"><i>1048</i>&nbsp;		return filePath == null ? null : new File(filePath);</b>
+<i>1049</i>&nbsp;	}
+<i>1050</i>&nbsp;
+<i>1051</i>&nbsp;
+<i>1052</i>&nbsp;	Map&lt;String, ServerBuilder&lt;BufferedImage&gt;&gt; getImageBuilders() {
+<b class="fc"><i>1053</i>&nbsp;		return Collections.unmodifiableMap(imageMap);</b>
+<i>1054</i>&nbsp;	}
+<i>1055</i>&nbsp;
+<i>1056</i>&nbsp;
+<i>1057</i>&nbsp;	@Override
+<i>1058</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="fc"><i>1059</i>&nbsp;		return originalMetadata;</b>
+<i>1060</i>&nbsp;	}
+<i>1061</i>&nbsp;	
+<i>1062</i>&nbsp;	/**
+<i>1063</i>&nbsp;	 * Get the class name of the first reader that potentially supports the file type, or null if no reader can be found.
+<i>1064</i>&nbsp;	 * &lt;p&gt;
+<i>1065</i>&nbsp;	 * This method only uses the path and file extensions, generously returning the first potential 
+<i>1066</i>&nbsp;	 * reader based on the extension. Its purpose is to help filter out hopeless cases, not to establish 
+<i>1067</i>&nbsp;	 * the &#39;correct&#39; reader.
+<i>1068</i>&nbsp;	 * 
+<i>1069</i>&nbsp;	 * @param path
+<i>1070</i>&nbsp;	 * @return
+<i>1071</i>&nbsp;	 * @throws InstantiationException
+<i>1072</i>&nbsp;	 * @throws IllegalAccessException
+<i>1073</i>&nbsp;	 * @throws IllegalArgumentException
+<i>1074</i>&nbsp;	 * @throws InvocationTargetException
+<i>1075</i>&nbsp;	 * @throws NoSuchMethodException
+<i>1076</i>&nbsp;	 * @throws SecurityException
+<i>1077</i>&nbsp;	 */
+<i>1078</i>&nbsp;	static String getSupportedReaderClass(String path) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+<b class="fc"><i>1079</i>&nbsp;		path = path.toLowerCase();</b>
+<b class="fc"><i>1080</i>&nbsp;		for (var cls : ImageReader.getDefaultReaderClasses().getClasses()) {</b>
+<b class="fc"><i>1081</i>&nbsp;			var reader = cls.getConstructor().newInstance();</b>
+<b class="fc"><i>1082</i>&nbsp;			if (reader.isThisType(path, false))</b>
+<b class="fc"><i>1083</i>&nbsp;				return cls.getName();</b>
+<b class="fc"><i>1084</i>&nbsp;			for (String s : reader.getSuffixes()) {</b>
+<b class="fc"><i>1085</i>&nbsp;				if (s != null &amp;&amp; !s.isBlank() &amp;&amp; path.endsWith(s.toLowerCase()))</b>
+<b class="nc"><i>1086</i>&nbsp;					return cls.getName();</b>
+<i>1087</i>&nbsp;			}
+<i>1088</i>&nbsp;		}
+<b class="nc"><i>1089</i>&nbsp;		return null;</b>
+<i>1090</i>&nbsp;	}
+<i>1091</i>&nbsp;	
+<i>1092</i>&nbsp;	
+<i>1093</i>&nbsp;	/**
+<i>1094</i>&nbsp;	 * Helper class to manage multiple Bio-Formats image readers.
+<i>1095</i>&nbsp;	 * &lt;p&gt;
+<i>1096</i>&nbsp;	 * This has two purposes:
+<i>1097</i>&nbsp;	 * &lt;ol&gt;
+<i>1098</i>&nbsp;	 *   &lt;li&gt;To construct IFormatReaders in a standardized way (e.g. with/without memoization).&lt;/li&gt;
+<i>1099</i>&nbsp;	 *   &lt;li&gt;To track the size of any memoization files for particular readers.&lt;/li&gt;
+<i>1100</i>&nbsp;	 *   &lt;li&gt;To allow BioFormatsImageServers to request separate Bio-Formats image readers for different threads.&lt;/li&gt;
+<i>1101</i>&nbsp;	 * &lt;/ol&gt; 
+<i>1102</i>&nbsp;	 * The memoization file size can be relevant because some readers are very memory-hungry, and may need to be created rarely.
+<i>1103</i>&nbsp;	 * On the other side, some readers are very lightweight - and having multiple such readers active at a time can help rapidly 
+<i>1104</i>&nbsp;	 * respond to tile requests.
+<i>1105</i>&nbsp;	 * &lt;p&gt;
+<i>1106</i>&nbsp;	 * It&#39;s up to any consumers to ensure that heavyweight readers aren&#39;t called for each thread. Additionally, each thread 
+<i>1107</i>&nbsp;	 * will have only one reader active at any time. This should be explicitly closed by the calling thread if it knows 
+<i>1108</i>&nbsp;	 * the reader will not be used again, but in practice this is often not the case and therefore a Cleaner is registered to 
+<i>1109</i>&nbsp;	 * provide some additional support for when a thread is no longer reachable.
+<i>1110</i>&nbsp;	 * &lt;p&gt;
+<i>1111</i>&nbsp;	 * Note that this does mean one should be sparing when creating threads, and not keep them around too long.
+<i>1112</i>&nbsp;	 */
+<b class="fc"><i>1113</i>&nbsp;	static class BioFormatsReaderManager {</b>
+<i>1114</i>&nbsp;		
+<b class="fc"><i>1115</i>&nbsp;		private static Cleaner cleaner = Cleaner.create();</b>
+<i>1116</i>&nbsp;		
+<i>1117</i>&nbsp;		/**
+<i>1118</i>&nbsp;		 * Map of reads for each calling thread.  Care should be taking by the calling code to ensure requests are only made for &#39;lightweight&#39; readers to avoid memory problems.
+<i>1119</i>&nbsp;		 */
+<b class="fc"><i>1120</i>&nbsp;		private static ThreadLocal&lt;LocalReaderWrapper&gt; localReader = new ThreadLocal&lt;&gt;();</b>
+<i>1121</i>&nbsp;		
+<i>1122</i>&nbsp;		/**
+<i>1123</i>&nbsp;		 * Map of memoization file sizes.
+<i>1124</i>&nbsp;		 */
+<b class="fc"><i>1125</i>&nbsp;		private static Map&lt;String, Long&gt; memoizationSizeMap = new HashMap&lt;&gt;();</b>
+<i>1126</i>&nbsp;		
+<i>1127</i>&nbsp;		/**
+<i>1128</i>&nbsp;		 * Temporary directory for storing memoization files
+<i>1129</i>&nbsp;		 */
+<b class="fc"><i>1130</i>&nbsp;		private static File dirMemoTemp = null;</b>
+<i>1131</i>&nbsp;		
+<i>1132</i>&nbsp;		/**
+<i>1133</i>&nbsp;		 * A set of primary readers, to avoid needing to regenerate these for all servers.
+<i>1134</i>&nbsp;		 */
+<b class="fc"><i>1135</i>&nbsp;		private static Set&lt;LocalReaderWrapper&gt; primaryReaders = Collections.newSetFromMap(new WeakHashMap&lt;&gt;());</b>
+<i>1136</i>&nbsp;		
+<i>1137</i>&nbsp;		/**
+<i>1138</i>&nbsp;		 * Set of created temp memo files
+<i>1139</i>&nbsp;		 */
+<b class="fc"><i>1140</i>&nbsp;		private static Set&lt;File&gt; tempMemoFiles = new HashSet&lt;&gt;();</b>
+<i>1141</i>&nbsp;		
+<i>1142</i>&nbsp;		/**
+<i>1143</i>&nbsp;		 * Request a IFormatReader for a specified path that is unique for the calling thread.
+<i>1144</i>&nbsp;		 * &lt;p&gt;
+<i>1145</i>&nbsp;		 * Note that the state of the reader is not specified; setSeries should be called before use.
+<i>1146</i>&nbsp;		 * 
+<i>1147</i>&nbsp;		 * @param options
+<i>1148</i>&nbsp;		 * @param path
+<i>1149</i>&nbsp;		 * @param readerOptions 
+<i>1150</i>&nbsp;		 * @return
+<i>1151</i>&nbsp;		 * @throws DependencyException
+<i>1152</i>&nbsp;		 * @throws ServiceException
+<i>1153</i>&nbsp;		 * @throws FormatException
+<i>1154</i>&nbsp;		 * @throws IOException
+<i>1155</i>&nbsp;		 */
+<i>1156</i>&nbsp;		public synchronized IFormatReader getReaderForThread(final BioFormatsServerOptions options, final String path, Map&lt;String, String&gt; readerOptions) throws DependencyException, ServiceException, FormatException, IOException {
+<i>1157</i>&nbsp;			
+<b class="fc"><i>1158</i>&nbsp;			LocalReaderWrapper wrapper = localReader.get();</b>
+<i>1159</i>&nbsp;			
+<i>1160</i>&nbsp;			// Check if we already have the correct reader
+<b class="fc"><i>1161</i>&nbsp;			IFormatReader reader = wrapper == null ? null : wrapper.getReader();</b>
+<b class="fc"><i>1162</i>&nbsp;			if (reader != null) {</b>
+<b class="fc"><i>1163</i>&nbsp;				if (path.equals(reader.getCurrentFile()) &amp;&amp; wrapper.argsMatch(readerOptions))</b>
+<b class="fc"><i>1164</i>&nbsp;					return reader;		</b>
+<i>1165</i>&nbsp;				else
+<b class="nc"><i>1166</i>&nbsp;					reader.close(false);</b>
+<i>1167</i>&nbsp;			}
+<i>1168</i>&nbsp;			
+<i>1169</i>&nbsp;			// Create a new reader
+<b class="fc"><i>1170</i>&nbsp;			reader = createReader(options, path, null, readerOptions);</b>
+<i>1171</i>&nbsp;			
+<i>1172</i>&nbsp;			// Store wrapped reference with associated cleaner
+<b class="fc"><i>1173</i>&nbsp;			wrapper = wrapReader(reader, readerOptions);</b>
+<b class="fc"><i>1174</i>&nbsp;			localReader.set(wrapper);</b>
+<i>1175</i>&nbsp;			
+<b class="fc"><i>1176</i>&nbsp;			return reader;</b>
+<i>1177</i>&nbsp;		}
+<i>1178</i>&nbsp;		
+<i>1179</i>&nbsp;		
+<i>1180</i>&nbsp;		private static LocalReaderWrapper wrapReader(IFormatReader reader, Map&lt;String, String&gt; readerOptions) {
+<b class="fc"><i>1181</i>&nbsp;			LocalReaderWrapper wrapper = new LocalReaderWrapper(reader, readerOptions);</b>
+<b class="fc"><i>1182</i>&nbsp;			logger.debug(&quot;Constructing reader for {}&quot;, Thread.currentThread());</b>
+<b class="fc"><i>1183</i>&nbsp;			cleaner.register(</b>
+<i>1184</i>&nbsp;					wrapper,
+<b class="fc"><i>1185</i>&nbsp;					new ReaderCleaner(Thread.currentThread().toString(), reader));</b>
+<b class="fc"><i>1186</i>&nbsp;			return wrapper;</b>
+<i>1187</i>&nbsp;		}
+<i>1188</i>&nbsp;		
+<i>1189</i>&nbsp;		
+<i>1190</i>&nbsp;		/**
+<i>1191</i>&nbsp;		 * Request a IFormatReader for the specified path.
+<i>1192</i>&nbsp;		 * &lt;p&gt;
+<i>1193</i>&nbsp;		 * This reader will have OME metadata populated in an accessible form, but will *not* be unique for the calling thread.
+<i>1194</i>&nbsp;		 * Therefore care needs to be taken with regard to synchronization.
+<i>1195</i>&nbsp;		 * &lt;p&gt;
+<i>1196</i>&nbsp;		 * Note that the state of the reader is not specified; setSeries should be called before use.
+<i>1197</i>&nbsp;		 * 
+<i>1198</i>&nbsp;		 * @param options
+<i>1199</i>&nbsp;		 * @param path
+<i>1200</i>&nbsp;		 * @return
+<i>1201</i>&nbsp;		 * @throws DependencyException
+<i>1202</i>&nbsp;		 * @throws ServiceException
+<i>1203</i>&nbsp;		 * @throws FormatException
+<i>1204</i>&nbsp;		 * @throws IOException
+<i>1205</i>&nbsp;		 */
+<i>1206</i>&nbsp;		synchronized IFormatReader createPrimaryReader(final BioFormatsServerOptions options, final String path, IMetadata metadata, Map&lt;String, String&gt; readerOptions) throws DependencyException, ServiceException, FormatException, IOException {
+<b class="fc"><i>1207</i>&nbsp;			return createReader(options, path, metadata == null ? MetadataTools.createOMEXMLMetadata() : metadata, readerOptions);</b>
+<i>1208</i>&nbsp;		}
+<i>1209</i>&nbsp;		
+<i>1210</i>&nbsp;		
+<i>1211</i>&nbsp;		/**
+<i>1212</i>&nbsp;		 * Get a wrapper for the primary reader for a particular path. This can be reused across ImageServers, but 
+<i>1213</i>&nbsp;		 * one must be careful to synchronize the actual use of the reader.
+<i>1214</i>&nbsp;		 * @param options
+<i>1215</i>&nbsp;		 * @param path
+<i>1216</i>&nbsp;		 * @return
+<i>1217</i>&nbsp;		 * @throws DependencyException
+<i>1218</i>&nbsp;		 * @throws ServiceException
+<i>1219</i>&nbsp;		 * @throws FormatException
+<i>1220</i>&nbsp;		 * @throws IOException
+<i>1221</i>&nbsp;		 */
+<i>1222</i>&nbsp;		synchronized LocalReaderWrapper getPrimaryReaderWrapper(final BioFormatsServerOptions options, final String path, Map&lt;String, String&gt; readerOptions) throws DependencyException, ServiceException, FormatException, IOException {
+<b class="fc"><i>1223</i>&nbsp;			for (LocalReaderWrapper wrapper : primaryReaders) {</b>
+<b class="fc"><i>1224</i>&nbsp;				if (path.equals(wrapper.getReader().getCurrentFile()) &amp;&amp; wrapper.argsMatch(readerOptions))</b>
+<b class="fc"><i>1225</i>&nbsp;					return wrapper;</b>
+<b class="nc"><i>1226</i>&nbsp;			}</b>
+<b class="fc"><i>1227</i>&nbsp;			LocalReaderWrapper wrapper = wrapReader(createPrimaryReader(options, path, null, readerOptions), readerOptions);</b>
+<b class="fc"><i>1228</i>&nbsp;			primaryReaders.add(wrapper);</b>
+<b class="fc"><i>1229</i>&nbsp;			return wrapper;</b>
+<i>1230</i>&nbsp;		}
+<i>1231</i>&nbsp;		
+<i>1232</i>&nbsp;		
+<i>1233</i>&nbsp;		/**
+<i>1234</i>&nbsp;		 * Create a new IFormatReader, with memoization if necessary.
+<i>1235</i>&nbsp;		 * 
+<i>1236</i>&nbsp;		 * @param options 
+<i>1237</i>&nbsp;		 * @param id File path for the image
+<i>1238</i>&nbsp;		 * @param store optional MetadataStore; this will be set in the reader if needed
+<i>1239</i>&nbsp;		 * @return the IFormatReader
+<i>1240</i>&nbsp;		 * @throws FormatException
+<i>1241</i>&nbsp;		 * @throws IOException
+<i>1242</i>&nbsp;		 */
+<i>1243</i>&nbsp;		static IFormatReader createReader(final BioFormatsServerOptions options, final String id, final MetadataStore store, Map&lt;String, String&gt; readerOptions) throws FormatException, IOException {
+<b class="fc"><i>1244</i>&nbsp;			return createReader(options, null, id, store, readerOptions);</b>
+<i>1245</i>&nbsp;		}
+<i>1246</i>&nbsp;		
+<i>1247</i>&nbsp;		/**
+<i>1248</i>&nbsp;		 * Request the file size of any known memoization file for a specific ID.
+<i>1249</i>&nbsp;		 * 
+<i>1250</i>&nbsp;		 * @param id
+<i>1251</i>&nbsp;		 * @return
+<i>1252</i>&nbsp;		 */
+<i>1253</i>&nbsp;		public long getMemoizationFileSize(String id) {
+<b class="fc"><i>1254</i>&nbsp;			return memoizationSizeMap.getOrDefault(id, Long.valueOf(0L));</b>
+<i>1255</i>&nbsp;		}
+<i>1256</i>&nbsp;		
+<i>1257</i>&nbsp;		/**
+<i>1258</i>&nbsp;		 * Create a new {@code IFormatReader}, with memoization if necessary.
+<i>1259</i>&nbsp;		 * 
+<i>1260</i>&nbsp;		 * @param options 	options used to control the reader generation
+<i>1261</i>&nbsp;		 * @param cls 		optionally specify a IFormatReader class if it is already known, to avoid a search.
+<i>1262</i>&nbsp;		 * @param id 		file path for the image.
+<i>1263</i>&nbsp;		 * @param store 	optional MetadataStore; this will be set in the reader if needed.
+<i>1264</i>&nbsp;		 * @return the {@code IFormatReader}
+<i>1265</i>&nbsp;		 * @throws FormatException
+<i>1266</i>&nbsp;		 * @throws IOException
+<i>1267</i>&nbsp;		 */
+<i>1268</i>&nbsp;		private static synchronized IFormatReader createReader(final BioFormatsServerOptions options, final Class&lt;? extends IFormatReader&gt; cls, 
+<i>1269</i>&nbsp;				final String id, final MetadataStore store, Map&lt;String, String&gt; readerOptions) throws FormatException, IOException {
+<i>1270</i>&nbsp;			IFormatReader imageReader;
+<b class="fc"><i>1271</i>&nbsp;			if (cls != null) {</b>
+<b class="nc"><i>1272</i>&nbsp;				ClassList&lt;IFormatReader&gt; list = new ClassList&lt;&gt;(IFormatReader.class);</b>
+<b class="nc"><i>1273</i>&nbsp;				list.addClass(cls);</b>
+<b class="nc"><i>1274</i>&nbsp;				imageReader = new ImageReader(list);</b>
+<b class="nc"><i>1275</i>&nbsp;			} else</b>
+<b class="fc"><i>1276</i>&nbsp;				imageReader = new ImageReader();</b>
+<i>1277</i>&nbsp;			
+<b class="fc"><i>1278</i>&nbsp;			imageReader.setFlattenedResolutions(false);</b>
+<i>1279</i>&nbsp;			
+<i>1280</i>&nbsp;			// Try to set any reader options that we have
+<b class="fc"><i>1281</i>&nbsp;			MetadataOptions metadataOptions = imageReader.getMetadataOptions();</b>
+<b class="fc"><i>1282</i>&nbsp;			if (!readerOptions.isEmpty() &amp;&amp; metadataOptions instanceof DynamicMetadataOptions) {</b>
+<b class="nc"><i>1283</i>&nbsp;				for (var option : readerOptions.entrySet()) {</b>
+<b class="nc"><i>1284</i>&nbsp;					((DynamicMetadataOptions)metadataOptions).set(option.getKey(), option.getValue());</b>
+<b class="nc"><i>1285</i>&nbsp;				}</b>
+<i>1286</i>&nbsp;			}
+<i>1287</i>&nbsp;			
+<b class="fc"><i>1288</i>&nbsp;			Memoizer memoizer = null;</b>
+<b class="fc"><i>1289</i>&nbsp;			int memoizationTimeMillis = options.getMemoizationTimeMillis();</b>
+<b class="fc"><i>1290</i>&nbsp;			File dir = null;</b>
+<b class="fc"><i>1291</i>&nbsp;			if (memoizationTimeMillis &gt;= 0) {</b>
+<i>1292</i>&nbsp;				// Try to use a specified directory
+<b class="fc"><i>1293</i>&nbsp;				String pathMemoization = options.getPathMemoization();</b>
+<b class="fc"><i>1294</i>&nbsp;				if (pathMemoization != null &amp;&amp; !pathMemoization.trim().isEmpty()) {</b>
+<b class="nc"><i>1295</i>&nbsp;					dir = new File(pathMemoization);</b>
+<b class="nc"><i>1296</i>&nbsp;					if (!dir.isDirectory()) {</b>
+<b class="nc"><i>1297</i>&nbsp;						logger.warn(&quot;Memoization path does not refer to a valid directory, will be ignored: {}&quot;, dir.getAbsolutePath());</b>
+<b class="nc"><i>1298</i>&nbsp;						dir = null;</b>
+<i>1299</i>&nbsp;					}
+<i>1300</i>&nbsp;				}
+<b class="fc"><i>1301</i>&nbsp;				if (dir == null) {</b>
+<b class="fc"><i>1302</i>&nbsp;					if (dirMemoTemp == null) {</b>
+<b class="fc"><i>1303</i>&nbsp;						Path path = Files.createTempDirectory(&quot;qupath-memo-&quot;);</b>
+<b class="fc"><i>1304</i>&nbsp;						dirMemoTemp = path.toFile();</b>
+<b class="fc"><i>1305</i>&nbsp;						Runtime.getRuntime().addShutdownHook(new Thread() {</b>
+<i>1306</i>&nbsp;							@Override
+<i>1307</i>&nbsp;							public void run() {
+<b class="fc"><i>1308</i>&nbsp;								deleteTempMemoFiles();</b>
+<b class="fc"><i>1309</i>&nbsp;							}</b>
+<i>1310</i>&nbsp;						});
+<i>1311</i>&nbsp;//						path.toFile().deleteOnExit(); // Won&#39;t work recursively!
+<b class="fc"><i>1312</i>&nbsp;						logger.warn(&quot;Temp memoization directory created at {}&quot;, dirMemoTemp);</b>
+<b class="fc"><i>1313</i>&nbsp;						logger.warn(&quot;If you want to avoid this warning, either disable Bio-Formats memoization in the preferences or specify a directory to use&quot;);</b>
+<i>1314</i>&nbsp;					}
+<b class="fc"><i>1315</i>&nbsp;					dir = dirMemoTemp;</b>
+<i>1316</i>&nbsp;				}
+<b class="fc"><i>1317</i>&nbsp;				if (dir != null) {</b>
+<b class="fc"><i>1318</i>&nbsp;					memoizer = new Memoizer(imageReader, memoizationTimeMillis, dir);</b>
+<b class="fc"><i>1319</i>&nbsp;					imageReader = memoizer;</b>
+<i>1320</i>&nbsp;				}
+<i>1321</i>&nbsp;			}
+<i>1322</i>&nbsp;			
+<b class="fc"><i>1323</i>&nbsp;			if (store != null) {</b>
+<b class="fc"><i>1324</i>&nbsp;				imageReader.setMetadataStore(store);</b>
+<i>1325</i>&nbsp;			}
+<i>1326</i>&nbsp;			else
+<b class="fc"><i>1327</i>&nbsp;				imageReader.setMetadataStore(new DummyMetadata());</b>
+<i>1328</i>&nbsp;			
+<b class="fc"><i>1329</i>&nbsp;			if (id != null) {</b>
+<b class="fc"><i>1330</i>&nbsp;				if (memoizer != null) {</b>
+<b class="fc"><i>1331</i>&nbsp;					File fileMemo = ((Memoizer)imageReader).getMemoFile(id);</b>
+<i>1332</i>&nbsp;					// If we&#39;re using a temporary directory, delete the memo file
+<b class="fc"><i>1333</i>&nbsp;					if (dir == dirMemoTemp)</b>
+<b class="fc"><i>1334</i>&nbsp;						tempMemoFiles.add(fileMemo);</b>
+<i>1335</i>&nbsp;					
+<b class="fc"><i>1336</i>&nbsp;					long memoizationFileSize = fileMemo == null ? 0L : fileMemo.length();</b>
+<b class="fc"><i>1337</i>&nbsp;					boolean memoFileExists = fileMemo != null &amp;&amp; fileMemo.exists();</b>
+<i>1338</i>&nbsp;					try {
+<b class="fc"><i>1339</i>&nbsp;						imageReader.setId(id);</b>
+<b class="nc"><i>1340</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>1341</i>&nbsp;						if (memoFileExists) {</b>
+<b class="nc"><i>1342</i>&nbsp;							logger.warn(&quot;Problem with memoization file {} ({}), will try to delete it&quot;, fileMemo.getName(), e.getLocalizedMessage());</b>
+<b class="nc"><i>1343</i>&nbsp;							fileMemo.delete();</b>
+<i>1344</i>&nbsp;						}
+<b class="nc"><i>1345</i>&nbsp;						imageReader.close();</b>
+<b class="nc"><i>1346</i>&nbsp;						imageReader.setId(id);</b>
+<b class="fc"><i>1347</i>&nbsp;					}</b>
+<b class="fc"><i>1348</i>&nbsp;					memoizationFileSize = fileMemo == null ? 0L : fileMemo.length();</b>
+<b class="fc"><i>1349</i>&nbsp;					if (memoizationFileSize &gt; 0L) {</b>
+<b class="nc"><i>1350</i>&nbsp;						if (memoizationFileSize &gt; MAX_PARALLELIZATION_MEMO_SIZE) {</b>
+<b class="nc"><i>1351</i>&nbsp;							logger.warn(String.format(&quot;The memoization file is very large (%.1f MB) - parallelization may be turned off to save memory&quot;,</b>
+<b class="nc"><i>1352</i>&nbsp;									memoizationFileSize/(1024.0*1024.0)));</b>
+<i>1353</i>&nbsp;						}
+<b class="nc"><i>1354</i>&nbsp;						memoizationSizeMap.put(id, memoizationFileSize);</b>
+<b class="fc"><i>1355</i>&nbsp;					} if (memoizationFileSize == 0L)</b>
+<b class="fc"><i>1356</i>&nbsp;						logger.debug(&quot;No memoization file generated for {}&quot;, id);</b>
+<b class="nc"><i>1357</i>&nbsp;					else if (!memoFileExists)</b>
+<b class="nc"><i>1358</i>&nbsp;						logger.debug(String.format(&quot;Generating memoization file %s (%.2f MB)&quot;, fileMemo.getAbsolutePath(), memoizationFileSize/1024.0/1024.0));</b>
+<i>1359</i>&nbsp;					else
+<b class="nc"><i>1360</i>&nbsp;						logger.debug(&quot;Memoization file exists at {}&quot;, fileMemo.getAbsolutePath());</b>
+<b class="fc"><i>1361</i>&nbsp;				} else {</b>
+<b class="nc"><i>1362</i>&nbsp;					imageReader.setId(id);</b>
+<i>1363</i>&nbsp;				}
+<i>1364</i>&nbsp;			}
+<b class="fc"><i>1365</i>&nbsp;			return imageReader;</b>
+<i>1366</i>&nbsp;		}
+<i>1367</i>&nbsp;		
+<i>1368</i>&nbsp;		/**
+<i>1369</i>&nbsp;		 * Delete any memoization files registered as being temporary, and also the 
+<i>1370</i>&nbsp;		 * temporary memoization directory (if it exists).
+<i>1371</i>&nbsp;		 * Note that this acts both recursively and rather conservatively, stopping if a file is 
+<i>1372</i>&nbsp;		 * encountered that is not expected.
+<i>1373</i>&nbsp;		 */
+<i>1374</i>&nbsp;		private static void deleteTempMemoFiles() {
+<b class="fc"><i>1375</i>&nbsp;			for (File f : tempMemoFiles) {</b>
+<i>1376</i>&nbsp;				// Be extra-careful not to delete too much...
+<b class="fc"><i>1377</i>&nbsp;				if (!f.exists())</b>
+<b class="fc"><i>1378</i>&nbsp;					continue;</b>
+<b class="nc"><i>1379</i>&nbsp;				if (!f.isFile() || !f.getName().endsWith(&quot;.bfmemo&quot;)) {</b>
+<b class="nc"><i>1380</i>&nbsp;					logger.warn(&quot;Unexpected memoization file, will not delete {}&quot;, f.getAbsolutePath());</b>
+<b class="nc"><i>1381</i>&nbsp;					return;</b>
+<i>1382</i>&nbsp;				}
+<b class="nc"><i>1383</i>&nbsp;				if (f.delete())</b>
+<b class="nc"><i>1384</i>&nbsp;					logger.debug(&quot;Deleted temp memoization file {}&quot;, f.getAbsolutePath());</b>
+<i>1385</i>&nbsp;				else
+<b class="nc"><i>1386</i>&nbsp;					logger.warn(&quot;Could not delete temp memoization file {}&quot;, f.getAbsolutePath());</b>
+<b class="nc"><i>1387</i>&nbsp;			}</b>
+<b class="fc"><i>1388</i>&nbsp;			if (dirMemoTemp == null)</b>
+<b class="nc"><i>1389</i>&nbsp;				return;</b>
+<b class="fc"><i>1390</i>&nbsp;			deleteEmptyDirectories(dirMemoTemp);</b>
+<b class="fc"><i>1391</i>&nbsp;		}</b>
+<i>1392</i>&nbsp;		
+<i>1393</i>&nbsp;		/**
+<i>1394</i>&nbsp;		 * Delete a directory and all sub-directories, assuming each contains only empty directories.
+<i>1395</i>&nbsp;		 * This is applied recursively, stopping at the first failure (i.e. any directory containing files).
+<i>1396</i>&nbsp;		 * @param dir
+<i>1397</i>&nbsp;		 * @return
+<i>1398</i>&nbsp;		 */
+<i>1399</i>&nbsp;		private static boolean deleteEmptyDirectories(File dir) {
+<b class="fc"><i>1400</i>&nbsp;			if (!dir.isDirectory())</b>
+<b class="nc"><i>1401</i>&nbsp;				return false;</b>
+<b class="fc"><i>1402</i>&nbsp;			int nFiles = 0;</b>
+<b class="fc"><i>1403</i>&nbsp;			for (File f : dir.listFiles()) {</b>
+<b class="fc"><i>1404</i>&nbsp;				if (f.isDirectory()) {</b>
+<b class="fc"><i>1405</i>&nbsp;					if (!deleteEmptyDirectories(f))</b>
+<b class="nc"><i>1406</i>&nbsp;						return false;</b>
+<b class="nc"><i>1407</i>&nbsp;				} else if (f.isFile())</b>
+<b class="nc"><i>1408</i>&nbsp;					nFiles++;</b>
+<i>1409</i>&nbsp;			}
+<b class="fc"><i>1410</i>&nbsp;			if (nFiles == 0) {</b>
+<b class="fc"><i>1411</i>&nbsp;				if (dir.delete()) {</b>
+<b class="fc"><i>1412</i>&nbsp;					logger.debug(&quot;Deleting empty memoization directory {}&quot;, dir.getAbsolutePath());</b>
+<b class="fc"><i>1413</i>&nbsp;					return true;</b>
+<i>1414</i>&nbsp;				} else {
+<b class="nc"><i>1415</i>&nbsp;					logger.warn(&quot;Could not delete temp memoization directory {}&quot;, dir.getAbsolutePath());</b>
+<b class="nc"><i>1416</i>&nbsp;					return false;</b>
+<i>1417</i>&nbsp;				}
+<i>1418</i>&nbsp;			} else {
+<b class="nc"><i>1419</i>&nbsp;				logger.warn(&quot;Temp memoization directory contains files, will not delete {}&quot;, dir.getAbsolutePath());</b>
+<b class="nc"><i>1420</i>&nbsp;				return false;</b>
+<i>1421</i>&nbsp;			}
+<i>1422</i>&nbsp;		}
+<i>1423</i>&nbsp;		
+<i>1424</i>&nbsp;		
+<i>1425</i>&nbsp;		/**
+<i>1426</i>&nbsp;		 * Simple wrapper for a reader to help with cleanup.
+<i>1427</i>&nbsp;		 */
+<i>1428</i>&nbsp;		static class LocalReaderWrapper {
+<i>1429</i>&nbsp;			
+<i>1430</i>&nbsp;			private IFormatReader reader;
+<i>1431</i>&nbsp;			private Map&lt;String, String&gt; readerOptions;
+<i>1432</i>&nbsp;			
+<b class="fc"><i>1433</i>&nbsp;			LocalReaderWrapper(IFormatReader reader, Map&lt;String, String&gt; readerOptions) {</b>
+<b class="fc"><i>1434</i>&nbsp;				this.reader = reader;</b>
+<b class="fc"><i>1435</i>&nbsp;				this.readerOptions = readerOptions == null || readerOptions.isEmpty() ? Collections.emptyMap() :</b>
+<b class="nc"><i>1436</i>&nbsp;					new LinkedHashMap&lt;&gt;(readerOptions);</b>
+<b class="fc"><i>1437</i>&nbsp;			}</b>
+<i>1438</i>&nbsp;			
+<i>1439</i>&nbsp;			public IFormatReader getReader() {
+<b class="fc"><i>1440</i>&nbsp;				return reader;</b>
+<i>1441</i>&nbsp;			}
+<i>1442</i>&nbsp;
+<i>1443</i>&nbsp;			public boolean argsMatch(Map&lt;String, String&gt; readerOptions) {
+<b class="fc"><i>1444</i>&nbsp;				return this.readerOptions.equals(readerOptions);</b>
+<i>1445</i>&nbsp;			}
+<i>1446</i>&nbsp;
+<i>1447</i>&nbsp;		}
+<i>1448</i>&nbsp;		
+<i>1449</i>&nbsp;		/**
+<i>1450</i>&nbsp;		 * Helper class that helps ensure readers are closed when a thread is no longer reachable.
+<i>1451</i>&nbsp;		 */
+<i>1452</i>&nbsp;		static class ReaderCleaner implements Runnable {
+<i>1453</i>&nbsp;			
+<i>1454</i>&nbsp;			private String name;
+<i>1455</i>&nbsp;			private IFormatReader reader;
+<i>1456</i>&nbsp;
+<b class="fc"><i>1457</i>&nbsp;			ReaderCleaner(String name, IFormatReader reader) {</b>
+<b class="fc"><i>1458</i>&nbsp;				this.name = name;</b>
+<b class="fc"><i>1459</i>&nbsp;				this.reader = reader;</b>
+<b class="fc"><i>1460</i>&nbsp;			}</b>
+<i>1461</i>&nbsp;			
+<i>1462</i>&nbsp;			@Override
+<i>1463</i>&nbsp;			public void run() {
+<b class="nc"><i>1464</i>&nbsp;				logger.debug(&quot;Cleaner &quot; + name + &quot; called for &quot; + reader + &quot; (&quot; + reader.getCurrentFile() + &quot;)&quot;);</b>
+<i>1465</i>&nbsp;				try {
+<b class="nc"><i>1466</i>&nbsp;					this.reader.close(false);</b>
+<b class="nc"><i>1467</i>&nbsp;				} catch (IOException e) {</b>
+<b class="nc"><i>1468</i>&nbsp;					logger.warn(&quot;Error when calling cleaner for &quot; + name, e);</b>
+<b class="nc"><i>1469</i>&nbsp;				}</b>
+<b class="nc"><i>1470</i>&nbsp;			}</b>
+<i>1471</i>&nbsp;			
+<i>1472</i>&nbsp;		}
+<i>1473</i>&nbsp;		
+<i>1474</i>&nbsp;	}
+<i>1475</i>&nbsp;	
+<i>1476</i>&nbsp;	static class BioFormatsArgs {
+<i>1477</i>&nbsp;		
+<b class="fc"><i>1478</i>&nbsp;		@Option(names = {&quot;--series&quot;, &quot;-s&quot;}, defaultValue = &quot;-1&quot;, description = &quot;Series number (0-based, must be &lt; image count for the file)&quot;)</b>
+<i>1479</i>&nbsp;		int series = -1;
+<i>1480</i>&nbsp;
+<b class="fc"><i>1481</i>&nbsp;		@Option(names = {&quot;--name&quot;, &quot;-n&quot;}, defaultValue = &quot;&quot;, description = &quot;Series name (legacy option, please use --series instead)&quot;)</b>
+<i>1482</i>&nbsp;		String seriesName = &quot;&quot;;
+<i>1483</i>&nbsp;
+<b class="fc"><i>1484</i>&nbsp;		@Option(names = {&quot;--bfOptions&quot;}, description = &quot;Bio-Formats reader options&quot;)</b>
+<i>1485</i>&nbsp;		Map&lt;String, String&gt; readerOptions = new LinkedHashMap&lt;&gt;();
+<i>1486</i>&nbsp;		
+<b class="fc"><i>1487</i>&nbsp;		@Unmatched</b>
+<i>1488</i>&nbsp;		List&lt;String&gt; unmatched = new ArrayList&lt;&gt;();
+<i>1489</i>&nbsp;		
+<b class="fc"><i>1490</i>&nbsp;		BioFormatsArgs() {}</b>
+<i>1491</i>&nbsp;		
+<b class="fc"><i>1492</i>&nbsp;		BioFormatsArgs(int series, Map&lt;String, String&gt; readerOptions) {</b>
+<b class="fc"><i>1493</i>&nbsp;			this.series = series;</b>
+<b class="fc"><i>1494</i>&nbsp;			if (readerOptions != null)</b>
+<b class="fc"><i>1495</i>&nbsp;				this.readerOptions.putAll(readerOptions);</b>
+<b class="fc"><i>1496</i>&nbsp;		}</b>
+<i>1497</i>&nbsp;		
+<i>1498</i>&nbsp;		String[] backToArgs() {
+<b class="fc"><i>1499</i>&nbsp;			var args = new ArrayList&lt;String&gt;();</b>
+<b class="fc"><i>1500</i>&nbsp;			if (series &gt;= 0) {</b>
+<b class="fc"><i>1501</i>&nbsp;				args.add(&quot;--series&quot;);</b>
+<b class="fc"><i>1502</i>&nbsp;				args.add(Integer.toString(series));</b>
+<b class="nc"><i>1503</i>&nbsp;			} else if (seriesName != null &amp;&amp; !seriesName.isBlank()) {</b>
+<b class="nc"><i>1504</i>&nbsp;				args.add(&quot;--name&quot;);</b>
+<b class="nc"><i>1505</i>&nbsp;				args.add(seriesName);				</b>
+<i>1506</i>&nbsp;			}
+<b class="fc"><i>1507</i>&nbsp;			for (var option : readerOptions.entrySet()) {</b>
+<i>1508</i>&nbsp;				// Note: this assumes that options &amp; values contain no awkwardness (e.g. quotes, spaces)
+<b class="nc"><i>1509</i>&nbsp;				args.add(&quot;--bfOptions&quot;);</b>
+<b class="nc"><i>1510</i>&nbsp;				args.add(option.getKey()+&quot;=&quot;+option.getValue());</b>
+<b class="nc"><i>1511</i>&nbsp;			}</b>
+<b class="fc"><i>1512</i>&nbsp;			args.addAll(unmatched);</b>
+<b class="fc"><i>1513</i>&nbsp;			return args.toArray(String[]::new);</b>
+<i>1514</i>&nbsp;		}
+<i>1515</i>&nbsp;		
+<i>1516</i>&nbsp;		static BioFormatsArgs parse(String[] args) {
+<b class="fc"><i>1517</i>&nbsp;			var bfArgs = new BioFormatsArgs();</b>
+<b class="fc"><i>1518</i>&nbsp;			new CommandLine(bfArgs).parseArgs(args);</b>
+<b class="fc"><i>1519</i>&nbsp;			return bfArgs;</b>
+<i>1520</i>&nbsp;		}
+<i>1521</i>&nbsp;		
+<i>1522</i>&nbsp;	}
+<i>1523</i>&nbsp;	
+<i>1524</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,131 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TileRequestManager</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TileRequestManager (qupath.lib.images.servers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">TileRequestManager</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.images.servers;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.util.Collection;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;/**
+<i>29</i>&nbsp; * Helper class to manage tile requests from an {@link ImageServer}.
+<i>30</i>&nbsp; * &lt;p&gt;
+<i>31</i>&nbsp; * The purpose of this is to make it possible to identify the &#39;optimal&#39; regions to request 
+<i>32</i>&nbsp; * for any particular pixels in the image, based on the resolution levels actually present. 
+<i>33</i>&nbsp; * &lt;p&gt;
+<i>34</i>&nbsp; * By contrast {@link RegionRequest} objects can be used to easily request any pixels at 
+<i>35</i>&nbsp; * any desired resolution, but this flexibility means that one can easily requests pixels 
+<i>36</i>&nbsp; * in an inefficient way - or even inadvertently request pixels multiple times 
+<i>37</i>&nbsp; * (e.g. through rounding errors when requesting pixels at an arbitrary resolution).
+<i>38</i>&nbsp; * 
+<i>39</i>&nbsp; * @author Pete Bankhead
+<i>40</i>&nbsp; *
+<i>41</i>&nbsp; */
+<i>42</i>&nbsp;public interface TileRequestManager {
+<i>43</i>&nbsp;	
+<i>44</i>&nbsp;	/**
+<i>45</i>&nbsp;	 * Get {@link TileRequest} objects for &lt;i&gt;all&lt;/i&gt; tiles that this server supports.
+<i>46</i>&nbsp;	 * &lt;p&gt;
+<i>47</i>&nbsp;	 * This should return an exhaustive collection of non-overlapping tiles, such that 
+<i>48</i>&nbsp;	 * making requests for each of these would result in every supported pixel (at every 
+<i>49</i>&nbsp;	 * resolution) being returned precisely once.
+<i>50</i>&nbsp;	 * 
+<i>51</i>&nbsp;	 * @return
+<i>52</i>&nbsp;	 */
+<i>53</i>&nbsp;	Collection&lt;TileRequest&gt; getAllTileRequests();
+<i>54</i>&nbsp;	
+<i>55</i>&nbsp;	/**
+<i>56</i>&nbsp;	 * Get {@link TileRequest} objects for all tiles that this server supports 
+<i>57</i>&nbsp;	 * at the specified resolution level.
+<i>58</i>&nbsp;	 * 
+<i>59</i>&nbsp;	 * @param level
+<i>60</i>&nbsp;	 * @return
+<i>61</i>&nbsp;	 */
+<i>62</i>&nbsp;	Collection&lt;TileRequest&gt; getTileRequestsForLevel(int level);
+<i>63</i>&nbsp;	
+<i>64</i>&nbsp;	/**
+<i>65</i>&nbsp;	 * Get a collection of {@link TileRequest} objects necessary to fulfil a specific {@link RegionRequest}. 
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param request
+<i>68</i>&nbsp;	 * @return
+<i>69</i>&nbsp;	 */
+<i>70</i>&nbsp;	Collection&lt;TileRequest&gt; getTileRequests(RegionRequest request);
+<i>71</i>&nbsp;	
+<i>72</i>&nbsp;	/**
+<i>73</i>&nbsp;	 * Get the single {@link TileRequest} containing a specified pixel, or null if no such request exists.
+<i>74</i>&nbsp;	 * 
+<i>75</i>&nbsp;	 * @param level
+<i>76</i>&nbsp;	 * @param x
+<i>77</i>&nbsp;	 * @param y
+<i>78</i>&nbsp;	 * @param z
+<i>79</i>&nbsp;	 * @param t
+<i>80</i>&nbsp;	 * @return
+<i>81</i>&nbsp;	 */
+<i>82</i>&nbsp;	TileRequest getTileRequest(int level, int x, int y, int z, int t);
+<i>83</i>&nbsp;	
+<i>84</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

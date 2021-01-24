@@ -1,0 +1,553 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageJServer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.imagej.images.servers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageJServer (qupath.imagej.images.servers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ImageJServer</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 197)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.imagej.images.servers;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Rectangle;
+<i>27</i>&nbsp;import java.awt.image.BandedSampleModel;
+<i>28</i>&nbsp;import java.awt.image.BufferedImage;
+<i>29</i>&nbsp;import java.awt.image.ColorModel;
+<i>30</i>&nbsp;import java.awt.image.DataBuffer;
+<i>31</i>&nbsp;import java.awt.image.DataBufferByte;
+<i>32</i>&nbsp;import java.awt.image.DataBufferFloat;
+<i>33</i>&nbsp;import java.awt.image.DataBufferUShort;
+<i>34</i>&nbsp;import java.awt.image.Raster;
+<i>35</i>&nbsp;import java.awt.image.SampleModel;
+<i>36</i>&nbsp;import java.io.File;
+<i>37</i>&nbsp;import java.io.IOException;
+<i>38</i>&nbsp;import java.net.URI;
+<i>39</i>&nbsp;import java.util.ArrayList;
+<i>40</i>&nbsp;import java.util.Collection;
+<i>41</i>&nbsp;import java.util.Collections;
+<i>42</i>&nbsp;import java.util.HashSet;
+<i>43</i>&nbsp;import java.util.List;
+<i>44</i>&nbsp;import java.util.Set;
+<i>45</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;import org.slf4j.Logger;
+<i>48</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;import ij.CompositeImage;
+<i>51</i>&nbsp;import ij.IJ;
+<i>52</i>&nbsp;import ij.ImagePlus;
+<i>53</i>&nbsp;import ij.ImageStack;
+<i>54</i>&nbsp;import ij.gui.Roi;
+<i>55</i>&nbsp;import ij.measure.Calibration;
+<i>56</i>&nbsp;import ij.plugin.Duplicator;
+<i>57</i>&nbsp;import ij.plugin.ImageInfo;
+<i>58</i>&nbsp;import ij.process.ByteProcessor;
+<i>59</i>&nbsp;import ij.process.ColorProcessor;
+<i>60</i>&nbsp;import ij.process.FloatProcessor;
+<i>61</i>&nbsp;import ij.process.ImageProcessor;
+<i>62</i>&nbsp;import ij.process.LUT;
+<i>63</i>&nbsp;import ij.process.ShortProcessor;
+<i>64</i>&nbsp;import qupath.imagej.tools.IJTools;
+<i>65</i>&nbsp;import qupath.lib.color.ColorModelFactory;
+<i>66</i>&nbsp;import qupath.lib.common.GeneralTools;
+<i>67</i>&nbsp;import qupath.lib.images.servers.AbstractImageServer;
+<i>68</i>&nbsp;import qupath.lib.images.servers.ImageChannel;
+<i>69</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder;
+<i>70</i>&nbsp;import qupath.lib.images.servers.ImageServerBuilder.ServerBuilder;
+<i>71</i>&nbsp;import qupath.lib.images.servers.ImageServerMetadata;
+<i>72</i>&nbsp;import qupath.lib.images.servers.PixelType;
+<i>73</i>&nbsp;import qupath.lib.objects.PathObject;
+<i>74</i>&nbsp;import qupath.lib.objects.PathObjectReader;
+<i>75</i>&nbsp;import qupath.lib.objects.PathObjects;
+<i>76</i>&nbsp;import qupath.lib.regions.RegionRequest;
+<i>77</i>&nbsp;
+<i>78</i>&nbsp;/**
+<i>79</i>&nbsp; * ImageServer that uses ImageJ&#39;s image-reading capabilities.
+<i>80</i>&nbsp; * 
+<i>81</i>&nbsp; * @author Pete Bankhead
+<i>82</i>&nbsp; *
+<i>83</i>&nbsp; */
+<i>84</i>&nbsp;public class ImageJServer extends AbstractImageServer&lt;BufferedImage&gt; implements PathObjectReader {
+<i>85</i>&nbsp;	
+<b class="nc"><i>86</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ImageJServer.class);</b>
+<i>87</i>&nbsp;	
+<i>88</i>&nbsp;	private ImageServerMetadata originalMetadata;
+<i>89</i>&nbsp;	
+<i>90</i>&nbsp;	private URI uri;
+<i>91</i>&nbsp;	private String[] args;
+<i>92</i>&nbsp;	
+<i>93</i>&nbsp;	private ImagePlus imp;
+<i>94</i>&nbsp;		
+<i>95</i>&nbsp;	private ColorModel colorModel;
+<i>96</i>&nbsp;	
+<i>97</i>&nbsp;	/**
+<i>98</i>&nbsp;	 * Constructor.
+<i>99</i>&nbsp;	 * @param uri URI representing the local file or an ImageJ-compatible URL
+<i>100</i>&nbsp;	 * @param args optional arguments (not currently used)
+<i>101</i>&nbsp;	 * @throws IOException
+<i>102</i>&nbsp;	 */
+<i>103</i>&nbsp;	public ImageJServer(final URI uri, final String...args) throws IOException {
+<b class="nc"><i>104</i>&nbsp;		super(BufferedImage.class);</b>
+<b class="nc"><i>105</i>&nbsp;		this.uri = uri;</b>
+<b class="nc"><i>106</i>&nbsp;		File file = GeneralTools.toPath(uri).toFile();</b>
+<b class="nc"><i>107</i>&nbsp;		String path = file.getAbsolutePath();</b>
+<b class="nc"><i>108</i>&nbsp;		if (path.toLowerCase().endsWith(&quot;.tif&quot;) || path.toLowerCase().endsWith(&quot;.tiff&quot;)) {</b>
+<b class="nc"><i>109</i>&nbsp;			imp = IJ.openVirtual(path);</b>
+<i>110</i>&nbsp;			// We only want a virtual stack if we have a large z-stack or time series
+<b class="nc"><i>111</i>&nbsp;			long bpp = imp.getBitDepth() / 8;</b>
+<b class="nc"><i>112</i>&nbsp;			if (bpp == 3)</b>
+<b class="nc"><i>113</i>&nbsp;				bpp = 4; // ImageJ uses 4 bytes for an RGB image, but reports 24-bit</b>
+<b class="nc"><i>114</i>&nbsp;			long nBytes = (long)imp.getWidth() * imp.getHeight() * imp.getStackSize() * bpp;</b>
+<b class="nc"><i>115</i>&nbsp;			long maxMemory = Runtime.getRuntime().maxMemory();</b>
+<i>116</i>&nbsp;			long allowedMemory;
+<b class="nc"><i>117</i>&nbsp;			if (maxMemory == Long.MAX_VALUE)</b>
+<b class="nc"><i>118</i>&nbsp;				allowedMemory = 1024L * 1024L * 1024L;</b>
+<i>119</i>&nbsp;			else
+<b class="nc"><i>120</i>&nbsp;				allowedMemory = maxMemory / 8;</b>
+<b class="nc"><i>121</i>&nbsp;			if ((imp.getNFrames() == 1 &amp;&amp; imp.getNSlices() == 1) || nBytes &lt; allowedMemory) {</b>
+<b class="nc"><i>122</i>&nbsp;				logger.debug(&quot;Opening {} fully, estimated {} MB (max memory {} MB)&quot;, uri, nBytes / (1024L * 1024L), maxMemory / (1024L * 1024L));</b>
+<b class="nc"><i>123</i>&nbsp;				imp = IJ.openImage(path);</b>
+<i>124</i>&nbsp;			} else {
+<b class="nc"><i>125</i>&nbsp;				logger.debug(&quot;Opening {} as virtual stack, estimated {} MB (max memory {} MB)&quot;, uri, nBytes / (1024L * 1024L), maxMemory / (1024L * 1024L));</b>
+<i>126</i>&nbsp;			}
+<i>127</i>&nbsp;		}
+<b class="nc"><i>128</i>&nbsp;		if (imp == null)</b>
+<b class="nc"><i>129</i>&nbsp;			imp = IJ.openImage(path);</b>
+<b class="nc"><i>130</i>&nbsp;		if (imp == null)</b>
+<b class="nc"><i>131</i>&nbsp;			throw new IOException(&quot;Could not open &quot; + path + &quot; with ImageJ&quot;);</b>
+<i>132</i>&nbsp;		
+<b class="nc"><i>133</i>&nbsp;		Calibration cal = imp.getCalibration();</b>
+<b class="nc"><i>134</i>&nbsp;		double xMicrons = IJTools.tryToParseMicrons(cal.pixelWidth, cal.getXUnit());</b>
+<b class="nc"><i>135</i>&nbsp;		double yMicrons = IJTools.tryToParseMicrons(cal.pixelHeight, cal.getYUnit());</b>
+<b class="nc"><i>136</i>&nbsp;		double zMicrons = IJTools.tryToParseMicrons(cal.pixelDepth, cal.getZUnit());</b>
+<b class="nc"><i>137</i>&nbsp;		TimeUnit timeUnit = null;</b>
+<b class="nc"><i>138</i>&nbsp;		double[] timepoints = null;</b>
+<b class="nc"><i>139</i>&nbsp;		for (TimeUnit temp : TimeUnit.values()) {</b>
+<b class="nc"><i>140</i>&nbsp;			if (temp.toString().toLowerCase().equals(cal.getTimeUnit())) {</b>
+<b class="nc"><i>141</i>&nbsp;				timeUnit = temp;</b>
+<b class="nc"><i>142</i>&nbsp;				timepoints = new double[imp.getNFrames()];</b>
+<b class="nc"><i>143</i>&nbsp;				for (int i = 0; i &lt; timepoints.length; i++) {</b>
+<b class="nc"><i>144</i>&nbsp;					timepoints[i] = i * cal.frameInterval;</b>
+<i>145</i>&nbsp;				}
+<b class="nc"><i>146</i>&nbsp;				break;</b>
+<i>147</i>&nbsp;			}
+<i>148</i>&nbsp;		}
+<i>149</i>&nbsp;		
+<i>150</i>&nbsp;		PixelType pixelType;
+<b class="nc"><i>151</i>&nbsp;		boolean isRGB = false;</b>
+<b class="nc"><i>152</i>&nbsp;		switch (imp.getType()) {</b>
+<i>153</i>&nbsp;		case (ImagePlus.COLOR_RGB):
+<b class="nc"><i>154</i>&nbsp;			isRGB = true;</b>
+<i>155</i>&nbsp;		case (ImagePlus.COLOR_256):
+<i>156</i>&nbsp;		case (ImagePlus.GRAY8):
+<b class="nc"><i>157</i>&nbsp;			pixelType = PixelType.UINT8;</b>
+<b class="nc"><i>158</i>&nbsp;			break;</b>
+<i>159</i>&nbsp;		case (ImagePlus.GRAY16):
+<b class="nc"><i>160</i>&nbsp;			pixelType = PixelType.UINT16;</b>
+<b class="nc"><i>161</i>&nbsp;			break;</b>
+<i>162</i>&nbsp;		case (ImagePlus.GRAY32):
+<b class="nc"><i>163</i>&nbsp;			pixelType = PixelType.FLOAT32;</b>
+<b class="nc"><i>164</i>&nbsp;			break;</b>
+<i>165</i>&nbsp;		default:
+<b class="nc"><i>166</i>&nbsp;			throw new IllegalArgumentException(&quot;Unknown ImagePlus type &quot; + imp.getType());</b>
+<i>167</i>&nbsp;		}
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;		List&lt;ImageChannel&gt; channels;
+<b class="nc"><i>170</i>&nbsp;		boolean is2D = imp.getNFrames() == 1 &amp;&amp; imp.getNSlices() == 1;</b>
+<b class="nc"><i>171</i>&nbsp;		if (isRGB)</b>
+<b class="nc"><i>172</i>&nbsp;			channels = ImageChannel.getDefaultRGBChannels();</b>
+<i>173</i>&nbsp;		else {
+<b class="nc"><i>174</i>&nbsp;			String[] sliceLabels = null;</b>
+<b class="nc"><i>175</i>&nbsp;			int nChannels = imp.getNChannels();</b>
+<i>176</i>&nbsp;			
+<i>177</i>&nbsp;			// See if we have slice labels that could plausibly act as channel names
+<i>178</i>&nbsp;			// For this, they must be non-null and unique for a 2D image
+<b class="nc"><i>179</i>&nbsp;			if (is2D &amp;&amp; nChannels == imp.getStackSize()) {</b>
+<b class="nc"><i>180</i>&nbsp;				sliceLabels = new String[nChannels];</b>
+<b class="nc"><i>181</i>&nbsp;				Set&lt;String&gt; sliceLabelSet = new HashSet&lt;&gt;();</b>
+<b class="nc"><i>182</i>&nbsp;				for (int s = 1; s &lt;= nChannels; s++) {</b>
+<b class="nc"><i>183</i>&nbsp;					String sliceLabel = imp.getStack().getSliceLabel(s);</b>
+<b class="nc"><i>184</i>&nbsp;					if (sliceLabel != null &amp;&amp; is2D) {</b>
+<b class="nc"><i>185</i>&nbsp;						sliceLabel = sliceLabel.split(&quot;\\R&quot;, 2)[0];</b>
+<b class="nc"><i>186</i>&nbsp;						if (!sliceLabel.isBlank()) {</b>
+<b class="nc"><i>187</i>&nbsp;							sliceLabels[s-1] = sliceLabel;</b>
+<b class="nc"><i>188</i>&nbsp;							sliceLabelSet.add(sliceLabel);</b>
+<i>189</i>&nbsp;						}
+<i>190</i>&nbsp;					}
+<i>191</i>&nbsp;				}
+<b class="nc"><i>192</i>&nbsp;				if (sliceLabelSet.size() &lt; nChannels)</b>
+<b class="nc"><i>193</i>&nbsp;					sliceLabels = null;</b>
+<i>194</i>&nbsp;			}
+<i>195</i>&nbsp;			
+<i>196</i>&nbsp;			// Get default channels
+<b class="nc"><i>197</i>&nbsp;			channels = new ArrayList&lt;&gt;(ImageChannel.getDefaultChannelList(imp.getNChannels()));</b>
+<i>198</i>&nbsp;			
+<i>199</i>&nbsp;			// Try to update the channel names and/or colors from ImageJ if we can
+<b class="nc"><i>200</i>&nbsp;			if (sliceLabels != null || imp instanceof CompositeImage) {</b>
+<b class="nc"><i>201</i>&nbsp;				for (int channel = 0; channel &lt; imp.getNChannels(); channel++) {</b>
+<b class="nc"><i>202</i>&nbsp;					String name = channels.get(channel).getName();</b>
+<b class="nc"><i>203</i>&nbsp;					Integer color = channels.get(channel).getColor();</b>
+<b class="nc"><i>204</i>&nbsp;					if (imp instanceof CompositeImage) {</b>
+<b class="nc"><i>205</i>&nbsp;						LUT lut = ((CompositeImage)imp).getChannelLut(channel+1);</b>
+<b class="nc"><i>206</i>&nbsp;						int ind = lut.getMapSize()-1;</b>
+<b class="nc"><i>207</i>&nbsp;						color = lut.getRGB(ind);</b>
+<i>208</i>&nbsp;					}
+<b class="nc"><i>209</i>&nbsp;					if (sliceLabels != null) {</b>
+<b class="nc"><i>210</i>&nbsp;						name = sliceLabels[channel];</b>
+<i>211</i>&nbsp;					}
+<b class="nc"><i>212</i>&nbsp;					channels.set(</b>
+<i>213</i>&nbsp;							channel,
+<b class="nc"><i>214</i>&nbsp;							ImageChannel.getInstance(name, color)</b>
+<i>215</i>&nbsp;							);
+<i>216</i>&nbsp;				}
+<i>217</i>&nbsp;			}
+<i>218</i>&nbsp;		}
+<i>219</i>&nbsp;		
+<b class="nc"><i>220</i>&nbsp;		this.args = args;</b>
+<b class="nc"><i>221</i>&nbsp;		var builder = new ImageServerMetadata.Builder() //, uri.normalize().toString())</b>
+<b class="nc"><i>222</i>&nbsp;				.width(imp.getWidth())</b>
+<b class="nc"><i>223</i>&nbsp;				.height(imp.getHeight())</b>
+<b class="nc"><i>224</i>&nbsp;				.name(imp.getTitle())</b>
+<i>225</i>&nbsp;//				.args(args)
+<b class="nc"><i>226</i>&nbsp;				.channels(channels)</b>
+<b class="nc"><i>227</i>&nbsp;				.sizeZ(imp.getNSlices())</b>
+<b class="nc"><i>228</i>&nbsp;				.sizeT(imp.getNFrames())</b>
+<b class="nc"><i>229</i>&nbsp;				.rgb(isRGB)</b>
+<b class="nc"><i>230</i>&nbsp;				.pixelType(pixelType)</b>
+<b class="nc"><i>231</i>&nbsp;				.zSpacingMicrons(zMicrons)</b>
+<b class="nc"><i>232</i>&nbsp;				.preferredTileSize(imp.getWidth(), imp.getHeight());</b>
+<i>233</i>&nbsp;//				setMagnification(pxlInfo.mag). // Don&#39;t know magnification...?
+<i>234</i>&nbsp;		
+<b class="nc"><i>235</i>&nbsp;		if (!Double.isNaN(xMicrons + yMicrons))</b>
+<b class="nc"><i>236</i>&nbsp;			builder = builder.pixelSizeMicrons(xMicrons, yMicrons);</b>
+<i>237</i>&nbsp;		
+<b class="nc"><i>238</i>&nbsp;		if (timeUnit != null)</b>
+<b class="nc"><i>239</i>&nbsp;			builder = builder.timepoints(timeUnit, timepoints);</b>
+<i>240</i>&nbsp;		
+<b class="nc"><i>241</i>&nbsp;		originalMetadata = builder.build();</b>
+<i>242</i>&nbsp;		
+<i>243</i>&nbsp;//		if ((!isRGB() &amp;&amp; nChannels() &gt; 1) || getBitsPerPixel() == 32)
+<i>244</i>&nbsp;//			throw new IOException(&quot;Sorry, currently only RGB &amp; single-channel 8 &amp; 16-bit images supported using ImageJ server&quot;);
+<i>245</i>&nbsp;	}
+<i>246</i>&nbsp;	
+<i>247</i>&nbsp;	
+<i>248</i>&nbsp;	@Override
+<i>249</i>&nbsp;	public Collection&lt;PathObject&gt; readPathObjects() {
+<b class="nc"><i>250</i>&nbsp;		var roi = imp.getRoi();</b>
+<b class="nc"><i>251</i>&nbsp;		var overlay = imp.getOverlay();</b>
+<b class="nc"><i>252</i>&nbsp;		if (roi == null &amp;&amp; (overlay == null || overlay.size() == 0))</b>
+<b class="nc"><i>253</i>&nbsp;			return Collections.emptyList();</b>
+<b class="nc"><i>254</i>&nbsp;		var list = new ArrayList&lt;PathObject&gt;();</b>
+<b class="nc"><i>255</i>&nbsp;		if (roi != null) {</b>
+<b class="nc"><i>256</i>&nbsp;			list.add(roiToAnnotation(roi));</b>
+<i>257</i>&nbsp;		}
+<b class="nc"><i>258</i>&nbsp;		if (overlay != null) {</b>
+<b class="nc"><i>259</i>&nbsp;			for (var r : overlay.toArray())</b>
+<b class="nc"><i>260</i>&nbsp;				list.add(roiToAnnotation(r));</b>
+<i>261</i>&nbsp;		}
+<b class="nc"><i>262</i>&nbsp;		return list;</b>
+<i>263</i>&nbsp;	}
+<i>264</i>&nbsp;	
+<i>265</i>&nbsp;	private PathObject roiToAnnotation(Roi roiIJ) {
+<i>266</i>&nbsp;		// Note that because we are reading from the ImagePlus directly, we have to avoid using any calibration information
+<b class="nc"><i>267</i>&nbsp;		var roi = IJTools.convertToROI(roiIJ, 0, 0, 1, IJTools.getImagePlane(roiIJ, imp));</b>
+<b class="nc"><i>268</i>&nbsp;		var annotation = PathObjects.createAnnotationObject(roi);</b>
+<b class="nc"><i>269</i>&nbsp;		annotation.setLocked(true);</b>
+<b class="nc"><i>270</i>&nbsp;		IJTools.calibrateObject(annotation, roiIJ);</b>
+<b class="nc"><i>271</i>&nbsp;		return annotation;</b>
+<i>272</i>&nbsp;	}
+<i>273</i>&nbsp;	
+<i>274</i>&nbsp;	
+<i>275</i>&nbsp;	/**
+<i>276</i>&nbsp;	 * Get a String representing the image metadata.
+<i>277</i>&nbsp;	 * &lt;p&gt;
+<i>278</i>&nbsp;	 * Currently, this reflects the contents of the ImageJ &#39;Show info&#39; command, which is tied to the &#39;current&#39; slice 
+<i>279</i>&nbsp;	 * and therefore not complete for all slices of a multichannel/multidimensional image.
+<i>280</i>&nbsp;	 * This behavior may change in the future.
+<i>281</i>&nbsp;	 * @return a String representing image metadata in ImageJ&#39;s own form
+<i>282</i>&nbsp;	 */
+<i>283</i>&nbsp;	public String dumpMetadata() {
+<b class="nc"><i>284</i>&nbsp;		return new ImageInfo().getImageInfo(imp);</b>
+<i>285</i>&nbsp;	}
+<i>286</i>&nbsp;	
+<i>287</i>&nbsp;	@Override
+<i>288</i>&nbsp;	public Collection&lt;URI&gt; getURIs() {
+<b class="nc"><i>289</i>&nbsp;		return Collections.singletonList(uri);</b>
+<i>290</i>&nbsp;	}
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;	@Override
+<i>293</i>&nbsp;	protected String createID() {
+<b class="nc"><i>294</i>&nbsp;		return getClass().getName() + &quot;: &quot; + uri.toString();</b>
+<i>295</i>&nbsp;	}
+<i>296</i>&nbsp;	
+<i>297</i>&nbsp;	@Override
+<i>298</i>&nbsp;	public synchronized BufferedImage readBufferedImage(RegionRequest request) {
+<i>299</i>&nbsp;		// Deal with any cropping
+<i>300</i>&nbsp;//		ImagePlus imp2 = this.imp;
+<i>301</i>&nbsp;		
+<b class="nc"><i>302</i>&nbsp;		int z = request.getZ()+1;</b>
+<b class="nc"><i>303</i>&nbsp;		int t = request.getT()+1;</b>
+<b class="nc"><i>304</i>&nbsp;		int nChannels = nChannels();</b>
+<i>305</i>&nbsp;		
+<i>306</i>&nbsp;//		// There would be a possibility to intercept these calls and perform a z-projection...
+<i>307</i>&nbsp;//		if (nZSlices() &gt; 1) {
+<i>308</i>&nbsp;//			imp.setT(t);
+<i>309</i>&nbsp;//			ZProjector zProjector = new ZProjector(imp);
+<i>310</i>&nbsp;//			zProjector.setMethod(ZProjector.MAX_METHOD);
+<i>311</i>&nbsp;//			zProjector.setStartSlice(1);
+<i>312</i>&nbsp;//			zProjector.setStopSlice(nZSlices());
+<i>313</i>&nbsp;//			zProjector.doHyperStackProjection(false);
+<i>314</i>&nbsp;//			imp = zProjector.getProjection();
+<i>315</i>&nbsp;//			z = 1;
+<i>316</i>&nbsp;//			t = 1;
+<i>317</i>&nbsp;//		}
+<i>318</i>&nbsp;		
+<i>319</i>&nbsp;		ImagePlus imp2;
+<b class="nc"><i>320</i>&nbsp;		if (!(request.getX() == 0 &amp;&amp; request.getY() == 0 &amp;&amp; request.getWidth() == this.imp.getWidth() &amp;&amp; request.getHeight() == this.imp.getHeight())) {</b>
+<i>321</i>&nbsp;			// Synchronization introduced because of concurrency issues around here!
+<b class="nc"><i>322</i>&nbsp;			this.imp.setRoi(request.getX(), request.getY(), request.getWidth(), request.getHeight());</b>
+<i>323</i>&nbsp;			// Crop for required z and time
+<b class="nc"><i>324</i>&nbsp;			Duplicator duplicator = new Duplicator();</b>
+<b class="nc"><i>325</i>&nbsp;			imp2 = duplicator.run(this.imp, 1, nChannels, z, z, t, t);</b>
+<b class="nc"><i>326</i>&nbsp;			this.imp.killRoi();</b>
+<b class="nc"><i>327</i>&nbsp;			if (imp2.getHeight() != request.getHeight()||</b>
+<b class="nc"><i>328</i>&nbsp;					imp2.getWidth() != request.getWidth())</b>
+<b class="nc"><i>329</i>&nbsp;				logger.warn(&quot;Unexpected image size {}x{} for request {}&quot;, imp.getWidth(), imp.getHeight(), request);</b>
+<b class="nc"><i>330</i>&nbsp;			z = 1;</b>
+<b class="nc"><i>331</i>&nbsp;			t = 1;</b>
+<i>332</i>&nbsp;//			imp = imp.duplicate();
+<b class="nc"><i>333</i>&nbsp;			imp2.killRoi();</b>
+<b class="nc"><i>334</i>&nbsp;		} else</b>
+<b class="nc"><i>335</i>&nbsp;			imp2 = this.imp;</b>
+<i>336</i>&nbsp;		
+<i>337</i>&nbsp;		// Deal with any downsampling
+<b class="nc"><i>338</i>&nbsp;		if (request.getDownsample() != 1) {</b>
+<b class="nc"><i>339</i>&nbsp;			ImageStack stackNew = null;</b>
+<b class="nc"><i>340</i>&nbsp;			Rectangle roi = imp2.getProcessor().getRoi();</b>
+<b class="nc"><i>341</i>&nbsp;			int w = (int)Math.max(1, Math.round(imp.getWidth() / request.getDownsample()));</b>
+<b class="nc"><i>342</i>&nbsp;			int h = (int)Math.max(1, Math.round(imp.getHeight() / request.getDownsample()));</b>
+<b class="nc"><i>343</i>&nbsp;			if (roi != null) {</b>
+<b class="nc"><i>344</i>&nbsp;				w = (int)Math.max(1, Math.round(roi.getWidth() / request.getDownsample()));</b>
+<b class="nc"><i>345</i>&nbsp;				h = (int)Math.max(1, Math.round(roi.getHeight() / request.getDownsample()));</b>
+<i>346</i>&nbsp;			}
+<b class="nc"><i>347</i>&nbsp;			for (int i = 1; i &lt;= nChannels; i++) {</b>
+<b class="nc"><i>348</i>&nbsp;				int ind = imp2.getStackIndex(i, z, t);</b>
+<b class="nc"><i>349</i>&nbsp;				ImageProcessor ip = imp2.getStack().getProcessor(ind);</b>
+<b class="nc"><i>350</i>&nbsp;				ip.setInterpolationMethod(ImageProcessor.BILINEAR);</b>
+<b class="nc"><i>351</i>&nbsp;				ip = ip.resize(w, h, true);</b>
+<b class="nc"><i>352</i>&nbsp;				if (stackNew == null)</b>
+<b class="nc"><i>353</i>&nbsp;					stackNew = new ImageStack(ip.getWidth(), ip.getHeight());</b>
+<b class="nc"><i>354</i>&nbsp;				stackNew.addSlice(&quot;Channel &quot; + i, ip);</b>
+<i>355</i>&nbsp;			}
+<b class="nc"><i>356</i>&nbsp;			imp2 = new ImagePlus(imp2.getTitle(), stackNew);</b>
+<b class="nc"><i>357</i>&nbsp;			imp2.setDimensions(nChannels, 1, 1);</b>
+<i>358</i>&nbsp;			// Reset other indices
+<b class="nc"><i>359</i>&nbsp;			z = 1;</b>
+<b class="nc"><i>360</i>&nbsp;			t = 1;</b>
+<i>361</i>&nbsp;		}
+<i>362</i>&nbsp;
+<i>363</i>&nbsp;		// If we don&#39;t have a color model yet, reuse this one
+<b class="nc"><i>364</i>&nbsp;		var img = convertToBufferedImage(imp2, z, t, colorModel);</b>
+<b class="nc"><i>365</i>&nbsp;		if (colorModel == null)</b>
+<b class="nc"><i>366</i>&nbsp;			colorModel = img.getColorModel();</b>
+<b class="nc"><i>367</i>&nbsp;		return img;</b>
+<i>368</i>&nbsp;	}
+<i>369</i>&nbsp;	
+<i>370</i>&nbsp;	
+<i>371</i>&nbsp;	/**
+<i>372</i>&nbsp;	 * Convert an ImagePlus to a BufferedImage, for a specific z-slice and timepoint.
+<i>373</i>&nbsp;	 * &lt;p&gt;
+<i>374</i>&nbsp;	 * Note that ImageJ uses 1-based indices for z and t! Therefore these should be &amp;gt;= 1.
+<i>375</i>&nbsp;	 * &lt;p&gt;
+<i>376</i>&nbsp;	 * A {@link ColorModel} can optionally be provided; otherwise, a default ColorModel will be 
+<i>377</i>&nbsp;	 * created for the image (with may not be particularly suitable).
+<i>378</i>&nbsp;	 * 
+<i>379</i>&nbsp;	 * @param imp2
+<i>380</i>&nbsp;	 * @param z
+<i>381</i>&nbsp;	 * @param t
+<i>382</i>&nbsp;	 * @param colorModel
+<i>383</i>&nbsp;	 * @return
+<i>384</i>&nbsp;	 */
+<i>385</i>&nbsp;	public static BufferedImage convertToBufferedImage(ImagePlus imp2, int z, int t, ColorModel colorModel) {
+<i>386</i>&nbsp;		// Extract processor
+<b class="nc"><i>387</i>&nbsp;		int nChannels = imp2.getNChannels();</b>
+<b class="nc"><i>388</i>&nbsp;		int ind = imp2.getStackIndex(1, z, t);</b>
+<b class="nc"><i>389</i>&nbsp;		ImageProcessor ip = imp2.getStack().getProcessor(ind);</b>
+<i>390</i>&nbsp;
+<b class="nc"><i>391</i>&nbsp;		BufferedImage img = null;</b>
+<b class="nc"><i>392</i>&nbsp;		int w = ip.getWidth();</b>
+<b class="nc"><i>393</i>&nbsp;		int h = ip.getHeight();</b>
+<b class="nc"><i>394</i>&nbsp;		if (ip instanceof ColorProcessor) {</b>
+<b class="nc"><i>395</i>&nbsp;			img = ip.getBufferedImage();</b>
+<i>396</i>&nbsp;//		} else if (nChannels == 1 &amp;&amp; !(ip instanceof FloatProcessor)) {
+<i>397</i>&nbsp;//			// Take the easy way out for 8 and 16-bit images
+<i>398</i>&nbsp;//			if (ip instanceof ByteProcessor)
+<i>399</i>&nbsp;//				img = ip.getBufferedImage();
+<i>400</i>&nbsp;//			else if (ip instanceof ShortProcessor)
+<i>401</i>&nbsp;//				img = ((ShortProcessor)ip).get16BitBufferedImage();
+<i>402</i>&nbsp;		} else {
+<i>403</i>&nbsp;			// Try to create a suitable BufferedImage for whatever else we may need
+<i>404</i>&nbsp;			SampleModel model;
+<b class="nc"><i>405</i>&nbsp;			if (colorModel == null) {</b>
+<b class="nc"><i>406</i>&nbsp;				if (ip instanceof ByteProcessor)</b>
+<b class="nc"><i>407</i>&nbsp;					colorModel = ColorModelFactory.getDummyColorModel(8);</b>
+<b class="nc"><i>408</i>&nbsp;				else if (ip instanceof ShortProcessor)</b>
+<b class="nc"><i>409</i>&nbsp;					colorModel = ColorModelFactory.getDummyColorModel(16);</b>
+<i>410</i>&nbsp;				else
+<b class="nc"><i>411</i>&nbsp;					colorModel = ColorModelFactory.getDummyColorModel(32);</b>
+<i>412</i>&nbsp;			}
+<i>413</i>&nbsp;
+<b class="nc"><i>414</i>&nbsp;			if (ip instanceof ByteProcessor) {</b>
+<b class="nc"><i>415</i>&nbsp;				model = new BandedSampleModel(DataBuffer.TYPE_BYTE, w, h, nChannels);</b>
+<b class="nc"><i>416</i>&nbsp;				byte[][] bytes = new byte[nChannels][w*h];</b>
+<b class="nc"><i>417</i>&nbsp;				for (int i = 0; i &lt; nChannels; i++) {</b>
+<b class="nc"><i>418</i>&nbsp;					int sliceInd = imp2.getStackIndex(i+1, z, t);</b>
+<b class="nc"><i>419</i>&nbsp;					bytes[i] = (byte[])imp2.getStack().getPixels(sliceInd);</b>
+<i>420</i>&nbsp;				}
+<b class="nc"><i>421</i>&nbsp;				DataBufferByte buffer = new DataBufferByte(bytes, w*h);</b>
+<b class="nc"><i>422</i>&nbsp;				return new BufferedImage(colorModel, Raster.createWritableRaster(model, buffer, null), false, null);</b>
+<b class="nc"><i>423</i>&nbsp;			} else if (ip instanceof ShortProcessor) {</b>
+<b class="nc"><i>424</i>&nbsp;				model = new BandedSampleModel(DataBuffer.TYPE_USHORT, w, h, nChannels);</b>
+<b class="nc"><i>425</i>&nbsp;				short[][] bytes = new short[nChannels][w*h];</b>
+<b class="nc"><i>426</i>&nbsp;				for (int i = 0; i &lt; nChannels; i++) {</b>
+<b class="nc"><i>427</i>&nbsp;					int sliceInd = imp2.getStackIndex(i+1, z, t);</b>
+<b class="nc"><i>428</i>&nbsp;					bytes[i] = (short[])imp2.getStack().getPixels(sliceInd);</b>
+<i>429</i>&nbsp;				}
+<b class="nc"><i>430</i>&nbsp;				DataBufferUShort buffer = new DataBufferUShort(bytes, w*h);</b>
+<b class="nc"><i>431</i>&nbsp;				return new BufferedImage(colorModel, Raster.createWritableRaster(model, buffer, null), false, null);</b>
+<b class="nc"><i>432</i>&nbsp;			} else if (ip instanceof FloatProcessor){</b>
+<b class="nc"><i>433</i>&nbsp;				model = new BandedSampleModel(DataBuffer.TYPE_FLOAT, w, h, nChannels);</b>
+<b class="nc"><i>434</i>&nbsp;				float[][] bytes = new float[nChannels][w*h];</b>
+<b class="nc"><i>435</i>&nbsp;				for (int i = 0; i &lt; nChannels; i++) {</b>
+<b class="nc"><i>436</i>&nbsp;					int sliceInd = imp2.getStackIndex(i+1, z, t);</b>
+<b class="nc"><i>437</i>&nbsp;					bytes[i] = (float[])imp2.getStack().getPixels(sliceInd);</b>
+<i>438</i>&nbsp;				}
+<b class="nc"><i>439</i>&nbsp;				DataBufferFloat buffer = new DataBufferFloat(bytes, w*h);</b>
+<b class="nc"><i>440</i>&nbsp;				return new BufferedImage(colorModel, Raster.createWritableRaster(model, buffer, null), false, null);</b>
+<i>441</i>&nbsp;			}
+<b class="nc"><i>442</i>&nbsp;			logger.error(&quot;Sorry, currently only RGB &amp; single-channel images supported with ImageJ&quot;);</b>
+<b class="nc"><i>443</i>&nbsp;			return null;</b>
+<i>444</i>&nbsp;		}
+<i>445</i>&nbsp;		//				if (request.getX() == 0 &amp;&amp; request.getY() == 0 &amp;&amp; request.getWidth() == imp.getWidth() &amp;&amp; request.getHeight() == imp.getHeight())
+<b class="nc"><i>446</i>&nbsp;		return img;</b>
+<i>447</i>&nbsp;	}
+<i>448</i>&nbsp;	
+<i>449</i>&nbsp;	
+<i>450</i>&nbsp;
+<i>451</i>&nbsp;	@Override
+<i>452</i>&nbsp;	public String getServerType() {
+<b class="nc"><i>453</i>&nbsp;		return &quot;ImageJ server&quot;;</b>
+<i>454</i>&nbsp;	}
+<i>455</i>&nbsp;
+<i>456</i>&nbsp;	@Override
+<i>457</i>&nbsp;	public ImageServerMetadata getOriginalMetadata() {
+<b class="nc"><i>458</i>&nbsp;		return originalMetadata;</b>
+<i>459</i>&nbsp;	}
+<i>460</i>&nbsp;	
+<i>461</i>&nbsp;	@Override
+<i>462</i>&nbsp;	protected ServerBuilder&lt;BufferedImage&gt; createServerBuilder() {
+<b class="nc"><i>463</i>&nbsp;		return ImageServerBuilder.DefaultImageServerBuilder.createInstance(</b>
+<i>464</i>&nbsp;				ImageJServerBuilder.class,
+<b class="nc"><i>465</i>&nbsp;				getMetadata(),</b>
+<i>466</i>&nbsp;				uri,
+<i>467</i>&nbsp;				args);
+<i>468</i>&nbsp;	}
+<i>469</i>&nbsp;	
+<i>470</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

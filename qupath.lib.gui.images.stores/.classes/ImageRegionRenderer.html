@@ -1,0 +1,116 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ImageRegionRenderer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.images.stores</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ImageRegionRenderer (qupath.lib.gui.images.stores)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ImageRegionRenderer</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>6</i>&nbsp; * %%
+<i>7</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>8</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>9</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>10</i>&nbsp; * License, or (at your option) any later version.
+<i>11</i>&nbsp; * 
+<i>12</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>13</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>14</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>15</i>&nbsp; * GNU General Public License for more details.
+<i>16</i>&nbsp; * 
+<i>17</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>18</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>19</i>&nbsp; * #L%
+<i>20</i>&nbsp; */
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;package qupath.lib.gui.images.stores;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;import java.awt.Graphics;
+<i>25</i>&nbsp;import java.awt.Shape;
+<i>26</i>&nbsp;import java.awt.image.BufferedImage;
+<i>27</i>&nbsp;import java.awt.image.ImageObserver;
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;import qupath.lib.images.servers.ImageServer;
+<i>30</i>&nbsp;
+<i>31</i>&nbsp;/**
+<i>32</i>&nbsp; * Interface for painting regions of an {@link ImageServer} onto a {@link Graphics} object.
+<i>33</i>&nbsp; * 
+<i>34</i>&nbsp; * @author Pete Bankhead
+<i>35</i>&nbsp; */
+<i>36</i>&nbsp;public interface ImageRegionRenderer {
+<i>37</i>&nbsp;	
+<i>38</i>&nbsp;	/**
+<i>39</i>&nbsp;	 * Similar to {@link #paintRegion(ImageServer, Graphics, Shape, int, int, double, BufferedImage, ImageObserver, ImageRenderer)}, 
+<i>40</i>&nbsp;	 * but wait until all the tiles have arrived (or abort if it is taking too long).
+<i>41</i>&nbsp;	 *
+<i>42</i>&nbsp;	 * @param server the server representing the image that shown be painted
+<i>43</i>&nbsp;	 * @param g the graphics object upon which to paint
+<i>44</i>&nbsp;	 * @param clipShapeVisible the visible shape representing the area of the graphics object that should be filled
+<i>45</i>&nbsp;	 * @param zPosition the z-stack position
+<i>46</i>&nbsp;	 * @param tPosition the timepoint position
+<i>47</i>&nbsp;	 * @param downsampleFactor the downsample factor
+<i>48</i>&nbsp;	 * @param observer an {@link ImageObserver} (often ignored)
+<i>49</i>&nbsp;	 * @param renderer an {@link ImageRenderer} to convert images to RGB
+<i>50</i>&nbsp;	 * @param timeoutMilliseconds Timeout after which a request is made from the PathImageServer directly, rather than waiting for tile requests.
+<i>51</i>&nbsp;	 */
+<i>52</i>&nbsp;	public void paintRegionCompletely(ImageServer&lt;BufferedImage&gt; server, Graphics g, Shape clipShapeVisible, int zPosition, int tPosition, double downsampleFactor, ImageObserver observer, ImageRenderer renderer, long timeoutMilliseconds);
+<i>53</i>&nbsp;	
+<i>54</i>&nbsp;	/**
+<i>55</i>&nbsp;	 * Paint an image region.
+<i>56</i>&nbsp;	 * 
+<i>57</i>&nbsp;	 * @param server the server representing the image that shown be painted
+<i>58</i>&nbsp;	 * @param g the graphics object upon which to paint
+<i>59</i>&nbsp;	 * @param clipShapeVisible the visible shape representing the area of the graphics object that should be filled
+<i>60</i>&nbsp;	 * @param zPosition the z-stack position
+<i>61</i>&nbsp;	 * @param tPosition the timepoint position
+<i>62</i>&nbsp;	 * @param downsampleFactor the downsample factor
+<i>63</i>&nbsp;	 * @param imgThumbnail a thumbnail image; if not null, this will be used to &#39;fill the gaps&#39;
+<i>64</i>&nbsp;	 * @param observer an {@link ImageObserver} (often ignored)
+<i>65</i>&nbsp;	 * @param renderer an {@link ImageRenderer} to convert images to RGB
+<i>66</i>&nbsp;	 */
+<i>67</i>&nbsp;	public void paintRegion(ImageServer&lt;BufferedImage&gt; server, Graphics g, Shape clipShapeVisible, int zPosition, int tPosition, double downsampleFactor, BufferedImage imgThumbnail, ImageObserver observer, ImageRenderer renderer);
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

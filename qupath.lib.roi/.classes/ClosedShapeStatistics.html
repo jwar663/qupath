@@ -1,0 +1,364 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ClosedShapeStatistics</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.roi</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ClosedShapeStatistics (qupath.lib.roi)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ClosedShapeStatistics</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 18)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 108)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.roi;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.awt.Shape;
+<i>27</i>&nbsp;import java.awt.geom.Area;
+<i>28</i>&nbsp;import java.awt.geom.Path2D;
+<i>29</i>&nbsp;import java.awt.geom.PathIterator;
+<i>30</i>&nbsp;import java.awt.geom.Rectangle2D;
+<i>31</i>&nbsp;import java.io.Serializable;
+<i>32</i>&nbsp;import java.util.Collections;
+<i>33</i>&nbsp;import java.util.List;
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;/**
+<i>36</i>&nbsp; * Calculate several shape measurements based on supplied lists of vertices.
+<i>37</i>&nbsp; * 
+<i>38</i>&nbsp; * @author Pete Bankhead
+<i>39</i>&nbsp; *
+<i>40</i>&nbsp; */
+<b class="nc"><i>41</i>&nbsp;class ClosedShapeStatistics implements Serializable {</b>
+<i>42</i>&nbsp;	
+<i>43</i>&nbsp;	private static final long serialVersionUID = 1L;
+<i>44</i>&nbsp;	
+<b class="nc"><i>45</i>&nbsp;	private double areaCached = Double.NaN;</b>
+<b class="nc"><i>46</i>&nbsp;	private double perimeterCached = Double.NaN;</b>
+<b class="nc"><i>47</i>&nbsp;	private float centroidXCached = Float.NaN;</b>
+<b class="nc"><i>48</i>&nbsp;	private float centroidYCached = Float.NaN;</b>
+<b class="nc"><i>49</i>&nbsp;	private double minX = Double.NaN, maxX = Double.NaN, minY = Double.NaN, maxY = Double.NaN;</b>
+<b class="nc"><i>50</i>&nbsp;	private int nVertices = 0;</b>
+<i>51</i>&nbsp;	
+<i>52</i>&nbsp;	/**
+<i>53</i>&nbsp;	 * Calculate shape statistics for default pixel width &amp;amp; height of 1.
+<i>54</i>&nbsp;	 * 
+<i>55</i>&nbsp;	 * @param vertices
+<i>56</i>&nbsp;	 */
+<i>57</i>&nbsp;	public ClosedShapeStatistics(final Vertices vertices) {
+<b class="nc"><i>58</i>&nbsp;		this(vertices, 1, 1);</b>
+<i>59</i>&nbsp;	}
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;	/**
+<i>62</i>&nbsp;	 * Calculate shape statistics for default pixel width &amp;amp; height of 1.
+<i>63</i>&nbsp;	 * 
+<i>64</i>&nbsp;	 * Note: This method access a list of multiple vertices relating to a single area, as stored by AreaROI.
+<i>65</i>&nbsp;	 * It isn&#39;t advised to work with this directly, since the manner in which these vertices are stored is important.
+<i>66</i>&nbsp;	 * 
+<i>67</i>&nbsp;	 * @param vertices
+<i>68</i>&nbsp;	 */
+<i>69</i>&nbsp;	public ClosedShapeStatistics(final List&lt;? extends Vertices&gt; vertices) {
+<b class="nc"><i>70</i>&nbsp;		this(vertices, 1, 1);</b>
+<i>71</i>&nbsp;	}
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;	/**
+<i>74</i>&nbsp;	 * Calculate shape statistics with scaling according to a specified pixel width &amp;amp; height
+<i>75</i>&nbsp;	 * (affecting the x and y coordinates respectively).
+<i>76</i>&nbsp;	 * 
+<i>77</i>&nbsp;	 * @param vertices
+<i>78</i>&nbsp;	 * @param pixelWidth
+<i>79</i>&nbsp;	 * @param pixelHeight
+<i>80</i>&nbsp;	 */
+<i>81</i>&nbsp;	public ClosedShapeStatistics(final Vertices vertices, final double pixelWidth, final double pixelHeight) {
+<b class="nc"><i>82</i>&nbsp;		this(Collections.singletonList(vertices), pixelWidth, pixelHeight);</b>
+<i>83</i>&nbsp;	}
+<i>84</i>&nbsp;	
+<i>85</i>&nbsp;	/**
+<i>86</i>&nbsp;	 * Calculate shape statistics with scaling according to a specified pixel width &amp;amp; height
+<i>87</i>&nbsp;	 * (affecting the x and y coordinates respectively).
+<i>88</i>&nbsp;	 * 
+<i>89</i>&nbsp;	 * Note: This method access a list of multiple vertices relating to a single area, as stored by AreaROI.
+<i>90</i>&nbsp;	 * It isn&#39;t advised to work with this directly, since the manner in which these vertices are stored is important.
+<i>91</i>&nbsp;	 * 
+<i>92</i>&nbsp;	 * @param verticesList
+<i>93</i>&nbsp;	 * @param pixelWidth
+<i>94</i>&nbsp;	 * @param pixelHeight
+<i>95</i>&nbsp;	 */
+<b class="nc"><i>96</i>&nbsp;	public ClosedShapeStatistics(final List&lt;? extends Vertices&gt; verticesList, final double pixelWidth, final double pixelHeight) {</b>
+<b class="nc"><i>97</i>&nbsp;		if (verticesList.isEmpty())</b>
+<i>98</i>&nbsp;			return;
+<b class="nc"><i>99</i>&nbsp;		Path2D path = new Path2D.Float();</b>
+<b class="nc"><i>100</i>&nbsp;		for (Vertices vertices : verticesList) {</b>
+<b class="nc"><i>101</i>&nbsp;			if (vertices.isEmpty())</b>
+<b class="nc"><i>102</i>&nbsp;				continue;</b>
+<b class="nc"><i>103</i>&nbsp;			path.moveTo(vertices.getX(0), vertices.getY(0));</b>
+<b class="nc"><i>104</i>&nbsp;			for (int i = 1; i &lt; vertices.size(); i++) {</b>
+<b class="nc"><i>105</i>&nbsp;				path.lineTo(vertices.getX(i), vertices.getY(i));				</b>
+<i>106</i>&nbsp;			}
+<b class="nc"><i>107</i>&nbsp;			path.closePath();			</b>
+<b class="nc"><i>108</i>&nbsp;		}</b>
+<b class="nc"><i>109</i>&nbsp;		calculateShapeMeasurements(path, pixelWidth, pixelHeight);</b>
+<i>110</i>&nbsp;	}
+<i>111</i>&nbsp;	
+<i>112</i>&nbsp;	
+<i>113</i>&nbsp;	@Deprecated
+<i>114</i>&nbsp;	ClosedShapeStatistics(final Shape shape) {
+<b class="nc"><i>115</i>&nbsp;		this(shape, 1, 1);</b>
+<i>116</i>&nbsp;	}
+<i>117</i>&nbsp;	
+<i>118</i>&nbsp;	@Deprecated
+<b class="nc"><i>119</i>&nbsp;	ClosedShapeStatistics(final Shape shape, final double pixelWidth, final double pixelHeight) {</b>
+<b class="nc"><i>120</i>&nbsp;		calculateShapeMeasurements(shape, pixelWidth, pixelHeight);</b>
+<i>121</i>&nbsp;	}
+<i>122</i>&nbsp;	
+<i>123</i>&nbsp;	private void calculateShapeMeasurements(final Shape shape, final double pixelWidth, final double pixelHeight) {
+<b class="nc"><i>124</i>&nbsp;		double perimeter = 0;		</b>
+<b class="nc"><i>125</i>&nbsp;		double cx = 0;</b>
+<b class="nc"><i>126</i>&nbsp;		double cy = 0;</b>
+<b class="nc"><i>127</i>&nbsp;		double areaTempSigned = 0;</b>
+<b class="nc"><i>128</i>&nbsp;		double areaCached = 0;</b>
+<i>129</i>&nbsp;		
+<b class="nc"><i>130</i>&nbsp;		double flatness = 0.01;</b>
+<i>131</i>&nbsp;		
+<i>132</i>&nbsp;		// Get a path iterator, with flattening involved
+<i>133</i>&nbsp;		PathIterator iter;
+<i>134</i>&nbsp;		
+<b class="nc"><i>135</i>&nbsp;		if (shape instanceof Area)</b>
+<b class="nc"><i>136</i>&nbsp;			iter = ((Area)shape).getPathIterator(null, flatness);</b>
+<i>137</i>&nbsp;		else {
+<i>138</i>&nbsp;			// Try to get path iterator from an area - but if this is empty, it suggests we just have a line, in which case we should use the default iterator (whatever that is)
+<b class="nc"><i>139</i>&nbsp;			Area area = new Area(shape);</b>
+<b class="nc"><i>140</i>&nbsp;			if (area.isEmpty())</b>
+<b class="nc"><i>141</i>&nbsp;				iter = shape.getPathIterator(null, flatness);</b>
+<i>142</i>&nbsp;			else {
+<b class="nc"><i>143</i>&nbsp;				iter = area.getPathIterator(null, flatness);</b>
+<i>144</i>&nbsp;			}
+<i>145</i>&nbsp;		}
+<b class="nc"><i>146</i>&nbsp;		double[] seg = new double[6];</b>
+<b class="nc"><i>147</i>&nbsp;		double startX = Double.NaN, startY = Double.NaN;</b>
+<b class="nc"><i>148</i>&nbsp;		minX = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>149</i>&nbsp;		maxX = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>150</i>&nbsp;		minY = Double.POSITIVE_INFINITY;</b>
+<b class="nc"><i>151</i>&nbsp;		maxY = Double.NEGATIVE_INFINITY;</b>
+<b class="nc"><i>152</i>&nbsp;		double x0 = 0, y0 = 0, x1 = 0, y1 = 0;</b>
+<b class="nc"><i>153</i>&nbsp;		int nPaths = 0;</b>
+<b class="nc"><i>154</i>&nbsp;		while (!iter.isDone()) {</b>
+<b class="nc"><i>155</i>&nbsp;			switch(iter.currentSegment(seg)) {</b>
+<i>156</i>&nbsp;			case PathIterator.SEG_MOVETO:
+<i>157</i>&nbsp;				// Log starting positions - need them again for closing the path
+<b class="nc"><i>158</i>&nbsp;				startX = seg[0] * pixelWidth;</b>
+<b class="nc"><i>159</i>&nbsp;				startY = seg[1] * pixelHeight;</b>
+<b class="nc"><i>160</i>&nbsp;				x0 = startX;</b>
+<b class="nc"><i>161</i>&nbsp;				y0 = startY;</b>
+<b class="nc"><i>162</i>&nbsp;				updateMinMax(x0, y0);</b>
+<b class="nc"><i>163</i>&nbsp;				iter.next();</b>
+<b class="nc"><i>164</i>&nbsp;				nPaths++; // Starting another sub-path</b>
+<b class="nc"><i>165</i>&nbsp;				areaCached += areaTempSigned;</b>
+<b class="nc"><i>166</i>&nbsp;				areaTempSigned = 0;</b>
+<b class="nc"><i>167</i>&nbsp;				nVertices++;</b>
+<b class="nc"><i>168</i>&nbsp;				continue;</b>
+<i>169</i>&nbsp;			case PathIterator.SEG_CLOSE:
+<b class="nc"><i>170</i>&nbsp;				x1 = startX;</b>
+<b class="nc"><i>171</i>&nbsp;				y1 = startY;</b>
+<b class="nc"><i>172</i>&nbsp;				break;</b>
+<i>173</i>&nbsp;			case PathIterator.SEG_LINETO:
+<b class="nc"><i>174</i>&nbsp;				x1 = seg[0] * pixelWidth;</b>
+<b class="nc"><i>175</i>&nbsp;				y1 = seg[1] * pixelHeight;</b>
+<b class="nc"><i>176</i>&nbsp;				updateMinMax(x1, y1);</b>
+<b class="nc"><i>177</i>&nbsp;				nVertices++;</b>
+<b class="nc"><i>178</i>&nbsp;				break;</b>
+<i>179</i>&nbsp;			default:
+<i>180</i>&nbsp;				// Shouldn&#39;t happen because of flattened PathIterator
+<b class="nc"><i>181</i>&nbsp;				throw new RuntimeException(&quot;Invalid polygon in &quot; + this + &quot; - only line connections are allowed&quot;);</b>
+<i>182</i>&nbsp;			};
+<i>183</i>&nbsp;			// Update the calculations
+<b class="nc"><i>184</i>&nbsp;			perimeter += Math.sqrt((x1 - x0)*(x1 - x0) + (y1 - y0)*(y1 - y0));</b>
+<i>185</i>&nbsp;//			area += ((x1 - x0) * (y1 + y0)*0.5);
+<i>186</i>&nbsp;			// For centroid calculations, see http://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon			
+<b class="nc"><i>187</i>&nbsp;			cx += (x0 + x1) * (x0 * y1 - x1 * y0);</b>
+<b class="nc"><i>188</i>&nbsp;			cy += (y0 + y1) * (x0 * y1 - x1 * y0);</b>
+<b class="nc"><i>189</i>&nbsp;			areaTempSigned += 0.5 * (x0 * y1 - x1 * y0);</b>
+<i>190</i>&nbsp;			// Update the coordinates
+<b class="nc"><i>191</i>&nbsp;			x0 = x1;</b>
+<b class="nc"><i>192</i>&nbsp;			y0 = y1;</b>
+<b class="nc"><i>193</i>&nbsp;			iter.next();</b>
+<i>194</i>&nbsp;		}
+<i>195</i>&nbsp;//		Line2D.Double line = new Line2D.Double();
+<i>196</i>&nbsp;//		Line2D.linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4)
+<i>197</i>&nbsp;//		logger.info(&quot;POLYGON - Area: &quot; + area + &quot;, Signed area: &quot; + areaSigned);
+<b class="nc"><i>198</i>&nbsp;		if (nPaths == 1) {</b>
+<b class="nc"><i>199</i>&nbsp;			centroidXCached = (float)(cx / (6 * areaTempSigned));</b>
+<b class="nc"><i>200</i>&nbsp;			centroidYCached = (float)(cy / (6 * areaTempSigned));</b>
+<i>201</i>&nbsp;			// The perimeter only makes sense if we have a single path
+<b class="nc"><i>202</i>&nbsp;			perimeterCached = perimeter;</b>
+<i>203</i>&nbsp;		} else {
+<b class="nc"><i>204</i>&nbsp;			centroidXCached = (float)(cx / (6 * (areaCached + areaTempSigned)));</b>
+<b class="nc"><i>205</i>&nbsp;			centroidYCached = (float)(cy / (6 * (areaCached + areaTempSigned)));</b>
+<b class="nc"><i>206</i>&nbsp;			perimeterCached = Double.NaN;</b>
+<i>207</i>&nbsp;		}
+<b class="nc"><i>208</i>&nbsp;		this.areaCached = Math.abs(areaCached + areaTempSigned);</b>
+<i>209</i>&nbsp;		
+<i>210</i>&nbsp;		// I&#39;m not entirely sure I have correctly deciphered Java&#39;s shapes... so do some basic sanity checking
+<b class="nc"><i>211</i>&nbsp;		Rectangle2D bounds = shape.getBounds2D();</b>
+<b class="nc"><i>212</i>&nbsp;		if (pixelWidth != 1 || pixelHeight != 1) {</b>
+<b class="nc"><i>213</i>&nbsp;			bounds.setFrame(</b>
+<b class="nc"><i>214</i>&nbsp;					bounds.getX() * pixelWidth,</b>
+<b class="nc"><i>215</i>&nbsp;					bounds.getY() * pixelHeight,</b>
+<b class="nc"><i>216</i>&nbsp;					bounds.getWidth() * pixelWidth,</b>
+<b class="nc"><i>217</i>&nbsp;					bounds.getHeight() * pixelHeight);</b>
+<i>218</i>&nbsp;		}
+<b class="nc"><i>219</i>&nbsp;		assert this.areaCached &lt;= bounds.getWidth() * bounds.getHeight();</b>
+<b class="nc"><i>220</i>&nbsp;		assert bounds.contains(centroidXCached, centroidYCached);</b>
+<i>221</i>&nbsp;	}
+<i>222</i>&nbsp;	
+<i>223</i>&nbsp;	
+<i>224</i>&nbsp;	final public double getBoundsX() {
+<b class="nc"><i>225</i>&nbsp;		return minX;</b>
+<i>226</i>&nbsp;	}
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;	final public double getBoundsY() {
+<b class="nc"><i>229</i>&nbsp;		return minY;</b>
+<i>230</i>&nbsp;	}
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;	final public double getBoundsWidth() {
+<b class="nc"><i>233</i>&nbsp;		return maxX - minX;</b>
+<i>234</i>&nbsp;	}
+<i>235</i>&nbsp;
+<i>236</i>&nbsp;	final public double getBoundsHeight() {
+<b class="nc"><i>237</i>&nbsp;		return maxY - minY;</b>
+<i>238</i>&nbsp;	}
+<i>239</i>&nbsp;	
+<i>240</i>&nbsp;	final private void updateMinMax(final double x, final double y) {
+<b class="nc"><i>241</i>&nbsp;		if (x &lt; minX)</b>
+<b class="nc"><i>242</i>&nbsp;			minX = x;</b>
+<b class="nc"><i>243</i>&nbsp;		if (x &gt; maxX)</b>
+<b class="nc"><i>244</i>&nbsp;			maxX = x;</b>
+<b class="nc"><i>245</i>&nbsp;		if (y &lt; minY)</b>
+<b class="nc"><i>246</i>&nbsp;			minY = y;</b>
+<b class="nc"><i>247</i>&nbsp;		if (y &gt; maxY)</b>
+<b class="nc"><i>248</i>&nbsp;			maxY = y;</b>
+<i>249</i>&nbsp;	}
+<i>250</i>&nbsp;	
+<i>251</i>&nbsp;	
+<i>252</i>&nbsp;	final public double getCentroidX() {
+<b class="nc"><i>253</i>&nbsp;		return centroidXCached;</b>
+<i>254</i>&nbsp;	}
+<i>255</i>&nbsp;
+<i>256</i>&nbsp;	final public double getCentroidY() {
+<b class="nc"><i>257</i>&nbsp;		return centroidYCached;</b>
+<i>258</i>&nbsp;	}
+<i>259</i>&nbsp;
+<i>260</i>&nbsp;	final public double getArea() {
+<b class="nc"><i>261</i>&nbsp;		return areaCached;</b>
+<i>262</i>&nbsp;	}
+<i>263</i>&nbsp;
+<i>264</i>&nbsp;	final public double getPerimeter() {
+<b class="nc"><i>265</i>&nbsp;		return perimeterCached;</b>
+<i>266</i>&nbsp;	}
+<i>267</i>&nbsp;	
+<i>268</i>&nbsp;//	public void translateCentroid(final double dx, final double dy) {
+<i>269</i>&nbsp;//		centroidXCached += dx;
+<i>270</i>&nbsp;//		centroidYCached += dy;
+<i>271</i>&nbsp;//		minX += dx;
+<i>272</i>&nbsp;//		minY += dy;
+<i>273</i>&nbsp;//		maxX += dx;
+<i>274</i>&nbsp;//		maxY += dy;
+<i>275</i>&nbsp;//	}
+<i>276</i>&nbsp;	
+<i>277</i>&nbsp;	final public int getNVertices() {
+<b class="nc"><i>278</i>&nbsp;		return nVertices;</b>
+<i>279</i>&nbsp;	}
+<i>280</i>&nbsp;	
+<i>281</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>

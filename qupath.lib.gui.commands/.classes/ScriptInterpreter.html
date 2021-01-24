@@ -1,0 +1,1139 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: ScriptInterpreter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">qupath.lib.gui.commands</a> ]
+</div>
+
+<h1>Coverage Summary for Class: ScriptInterpreter (qupath.lib.gui.commands)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ScriptInterpreter</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 373)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ScriptInterpreter$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ScriptInterpreter$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 2)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ScriptInterpreter$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ScriptInterpreter$VariableInfoType</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ScriptInterpreter$VariableTableCell</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 76)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 51)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 455)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;/*-
+<i>2</i>&nbsp; * #%L
+<i>3</i>&nbsp; * This file is part of QuPath.
+<i>4</i>&nbsp; * %%
+<i>5</i>&nbsp; * Copyright (C) 2014 - 2016 The Queen&#39;s University of Belfast, Northern Ireland
+<i>6</i>&nbsp; * Contact: IP Management (ipmanagement@qub.ac.uk)
+<i>7</i>&nbsp; * Copyright (C) 2018 - 2020 QuPath developers, The University of Edinburgh
+<i>8</i>&nbsp; * %%
+<i>9</i>&nbsp; * QuPath is free software: you can redistribute it and/or modify
+<i>10</i>&nbsp; * it under the terms of the GNU General Public License as
+<i>11</i>&nbsp; * published by the Free Software Foundation, either version 3 of the
+<i>12</i>&nbsp; * License, or (at your option) any later version.
+<i>13</i>&nbsp; * 
+<i>14</i>&nbsp; * QuPath is distributed in the hope that it will be useful,
+<i>15</i>&nbsp; * but WITHOUT ANY WARRANTY; without even the implied warranty of
+<i>16</i>&nbsp; * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+<i>17</i>&nbsp; * GNU General Public License for more details.
+<i>18</i>&nbsp; * 
+<i>19</i>&nbsp; * You should have received a copy of the GNU General Public License 
+<i>20</i>&nbsp; * along with QuPath.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
+<i>21</i>&nbsp; * #L%
+<i>22</i>&nbsp; */
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;package qupath.lib.gui.commands;
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;import java.io.IOException;
+<i>27</i>&nbsp;import java.io.Writer;
+<i>28</i>&nbsp;import java.lang.reflect.Field;
+<i>29</i>&nbsp;import java.lang.reflect.InvocationTargetException;
+<i>30</i>&nbsp;import java.lang.reflect.Method;
+<i>31</i>&nbsp;import java.lang.reflect.Parameter;
+<i>32</i>&nbsp;import java.util.ArrayList;
+<i>33</i>&nbsp;import java.util.Collections;
+<i>34</i>&nbsp;import java.util.List;
+<i>35</i>&nbsp;import java.util.stream.Collectors;
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;import javax.script.Bindings;
+<i>38</i>&nbsp;import javax.script.ScriptContext;
+<i>39</i>&nbsp;import javax.script.ScriptEngine;
+<i>40</i>&nbsp;import javax.script.ScriptEngineFactory;
+<i>41</i>&nbsp;import javax.script.ScriptEngineManager;
+<i>42</i>&nbsp;import javax.script.SimpleScriptContext;
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;import org.controlsfx.control.MasterDetailPane;
+<i>45</i>&nbsp;import org.slf4j.Logger;
+<i>46</i>&nbsp;import org.slf4j.LoggerFactory;
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;import javafx.beans.property.SimpleStringProperty;
+<i>49</i>&nbsp;import javafx.beans.property.StringProperty;
+<i>50</i>&nbsp;import javafx.collections.FXCollections;
+<i>51</i>&nbsp;import javafx.collections.ObservableList;
+<i>52</i>&nbsp;import javafx.geometry.Bounds;
+<i>53</i>&nbsp;import javafx.geometry.Side;
+<i>54</i>&nbsp;import javafx.scene.Node;
+<i>55</i>&nbsp;import javafx.scene.Scene;
+<i>56</i>&nbsp;import javafx.scene.control.Button;
+<i>57</i>&nbsp;import javafx.scene.control.ContentDisplay;
+<i>58</i>&nbsp;import javafx.scene.control.ContextMenu;
+<i>59</i>&nbsp;import javafx.scene.control.CustomMenuItem;
+<i>60</i>&nbsp;import javafx.scene.control.Label;
+<i>61</i>&nbsp;import javafx.scene.control.ListView;
+<i>62</i>&nbsp;import javafx.scene.control.Menu;
+<i>63</i>&nbsp;import javafx.scene.control.MenuBar;
+<i>64</i>&nbsp;import javafx.scene.control.MenuItem;
+<i>65</i>&nbsp;import javafx.scene.control.RadioMenuItem;
+<i>66</i>&nbsp;import javafx.scene.control.SelectionMode;
+<i>67</i>&nbsp;import javafx.scene.control.Skin;
+<i>68</i>&nbsp;import javafx.scene.control.Tab;
+<i>69</i>&nbsp;import javafx.scene.control.TabPane;
+<i>70</i>&nbsp;import javafx.scene.control.TabPane.TabClosingPolicy;
+<i>71</i>&nbsp;import javafx.scene.control.TableCell;
+<i>72</i>&nbsp;import javafx.scene.control.TableColumn;
+<i>73</i>&nbsp;import javafx.scene.control.TableView;
+<i>74</i>&nbsp;import javafx.scene.control.TextArea;
+<i>75</i>&nbsp;import javafx.scene.control.ToggleGroup;
+<i>76</i>&nbsp;import javafx.scene.control.Tooltip;
+<i>77</i>&nbsp;import javafx.scene.input.KeyCode;
+<i>78</i>&nbsp;import javafx.scene.input.KeyEvent;
+<i>79</i>&nbsp;import javafx.scene.layout.BorderPane;
+<i>80</i>&nbsp;import javafx.scene.layout.ColumnConstraints;
+<i>81</i>&nbsp;import javafx.scene.layout.Priority;
+<i>82</i>&nbsp;import javafx.scene.text.Font;
+<i>83</i>&nbsp;import javafx.scene.text.Text;
+<i>84</i>&nbsp;import javafx.scene.web.WebView;
+<i>85</i>&nbsp;import javafx.stage.Stage;
+<i>86</i>&nbsp;import jfxtras.scene.layout.GridPane;
+<i>87</i>&nbsp;import qupath.lib.gui.QuPathGUI;
+<i>88</i>&nbsp;import qupath.lib.gui.dialogs.Dialogs;
+<i>89</i>&nbsp;import qupath.lib.gui.panes.ObjectTreeBrowser;
+<i>90</i>&nbsp;import qupath.lib.gui.prefs.PathPrefs;
+<i>91</i>&nbsp;import qupath.lib.gui.scripting.QPEx;
+<i>92</i>&nbsp;import qupath.lib.images.ImageData;
+<i>93</i>&nbsp;
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;/**
+<i>96</i>&nbsp; * A simple command window to run scripts, using JSR 223
+<i>97</i>&nbsp; * 
+<i>98</i>&nbsp; * @author Pete Bankhead
+<i>99</i>&nbsp; *
+<i>100</i>&nbsp; */
+<i>101</i>&nbsp;class ScriptInterpreter {
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;	final private static Logger logger = LoggerFactory.getLogger(ScriptInterpreter.class);</b>
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;	private QuPathGUI qupath;
+<i>106</i>&nbsp;	private Stage stage;
+<i>107</i>&nbsp;	private ScriptEngineManager manager;
+<b class="nc"><i>108</i>&nbsp;	private ScriptContext preferredContext = new SimpleScriptContext(); // A preferred context for interoperability</b>
+<i>109</i>&nbsp;	private ScriptContext context; // The context currently in use - may be locked to a specific engine
+<i>110</i>&nbsp;	private ScriptEngine engine;
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;	/**
+<i>113</i>&nbsp;	 * Name to use when creating ImageData variable
+<i>114</i>&nbsp;	 */
+<b class="nc"><i>115</i>&nbsp;	private String defaultImageDataName = &quot;imageData&quot;;</b>
+<b class="nc"><i>116</i>&nbsp;	private String defaultHierarchyName = &quot;hierarchy&quot;;</b>
+<b class="nc"><i>117</i>&nbsp;	private String defaultSelectionModelName = &quot;selectionModel&quot;;</b>
+<b class="nc"><i>118</i>&nbsp;	private String defaultImageServerName = &quot;server&quot;;</b>
+<b class="nc"><i>119</i>&nbsp;	private String defaultProjectName = &quot;project&quot;;</b>
+<b class="nc"><i>120</i>&nbsp;	private String defaultScriptingHelperName = &quot;QP&quot;;</b>
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;	/**
+<i>123</i>&nbsp;	 * Font for displaying code
+<i>124</i>&nbsp;	 */
+<b class="nc"><i>125</i>&nbsp;	private Font font = Font.font(&quot;Courier&quot;);</b>
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;	/**
+<i>129</i>&nbsp;	 * Different types of info that could be displayed for a variable
+<i>130</i>&nbsp;	 */
+<b class="nc"><i>131</i>&nbsp;	private static enum VariableInfoType {NAME, CLASS, VALUE};</b>
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;	/**
+<i>134</i>&nbsp;	 * List of all commands that were run
+<i>135</i>&nbsp;	 */
+<b class="nc"><i>136</i>&nbsp;	private ObservableList&lt;String&gt; historyList = FXCollections.observableArrayList();</b>
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;	/**
+<i>139</i>&nbsp;	 * All the command window text
+<i>140</i>&nbsp;	 */
+<b class="nc"><i>141</i>&nbsp;	private StringProperty historyText = new SimpleStringProperty(&quot;&quot;);</b>
+<i>142</i>&nbsp;
+<i>143</i>&nbsp;	/**
+<i>144</i>&nbsp;	 * The text currently being entered
+<i>145</i>&nbsp;	 */
+<b class="nc"><i>146</i>&nbsp;	private StringProperty currentText = new SimpleStringProperty(&quot;&quot;);</b>
+<i>147</i>&nbsp;
+<i>148</i>&nbsp;	/**
+<i>149</i>&nbsp;	 * Table displaying variables
+<i>150</i>&nbsp;	 */
+<b class="nc"><i>151</i>&nbsp;	private TableView&lt;String&gt; tableVariables = new TableView&lt;&gt;();</b>
+<i>152</i>&nbsp;
+<i>153</i>&nbsp;	/**
+<i>154</i>&nbsp;	 * List displaying command history
+<i>155</i>&nbsp;	 */
+<b class="nc"><i>156</i>&nbsp;	private ListView&lt;String&gt; listHistory = new ListView&lt;&gt;(historyList);</b>
+<i>157</i>&nbsp;
+<i>158</i>&nbsp;	/**
+<i>159</i>&nbsp;	 * For inputting new commands.
+<i>160</i>&nbsp;	 */
+<b class="nc"><i>161</i>&nbsp;	private TextArea textAreaInput = new TextArea();</b>
+<i>162</i>&nbsp;
+<b class="nc"><i>163</i>&nbsp;	ScriptInterpreter(final QuPathGUI qupath, final ClassLoader classLoader) {</b>
+<b class="nc"><i>164</i>&nbsp;		this.qupath = qupath;</b>
+<b class="nc"><i>165</i>&nbsp;		manager = new ScriptEngineManager(classLoader);</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;		setWriters(preferredContext);</b>
+<i>168</i>&nbsp;
+<b class="nc"><i>169</i>&nbsp;		stage = new Stage();</b>
+<b class="nc"><i>170</i>&nbsp;		stage.setTitle(&quot;QuPath Interpreter&quot;);</b>
+<i>171</i>&nbsp;
+<b class="nc"><i>172</i>&nbsp;		initialize();</b>
+<i>173</i>&nbsp;	}
+<i>174</i>&nbsp;
+<i>175</i>&nbsp;
+<i>176</i>&nbsp;	private void initialize() {
+<b class="nc"><i>177</i>&nbsp;		MenuBar menuBar = new MenuBar();</b>
+<b class="nc"><i>178</i>&nbsp;		Menu menuLanguages = new Menu(&quot;Language&quot;);</b>
+<b class="nc"><i>179</i>&nbsp;		menuBar.getMenus().add(menuLanguages);</b>
+<b class="nc"><i>180</i>&nbsp;		ToggleGroup group = new ToggleGroup();</b>
+<i>181</i>&nbsp;
+<i>182</i>&nbsp;		// Create menu items for each scripting language available
+<i>183</i>&nbsp;		// Attempt to &#39;sanitize&#39; the names
+<b class="nc"><i>184</i>&nbsp;		for (ScriptEngineFactory factory : manager.getEngineFactories()) {</b>
+<i>185</i>&nbsp;			//				logger.info(factory.getEngineName() + &quot;, &quot; + factory.getEngineVersion());
+<i>186</i>&nbsp;			//				logger.info(factory.getLanguageName() + &quot;, &quot; + factory.getLanguageVersion());
+<b class="nc"><i>187</i>&nbsp;			logger.info(&quot;{}&quot;, factory.getNames());</b>
+<i>188</i>&nbsp;
+<i>189</i>&nbsp;			String name;
+<b class="nc"><i>190</i>&nbsp;			List&lt;String&gt; allNames = factory.getNames();</b>
+<b class="nc"><i>191</i>&nbsp;			if (allNames.contains(&quot;groovy&quot;))</b>
+<b class="nc"><i>192</i>&nbsp;				name = &quot;Groovy&quot;;</b>
+<b class="nc"><i>193</i>&nbsp;			else if (allNames.contains(&quot;jython&quot;))</b>
+<b class="nc"><i>194</i>&nbsp;				name = &quot;Jython&quot;;</b>
+<b class="nc"><i>195</i>&nbsp;			else if (allNames.contains(&quot;python&quot;))</b>
+<b class="nc"><i>196</i>&nbsp;				name = &quot;Python&quot;;</b>
+<b class="nc"><i>197</i>&nbsp;			else if (allNames.contains(&quot;r&quot;))</b>
+<b class="nc"><i>198</i>&nbsp;				name = &quot;R&quot;;</b>
+<b class="nc"><i>199</i>&nbsp;			else if (allNames.contains(&quot;ruby&quot;))</b>
+<b class="nc"><i>200</i>&nbsp;				name = &quot;Ruby&quot;;</b>
+<b class="nc"><i>201</i>&nbsp;			else if (allNames.contains(&quot;javascript&quot;))</b>
+<b class="nc"><i>202</i>&nbsp;				name = &quot;JavaScript&quot;;</b>
+<i>203</i>&nbsp;			else
+<b class="nc"><i>204</i>&nbsp;				name = factory.getLanguageName();</b>
+<i>205</i>&nbsp;
+<b class="nc"><i>206</i>&nbsp;			RadioMenuItem menuItem = new RadioMenuItem(name);</b>
+<b class="nc"><i>207</i>&nbsp;			menuItem.setToggleGroup(group);</b>
+<b class="nc"><i>208</i>&nbsp;			menuItem.selectedProperty().addListener((o, v, n) -&gt; {</b>
+<b class="nc"><i>209</i>&nbsp;				if (n) {</b>
+<b class="nc"><i>210</i>&nbsp;					engine = factory.getScriptEngine();</b>
+<i>211</i>&nbsp;					try {
+<b class="nc"><i>212</i>&nbsp;						engine.setContext(preferredContext);</b>
+<b class="nc"><i>213</i>&nbsp;						context = preferredContext;</b>
+<b class="nc"><i>214</i>&nbsp;					} catch (Exception e) {</b>
+<b class="nc"><i>215</i>&nbsp;						logger.warn(&quot;Could not set preferred script context for {}: {}&quot;, engine, e.getLocalizedMessage());</b>
+<b class="nc"><i>216</i>&nbsp;						context = engine.getContext();</b>
+<b class="nc"><i>217</i>&nbsp;						setWriters(context);</b>
+<b class="nc"><i>218</i>&nbsp;					}</b>
+<b class="nc"><i>219</i>&nbsp;					updateVariableTable();</b>
+<i>220</i>&nbsp;				}
+<i>221</i>&nbsp;			});
+<b class="nc"><i>222</i>&nbsp;			if (group.getSelectedToggle() == null || &quot;Groovy&quot;.equals(name)) // Prefer Groovy if we can get it</b>
+<b class="nc"><i>223</i>&nbsp;				group.selectToggle(menuItem);</b>
+<b class="nc"><i>224</i>&nbsp;			menuLanguages.getItems().add(menuItem);</b>
+<b class="nc"><i>225</i>&nbsp;		}</b>
+<b class="nc"><i>226</i>&nbsp;		FXCollections.sort(menuLanguages.getItems(), (m1, m2) -&gt; m1.getText().compareTo(m2.getText()));</b>
+<i>227</i>&nbsp;
+<i>228</i>&nbsp;
+<i>229</i>&nbsp;		// Script menu
+<b class="nc"><i>230</i>&nbsp;		Menu menuScript = new Menu(&quot;Script&quot;);</b>
+<b class="nc"><i>231</i>&nbsp;		MenuItem miGenerateScript = new MenuItem(&quot;Generate script&quot;);</b>
+<b class="nc"><i>232</i>&nbsp;		miGenerateScript.setOnAction(e -&gt; {</b>
+<b class="nc"><i>233</i>&nbsp;			String script = String.join(&quot;\n&quot;, historyList);</b>
+<b class="nc"><i>234</i>&nbsp;			qupath.getScriptEditor().showScript(&quot;From interpreter&quot;, script);</b>
+<i>235</i>&nbsp;		});
+<b class="nc"><i>236</i>&nbsp;		menuScript.getItems().add(miGenerateScript);</b>
+<b class="nc"><i>237</i>&nbsp;		menuBar.getMenus().add(menuScript);</b>
+<i>238</i>&nbsp;
+<i>239</i>&nbsp;
+<i>240</i>&nbsp;		/*
+<i>241</i>&nbsp;		 * Create the main area
+<i>242</i>&nbsp;		 */
+<i>243</i>&nbsp;		// Simple TextArea-based command log (no syntax coloring)
+<i>244</i>&nbsp;		//			TextArea textArea = new TextArea();
+<i>245</i>&nbsp;		//			textArea.setPrefColumnCount(50);
+<i>246</i>&nbsp;		//			textArea.setPrefRowCount(40);
+<i>247</i>&nbsp;		//			textArea.textProperty().bindBidirectional(historyText);
+<i>248</i>&nbsp;		//			textArea.setWrapText(true);
+<i>249</i>&nbsp;		//			textArea.setFont(font);
+<i>250</i>&nbsp;		//			textArea.setEditable(false);
+<i>251</i>&nbsp;		//			textArea.textProperty().addListener((v, o, n) -&gt; {
+<i>252</i>&nbsp;		////				if (textArea.getSelection().getLength() == 0) {
+<i>253</i>&nbsp;		////					textArea.setScrollTop(Double.MAX_VALUE);
+<i>254</i>&nbsp;		////				}
+<i>255</i>&nbsp;		//				Platform.runLater(() -&gt; textArea.appendText(&quot;&quot;));
+<i>256</i>&nbsp;		//			});
+<i>257</i>&nbsp;
+<i>258</i>&nbsp;		// Command log with some color coding
+<b class="nc"><i>259</i>&nbsp;		WebView textArea = new WebView();</b>
+<b class="nc"><i>260</i>&nbsp;		historyText.addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>261</i>&nbsp;			String styleAll = &quot;* {\n  &quot; + </b>
+<i>262</i>&nbsp;					&quot;font-family: \&quot;Courier New\&quot;, Courier, monospace;\n&quot; + 
+<i>263</i>&nbsp;					&quot;font-size: 0.95em;\n &quot; + 
+<i>264</i>&nbsp;					&quot;}&quot;;
+<b class="nc"><i>265</i>&nbsp;			String styleError = &quot;.error {\n  &quot; + </b>
+<i>266</i>&nbsp;					&quot;color: red;\n&quot; + 
+<i>267</i>&nbsp;					&quot;}&quot;;
+<b class="nc"><i>268</i>&nbsp;			String styleWarning = &quot;.warning {\n  &quot; + </b>
+<i>269</i>&nbsp;					&quot;color: orange;\n&quot; + 
+<i>270</i>&nbsp;					&quot;}&quot;;
+<b class="nc"><i>271</i>&nbsp;			String styleCommand = &quot;.command {\n  &quot; + </b>
+<i>272</i>&nbsp;					&quot;color: black;\n&quot; + 
+<i>273</i>&nbsp;					&quot;}&quot;;
+<b class="nc"><i>274</i>&nbsp;			String styleOther = &quot;.other {\n  &quot; + </b>
+<i>275</i>&nbsp;					&quot;color: gray;\n&quot; + 
+<i>276</i>&nbsp;					&quot;}&quot;;
+<b class="nc"><i>277</i>&nbsp;			String styleVariable = &quot;.variable {\n  &quot; + </b>
+<i>278</i>&nbsp;					&quot;color: purple;\n&quot; + 
+<i>279</i>&nbsp;					&quot;}&quot;;
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;			StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>282</i>&nbsp;			sb.append(&quot;&lt;html&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>283</i>&nbsp;			sb.append(&quot;&lt;head&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>284</i>&nbsp;			sb.append(&quot;&lt;script language=\&quot;javascript\&quot; type=\&quot;text/javascript\&quot;&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>285</i>&nbsp;			sb.append(&quot;function scrollToEnd(){&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>286</i>&nbsp;			sb.append(&quot;window.scrollTo(0, document.body.scrollHeight);&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>287</i>&nbsp;			sb.append(&quot;}&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>288</i>&nbsp;			sb.append(&quot;&lt;/script&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>289</i>&nbsp;			sb.append(&quot;&lt;style&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>290</i>&nbsp;			sb.append(styleAll).append(&quot;\n&quot;);</b>
+<b class="nc"><i>291</i>&nbsp;			sb.append(styleError).append(&quot;\n&quot;);</b>
+<b class="nc"><i>292</i>&nbsp;			sb.append(styleWarning).append(&quot;\n&quot;);</b>
+<b class="nc"><i>293</i>&nbsp;			sb.append(styleCommand).append(&quot;\n&quot;);</b>
+<b class="nc"><i>294</i>&nbsp;			sb.append(styleOther).append(&quot;\n&quot;);</b>
+<b class="nc"><i>295</i>&nbsp;			sb.append(styleVariable).append(&quot;\n&quot;);</b>
+<b class="nc"><i>296</i>&nbsp;			sb.append(&quot;&lt;/style&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>297</i>&nbsp;			sb.append(&quot;&lt;/head&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>298</i>&nbsp;			sb.append(&quot;&lt;body onload=&#39;scrollToEnd()&#39;&gt;&quot;).append(&quot;\n&quot;);</b>
+<b class="nc"><i>299</i>&nbsp;			sb.append(n.replace(&quot;\n&quot;, &quot;&lt;br/&gt;&quot;));</b>
+<b class="nc"><i>300</i>&nbsp;			sb.append(&quot;&lt;/body&gt;&quot;);</b>
+<i>301</i>&nbsp;
+<i>302</i>&nbsp;			//				String content = String.format(&quot;&lt;html&gt;&lt;head&gt;&lt;style&gt;%s&lt;/style&gt;&lt;/head&gt;&lt;body&gt;%s&lt;/body&gt;&lt;/html&gt;&quot;, style, n.replace(&quot;\n&quot;, &quot;&lt;br/&gt;&quot;));
+<i>303</i>&nbsp;
+<b class="nc"><i>304</i>&nbsp;			textArea.getEngine().loadContent(sb.toString());</b>
+<i>305</i>&nbsp;		});
+<i>306</i>&nbsp;
+<i>307</i>&nbsp;		//			TextArea textArea = new TextArea();
+<i>308</i>&nbsp;		//			textArea.setPrefColumnCount(50);
+<i>309</i>&nbsp;		//			textArea.setPrefRowCount(40);
+<i>310</i>&nbsp;		//			textArea.textProperty().bindBidirectional(historyText);
+<i>311</i>&nbsp;		//			textArea.setWrapText(true);
+<i>312</i>&nbsp;		//			textArea.setFont(font);
+<i>313</i>&nbsp;		//			textArea.setEditable(false);
+<i>314</i>&nbsp;		//			textArea.textProperty().addListener((v, o, n) -&gt; {
+<i>315</i>&nbsp;		////				if (textArea.getSelection().getLength() == 0) {
+<i>316</i>&nbsp;		////					textArea.setScrollTop(Double.MAX_VALUE);
+<i>317</i>&nbsp;		////				}
+<i>318</i>&nbsp;		//				Platform.runLater(() -&gt; textArea.appendText(&quot;&quot;));
+<i>319</i>&nbsp;		//			});
+<i>320</i>&nbsp;
+<i>321</i>&nbsp;
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;		// Input
+<b class="nc"><i>324</i>&nbsp;		textAreaInput = new TextArea();</b>
+<b class="nc"><i>325</i>&nbsp;		textAreaInput.setPrefRowCount(4);</b>
+<b class="nc"><i>326</i>&nbsp;		textAreaInput.textProperty().bindBidirectional(currentText);</b>
+<b class="nc"><i>327</i>&nbsp;		textAreaInput.addEventFilter(KeyEvent.KEY_PRESSED, e -&gt; {</b>
+<b class="nc"><i>328</i>&nbsp;			if (e.getCode() == KeyCode.ENTER) {</b>
+<b class="nc"><i>329</i>&nbsp;				runLine();</b>
+<b class="nc"><i>330</i>&nbsp;				e.consume();</b>
+<i>331</i>&nbsp;			}
+<i>332</i>&nbsp;		});
+<b class="nc"><i>333</i>&nbsp;		textAreaInput.addEventFilter(KeyEvent.KEY_RELEASED, e -&gt; {</b>
+<b class="nc"><i>334</i>&nbsp;			if (e.getCode() == KeyCode.ENTER) {</b>
+<i>335</i>&nbsp;				return; // Already handled with key press
+<b class="nc"><i>336</i>&nbsp;			} else if (e.getCode() == KeyCode.UP || (e.getCode() == KeyCode.DOWN)) {</b>
+<i>337</i>&nbsp;				// Don&#39;t do anything if we&#39;re using autocomplete
+<b class="nc"><i>338</i>&nbsp;				if (menuAutocomplete.isShowing())</b>
+<i>339</i>&nbsp;					return;
+<b class="nc"><i>340</i>&nbsp;				if (e.getCode() == KeyCode.UP) {</b>
+<b class="nc"><i>341</i>&nbsp;					if (!decrementHistoryPointer()) {</b>
+<b class="nc"><i>342</i>&nbsp;						e.consume();</b>
+<i>343</i>&nbsp;						return;
+<i>344</i>&nbsp;					}
+<i>345</i>&nbsp;				}
+<i>346</i>&nbsp;				else {
+<b class="nc"><i>347</i>&nbsp;					if (!incrementHistoryPointer()) {</b>
+<b class="nc"><i>348</i>&nbsp;						e.consume();</b>
+<i>349</i>&nbsp;						return;
+<i>350</i>&nbsp;					}
+<i>351</i>&nbsp;				}
+<i>352</i>&nbsp;				//					textAreaInput.setText(listHistory.getSelectionModel().getSelectedItem());
+<i>353</i>&nbsp;				//					textAreaInput.appendText(&quot;&quot;); // To move caret
+<b class="nc"><i>354</i>&nbsp;				e.consume();</b>
+<i>355</i>&nbsp;				return;
+<i>356</i>&nbsp;			}
+<i>357</i>&nbsp;			//				resetHistoryPointer();
+<b class="nc"><i>358</i>&nbsp;			if (menuAutocomplete.isShowing() || (e.isControlDown() &amp;&amp; e.getCode() == KeyCode.SPACE)) {</b>
+<b class="nc"><i>359</i>&nbsp;				updateAutocompleteMenu();</b>
+<i>360</i>&nbsp;				// Using reflection for compatibility with Java 8 and Java 9
+<b class="nc"><i>361</i>&nbsp;				Skin&lt;?&gt; skin = textAreaInput.getSkin();</b>
+<b class="nc"><i>362</i>&nbsp;				Bounds b = null;</b>
+<i>363</i>&nbsp;				try {
+<b class="nc"><i>364</i>&nbsp;					b = (Bounds)skin.getClass().getMethod(&quot;getCaretBounds&quot;).invoke(skin);</b>
+<b class="nc"><i>365</i>&nbsp;				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException</b>
+<i>366</i>&nbsp;						| NoSuchMethodException | SecurityException e1) {
+<b class="nc"><i>367</i>&nbsp;					logger.error(&quot;Error requesting caret bounds - cannot display autocomplete menu&quot;, e1);</b>
+<b class="nc"><i>368</i>&nbsp;				}</b>
+<i>369</i>&nbsp;				//					TextAreaSkin skin = (TextAreaSkin)textAreaInput.getSkin();
+<i>370</i>&nbsp;				//					Bounds b = skin.getCaretBounds();
+<i>371</i>&nbsp;				// If there&#39;s only one open, and we aren&#39;t already showing, just use it
+<b class="nc"><i>372</i>&nbsp;				if (!menuAutocomplete.isShowing() &amp;&amp; menuAutocomplete.getItems().size() == 1) {</b>
+<b class="nc"><i>373</i>&nbsp;					menuAutocomplete.getItems().get(0).fire();</b>
+<b class="nc"><i>374</i>&nbsp;					e.consume();</b>
+<i>375</i>&nbsp;					return;
+<i>376</i>&nbsp;				}
+<i>377</i>&nbsp;
+<b class="nc"><i>378</i>&nbsp;				if (b != null &amp;&amp; !menuAutocomplete.getItems().isEmpty()) {</b>
+<b class="nc"><i>379</i>&nbsp;					menuAutocomplete.show(textAreaInput,</b>
+<i>380</i>&nbsp;							Side.TOP,
+<b class="nc"><i>381</i>&nbsp;							b.getMaxX()+5,</b>
+<b class="nc"><i>382</i>&nbsp;							b.getMaxY()+5);</b>
+<i>383</i>&nbsp;				}
+<b class="nc"><i>384</i>&nbsp;			} else if (menuAutocomplete.isShowing() &amp;&amp; e.getCode() == KeyCode.TAB) {</b>
+<b class="nc"><i>385</i>&nbsp;				menuAutocomplete.hide();</b>
+<b class="nc"><i>386</i>&nbsp;				e.consume();</b>
+<i>387</i>&nbsp;			}
+<i>388</i>&nbsp;		});
+<b class="nc"><i>389</i>&nbsp;		textAreaInput.addEventHandler(KeyEvent.KEY_RELEASED, e -&gt; {</b>
+<b class="nc"><i>390</i>&nbsp;			if (!e.isConsumed())</b>
+<b class="nc"><i>391</i>&nbsp;				updateLastHistoryListEntry();</b>
+<i>392</i>&nbsp;		});
+<b class="nc"><i>393</i>&nbsp;		historyList.add(&quot;&quot;);</b>
+<i>394</i>&nbsp;		//			currentText.addListener((v, o, n) -&gt; {
+<i>395</i>&nbsp;		//				historyList.set(historyList.size()-1, n);
+<i>396</i>&nbsp;		//			}); // Keep last entry updated
+<b class="nc"><i>397</i>&nbsp;		textAreaInput.setFont(font);</b>
+<i>398</i>&nbsp;
+<i>399</i>&nbsp;		// Create the variable table
+<b class="nc"><i>400</i>&nbsp;		TableColumn&lt;String, String&gt; colKeys = new TableColumn&lt;&gt;(&quot;Name&quot;);</b>
+<b class="nc"><i>401</i>&nbsp;		colKeys.setCellValueFactory(c -&gt; new SimpleStringProperty(c.getValue()));</b>
+<b class="nc"><i>402</i>&nbsp;		colKeys.setCellFactory(c -&gt; new VariableTableCell(VariableInfoType.NAME));</b>
+<i>403</i>&nbsp;
+<b class="nc"><i>404</i>&nbsp;		TableColumn&lt;String, String&gt; colClasses = new TableColumn&lt;&gt;(&quot;Class&quot;);</b>
+<b class="nc"><i>405</i>&nbsp;		colClasses.setCellValueFactory(c -&gt; new SimpleStringProperty(c.getValue()));</b>
+<b class="nc"><i>406</i>&nbsp;		colClasses.setCellFactory(c -&gt; new VariableTableCell(VariableInfoType.CLASS));</b>
+<i>407</i>&nbsp;
+<b class="nc"><i>408</i>&nbsp;		TableColumn&lt;String, String&gt; colValues = new TableColumn&lt;&gt;(&quot;Value&quot;);</b>
+<b class="nc"><i>409</i>&nbsp;		colValues.setCellValueFactory(c -&gt; new SimpleStringProperty(c.getValue()));</b>
+<b class="nc"><i>410</i>&nbsp;		colValues.setCellFactory(c -&gt; new VariableTableCell(VariableInfoType.VALUE));</b>
+<i>411</i>&nbsp;
+<b class="nc"><i>412</i>&nbsp;		tableVariables.setPlaceholder(new Label(&quot;No variables set&quot;));</b>
+<b class="nc"><i>413</i>&nbsp;		tableVariables.getColumns().add(colKeys);</b>
+<b class="nc"><i>414</i>&nbsp;		tableVariables.getColumns().add(colClasses);</b>
+<b class="nc"><i>415</i>&nbsp;		tableVariables.getColumns().add(colValues);</b>
+<b class="nc"><i>416</i>&nbsp;		tableVariables.setTableMenuButtonVisible(true);</b>
+<b class="nc"><i>417</i>&nbsp;		tableVariables.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);</b>
+<i>418</i>&nbsp;
+<b class="nc"><i>419</i>&nbsp;		Button btnClear = new Button(&quot;Clear variables&quot;);</b>
+<b class="nc"><i>420</i>&nbsp;		btnClear.setOnAction(e -&gt; {</b>
+<b class="nc"><i>421</i>&nbsp;			Bindings bindings = context.getBindings(ScriptContext.ENGINE_SCOPE);</b>
+<b class="nc"><i>422</i>&nbsp;			List&lt;String&gt; variables = getSelectedVariableNames();</b>
+<b class="nc"><i>423</i>&nbsp;			if (variables.isEmpty())</b>
+<b class="nc"><i>424</i>&nbsp;				variables = getCurrentVariableNames();</b>
+<b class="nc"><i>425</i>&nbsp;			if (variables.isEmpty())</b>
+<i>426</i>&nbsp;				return;
+<b class="nc"><i>427</i>&nbsp;			if (variables.size() == 1) {</b>
+<b class="nc"><i>428</i>&nbsp;				if (!Dialogs.showConfirmDialog(&quot;Clear variables&quot;, &quot;Clear variable &#39;&quot; + variables.get(0) + &quot;&#39;?&quot;))</b>
+<i>429</i>&nbsp;					return;
+<i>430</i>&nbsp;			} else {
+<b class="nc"><i>431</i>&nbsp;				if (!Dialogs.showConfirmDialog(&quot;Clear variables&quot;, &quot;Clear &quot; + variables.size() + &quot; variables?&quot;))</b>
+<i>432</i>&nbsp;					return;
+<i>433</i>&nbsp;			}
+<b class="nc"><i>434</i>&nbsp;			for (String v : variables)</b>
+<b class="nc"><i>435</i>&nbsp;				bindings.remove(v);</b>
+<b class="nc"><i>436</i>&nbsp;			logger.info(&quot;Removed variables from interpreter workspace: {}&quot;, variables);</b>
+<b class="nc"><i>437</i>&nbsp;			updateVariableTable();</b>
+<i>438</i>&nbsp;		});
+<b class="nc"><i>439</i>&nbsp;		btnClear.setMaxWidth(Double.MAX_VALUE);</b>
+<b class="nc"><i>440</i>&nbsp;		btnClear.disableProperty().bind(</b>
+<b class="nc"><i>441</i>&nbsp;				javafx.beans.binding.Bindings.createBooleanBinding(() -&gt; tableVariables.getItems().isEmpty(), tableVariables.getItems())</b>
+<i>442</i>&nbsp;				);
+<i>443</i>&nbsp;
+<b class="nc"><i>444</i>&nbsp;		Button btnAdd = new Button(&quot;Add...&quot;);</b>
+<b class="nc"><i>445</i>&nbsp;		ContextMenu menuAdd = new ContextMenu();</b>
+<b class="nc"><i>446</i>&nbsp;		MenuItem miAddImageData = new MenuItem(&quot;Image data&quot;);</b>
+<b class="nc"><i>447</i>&nbsp;		miAddImageData.setOnAction(e -&gt; {</b>
+<b class="nc"><i>448</i>&nbsp;			ImageData&lt;?&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>449</i>&nbsp;			engine.put(defaultImageDataName, imageData);</b>
+<b class="nc"><i>450</i>&nbsp;			updateVariableTable();</b>
+<i>451</i>&nbsp;		});
+<b class="nc"><i>452</i>&nbsp;		MenuItem miAddHierarchy = new MenuItem(&quot;Hierarchy&quot;);</b>
+<b class="nc"><i>453</i>&nbsp;		miAddHierarchy.setOnAction(e -&gt; {</b>
+<b class="nc"><i>454</i>&nbsp;			ImageData&lt;?&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>455</i>&nbsp;			engine.put(defaultHierarchyName, imageData == null ? null : imageData.getHierarchy());</b>
+<b class="nc"><i>456</i>&nbsp;			updateVariableTable();</b>
+<i>457</i>&nbsp;		});
+<b class="nc"><i>458</i>&nbsp;		MenuItem miAddSelectionModel = new MenuItem(&quot;Selection model&quot;);</b>
+<b class="nc"><i>459</i>&nbsp;		miAddSelectionModel.setOnAction(e -&gt; {</b>
+<b class="nc"><i>460</i>&nbsp;			ImageData&lt;?&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>461</i>&nbsp;			engine.put(defaultSelectionModelName, imageData == null ? null : imageData.getHierarchy().getSelectionModel());</b>
+<b class="nc"><i>462</i>&nbsp;			updateVariableTable();</b>
+<i>463</i>&nbsp;		});
+<b class="nc"><i>464</i>&nbsp;		MenuItem miAddServer = new MenuItem(&quot;Image server&quot;);</b>
+<b class="nc"><i>465</i>&nbsp;		miAddServer.setOnAction(e -&gt; {</b>
+<b class="nc"><i>466</i>&nbsp;			ImageData&lt;?&gt; imageData = qupath.getImageData();</b>
+<b class="nc"><i>467</i>&nbsp;			engine.put(defaultImageServerName, imageData == null ? null : imageData.getServer());</b>
+<b class="nc"><i>468</i>&nbsp;			updateVariableTable();</b>
+<i>469</i>&nbsp;		});
+<b class="nc"><i>470</i>&nbsp;		MenuItem miAddProject = new MenuItem(&quot;Project&quot;);</b>
+<b class="nc"><i>471</i>&nbsp;		miAddProject.setOnAction(e -&gt; {</b>
+<b class="nc"><i>472</i>&nbsp;			engine.put(defaultProjectName, qupath.getProject());</b>
+<b class="nc"><i>473</i>&nbsp;			updateVariableTable();</b>
+<i>474</i>&nbsp;		});
+<b class="nc"><i>475</i>&nbsp;		MenuItem miAddScriptingHelpers = new MenuItem(&quot;Scripting helpers&quot;);</b>
+<b class="nc"><i>476</i>&nbsp;		miAddScriptingHelpers.setOnAction(e -&gt; {</b>
+<b class="nc"><i>477</i>&nbsp;			engine.put(defaultScriptingHelperName, new QPEx());</b>
+<b class="nc"><i>478</i>&nbsp;			updateVariableTable();</b>
+<i>479</i>&nbsp;		});
+<b class="nc"><i>480</i>&nbsp;		menuAdd.getItems().addAll(miAddImageData, miAddHierarchy, miAddSelectionModel, miAddServer, miAddProject, miAddScriptingHelpers);</b>
+<b class="nc"><i>481</i>&nbsp;		btnAdd.setOnMouseClicked(e -&gt; {</b>
+<b class="nc"><i>482</i>&nbsp;			menuAdd.show(btnAdd, e.getScreenX(), e.getScreenY());</b>
+<i>483</i>&nbsp;		});
+<b class="nc"><i>484</i>&nbsp;		btnAdd.setMaxWidth(Double.MAX_VALUE);</b>
+<i>485</i>&nbsp;
+<b class="nc"><i>486</i>&nbsp;		GridPane paneTable = new GridPane();</b>
+<b class="nc"><i>487</i>&nbsp;		paneTable.add(tableVariables, 0, 0, 2, 1);</b>
+<b class="nc"><i>488</i>&nbsp;		paneTable.add(btnAdd, 0, 1, 1, 1);</b>
+<b class="nc"><i>489</i>&nbsp;		paneTable.add(btnClear, 1, 1, 1, 1);</b>
+<b class="nc"><i>490</i>&nbsp;		GridPane.setVgrow(tableVariables, Priority.ALWAYS);</b>
+<b class="nc"><i>491</i>&nbsp;		GridPane.setHgrow(tableVariables, Priority.ALWAYS);</b>
+<b class="nc"><i>492</i>&nbsp;		GridPane.setHgrow(btnAdd, Priority.ALWAYS);</b>
+<b class="nc"><i>493</i>&nbsp;		GridPane.setHgrow(btnClear, Priority.ALWAYS);</b>
+<b class="nc"><i>494</i>&nbsp;		ColumnConstraints col1 = new ColumnConstraints();</b>
+<b class="nc"><i>495</i>&nbsp;		col1.setPercentWidth(50);</b>
+<b class="nc"><i>496</i>&nbsp;		ColumnConstraints col2 = new ColumnConstraints();</b>
+<b class="nc"><i>497</i>&nbsp;		col2.setPercentWidth(50);</b>
+<b class="nc"><i>498</i>&nbsp;		paneTable.getColumnConstraints().addAll(col1, col2);</b>
+<i>499</i>&nbsp;
+<i>500</i>&nbsp;
+<i>501</i>&nbsp;		// Handle list
+<b class="nc"><i>502</i>&nbsp;		listHistory.setEditable(false);</b>
+<b class="nc"><i>503</i>&nbsp;		listHistory.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);</b>
+<b class="nc"><i>504</i>&nbsp;		listHistory.setStyle(&quot;-fx-font-family: \&quot;Courier New\&quot;, Courier, monospace;&quot;);</b>
+<b class="nc"><i>505</i>&nbsp;		listHistory.getSelectionModel().selectedIndexProperty().addListener((v, o, n) -&gt; {</b>
+<b class="nc"><i>506</i>&nbsp;			if (o.intValue() &lt; 0 || n.intValue() &lt; 0)</b>
+<i>507</i>&nbsp;				return;
+<b class="nc"><i>508</i>&nbsp;			textAreaInput.setText(listHistory.getSelectionModel().getSelectedItem());</b>
+<b class="nc"><i>509</i>&nbsp;			textAreaInput.appendText(&quot;&quot;); // To move caret</b>
+<i>510</i>&nbsp;			//				e.consume();
+<i>511</i>&nbsp;			//				return;
+<i>512</i>&nbsp;		});
+<i>513</i>&nbsp;
+<i>514</i>&nbsp;
+<i>515</i>&nbsp;		// Create tabbed pane
+<b class="nc"><i>516</i>&nbsp;		TabPane tabPane = new TabPane();</b>
+<b class="nc"><i>517</i>&nbsp;		tabPane.setTabClosingPolicy(TabClosingPolicy.UNAVAILABLE);</b>
+<b class="nc"><i>518</i>&nbsp;		tabPane.getTabs().add(new Tab(&quot;Variables&quot;, paneTable));</b>
+<b class="nc"><i>519</i>&nbsp;		tabPane.getTabs().add(new Tab(&quot;History&quot;, listHistory));</b>
+<i>520</i>&nbsp;
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;		// Set the stage
+<b class="nc"><i>523</i>&nbsp;		BorderPane pane = new BorderPane();</b>
+<b class="nc"><i>524</i>&nbsp;		MasterDetailPane paneMasterDetail = new MasterDetailPane(Side.LEFT);</b>
+<b class="nc"><i>525</i>&nbsp;		BorderPane paneInner = new BorderPane();</b>
+<b class="nc"><i>526</i>&nbsp;		paneInner.setCenter(textArea);</b>
+<b class="nc"><i>527</i>&nbsp;		paneInner.setBottom(textAreaInput);</b>
+<b class="nc"><i>528</i>&nbsp;		paneMasterDetail.setMasterNode(paneInner);</b>
+<b class="nc"><i>529</i>&nbsp;		paneMasterDetail.setDetailNode(tabPane);</b>
+<b class="nc"><i>530</i>&nbsp;		pane.setTop(menuBar);</b>
+<b class="nc"><i>531</i>&nbsp;		pane.setCenter(paneMasterDetail);</b>
+<i>532</i>&nbsp;		//			menuBar.setUseSystemMenuBar(true);
+<b class="nc"><i>533</i>&nbsp;		menuBar.useSystemMenuBarProperty().bindBidirectional(PathPrefs.useSystemMenubarProperty());</b>
+<i>534</i>&nbsp;
+<b class="nc"><i>535</i>&nbsp;		stage.setScene(new Scene(pane, 800, 600));</b>
+<b class="nc"><i>536</i>&nbsp;		textAreaInput.requestFocus();</b>
+<i>537</i>&nbsp;		//			paneMasterDetail.setDividerPosition(350);
+<i>538</i>&nbsp;
+<i>539</i>&nbsp;	}
+<i>540</i>&nbsp;
+<i>541</i>&nbsp;
+<i>542</i>&nbsp;	private void setWriters(final ScriptContext context) {
+<b class="nc"><i>543</i>&nbsp;		context.setWriter(new Writer() {</b>
+<i>544</i>&nbsp;
+<i>545</i>&nbsp;			@Override
+<i>546</i>&nbsp;			public void write(char[] cbuf, int off, int len) throws IOException {
+<b class="nc"><i>547</i>&nbsp;				addToCommandWindow(String.copyValueOf(cbuf, off, len));</b>
+<i>548</i>&nbsp;			}
+<i>549</i>&nbsp;
+<i>550</i>&nbsp;			@Override
+<i>551</i>&nbsp;			public void flush() throws IOException {}
+<i>552</i>&nbsp;
+<i>553</i>&nbsp;			@Override
+<i>554</i>&nbsp;			public void close() throws IOException {}
+<i>555</i>&nbsp;
+<i>556</i>&nbsp;		});
+<b class="nc"><i>557</i>&nbsp;		context.setErrorWriter(new Writer() {</b>
+<i>558</i>&nbsp;
+<i>559</i>&nbsp;			@Override
+<i>560</i>&nbsp;			public void write(char[] cbuf, int off, int len) throws IOException {
+<b class="nc"><i>561</i>&nbsp;				addToCommandWindow(&quot;Error: &quot; + String.copyValueOf(cbuf, off, len));</b>
+<i>562</i>&nbsp;			}
+<i>563</i>&nbsp;
+<i>564</i>&nbsp;			@Override
+<i>565</i>&nbsp;			public void flush() throws IOException {}
+<i>566</i>&nbsp;
+<i>567</i>&nbsp;			@Override
+<i>568</i>&nbsp;			public void close() throws IOException {}
+<i>569</i>&nbsp;
+<i>570</i>&nbsp;		});
+<i>571</i>&nbsp;	}
+<i>572</i>&nbsp;
+<i>573</i>&nbsp;
+<i>574</i>&nbsp;	//		private void addToCommandWindow(final String newText) {
+<i>575</i>&nbsp;	//			historyText.set(historyText.get() + &quot;\n&quot; + newText);
+<i>576</i>&nbsp;	//		}
+<i>577</i>&nbsp;
+<i>578</i>&nbsp;
+<i>579</i>&nbsp;	private void addToCommandWindow(final String newText) {
+<b class="nc"><i>580</i>&nbsp;		String lower = newText.toLowerCase();</b>
+<b class="nc"><i>581</i>&nbsp;		if (lower.startsWith(&quot;error:&quot;))</b>
+<b class="nc"><i>582</i>&nbsp;			historyText.set(historyText.get() + &quot;&lt;pre class=\&quot;error\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);</b>
+<b class="nc"><i>583</i>&nbsp;		else if (lower.startsWith(&quot;warn&quot;))</b>
+<b class="nc"><i>584</i>&nbsp;			historyText.set(historyText.get() + &quot;&lt;pre class=\&quot;warning\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);</b>
+<b class="nc"><i>585</i>&nbsp;		else if (lower.startsWith(&quot;-------&quot;))</b>
+<b class="nc"><i>586</i>&nbsp;			historyText.set(historyText.get() + &quot;&lt;pre class=\&quot;variable\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);</b>
+<b class="nc"><i>587</i>&nbsp;		else if (lower.startsWith(&quot;&gt; &quot;))</b>
+<b class="nc"><i>588</i>&nbsp;			historyText.set(historyText.get() + &quot;&lt;pre class=\&quot;command\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);</b>
+<i>589</i>&nbsp;		else
+<b class="nc"><i>590</i>&nbsp;			historyText.set(historyText.get() + &quot;&lt;pre class=\&quot;other\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);</b>
+<i>591</i>&nbsp;
+<i>592</i>&nbsp;		//			if (lower.startsWith(&quot;error:&quot;))
+<i>593</i>&nbsp;		//				historyText.set(historyText.get() + &quot;&lt;pre style=\&quot;color:red\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);
+<i>594</i>&nbsp;		//			else if (lower.startsWith(&quot;warn&quot;))
+<i>595</i>&nbsp;		//				historyText.set(historyText.get() + &quot;&lt;pre style=\&quot;color:orange\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);
+<i>596</i>&nbsp;		//			else if (lower.startsWith(&quot;-------&quot;))
+<i>597</i>&nbsp;		//				historyText.set(historyText.get() + &quot;&lt;pre style=\&quot;color:purple\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);
+<i>598</i>&nbsp;		//			else if (!lower.startsWith(&quot;&gt; &quot;))
+<i>599</i>&nbsp;		//				historyText.set(historyText.get() + &quot;&lt;pre style=\&quot;color:grey\&quot;&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);
+<i>600</i>&nbsp;		//			else
+<i>601</i>&nbsp;		//				historyText.set(historyText.get() + &quot;&lt;pre&gt;&quot; + newText + &quot;&lt;/pre&gt;&quot;);
+<i>602</i>&nbsp;	}
+<i>603</i>&nbsp;
+<i>604</i>&nbsp;
+<i>605</i>&nbsp;
+<i>606</i>&nbsp;	/**
+<i>607</i>&nbsp;	 * Synchronize the last entry in the history list to the current text in the command entry box
+<i>608</i>&nbsp;	 */
+<i>609</i>&nbsp;	private void updateLastHistoryListEntry() {
+<b class="nc"><i>610</i>&nbsp;		historyList.set(historyList.size()-1, textAreaInput.getText()); // Keep last entry updated</b>
+<i>611</i>&nbsp;	}
+<i>612</i>&nbsp;
+<i>613</i>&nbsp;	/**
+<i>614</i>&nbsp;	 * Get names of variables currently selected in the variable table
+<i>615</i>&nbsp;	 * @return
+<i>616</i>&nbsp;	 */
+<i>617</i>&nbsp;	private ObservableList&lt;String&gt; getSelectedVariableNames() {
+<b class="nc"><i>618</i>&nbsp;		return tableVariables.getSelectionModel().getSelectedItems();</b>
+<i>619</i>&nbsp;	}
+<i>620</i>&nbsp;
+<i>621</i>&nbsp;	/**
+<i>622</i>&nbsp;	 * Get names of all available variables from the variable table (call updateVariableTable() first if necessary)
+<i>623</i>&nbsp;	 * @return
+<i>624</i>&nbsp;	 */
+<i>625</i>&nbsp;	private ObservableList&lt;String&gt; getCurrentVariableNames() {
+<b class="nc"><i>626</i>&nbsp;		return tableVariables.getItems();</b>
+<i>627</i>&nbsp;	}
+<i>628</i>&nbsp;
+<i>629</i>&nbsp;	private void updateVariableTable() {
+<b class="nc"><i>630</i>&nbsp;		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);</b>
+<b class="nc"><i>631</i>&nbsp;		List&lt;String&gt; variableNames = bindings.keySet().stream().filter(v -&gt; !v.equals(&quot;__builtins__&quot;)).collect(Collectors.toList());</b>
+<i>632</i>&nbsp;
+<i>633</i>&nbsp;		// Globals
+<i>634</i>&nbsp;		try {
+<b class="nc"><i>635</i>&nbsp;			bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE);</b>
+<b class="nc"><i>636</i>&nbsp;			if (bindings != null)</b>
+<b class="nc"><i>637</i>&nbsp;				variableNames.addAll(bindings.keySet());</b>
+<b class="nc"><i>638</i>&nbsp;		} catch (Exception e) {</b>
+<b class="nc"><i>639</i>&nbsp;			logger.debug(&quot;Unable to obtain global variables for {}&quot;, engine);</b>
+<b class="nc"><i>640</i>&nbsp;		}</b>
+<i>641</i>&nbsp;
+<b class="nc"><i>642</i>&nbsp;		Collections.sort(variableNames);</b>
+<b class="nc"><i>643</i>&nbsp;		tableVariables.getItems().setAll(variableNames);</b>
+<i>644</i>&nbsp;	}
+<i>645</i>&nbsp;
+<i>646</i>&nbsp;
+<i>647</i>&nbsp;	private Object getVariable(final String name) {
+<b class="nc"><i>648</i>&nbsp;		if (name == null || name.isEmpty())</b>
+<b class="nc"><i>649</i>&nbsp;			return null;</b>
+<b class="nc"><i>650</i>&nbsp;		return engine == null ? null : engine.get(name);</b>
+<i>651</i>&nbsp;		//			Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+<i>652</i>&nbsp;		//			if (bindings == null)
+<i>653</i>&nbsp;		//				bindings = engine.getBindings(ScriptContext.GLOBAL_SCOPE);
+<i>654</i>&nbsp;		//        	return bindings == null ? null : bindings.get(name);
+<i>655</i>&nbsp;	}
+<i>656</i>&nbsp;
+<i>657</i>&nbsp;
+<b class="nc"><i>658</i>&nbsp;	private ContextMenu menuAutocomplete = new ContextMenu();</b>
+<i>659</i>&nbsp;
+<i>660</i>&nbsp;	private void updateAutocompleteMenu() {
+<i>661</i>&nbsp;
+<b class="nc"><i>662</i>&nbsp;		menuAutocomplete.setStyle(&quot;-fx-font-size: 0.8em&quot;);</b>
+<b class="nc"><i>663</i>&nbsp;		menuAutocomplete.setOpacity(0.9);</b>
+<b class="nc"><i>664</i>&nbsp;		menuAutocomplete.setMaxHeight(200);</b>
+<i>665</i>&nbsp;
+<b class="nc"><i>666</i>&nbsp;		menuAutocomplete.hide();</b>
+<b class="nc"><i>667</i>&nbsp;		menuAutocomplete.getItems().clear();</b>
+<b class="nc"><i>668</i>&nbsp;		String text = currentText.get();</b>
+<b class="nc"><i>669</i>&nbsp;		if (text.trim().isEmpty()) {</b>
+<i>670</i>&nbsp;			return;
+<i>671</i>&nbsp;		}
+<i>672</i>&nbsp;
+<b class="nc"><i>673</i>&nbsp;		boolean breakAtDot = false;</b>
+<b class="nc"><i>674</i>&nbsp;		int ind = text.length()-1;</b>
+<b class="nc"><i>675</i>&nbsp;		String delimiters = &quot; \t;:(){}&quot;;</b>
+<b class="nc"><i>676</i>&nbsp;		while (ind &gt;= 0) {</b>
+<b class="nc"><i>677</i>&nbsp;			char c = text.charAt(ind);</b>
+<b class="nc"><i>678</i>&nbsp;			if (c == &#39;.&#39;) {</b>
+<b class="nc"><i>679</i>&nbsp;				breakAtDot = true;</b>
+<b class="nc"><i>680</i>&nbsp;				break;</b>
+<b class="nc"><i>681</i>&nbsp;			} else if (delimiters.indexOf(c) &gt;= 0)</b>
+<b class="nc"><i>682</i>&nbsp;				break;</b>
+<b class="nc"><i>683</i>&nbsp;			ind--;</b>
+<b class="nc"><i>684</i>&nbsp;		}</b>
+<i>685</i>&nbsp;
+<i>686</i>&nbsp;		// Set the starting index for any completion
+<b class="nc"><i>687</i>&nbsp;		final int startInd = ind+1;</b>
+<b class="nc"><i>688</i>&nbsp;		List&lt;MenuItem&gt; items = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>689</i>&nbsp;		StringBuilder sb = new StringBuilder();</b>
+<b class="nc"><i>690</i>&nbsp;		if (breakAtDot) {</b>
+<b class="nc"><i>691</i>&nbsp;			String current = text.substring(startInd);</b>
+<b class="nc"><i>692</i>&nbsp;			if (ind == 0)</b>
+<i>693</i>&nbsp;				return;
+<i>694</i>&nbsp;			// Try to get a variable name
+<b class="nc"><i>695</i>&nbsp;			ind--;</b>
+<b class="nc"><i>696</i>&nbsp;			while (ind &gt;= 0) {</b>
+<b class="nc"><i>697</i>&nbsp;				char c = text.charAt(ind);</b>
+<b class="nc"><i>698</i>&nbsp;				if (delimiters.indexOf(c) &gt;= 0)</b>
+<b class="nc"><i>699</i>&nbsp;					break;</b>
+<b class="nc"><i>700</i>&nbsp;				ind--;</b>
+<b class="nc"><i>701</i>&nbsp;			}</b>
+<b class="nc"><i>702</i>&nbsp;			String lastName = text.substring(ind+1, startInd-1);</b>
+<b class="nc"><i>703</i>&nbsp;			Object o = getVariable(lastName);</b>
+<b class="nc"><i>704</i>&nbsp;			if (o != null) {</b>
+<i>705</i>&nbsp;				// Autocomplete using methods/fields
+<b class="nc"><i>706</i>&nbsp;				for (Field f : o.getClass().getFields()) {</b>
+<b class="nc"><i>707</i>&nbsp;					String fieldName = f.getName();</b>
+<b class="nc"><i>708</i>&nbsp;					if (fieldName.startsWith(current)) {</b>
+<b class="nc"><i>709</i>&nbsp;						items.add(getCompletionMenuItem(fieldName, text, startInd, fieldName, null));</b>
+<i>710</i>&nbsp;					}
+<i>711</i>&nbsp;				}
+<i>712</i>&nbsp;
+<b class="nc"><i>713</i>&nbsp;				for (Method m : o.getClass().getMethods()) {</b>
+<b class="nc"><i>714</i>&nbsp;					String methodName = m.getName();</b>
+<b class="nc"><i>715</i>&nbsp;					if (methodName.startsWith(current)) {</b>
+<b class="nc"><i>716</i>&nbsp;						sb.setLength(0);</b>
+<b class="nc"><i>717</i>&nbsp;						sb.append(methodName).append(&quot;(&quot;);</b>
+<b class="nc"><i>718</i>&nbsp;						int count = 0;</b>
+<b class="nc"><i>719</i>&nbsp;						int n = m.getParameterCount();</b>
+<b class="nc"><i>720</i>&nbsp;						for (Parameter p : m.getParameters()) {</b>
+<b class="nc"><i>721</i>&nbsp;							count++;</b>
+<b class="nc"><i>722</i>&nbsp;							sb.append(p.getType().getSimpleName());</b>
+<b class="nc"><i>723</i>&nbsp;							sb.append(&quot; &quot;);</b>
+<b class="nc"><i>724</i>&nbsp;							sb.append(p.getName());</b>
+<b class="nc"><i>725</i>&nbsp;							if (count &lt; n)</b>
+<b class="nc"><i>726</i>&nbsp;								sb.append(&quot;, &quot;);</b>
+<i>727</i>&nbsp;						}
+<b class="nc"><i>728</i>&nbsp;						sb.append(&quot;)&quot;);</b>
+<i>729</i>&nbsp;						String completion;
+<b class="nc"><i>730</i>&nbsp;						if (n == 0)</b>
+<b class="nc"><i>731</i>&nbsp;							completion = methodName + &quot;()&quot;;</b>
+<i>732</i>&nbsp;						else
+<b class="nc"><i>733</i>&nbsp;							completion = methodName + &quot;(&quot;;</b>
+<i>734</i>&nbsp;
+<b class="nc"><i>735</i>&nbsp;						items.add(getCompletionMenuItem(sb.toString(), text, startInd, completion, new Text(m.getReturnType().getSimpleName())));</b>
+<i>736</i>&nbsp;					}
+<i>737</i>&nbsp;				}
+<i>738</i>&nbsp;
+<i>739</i>&nbsp;			}
+<b class="nc"><i>740</i>&nbsp;		} else {</b>
+<i>741</i>&nbsp;			// Try to autocomplete using an existing variable name
+<b class="nc"><i>742</i>&nbsp;			String current = text.substring(startInd);</b>
+<b class="nc"><i>743</i>&nbsp;			for (String v : getCurrentVariableNames()) {</b>
+<b class="nc"><i>744</i>&nbsp;				if (v.startsWith(current)) {</b>
+<b class="nc"><i>745</i>&nbsp;					items.add(getCompletionMenuItem(v, text, startInd, v, null));</b>
+<i>746</i>&nbsp;				}
+<b class="nc"><i>747</i>&nbsp;			}				</b>
+<i>748</i>&nbsp;		}
+<b class="nc"><i>749</i>&nbsp;		if (items.isEmpty()) {</b>
+<i>750</i>&nbsp;			return;
+<i>751</i>&nbsp;		}
+<b class="nc"><i>752</i>&nbsp;		menuAutocomplete.getItems().setAll(items);</b>
+<i>753</i>&nbsp;	}
+<i>754</i>&nbsp;
+<i>755</i>&nbsp;
+<i>756</i>&nbsp;	private MenuItem getCompletionMenuItem(final String name, final String oldText, final int startInd, final String completion, final Node graphic) {
+<b class="nc"><i>757</i>&nbsp;		Label label = new Label(name);</b>
+<b class="nc"><i>758</i>&nbsp;		label.setMaxWidth(Double.POSITIVE_INFINITY);</b>
+<b class="nc"><i>759</i>&nbsp;		CustomMenuItem item = new CustomMenuItem(label);</b>
+<b class="nc"><i>760</i>&nbsp;		item.setOnAction(e -&gt; {</b>
+<b class="nc"><i>761</i>&nbsp;			currentText.set(oldText.substring(0, startInd) + completion);</b>
+<b class="nc"><i>762</i>&nbsp;			textAreaInput.appendText(&quot;&quot;);</b>
+<b class="nc"><i>763</i>&nbsp;			updateLastHistoryListEntry();</b>
+<i>764</i>&nbsp;		});
+<b class="nc"><i>765</i>&nbsp;		if (graphic != null) {</b>
+<b class="nc"><i>766</i>&nbsp;			label.setContentDisplay(ContentDisplay.RIGHT);</b>
+<b class="nc"><i>767</i>&nbsp;			label.setGraphic(graphic);</b>
+<i>768</i>&nbsp;		}
+<b class="nc"><i>769</i>&nbsp;		return item;</b>
+<i>770</i>&nbsp;	}
+<i>771</i>&nbsp;
+<i>772</i>&nbsp;
+<i>773</i>&nbsp;
+<i>774</i>&nbsp;	private boolean incrementHistoryPointer() {
+<b class="nc"><i>775</i>&nbsp;		int historyPointer = listHistory.getSelectionModel().getSelectedIndex();</b>
+<b class="nc"><i>776</i>&nbsp;		if (historyPointer &lt; historyList.size() - 1) {</b>
+<b class="nc"><i>777</i>&nbsp;			listHistory.getSelectionModel().select(historyPointer + 1);</b>
+<b class="nc"><i>778</i>&nbsp;			return true;</b>
+<i>779</i>&nbsp;		}
+<b class="nc"><i>780</i>&nbsp;		return false;</b>
+<i>781</i>&nbsp;	}
+<i>782</i>&nbsp;
+<i>783</i>&nbsp;	private boolean decrementHistoryPointer() {
+<b class="nc"><i>784</i>&nbsp;		int historyPointer = listHistory.getSelectionModel().getSelectedIndex();</b>
+<b class="nc"><i>785</i>&nbsp;		if (historyPointer &gt; 0) {</b>
+<b class="nc"><i>786</i>&nbsp;			listHistory.getSelectionModel().select(historyPointer - 1);</b>
+<b class="nc"><i>787</i>&nbsp;			return true;</b>
+<i>788</i>&nbsp;		}
+<b class="nc"><i>789</i>&nbsp;		return false;</b>
+<i>790</i>&nbsp;	}
+<i>791</i>&nbsp;
+<i>792</i>&nbsp;	private void resetHistoryPointer() {
+<b class="nc"><i>793</i>&nbsp;		listHistory.getSelectionModel().select(historyList.size()-1);</b>
+<i>794</i>&nbsp;	}
+<i>795</i>&nbsp;
+<i>796</i>&nbsp;
+<i>797</i>&nbsp;	private void runLine() {
+<b class="nc"><i>798</i>&nbsp;		String text = currentText.get();</b>
+<b class="nc"><i>799</i>&nbsp;		if (text != null &amp;&amp; text.length() &gt; 0) {</b>
+<b class="nc"><i>800</i>&nbsp;			addToCommandWindow(&quot;&gt; &quot; + text);</b>
+<b class="nc"><i>801</i>&nbsp;			String lastHistory = historyList.get(historyList.size()-1);</b>
+<b class="nc"><i>802</i>&nbsp;			if (lastHistory != null &amp;&amp; !lastHistory.isEmpty())</b>
+<b class="nc"><i>803</i>&nbsp;				historyList.add(&quot;&quot;); // Create a new history entry</b>
+<b class="nc"><i>804</i>&nbsp;			resetHistoryPointer();</b>
+<i>805</i>&nbsp;			try {
+<b class="nc"><i>806</i>&nbsp;				Object result = engine.eval(text, context);</b>
+<b class="nc"><i>807</i>&nbsp;				if (result == null)</b>
+<b class="nc"><i>808</i>&nbsp;					addToCommandWindow(&quot;&quot;);</b>
+<i>809</i>&nbsp;				else
+<b class="nc"><i>810</i>&nbsp;					addToCommandWindow(&quot;&quot; + result + &quot;\n&quot;);</b>
+<b class="nc"><i>811</i>&nbsp;			} catch (Exception e) {</b>
+<b class="nc"><i>812</i>&nbsp;				logger.error(&quot;Script error&quot;, e);</b>
+<b class="nc"><i>813</i>&nbsp;				addToCommandWindow(&quot;Error: &quot; + e.getLocalizedMessage() + &quot;\n&quot;);</b>
+<i>814</i>&nbsp;			} finally {
+<b class="nc"><i>815</i>&nbsp;				currentText.set(&quot;&quot;);</b>
+<b class="nc"><i>816</i>&nbsp;				updateVariableTable();</b>
+<b class="nc"><i>817</i>&nbsp;			}</b>
+<i>818</i>&nbsp;		}
+<i>819</i>&nbsp;	}
+<i>820</i>&nbsp;
+<i>821</i>&nbsp;	public Stage getStage() {
+<b class="nc"><i>822</i>&nbsp;		return stage;</b>
+<i>823</i>&nbsp;	}
+<i>824</i>&nbsp;
+<i>825</i>&nbsp;
+<i>826</i>&nbsp;	class VariableTableCell extends TableCell&lt;String, String&gt; {
+<i>827</i>&nbsp;
+<i>828</i>&nbsp;		private VariableInfoType type;
+<b class="nc"><i>829</i>&nbsp;		private Tooltip tooltip = new Tooltip();</b>
+<b class="nc"><i>830</i>&nbsp;		private StringBuilder sb = new StringBuilder();</b>
+<i>831</i>&nbsp;
+<b class="nc"><i>832</i>&nbsp;		VariableTableCell(final VariableInfoType type) {</b>
+<b class="nc"><i>833</i>&nbsp;			this.type = type;</b>
+<i>834</i>&nbsp;		}
+<i>835</i>&nbsp;
+<i>836</i>&nbsp;		@Override
+<i>837</i>&nbsp;		public void updateItem(String item, boolean empty) {
+<b class="nc"><i>838</i>&nbsp;			super.updateItem(item, empty);</b>
+<b class="nc"><i>839</i>&nbsp;			if (empty) {</b>
+<b class="nc"><i>840</i>&nbsp;				setText(null);</b>
+<b class="nc"><i>841</i>&nbsp;				setTooltip(null);</b>
+<i>842</i>&nbsp;			} else {
+<b class="nc"><i>843</i>&nbsp;				Object value = getVariable(item);</b>
+<b class="nc"><i>844</i>&nbsp;				switch (type) {</b>
+<i>845</i>&nbsp;				case CLASS:
+<b class="nc"><i>846</i>&nbsp;					setText(value == null ? &quot;-&quot; : value.getClass().getSimpleName());</b>
+<b class="nc"><i>847</i>&nbsp;					break;</b>
+<i>848</i>&nbsp;				case NAME:
+<b class="nc"><i>849</i>&nbsp;					setText(item);</b>
+<b class="nc"><i>850</i>&nbsp;					break;</b>
+<i>851</i>&nbsp;				case VALUE:
+<b class="nc"><i>852</i>&nbsp;					setText(String.valueOf(value));</b>
+<b class="nc"><i>853</i>&nbsp;					break;</b>
+<i>854</i>&nbsp;				default:
+<b class="nc"><i>855</i>&nbsp;					setText(item);</b>
+<i>856</i>&nbsp;				}
+<i>857</i>&nbsp;
+<b class="nc"><i>858</i>&nbsp;				String text = item;</b>
+<b class="nc"><i>859</i>&nbsp;				if (value != null) {</b>
+<b class="nc"><i>860</i>&nbsp;					sb.setLength(0);</b>
+<b class="nc"><i>861</i>&nbsp;					sb.append(&quot;Name:\t&quot;).append(item).append(&quot;\n&quot;);</b>
+<b class="nc"><i>862</i>&nbsp;					sb.append(&quot;Class:\t&quot;).append(value.getClass().getName()).append(&quot;\n&quot;);</b>
+<b class="nc"><i>863</i>&nbsp;					sb.append(&quot;Value:\t&quot;).append(value);</b>
+<i>864</i>&nbsp;					//			        	sb.append(&quot;Value:\t&quot;).append(value).append(&quot;\n&quot;);
+<i>865</i>&nbsp;
+<i>866</i>&nbsp;					//			        	for (Method m : value.getClass().getMethods()) {
+<i>867</i>&nbsp;					//			        		sb.append(&quot;\n&quot;);
+<i>868</i>&nbsp;					//			        		sb.append(m.getReturnType()).append(&quot; &quot;);
+<i>869</i>&nbsp;					//			        		sb.append(m.getName()).append(&quot;(&quot;);
+<i>870</i>&nbsp;					//			        		int count = 0;
+<i>871</i>&nbsp;					//			        		int n = m.getParameterCount();
+<i>872</i>&nbsp;					//			        		for (Class&lt;?&gt; c : m.getParameterTypes()) {
+<i>873</i>&nbsp;					//			        			count++;
+<i>874</i>&nbsp;					//				        		sb.append(c.getSimpleName());
+<i>875</i>&nbsp;					//				        		if (count &lt; n)
+<i>876</i>&nbsp;					//					        		sb.append(&quot;, &quot;);
+<i>877</i>&nbsp;					//			        		}
+<i>878</i>&nbsp;					//			        		sb.append(&quot;)&quot;);
+<i>879</i>&nbsp;					//			        	}
+<b class="nc"><i>880</i>&nbsp;					text = sb.toString();</b>
+<i>881</i>&nbsp;
+<b class="nc"><i>882</i>&nbsp;					setOnMouseClicked(e -&gt; {</b>
+<b class="nc"><i>883</i>&nbsp;						if (e.getClickCount() == 2) {</b>
+<i>884</i>&nbsp;
+<i>885</i>&nbsp;
+<b class="nc"><i>886</i>&nbsp;							var treeView = ObjectTreeBrowser.createObjectTreeBrowser(item, value);</b>
+<b class="nc"><i>887</i>&nbsp;							Stage stage = new Stage();</b>
+<b class="nc"><i>888</i>&nbsp;							stage.setTitle(&quot;Object Inspector: &quot; + item);</b>
+<b class="nc"><i>889</i>&nbsp;							stage.initOwner(qupath.getStage());</b>
+<b class="nc"><i>890</i>&nbsp;							stage.setScene(new Scene(new BorderPane(treeView), 400, 400));</b>
+<b class="nc"><i>891</i>&nbsp;							stage.show();</b>
+<i>892</i>&nbsp;
+<i>893</i>&nbsp;
+<b class="nc"><i>894</i>&nbsp;							sb.setLength(0);</b>
+<b class="nc"><i>895</i>&nbsp;							sb.append(&quot;---------------------------------------------\n&quot;);</b>
+<b class="nc"><i>896</i>&nbsp;							sb.append(&quot;NAME: \t&quot;).append(item);</b>
+<b class="nc"><i>897</i>&nbsp;							sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>898</i>&nbsp;							sb.append(&quot;VALUE: \t&quot;).append(String.valueOf(value));</b>
+<b class="nc"><i>899</i>&nbsp;							sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>900</i>&nbsp;							sb.append(&quot;CLASS: \t&quot;).append(value.getClass().getName());</b>
+<b class="nc"><i>901</i>&nbsp;							sb.append(&quot;\n&quot;);</b>
+<i>902</i>&nbsp;							//			        			sb.append(&quot;---------------------------------------------\n&quot;);
+<b class="nc"><i>903</i>&nbsp;							Field[] fields = value.getClass().getFields();</b>
+<b class="nc"><i>904</i>&nbsp;							if (fields.length &gt; 0) {</b>
+<b class="nc"><i>905</i>&nbsp;								sb.append(&quot;FIELDS:\n&quot;);</b>
+<b class="nc"><i>906</i>&nbsp;								for (Field f : value.getClass().getFields()) {</b>
+<i>907</i>&nbsp;									try {
+<b class="nc"><i>908</i>&nbsp;										Object innerValue = f.get(value);</b>
+<b class="nc"><i>909</i>&nbsp;										sb.append(&quot;  &quot;);</b>
+<b class="nc"><i>910</i>&nbsp;										sb.append(f.getName());</b>
+<b class="nc"><i>911</i>&nbsp;										sb.append(&quot;: &quot;);</b>
+<b class="nc"><i>912</i>&nbsp;										sb.append(&quot;\t&quot;);</b>
+<b class="nc"><i>913</i>&nbsp;										sb.append(String.valueOf(innerValue));</b>
+<b class="nc"><i>914</i>&nbsp;										sb.append(&quot;\n&quot;);</b>
+<b class="nc"><i>915</i>&nbsp;									} catch (Exception e1) {</b>
+<b class="nc"><i>916</i>&nbsp;										logger.trace(&quot;Could not find value for field {}&quot;, f.getName());</b>
+<b class="nc"><i>917</i>&nbsp;									}</b>
+<i>918</i>&nbsp;								}
+<i>919</i>&nbsp;							}
+<b class="nc"><i>920</i>&nbsp;							sb.append(&quot;METHODS:\n&quot;);</b>
+<b class="nc"><i>921</i>&nbsp;							for (Method m : value.getClass().getMethods()) {</b>
+<b class="nc"><i>922</i>&nbsp;								sb.append(&quot;  &quot;);</b>
+<b class="nc"><i>923</i>&nbsp;								sb.append(m.getReturnType().getSimpleName());</b>
+<b class="nc"><i>924</i>&nbsp;								sb.append(&quot;  &quot;);</b>
+<b class="nc"><i>925</i>&nbsp;								sb.append(m.getName());</b>
+<b class="nc"><i>926</i>&nbsp;								sb.append(&quot;(&quot;);</b>
+<b class="nc"><i>927</i>&nbsp;								int count = 0;</b>
+<b class="nc"><i>928</i>&nbsp;								int n = m.getParameterCount();</b>
+<b class="nc"><i>929</i>&nbsp;								for (Parameter p : m.getParameters()) {</b>
+<b class="nc"><i>930</i>&nbsp;									count++;</b>
+<b class="nc"><i>931</i>&nbsp;									sb.append(p.getType().getSimpleName());</b>
+<b class="nc"><i>932</i>&nbsp;									sb.append(&quot; &quot;);</b>
+<b class="nc"><i>933</i>&nbsp;									sb.append(p.getName());</b>
+<b class="nc"><i>934</i>&nbsp;									if (count &lt; n)</b>
+<b class="nc"><i>935</i>&nbsp;										sb.append(&quot;, &quot;);</b>
+<i>936</i>&nbsp;								}
+<b class="nc"><i>937</i>&nbsp;								sb.append(&quot;)\n&quot;);</b>
+<i>938</i>&nbsp;							}
+<b class="nc"><i>939</i>&nbsp;							sb.append(&quot;---------------------------------------------\n&quot;);</b>
+<i>940</i>&nbsp;
+<b class="nc"><i>941</i>&nbsp;							addToCommandWindow(sb.toString());</b>
+<i>942</i>&nbsp;						}
+<i>943</i>&nbsp;					});
+<i>944</i>&nbsp;
+<i>945</i>&nbsp;				} else
+<b class="nc"><i>946</i>&nbsp;					setOnMouseClicked(null);</b>
+<b class="nc"><i>947</i>&nbsp;				tooltip.setText(text);</b>
+<b class="nc"><i>948</i>&nbsp;				setTooltip(tooltip);</b>
+<i>949</i>&nbsp;			}
+<i>950</i>&nbsp;		}
+<i>951</i>&nbsp;
+<i>952</i>&nbsp;	}
+<i>953</i>&nbsp;
+<i>954</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2021-01-25 09:46</div>
+</div>
+</body>
+</html>
