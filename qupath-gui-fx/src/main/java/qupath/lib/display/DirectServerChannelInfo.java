@@ -136,6 +136,10 @@ public class DirectServerChannelInfo extends AbstractSingleChannelInfo {
 
 	@Override
 	public float[] getValues(BufferedImage img, int x, int y, int w, int h, float[] array) {
+		System.out.println("x: " + x);
+		System.out.println("y: " + y);
+		System.out.println("w: " + w);
+		System.out.println("h: " + h);
 		if (array == null || array.length < w * h)
 			array = new float[w * h];
 		//			long start = System.currentTimeMillis();
