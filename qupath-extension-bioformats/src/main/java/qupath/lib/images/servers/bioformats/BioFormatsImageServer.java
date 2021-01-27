@@ -243,6 +243,9 @@ public class BioFormatsImageServer extends AbstractTileableImageServer {
 	 */
 	public BioFormatsImageServer(final URI uri, String...args) throws FormatException, IOException, DependencyException, ServiceException, URISyntaxException {
 		this(uri, BioFormatsServerOptions.getInstance(), args);
+		System.out.println("in first bio format image server");
+		System.out.println("uri to string 1: " + uri.toString());
+		System.out.println("uri to string 1: " + uri.toASCIIString());
 	}
 	
 	
@@ -250,7 +253,9 @@ public class BioFormatsImageServer extends AbstractTileableImageServer {
 		super();
 		
 		long startTime = System.currentTimeMillis();
-
+		System.out.println("in second bio format image server");
+		System.out.println("uri to string 2: " + uri.toString());
+		System.out.println("uri to string 2: " + uri.toASCIIString());
 		this.options = options;
 		
 		// Create variables for metadata
