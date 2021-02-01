@@ -6,12 +6,15 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
+import qupath.lib.images.writers.ImageWriterTools;
 import qupath.lib.regions.RegionRequest;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,7 +145,7 @@ public class ConcatChannelsABI {
      *
      * @param imageData
      */
-    public static void setRegularChannelColours(ImageData<?> imageData){
+    public static void setRegularChannelColours(ImageData imageData){
         Integer[] regularChannelColourArray = new Integer[7];
         regularChannelColourArray[0] = ColorTools.makeRGB(ALEXA_488[0], ALEXA_488[1], ALEXA_488[2]); //Alexa 488
         regularChannelColourArray[1] = ColorTools.makeRGB(ALEXA_555[0], ALEXA_555[1], ALEXA_555[2]); //Alexa 555
@@ -153,6 +156,46 @@ public class ConcatChannelsABI {
         regularChannelColourArray[6] = ColorTools.makeRGB(DL755_DUNBAR[0], DL755_DUNBAR[1], DL755_DUNBAR[2]); //DL755_Dunbar
         setChannelColors(imageData, regularChannelColourArray);
     }
+
+    /**
+     * Call setChannelNames method with the channel names
+     *
+     * @param imageData
+     */
+    public static void setRegularChannelNames(ImageData imageData){
+        int nChannels = imageData.getServer().nChannels();
+        String[] regularChannelNameArray = new String[nChannels];
+        for(int i = 1; i < nChannels + 1; i++) {
+            regularChannelNameArray[i - 1] = "Channel " + i;
+        }
+        setChannelNames(imageData, regularChannelNameArray);
+    }
+
+    /**
+     * @author Pete Bankhead
+     * Set the channel names for the specified ImageData.
+     * It is not essential to pass names for all channels:
+     * by passing n values, the first n channel names will be set.
+     * Any name that is null will be left unchanged.
+     *
+     * @param imageData
+     * @param names
+     */
+    public static void setChannelNames(ImageData<?> imageData, String... names) {
+        List<ImageChannel> oldChannels = imageData.getServer().getMetadata().getChannels();
+        List<ImageChannel> newChannels = new ArrayList<>(oldChannels);
+        for (int i = 0; i < names.length; i++) {
+            String name = names[i];
+            if (name == null)
+                continue;
+            newChannels.set(i, ImageChannel.getInstance(name, newChannels.get(i).getColor()));
+            if (i >= newChannels.size()) {
+                break;
+            }
+        }
+        setChannels(imageData, newChannels.toArray(ImageChannel[]::new));
+    }
+
 
     /**
      * Use the channels that are not duplicates to create a new BufferedImage object.
@@ -218,12 +261,21 @@ public class ConcatChannelsABI {
                 }
             }
             BufferedImage finalImg = createNewBufferedImage(notDuplicates, img);
+            //writing a tiff file, not particularly useful
+//            File file = new File("D:\\Desktop\\QuPath\\newImage.tiff");
+//            try {
+//                ImageIO.write(finalImg, "tiff", file);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
             ImageData imageData1 = new ImageData<BufferedImage>(newServer);
+            imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
+            //imageData1.setProperty()
             setRegularChannelColours(imageData1);
             resultImageData = imageData1;
-            //TODO: set edit image data to show the correct values
         }
+        setRegularChannelNames(resultImageData);
         return resultImageData;
     }
 }
