@@ -16,9 +16,8 @@ import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.net.URI;
+import java.util.*;
 
 /**
  * Functions to help with combining fluorescent channels that are the same or similar.
@@ -221,6 +220,21 @@ public class ConcatChannelsABI {
         return resultImage;
     }
 
+    /**
+     * Use the original and new URI to create a new mapping.
+     *
+     * @param originalURI
+     * @param newURIs
+     */
+    public static Map<URI, URI> getCorrectURIMap(URI originalURI, Collection<URI> newURIs) {
+        URI[] newURIArray = newURIs.toArray(new URI[newURIs.size()]);
+        Map<URI, URI> uriMap = new HashMap<URI, URI>();
+        for(int i = 0; i < newURIs.size(); i++) {
+            uriMap.put(originalURI, newURIArray[i]);
+        }
+        return uriMap;
+    }
+
     public static ImageData concatDuplicateChannels(ImageData<?> imageData) {
         ImageData resultImageData = imageData;
         int nChannels = imageData.getServer().nChannels();
@@ -273,6 +287,19 @@ public class ConcatChannelsABI {
             imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
             //imageData1.setProperty()
             setRegularChannelColours(imageData1);
+//            System.out.println("original URI: " + imageData.getServer().getURIs().toString());
+//            System.out.println("new URI: " + imageData1.getServer().getURIs().toString());
+//            System.out.println("original reference: " + imageData.getServer().getPath());
+//            System.out.println("reference: " + imageData1.getServer().getPath());
+//            try {
+//                imageData1.getServer()
+//                        .getBuilder().
+//                        updateURIs(getCorrectURIMap(new URI(imageData1.getServer().getPath()), imageData.getServer().getURIs()))
+//                        .build();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            System.out.println("updated URI: " + imageData1.getServer().getURIs().toString());
             resultImageData = imageData1;
         }
         setRegularChannelNames(resultImageData);
