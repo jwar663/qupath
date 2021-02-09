@@ -42,37 +42,6 @@ public class ConcatChannelsABI {
      * @param firstChannel
      * @param secondChannel
      */
-    public static boolean normCrossCorrelation(float[] firstChannel, float[] secondChannel) {
-        float nominator = 0;
-        float firstDenominator = 0;
-        float secondDenominator = 0;
-        float result = 0;
-        System.out.println("channelLength: " + firstChannel.length);
-        for(int i = 0; i < firstChannel.length; i++) {
-            nominator += firstChannel[i] * secondChannel[i];
-            firstDenominator += (firstChannel[i] * firstChannel[i]);
-            secondDenominator += (secondChannel[i] * secondChannel[i]);
-        }
-        System.out.println("nominator: " + nominator);
-        System.out.println("firstDenominator: " + firstDenominator);
-        System.out.println("secondDenominator: " + secondDenominator);
-        result = nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
-        System.out.println("result: " + result);
-        if(result > SIMILARITY_THRESHOLD) {
-            System.out.println("dupeChannel: true");
-            return true;
-        } else {
-            System.out.println("dupeChannel: false");
-            return false;
-        }
-    }
-
-    /**
-     * This method is used to compare two channels together to see if they are similar or not using normalised cross-correlation.
-     *
-     * @param firstChannel
-     * @param secondChannel
-     */
     public static float normCrossCorrelationFloat(float[] firstChannel, float[] secondChannel) {
         float nominator = 0;
         float firstDenominator = 0;
@@ -85,6 +54,36 @@ public class ConcatChannelsABI {
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
     }
 
+    /**
+     * This method uses the Normalised Cross Correlation Matrix to return which channels are
+     * distinct channels.
+     *
+     * @param crossCorrelationMatrix
+     */
+    public static ArrayList<Integer> distinctChannels(float[][] crossCorrelationMatrix) {
+        ArrayList<Integer> duplicates = new ArrayList<>();
+        ArrayList<Integer> distinct = new ArrayList<>();
+        int nChannels = crossCorrelationMatrix.length;
+        for(int i = 0; i < nChannels - 1; i++) {
+            //only check for duplicates in channels that aren't already considered duplicates
+            if(!duplicates.contains(i)) {
+                for(int j = i + 1; j < crossCorrelationMatrix.length; j++) {
+                    if(!duplicates.contains(j)) {
+                        if(crossCorrelationMatrix[i][j] > SIMILARITY_THRESHOLD) {
+                            duplicates.add(j);
+                        }
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < nChannels; i++) {
+            if(!duplicates.contains(i)) {
+                distinct.add(i);
+            }
+        }
+        return distinct;
+    }
+    
     /**
      * This method is used to check if there are more than 7 channels and therefore whether channels should be concatenated or not.
      *
@@ -291,38 +290,16 @@ public class ConcatChannelsABI {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            float[][] newFloatArray = createConcatMatrix(img);
+            float[][] crossCorrelationMatrix = createConcatMatrix(img);
 //            for(int i = 0; i < newFloatArray.length; i++) {
 //                System.out.println(newFloatArray[i][0] + " " + newFloatArray[i][1] + " " + newFloatArray[i][2] + " " + newFloatArray[i][3] + " " + newFloatArray[i][4] + " " + newFloatArray[i][5] + " " + newFloatArray[i][6] + " " + newFloatArray[i][7] + " " + newFloatArray[i][8] + " " + newFloatArray[i][9] + " " + newFloatArray[i][10] + " " + newFloatArray[i][11] + " " + newFloatArray[i][12] + " " + newFloatArray[i][13] + " " + newFloatArray[i][14] + " " + newFloatArray[i][15] + " " + newFloatArray[i][16] + " " + newFloatArray[i][17] + " " + newFloatArray[i][18] + " " + newFloatArray[i][19] + " " + newFloatArray[i][20] + " " + newFloatArray[i][21] + " " + newFloatArray[i][22] + " " + newFloatArray[i][23] + " " + newFloatArray[i][24] + " " + newFloatArray[i][25] + " " + newFloatArray[i][26] + " " + newFloatArray[i][27] + " " + newFloatArray[i][28] + " " + newFloatArray[i][29] + " " + newFloatArray[i][30] + " " + newFloatArray[i][31] + " " + newFloatArray[i][32] + " " + newFloatArray[i][33] + " " + newFloatArray[i][34] + " " + newFloatArray[i][35] + " " + newFloatArray[i][36] + " " + newFloatArray[i][37] + " " + newFloatArray[i][38] + " " + newFloatArray[i][39] + " " + newFloatArray[i][40] + " " + newFloatArray[i][41] + " " + newFloatArray[i][42]);
 //            }
-            ArrayList<Integer> duplicates = new ArrayList<>();
-            int width = img.getWidth();
-            int height = img.getHeight();
-            float[] channelOneArray = new float[width * height];
-            float[] channelTwoArray = new float[width * height];
-            for(int channelOne = 0; channelOne < nChannels - 1; channelOne++) {
-                //only check for duplicates in channels that aren't already considered duplicates
-                if(!duplicates.contains(channelOne)) {
-                    img.getRaster().getSamples(0 , 0, width, height, channelOne, channelOneArray);
-                    for(int channelTwo = channelOne + 1; channelTwo < nChannels; channelTwo++) {
-                        if(!duplicates.contains(channelTwo)) {
-                            img.getRaster().getSamples(0, 0, width, height, channelTwo, channelTwoArray);
-                            if(normCrossCorrelation(channelOneArray, channelTwoArray)) {
-                                duplicates.add(channelTwo);
-                            }
-                        }
-                    }
-                }
-            }
-            ArrayList<Integer> notDuplicates = new ArrayList<>();
+            ArrayList<Integer> distinct = distinctChannels(crossCorrelationMatrix);
             List<ImageChannel> channels = new ArrayList<>();
-            for(int i = 0; i < nChannels; i++) {
-                if(!duplicates.contains(i)) {
-                    notDuplicates.add(i);
-                    channels.add(imageData.getServer().getChannel(i));
-                }
+            for(int i = 0; i < distinct.size(); i++) {
+                channels.add(imageData.getServer().getChannel(i));
             }
-            BufferedImage finalImg = createNewBufferedImage(notDuplicates, img);
+            BufferedImage finalImg = createNewBufferedImage(distinct, img);
             //writing a tiff file, not particularly useful
 //            File file = new File("D:\\Desktop\\QuPath\\newImage.tiff");
 //            try {
