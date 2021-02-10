@@ -524,7 +524,7 @@ public class QuPathGUI {
 		public final Action BRIGHTNESS_CONTRAST = ActionTools.createAction(new BrightnessContrastCommand(QuPathGUI.this), "Brightness/Contrast");
 
 		/**
-		 * Show the Duplicate Matrix dialog.
+		 * Show the Duplicate Matrix dialog. //not currently functioning
 		 */
 		@ActionIcon(PathIcons.CONTRAST)
 		@ActionAccelerator("shift+j")
@@ -2949,7 +2949,8 @@ public class QuPathGUI {
 					imageData = createNewImageData(serverNew);
 				}
 				ImageData imageData1 = ConcatChannelsABI.concatDuplicateChannels(imageData);
-				viewer.setImageData(imageData1);
+				//viewer.setImageData(imageData1);
+				viewer.setImageData(imageData);
 //				setInitialLocationAndMagnification(viewer);
 
 				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT)

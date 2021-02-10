@@ -774,6 +774,19 @@ public class BrightnessContrastCommand implements Runnable, ChangeListener<Image
 		
 //		histogramPanel.setVerticalLines(new double[]{infoVisible.getMinDisplay(), infoVisible.getMaxDisplay()}, ColorToolsFX.TRANSLUCENT_BLACK_FX);
 	}
+
+	/**
+	 * Method to set slider values from outside this class.
+	 */
+	public void modifySliderValues(double minValue, double maxValue) {
+		if(maxValue > 0) {
+			sliderMax.setValue(maxValue);
+		}
+		if(minValue > 0) {
+			sliderMin.setValue(minValue);
+		}
+
+	}
 	
 
 	/**
