@@ -173,13 +173,7 @@ import qupath.lib.gui.extensions.QuPathExtension;
 import qupath.lib.gui.images.stores.DefaultImageRegionStore;
 import qupath.lib.gui.images.stores.ImageRegionStoreFactory;
 import qupath.lib.gui.logging.LogManager;
-import qupath.lib.gui.panes.AnnotationPane;
-import qupath.lib.gui.panes.ImageDetailsPane;
-import qupath.lib.gui.panes.PathObjectHierarchyView;
-import qupath.lib.gui.panes.PreferencePane;
-import qupath.lib.gui.panes.ProjectBrowser;
-import qupath.lib.gui.panes.SelectedMeasurementTableView;
-import qupath.lib.gui.panes.WorkflowCommandLogView;
+import qupath.lib.gui.panes.*;
 import qupath.lib.gui.plugins.ParameterDialogWrapper;
 import qupath.lib.gui.plugins.PluginRunnerFX;
 import qupath.lib.gui.prefs.PathPrefs;
@@ -2949,12 +2943,15 @@ public class QuPathGUI {
 					imageData = createNewImageData(serverNew);
 				}
 				ImageData imageData1 = ConcatChannelsABI.concatDuplicateChannels(imageData);
-				//viewer.setImageData(imageData1);
-				viewer.setImageData(imageData);
+				viewer.setImageData(imageData1);
+				//viewer.setImageData(imageData);
 //				setInitialLocationAndMagnification(viewer);
 
-				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT)
+				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT) {
 					ImageDetailsPane.promptToSetImageType(imageData);
+					DuplicateMatrixPane.promptToSetThresholdValue(imageData);
+				}
+
 
 //				// Reset the object hierarchy to clear any ROIs etc.
 //				hierarchy.clearAll();
