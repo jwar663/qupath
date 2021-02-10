@@ -83,7 +83,7 @@ public class ConcatChannelsABI {
         }
         return distinct;
     }
-    
+
     /**
      * This method is used to check if there are more than 7 channels and therefore whether channels should be concatenated or not.
      *
@@ -318,8 +318,8 @@ public class ConcatChannelsABI {
 //            System.out.println("reference: " + imageData1.getServer().getPath());
 //            try {
 //                imageData1.getServer()
-//                        .getBuilder().
-//                        updateURIs(getCorrectURIMap(new URI(imageData1.getServer().getPath()), imageData.getServer().getURIs()))
+//                        .getBuilder()
+//                        .updateURIs(getCorrectURIMap(new URI(imageData1.getServer().getPath()), imageData.getServer().getURIs()))
 //                        .build();
 //            } catch (Exception e) {
 //                e.printStackTrace();

@@ -165,12 +165,7 @@ import qupath.lib.common.ThreadTools;
 import qupath.lib.gui.ActionTools.ActionAccelerator;
 import qupath.lib.gui.ActionTools.ActionDescription;
 import qupath.lib.gui.ActionTools.ActionIcon;
-import qupath.lib.gui.commands.BrightnessContrastCommand;
-import qupath.lib.gui.commands.Commands;
-import qupath.lib.gui.commands.CountingPanelCommand;
-import qupath.lib.gui.commands.LogViewerCommand;
-import qupath.lib.gui.commands.ProjectCommands;
-import qupath.lib.gui.commands.TMACommands;
+import qupath.lib.gui.commands.*;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.dialogs.ParameterPanelFX;
 import qupath.lib.gui.dialogs.Dialogs.DialogButton;
@@ -527,7 +522,14 @@ public class QuPathGUI {
 		@ActionIcon(PathIcons.CONTRAST)
 		@ActionAccelerator("shift+c")
 		public final Action BRIGHTNESS_CONTRAST = ActionTools.createAction(new BrightnessContrastCommand(QuPathGUI.this), "Brightness/Contrast");
-		
+
+		/**
+		 * Show the Duplicate Matrix dialog.
+		 */
+		@ActionIcon(PathIcons.CONTRAST)
+		@ActionAccelerator("shift+j")
+		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
+
 		/**
 		 * Toggle the image overview display on the viewers.
 		 */
@@ -2380,6 +2382,18 @@ public class QuPathGUI {
 				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 10), "10%"),
 				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 100), "1%")
 				);
+
+		Menu matrixView = MenuTools.createMenu(
+				"Display",
+				ActionTools.createCheckMenuItem(defaultActions.SHOW_ANALYSIS_PANE, null),
+				defaultActions.DUPLICATE_MATRIX,
+				null,
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 0.25), "400%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 1), "100%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 2), "50%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 10), "10%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 100), "1%")
+		);
 		
 		ToggleGroup groupTools = new ToggleGroup();
 		Menu menuTools = MenuTools.createMenu(
@@ -2514,6 +2528,7 @@ public class QuPathGUI {
 				menuMultiview,
 				menuCells,
 				menuView,
+				matrixView,
 				menuTools
 				);
 		
