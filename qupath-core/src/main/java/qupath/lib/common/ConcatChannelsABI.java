@@ -225,8 +225,6 @@ public class ConcatChannelsABI {
         SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(notDuplicatesArray);
         WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
         BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
-        //May need to create a new image rather than duplicating
-        //need to set 3 to number of channels. Currently does not work as channels are limited to 3 rather than 7.
         for(int i = 0; i < notDuplicates.size(); i++) {
             img.getRaster().getSamples(0, 0, width, height, notDuplicates.get(i), tempFloatArray);
             resultImage.getRaster().setSamples(0, 0, width, height, i, tempFloatArray);
@@ -279,6 +277,41 @@ public class ConcatChannelsABI {
         return channelMatrix;
     }
 
+    /**
+     * Use the image data to create an associated image with the specified channel.
+     * This image will be used to compare to see if the channels are actually different.
+     *
+     * @param imageData
+     * @param channel
+     */
+    public static BufferedImage singleChannelImage(ImageData<?> imageData, int channel) {
+        int[] channelArray = new int[1];
+        channelArray[0] = channel;
+        RegionRequest request = RegionRequest.createInstance(imageData.getServer());
+        int width = imageData.getServer().getMetadata().getWidth();
+        int height = imageData.getServer().getMetadata().getHeight();
+        float[] tempFloatArray = new float[width * height];
+
+        //BufferedImage img = null;
+        try {
+            BufferedImage img = (BufferedImage) imageData.getServer().readBufferedImage(request);
+            SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(channelArray);
+            WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
+            BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
+            img.getRaster().getSamples(0, 0, width, height, channel, tempFloatArray);
+            resultImage.getRaster().setSamples(0, 0, width, height, channel, tempFloatArray);
+            return resultImage;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Create the associated image whilst removing the duplicate channels.
+     *
+     * @param imageData
+     */
     public static ImageData concatDuplicateChannels(ImageData<?> imageData) {
         ImageData resultImageData = imageData;
         int nChannels = imageData.getServer().nChannels();
