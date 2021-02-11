@@ -518,9 +518,8 @@ public class QuPathGUI {
 		public final Action BRIGHTNESS_CONTRAST = ActionTools.createAction(new BrightnessContrastCommand(QuPathGUI.this), "Brightness/Contrast");
 
 		/**
-		 * Show the Duplicate Matrix dialog. //not currently functioning
+		 * Show the Duplicate Matrix dialog.
 		 */
-		@ActionIcon(PathIcons.CONTRAST)
 		@ActionAccelerator("shift+j")
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
@@ -2949,7 +2948,6 @@ public class QuPathGUI {
 
 				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT) {
 					ImageDetailsPane.promptToSetImageType(imageData);
-					DuplicateMatrixPane.promptToSetThresholdValue(imageData);
 				}
 
 
