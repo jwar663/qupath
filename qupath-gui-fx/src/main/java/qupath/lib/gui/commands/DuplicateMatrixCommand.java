@@ -157,6 +157,7 @@ public class DuplicateMatrixCommand implements Runnable {
         Button thresholdConfirm = new Button("OK");
         HBox thresholdHBox = new HBox();
         thresholdHBox.getChildren().addAll(thresholdLabel, thresholdValue, thresholdConfirm);
+        overallPane.getChildren().add(thresholdHBox);
 
         //matrix part
         BorderPane matrixPane = new BorderPane();
@@ -189,11 +190,25 @@ public class DuplicateMatrixCommand implements Runnable {
         verticalScrollBar.setOrientation(Orientation.VERTICAL);
         matrixPane.setBottom(horizontalScrollBar);
         matrixPane.setRight(verticalScrollBar);
+        matrixPane.setCenter(matrix);
+        overallPane.getChildren().add(matrixPane);
+
+        //preview image section
+        HBox imageHBox = new HBox();
+        VBox image1VBox = new VBox();
+        VBox image2VBox = new VBox();
+        imageHBox.getChildren().addAll(image1VBox, image2VBox);
+        Label image1Label = new Label("Image 1");
+        Label image2Label = new Label("Image 2");
+        Canvas image1Canvas = new Canvas();
+        Canvas image2Canvas = new Canvas();
+        image1VBox.getChildren().addAll(image1Label, image1Canvas);
+        image2VBox.getChildren().addAll(image2Label, image2Canvas);
+        overallPane.getChildren().add(imageHBox);
 
         //set borders
         overallPane.setBorder(border);
 
-        overallPane.getChildren().addAll(matrix);
         pane.getChildren().add(overallPane);
 
         //overallPane.maxWidth(20);
