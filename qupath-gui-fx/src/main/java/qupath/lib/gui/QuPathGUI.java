@@ -521,7 +521,7 @@ public class QuPathGUI {
 		 * Show the Duplicate Matrix dialog.
 		 */
 		@ActionAccelerator("shift+j")
-		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
+		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this, getImageData()), "Duplicate Matrix");
 
 		/**
 		 * Toggle the image overview display on the viewers.

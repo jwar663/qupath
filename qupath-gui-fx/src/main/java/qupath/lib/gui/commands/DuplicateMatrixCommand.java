@@ -36,6 +36,11 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Orientation;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,24 +60,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -81,16 +69,13 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import qupath.lib.analysis.stats.Histogram;
+import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.display.ChannelDisplayInfo;
 import qupath.lib.display.DirectServerChannelInfo;
 import qupath.lib.display.ImageDisplay;
@@ -107,6 +92,8 @@ import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
+
+import static java.lang.Math.round;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -125,40 +112,89 @@ public class DuplicateMatrixCommand implements Runnable {
     private QuPathViewer viewer;
     private ImageDisplay imageDisplay;
 
+    private BufferedImage image1;
+    private BufferedImage image2;
+
     private Stage dialog;
 
-    private TableView<ChannelDisplayInfo> table = new TableView<>();
-    private StringProperty filterText = new SimpleStringProperty("");
-    private ObjectBinding<Predicate<ChannelDisplayInfo>> predicate = Bindings.createObjectBinding(() -> {
-        String text = filterText.get().toLowerCase().strip();
-        if (text.isBlank())
-            return info -> true;
-        return info -> info.getName().toLowerCase().contains(text);
-    }, filterText);
+    private double[][] fakeMatrix = new double[42][42];
+    private int size;
 
-    private ColorPicker picker = new ColorPicker();
-
-    private ContextMenu popup;
+    private ImageData imageData;
 
     /**
      * Constructor.
      * @param qupath
      */
-    public DuplicateMatrixCommand(final QuPathGUI qupath) {
+    public DuplicateMatrixCommand(final QuPathGUI qupath, ImageData<?> imageData) {
         this.qupath = qupath;
+        this.imageData = imageData;
     }
 
     protected Stage createDialog() {
+        //for testing matrix without image data
+        size = 5;
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                fakeMatrix[i][j] = Math.random();
+            }
+        }
 
-        BorderPane pane = new BorderPane();
+        //to visualise and allow for dimensions
+        Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
+        //larger panes
+        Pane pane = new Pane();
+        VBox overallPane = new VBox();
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
-
         pane.setPadding(new Insets(10, 10, 10, 10));
-        Label newLabel = new Label("label");
-        pane.setCenter(newLabel);
+
+        //Threshold Part
+        Label thresholdLabel = new Label("Please enter the correct threshold value:");
+        TextField thresholdValue = new TextField("0.90");
+        Button thresholdConfirm = new Button("OK");
+        HBox thresholdHBox = new HBox();
+        thresholdHBox.getChildren().addAll(thresholdLabel, thresholdValue, thresholdConfirm);
+
+        //matrix part
+        BorderPane matrixPane = new BorderPane();
+        //TableView<Double> matrixTable = new TableView<Double>();
+        GridPane matrix = new GridPane();
+        matrix.setGridLinesVisible(true);
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                String tempString = String.format("%.2f", fakeMatrix[i][j]);
+                Button tempButton = new Button(tempString);
+
+                tempButton.setOnAction(e -> {
+                    System.out.println(tempString);
+                });
+                matrix.add(tempButton, i, j);
+            }
+        }
+        ScrollBar verticalScrollBar = new ScrollBar();
+        ScrollBar horizontalScrollBar = new ScrollBar();
+        verticalScrollBar.setOrientation(Orientation.VERTICAL);
+        matrixPane.setBottom(horizontalScrollBar);
+        matrixPane.setRight(verticalScrollBar);
+
+        //set borders
+        overallPane.setBorder(border);
+
+        overallPane.getChildren().addAll(matrix);
+        pane.getChildren().add(overallPane);
+
+        //overallPane.maxWidth(20);
+
+        //image data is bad
+        //image1 = ConcatChannelsABI.singleChannelImage(imageData, 0);
+        //Canvas canvas1 = new Canvas();
+        //canvas1.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image1, null), 0,0);
+        //largePane.getChildren().add(canvas1);
+
+
         Scene scene = new Scene(pane, 350, 500);
         dialog.setScene(scene);
         dialog.setMinWidth(300);

@@ -283,7 +283,7 @@ public class ConcatChannelsABI {
      * @param imageData
      * @param channel
      */
-    public static BufferedImage singleChannelImage(ImageData<?> imageData, int channel) {
+    public static BufferedImage singleChannelImage(ImageData imageData, int channel) {
         int[] channelArray = new int[1];
         channelArray[0] = channel;
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
