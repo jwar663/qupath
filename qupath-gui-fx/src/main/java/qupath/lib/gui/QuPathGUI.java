@@ -2943,8 +2943,8 @@ public class QuPathGUI {
 					imageData = createNewImageData(serverNew);
 				}
 				ImageData imageData1 = ConcatChannelsABI.concatDuplicateChannels(imageData);
-				viewer.setImageData(imageData1);
-				//viewer.setImageData(imageData);
+				//viewer.setImageData(imageData1);
+				viewer.setImageData(imageData);
 //				setInitialLocationAndMagnification(viewer);
 
 				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT) {

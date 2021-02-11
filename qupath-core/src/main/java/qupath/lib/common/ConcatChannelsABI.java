@@ -8,13 +8,12 @@ import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
 import qupath.lib.regions.RegionRequest;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
+import java.util.List;
 
 /**
  * Functions to help with combining fluorescent channels that are the same or similar.
