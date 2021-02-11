@@ -162,16 +162,26 @@ public class DuplicateMatrixCommand implements Runnable {
         BorderPane matrixPane = new BorderPane();
         //TableView<Double> matrixTable = new TableView<Double>();
         GridPane matrix = new GridPane();
-        matrix.setGridLinesVisible(true);
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
-                String tempString = String.format("%.2f", fakeMatrix[i][j]);
-                Button tempButton = new Button(tempString);
+        for(int i = 0; i < size + 1; i++) {
+            for(int j = 0; j < size + 1; j++) {
+                if(i == 0 && j == 0) {
 
-                tempButton.setOnAction(e -> {
-                    System.out.println(tempString);
-                });
-                matrix.add(tempButton, i, j);
+                } else if(i == 0) {
+                    Label tempLabel = new Label(Integer.toString(j));
+                    matrix.add(tempLabel, i, j);
+                } else if(j == 0) {
+                    Label tempLabel = new Label(Integer.toString(i));
+                    matrix.add(tempLabel, i, j);
+                } else {
+                    String tempString = String.format("%.2f", fakeMatrix[i - 1][j - 1]);
+                    //set buttons to be the corresponding matrix
+                    Button tempButton = new Button(tempString);
+                    tempButton.setOnAction(e -> {
+                        //set the correct images depending on button click
+                        System.out.println(tempString);
+                    });
+                    matrix.add(tempButton, i, j);
+                }
             }
         }
         ScrollBar verticalScrollBar = new ScrollBar();
