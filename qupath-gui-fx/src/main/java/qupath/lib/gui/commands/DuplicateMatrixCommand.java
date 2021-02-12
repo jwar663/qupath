@@ -24,26 +24,14 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicReference;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -51,56 +39,14 @@ import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.ObjectBinding;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.transformation.FilteredList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
-import qupath.lib.analysis.stats.Histogram;
-import qupath.lib.common.ConcatChannelsABI;
-import qupath.lib.display.ChannelDisplayInfo;
-import qupath.lib.display.DirectServerChannelInfo;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
-import qupath.lib.gui.charts.HistogramPanelFX;
-import qupath.lib.gui.charts.HistogramPanelFX.HistogramData;
-import qupath.lib.gui.charts.HistogramPanelFX.ThresholdedChartWrapper;
-import qupath.lib.gui.dialogs.Dialogs;
-import qupath.lib.gui.prefs.PathPrefs;
-import qupath.lib.gui.tools.ColorToolsFX;
-import qupath.lib.gui.tools.PaneTools;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
-import qupath.lib.images.servers.ImageChannel;
-import qupath.lib.images.servers.ImageServer;
-import qupath.lib.images.servers.ImageServerMetadata;
-
-import javax.imageio.ImageIO;
 
 import static java.lang.Math.round;
 
@@ -164,13 +110,22 @@ public class DuplicateMatrixCommand implements Runnable {
         pane.setPadding(new Insets(10, 10, 10, 10));
 
         //Threshold Part
+        AtomicReference<String> thresholdValue = new AtomicReference<>("0.90");
         Label thresholdLabel = new Label("Please enter the correct threshold value:");
-        TextField thresholdValue = new TextField("0.90");
-        thresholdValue.setPrefSize(40,10);
+        TextField thresholdTextField = new TextField("0.90");
+        thresholdTextField.setPrefSize(40,20);
         Button thresholdConfirm = new Button("OK");
-        HBox thresholdHBox = new HBox();
-        thresholdHBox.getChildren().addAll(thresholdLabel, thresholdValue, thresholdConfirm);
-        overallPane.setTop(thresholdHBox);
+        thresholdConfirm.setOnAction(event -> {
+            thresholdValue.set(thresholdTextField.getText());
+            System.out.println(thresholdValue);
+        });
+        thresholdConfirm.setPrefSize(40,20);
+        GridPane thresholdGrid = new GridPane();
+        thresholdGrid.add(thresholdLabel, 0, 0);
+        thresholdGrid.add(thresholdTextField, 1, 0);
+        thresholdGrid.add(thresholdConfirm, 2, 0);
+        thresholdGrid.setHgap(10);
+        overallPane.setTop(thresholdGrid);
 
         //matrix part
         BorderPane matrixPane = new BorderPane();
@@ -214,6 +169,8 @@ public class DuplicateMatrixCommand implements Runnable {
         HBox imageHBox = new HBox();
         VBox image1VBox = new VBox();
         VBox image2VBox = new VBox();
+        Pane imagePane1 = new Pane();
+        Pane imagePane2 = new Pane();
         imageHBox.getChildren().addAll(image1VBox, image2VBox);
         Label image1Label = new Label("Image 1");
         Label image2Label = new Label("Image 2");
@@ -221,8 +178,10 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageView imageView2 = new ImageView();
         imageView1.setImage(img);
         imageView2.setImage(img);
-        image1VBox.getChildren().addAll(image1Label, imageView1);
-        image2VBox.getChildren().addAll(image2Label, imageView2);
+        imagePane1.getChildren().add(imageView1);
+        imagePane2.getChildren().add(imageView2);
+        image1VBox.getChildren().addAll(image1Label, imagePane1);
+        image2VBox.getChildren().addAll(image2Label, imagePane2);
         overallPane.setBottom(imageHBox);
 
         //set borders
@@ -236,12 +195,11 @@ public class DuplicateMatrixCommand implements Runnable {
         //canvas1.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image1, null), 0,0);
         //largePane.getChildren().add(canvas1);
 
-
-        Scene scene = new Scene(pane, 800, 800);
+        Scene scene = new Scene(pane, 900, 800);
         dialog.setScene(scene);
-        dialog.setMinWidth(800);
+        dialog.setMinWidth(900);
         dialog.setMinHeight(800);
-        dialog.setMaxWidth(800);
+        dialog.setMaxWidth(900);
         dialog.setMaxHeight(800);
 
         return dialog;
