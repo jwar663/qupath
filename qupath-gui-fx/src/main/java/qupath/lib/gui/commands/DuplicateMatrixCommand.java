@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -43,6 +44,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
@@ -135,6 +137,25 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdGrid.setHgap(10);
         overallPane.setTop(thresholdGrid);
 
+        //preview image section
+        HBox imageHBox = new HBox();
+        VBox image1VBox = new VBox();
+        VBox image2VBox = new VBox();
+        Pane imagePane1 = new Pane();
+        Pane imagePane2 = new Pane();
+        imageHBox.getChildren().addAll(image1VBox, image2VBox);
+        Label image1Label = new Label("Image 1");
+        Label image2Label = new Label("Image 2");
+        ImageView imageView1 = new ImageView();
+        ImageView imageView2 = new ImageView();
+        imageView1.setImage(img);
+        imageView2.setImage(img);
+        imagePane1.getChildren().add(imageView1);
+        imagePane2.getChildren().add(imageView2);
+        image1VBox.getChildren().addAll(image1Label, imagePane1);
+        image2VBox.getChildren().addAll(image2Label, imagePane2);
+        overallPane.setBottom(imageHBox);
+
         //matrix part
         BorderPane matrixPane = new BorderPane();
         //TableView<Double> matrixTable = new TableView<Double>();
@@ -155,8 +176,14 @@ public class DuplicateMatrixCommand implements Runnable {
                     //set buttons to be the corresponding matrix
                     Button tempButton = new Button(tempString);
                     tempButton.setAlignment(Pos.CENTER);
+                    int tempI = i;
+                    int tempJ = j;
                     tempButton.setOnAction(e -> {
                         //set the correct images depending on button click
+                        image1Label.setText("Channel " + tempI);
+                        image2Label.setText("Channel " + tempJ);
+                        //imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
+                        //imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
                         System.out.println(tempString);
                     });
                     matrix.add(tempButton, i, j);
@@ -172,25 +199,6 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixPane.setRight(verticalScrollBar);
         matrixPane.setCenter(matrix);
         overallPane.setCenter(matrixPane);
-
-        //preview image section
-        HBox imageHBox = new HBox();
-        VBox image1VBox = new VBox();
-        VBox image2VBox = new VBox();
-        Pane imagePane1 = new Pane();
-        Pane imagePane2 = new Pane();
-        imageHBox.getChildren().addAll(image1VBox, image2VBox);
-        Label image1Label = new Label("Image 1");
-        Label image2Label = new Label("Image 2");
-        ImageView imageView1 = new ImageView();
-        ImageView imageView2 = new ImageView();
-        imageView1.setImage(img);
-        imageView2.setImage(img);
-        imagePane1.getChildren().add(imageView1);
-        imagePane2.getChildren().add(imageView2);
-        image1VBox.getChildren().addAll(image1Label, imagePane1);
-        image2VBox.getChildren().addAll(image2Label, imagePane2);
-        overallPane.setBottom(imageHBox);
 
         //set borders
         //overallPane.setBorder(border);
