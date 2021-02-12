@@ -110,14 +110,22 @@ public class DuplicateMatrixCommand implements Runnable {
         pane.setPadding(new Insets(10, 10, 10, 10));
 
         //Threshold Part
-        AtomicReference<String> thresholdValue = new AtomicReference<>("0.90");
         Label thresholdLabel = new Label("Please enter the correct threshold value:");
         TextField thresholdTextField = new TextField("0.90");
         thresholdTextField.setPrefSize(40,20);
         Button thresholdConfirm = new Button("OK");
         thresholdConfirm.setOnAction(event -> {
-            thresholdValue.set(thresholdTextField.getText());
-            System.out.println(thresholdValue);
+            String thresholdValue = thresholdTextField.getText();
+            try{
+                if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
+                    //TODO: Call ConcatChannelsABI.concatDuplicateChannels when imageData is gathered correctly
+                    System.out.println(thresholdValue);
+                } else {
+                    System.out.println("error");
+                }
+            } catch(Exception e) {
+                System.out.println("Exception: " + e);
+            }
         });
         thresholdConfirm.setPrefSize(40,20);
         GridPane thresholdGrid = new GridPane();
