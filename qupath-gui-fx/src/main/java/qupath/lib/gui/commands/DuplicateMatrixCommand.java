@@ -26,6 +26,10 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,8 +42,11 @@ import java.util.stream.Collectors;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,6 +100,8 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 
+import javax.imageio.ImageIO;
+
 import static java.lang.Math.round;
 
 /**
@@ -131,7 +140,7 @@ public class DuplicateMatrixCommand implements Runnable {
         this.imageData = imageData;
     }
 
-    protected Stage createDialog() {
+    protected Stage createDialog() throws IOException {
         //for testing matrix without image data
         size = 5;
         for(int i = 0; i < size; i++) {
@@ -139,13 +148,16 @@ public class DuplicateMatrixCommand implements Runnable {
                 fakeMatrix[i][j] = Math.random();
             }
         }
+        //for testing images
+        InputStream stream = new FileInputStream("D:\\Desktop\\QuPath\\testimage.jpg");
+        Image img = new Image(stream);
 
         //to visualise and allow for dimensions
         Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
         //larger panes
         Pane pane = new Pane();
-        VBox overallPane = new VBox();
+        BorderPane overallPane = new BorderPane();
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
@@ -154,10 +166,11 @@ public class DuplicateMatrixCommand implements Runnable {
         //Threshold Part
         Label thresholdLabel = new Label("Please enter the correct threshold value:");
         TextField thresholdValue = new TextField("0.90");
+        thresholdValue.setPrefSize(40,10);
         Button thresholdConfirm = new Button("OK");
         HBox thresholdHBox = new HBox();
         thresholdHBox.getChildren().addAll(thresholdLabel, thresholdValue, thresholdConfirm);
-        overallPane.getChildren().add(thresholdHBox);
+        overallPane.setTop(thresholdHBox);
 
         //matrix part
         BorderPane matrixPane = new BorderPane();
@@ -169,6 +182,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
                 } else if(i == 0) {
                     Label tempLabel = new Label(Integer.toString(j));
+                    tempLabel.setAlignment(Pos.CENTER);
                     matrix.add(tempLabel, i, j);
                 } else if(j == 0) {
                     Label tempLabel = new Label(Integer.toString(i));
@@ -177,6 +191,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     String tempString = String.format("%.2f", fakeMatrix[i - 1][j - 1]);
                     //set buttons to be the corresponding matrix
                     Button tempButton = new Button(tempString);
+                    tempButton.setAlignment(Pos.CENTER);
                     tempButton.setOnAction(e -> {
                         //set the correct images depending on button click
                         System.out.println(tempString);
@@ -185,13 +200,15 @@ public class DuplicateMatrixCommand implements Runnable {
                 }
             }
         }
+        matrix.setAlignment(Pos.BOTTOM_RIGHT);
+        System.out.println(matrix.getAlignment().toString());
         ScrollBar verticalScrollBar = new ScrollBar();
         ScrollBar horizontalScrollBar = new ScrollBar();
         verticalScrollBar.setOrientation(Orientation.VERTICAL);
         matrixPane.setBottom(horizontalScrollBar);
         matrixPane.setRight(verticalScrollBar);
         matrixPane.setCenter(matrix);
-        overallPane.getChildren().add(matrixPane);
+        overallPane.setCenter(matrixPane);
 
         //preview image section
         HBox imageHBox = new HBox();
@@ -200,18 +217,18 @@ public class DuplicateMatrixCommand implements Runnable {
         imageHBox.getChildren().addAll(image1VBox, image2VBox);
         Label image1Label = new Label("Image 1");
         Label image2Label = new Label("Image 2");
-        Canvas image1Canvas = new Canvas();
-        Canvas image2Canvas = new Canvas();
-        image1VBox.getChildren().addAll(image1Label, image1Canvas);
-        image2VBox.getChildren().addAll(image2Label, image2Canvas);
-        overallPane.getChildren().add(imageHBox);
+        ImageView imageView1 = new ImageView();
+        ImageView imageView2 = new ImageView();
+        imageView1.setImage(img);
+        imageView2.setImage(img);
+        image1VBox.getChildren().addAll(image1Label, imageView1);
+        image2VBox.getChildren().addAll(image2Label, imageView2);
+        overallPane.setBottom(imageHBox);
 
         //set borders
-        overallPane.setBorder(border);
+        //overallPane.setBorder(border);
 
         pane.getChildren().add(overallPane);
-
-        //overallPane.maxWidth(20);
 
         //image data is bad
         //image1 = ConcatChannelsABI.singleChannelImage(imageData, 0);
@@ -220,11 +237,11 @@ public class DuplicateMatrixCommand implements Runnable {
         //largePane.getChildren().add(canvas1);
 
 
-        Scene scene = new Scene(pane, 350, 500);
+        Scene scene = new Scene(pane, 800, 800);
         dialog.setScene(scene);
-        dialog.setMinWidth(300);
-        dialog.setMinHeight(400);
-        dialog.setMaxWidth(600);
+        dialog.setMinWidth(800);
+        dialog.setMinHeight(800);
+        dialog.setMaxWidth(800);
         dialog.setMaxHeight(800);
 
         return dialog;
@@ -233,7 +250,11 @@ public class DuplicateMatrixCommand implements Runnable {
     @Override
     public void run() {
         if (dialog == null)
-            dialog = createDialog();
+            try{
+                dialog = createDialog();
+            } catch (IOException e) {
+
+            }
         dialog.show();
     }
 }
