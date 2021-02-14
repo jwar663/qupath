@@ -105,14 +105,17 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //larger panes
         Pane pane = new Pane();
+        pane.setPrefSize(900, 800);
         BorderPane overallPane = new BorderPane();
+        overallPane.setPrefSize(880,780);
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
-        pane.setPadding(new Insets(10, 10, 10, 10));
+        //pane.setPadding(new Insets(10, 10, 10, 10));
 
         //Threshold Part
         Label thresholdLabel = new Label("Please enter the correct threshold value:");
+        thresholdLabel.setPrefHeight(20);
         TextField thresholdTextField = new TextField("0.90");
         thresholdTextField.setPrefSize(40,20);
         Button thresholdConfirm = new Button("OK");
@@ -134,20 +137,34 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdGrid.add(thresholdLabel, 0, 0);
         thresholdGrid.add(thresholdTextField, 1, 0);
         thresholdGrid.add(thresholdConfirm, 2, 0);
+        thresholdGrid.setPrefSize(880, 20);
         thresholdGrid.setHgap(10);
         overallPane.setTop(thresholdGrid);
 
         //preview image section
         HBox imageHBox = new HBox();
+        imageHBox.setPrefSize(880, 346);
         VBox image1VBox = new VBox();
+        image1VBox.setPrefSize(435, 346);
         VBox image2VBox = new VBox();
+        image2VBox.setPrefSize(435, 346);
         Pane imagePane1 = new Pane();
+        imagePane1.setPrefSize(435, 326);
         Pane imagePane2 = new Pane();
+        imagePane2.setPrefSize(435, 326);
         imageHBox.getChildren().addAll(image1VBox, image2VBox);
         Label image1Label = new Label("Image 1");
+        image1Label.setPrefHeight(20);
         Label image2Label = new Label("Image 2");
+        image2Label.setPrefHeight(20);
         ImageView imageView1 = new ImageView();
+        imageView1.setFitHeight(326);
+        imageView1.setFitWidth(435);
+        imageView1.setPreserveRatio(true);
         ImageView imageView2 = new ImageView();
+        imageView2.setFitHeight(326);
+        imageView2.setFitWidth(435);
+        imageView2.setPreserveRatio(true);
         imageView1.setImage(img);
         imageView2.setImage(img);
         imagePane1.getChildren().add(imageView1);
@@ -158,23 +175,29 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //matrix part
         BorderPane matrixPane = new BorderPane();
+        matrixPane.setPrefSize(880, 394);
         //TableView<Double> matrixTable = new TableView<Double>();
         GridPane matrix = new GridPane();
+        matrix.setPrefSize(860,374);
         for(int i = 0; i < size + 1; i++) {
             for(int j = 0; j < size + 1; j++) {
                 if(i == 0 && j == 0) {
 
                 } else if(i == 0) {
                     Label tempLabel = new Label(Integer.toString(j));
+                    tempLabel.setPrefSize(40,20);
                     tempLabel.setAlignment(Pos.CENTER);
                     matrix.add(tempLabel, i, j);
                 } else if(j == 0) {
                     Label tempLabel = new Label(Integer.toString(i));
+                    tempLabel.setPrefSize(40,20);
+                    tempLabel.setAlignment(Pos.CENTER);
                     matrix.add(tempLabel, i, j);
                 } else {
                     String tempString = String.format("%.2f", fakeMatrix[i - 1][j - 1]);
                     //set buttons to be the corresponding matrix
                     Button tempButton = new Button(tempString);
+                    tempButton.setPrefSize(40,20);
                     tempButton.setAlignment(Pos.CENTER);
                     int tempI = i;
                     int tempJ = j;
@@ -194,7 +217,9 @@ public class DuplicateMatrixCommand implements Runnable {
         System.out.println(matrix.getAlignment().toString());
         ScrollBar verticalScrollBar = new ScrollBar();
         ScrollBar horizontalScrollBar = new ScrollBar();
+        horizontalScrollBar.setPrefSize(860, 20);
         verticalScrollBar.setOrientation(Orientation.VERTICAL);
+        verticalScrollBar.setPrefSize(20, 374);
         matrixPane.setBottom(horizontalScrollBar);
         matrixPane.setRight(verticalScrollBar);
         matrixPane.setCenter(matrix);
