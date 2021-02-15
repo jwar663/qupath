@@ -33,6 +33,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private QuPathViewer viewer;
 
     private Stage dialog;
+    private Stage error;
 
     private int size;
     private float[][] duplicateMatrix;
@@ -78,9 +81,23 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     protected Stage createDialog() throws IOException, NullPointerException {
-
         viewer = qupath.getViewer();
         imageData = qupath.getImageData();
+        System.out.println(imageData);
+        if(imageData == null) {
+            Stage error = new Stage();
+            error.initModality(Modality.WINDOW_MODAL);
+            Button confirmButton = new Button("OK");
+            confirmButton.setOnAction(e -> {
+                error.close();
+            });
+            VBox vbox = new VBox(new Text("Please open an image before selecting this feature"), confirmButton);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setPadding(new Insets(15));
+
+            error.setScene(new Scene(vbox));
+            return error;
+        }
         size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
         img = ConcatChannelsABI.convertImageDataToImage(imageData);
@@ -259,12 +276,17 @@ public class DuplicateMatrixCommand implements Runnable {
 
     @Override
     public void run() {
-        if (dialog == null)
+        if (dialog == null) {
             try{
                 dialog = createDialog();
             } catch (IOException e) {
-
             }
+        } else if(!dialog.isShowing()) {
+            try {
+                dialog = createDialog();
+            } catch (IOException e) {
+            }
+        }
         dialog.show();
     }
 }
