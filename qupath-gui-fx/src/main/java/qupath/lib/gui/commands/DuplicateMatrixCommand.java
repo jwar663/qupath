@@ -64,16 +64,12 @@ public class DuplicateMatrixCommand implements Runnable {
     private static DecimalFormat df = new DecimalFormat("#.###");
 
     private QuPathGUI qupath;
-    private QuPathViewer viewer;
-    private ImageDisplay imageDisplay;
-
-    private BufferedImage image1;
-    private BufferedImage image2;
 
     private Stage dialog;
 
-    private int size = 12;
-    private double[][] fakeMatrix = new double[size][size];
+    private int size;
+    private float[][] duplicateMatrix;
+    private BufferedImage img;
 
 
     public ImageData<BufferedImage> imageData;
@@ -89,12 +85,10 @@ public class DuplicateMatrixCommand implements Runnable {
     protected Stage createDialog() throws IOException, NullPointerException {
 
         imageData = qupath.getImageData();
-        //for testing matrix without image data
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
-                fakeMatrix[i][j] = Math.random();
-            }
-        }
+        size = imageData.getServer().nChannels();
+        duplicateMatrix = new float[size][size];
+        img = ConcatChannelsABI.convertImageDataToImage(imageData);
+        duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
 
         //to visualise and allow for dimensions
         //Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
@@ -207,10 +201,12 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempLabel.setAlignment(Pos.CENTER);
                     labelVertical.add(tempLabel, i, j);
                 }
-                String tempString = String.format("%.2f", fakeMatrix[i][j]);
+                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
                 //set buttons to be the corresponding matrix
                 Button tempButton = new Button(tempString);
                 tempButton.setPrefSize(40,20);
+                tempButton.setMaxSize(40,20);
+                tempButton.setMinSize(40,20);
                 tempButton.setAlignment(Pos.CENTER);
                 int tempI = i + 1;
                 int tempJ = j + 1;
