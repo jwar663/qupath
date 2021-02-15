@@ -26,8 +26,6 @@ import java.util.List;
 public class ConcatChannelsABI {
 
     //Macros
-    private static final double SIMILARITY_THRESHOLD = 0.90;
-    private static final int NUMBER_FOR_EXCESS_CHANNELS = 42;
     private static final int[] ALEXA_488 = {0, 204, 0}; //GREEN
     private static final int[] ALEXA_555 = {255, 255, 0}; //YELLOW
     private static final int[] ALEXA_594 = {255, 0, 0}; //RED
@@ -59,8 +57,9 @@ public class ConcatChannelsABI {
      * distinct channels.
      *
      * @param crossCorrelationMatrix
+     * @param similarityThreshold
      */
-    public static ArrayList<Integer> distinctChannels(float[][] crossCorrelationMatrix) {
+    public static ArrayList<Integer> distinctChannels(float[][] crossCorrelationMatrix, double similarityThreshold) {
         ArrayList<Integer> duplicates = new ArrayList<>();
         ArrayList<Integer> distinct = new ArrayList<>();
         int nChannels = crossCorrelationMatrix.length;
@@ -69,7 +68,7 @@ public class ConcatChannelsABI {
             if(!duplicates.contains(i)) {
                 for(int j = i + 1; j < crossCorrelationMatrix.length; j++) {
                     if(!duplicates.contains(j)) {
-                        if(crossCorrelationMatrix[i][j] > SIMILARITY_THRESHOLD) {
+                        if(crossCorrelationMatrix[i][j] > similarityThreshold) {
                             duplicates.add(j);
                         }
                     }
@@ -82,21 +81,6 @@ public class ConcatChannelsABI {
             }
         }
         return distinct;
-    }
-
-    /**
-     * This method is used to check if there are more than 7 channels and therefore whether channels should be concatenated or not.
-     *
-     * @param nChannels
-     */
-    public static boolean isExcessChannels(int nChannels) {
-        if(nChannels >= NUMBER_FOR_EXCESS_CHANNELS) {
-            System.out.println("excessChannels: true");
-            return true;
-        } else {
-            System.out.println("excessChannels: false");
-            return false;
-        }
     }
 
     /**
@@ -325,22 +309,16 @@ public class ConcatChannelsABI {
      * Create the associated image whilst removing the duplicate channels.
      *
      * @param imageData
+     * @param img
      */
-    public static ImageData concatDuplicateChannels(ImageData<BufferedImage> imageData) {
-        ImageData resultImageData = imageData;
-        int nChannels = imageData.getServer().nChannels();
-        if(isExcessChannels(nChannels)) {
-            BufferedImage img = convertImageDataToImage(imageData);
-            float[][] crossCorrelationMatrix = createConcatMatrix(img);
-//            for(int i = 0; i < newFloatArray.length; i++) {
-//                System.out.println(newFloatArray[i][0] + " " + newFloatArray[i][1] + " " + newFloatArray[i][2] + " " + newFloatArray[i][3] + " " + newFloatArray[i][4] + " " + newFloatArray[i][5] + " " + newFloatArray[i][6] + " " + newFloatArray[i][7] + " " + newFloatArray[i][8] + " " + newFloatArray[i][9] + " " + newFloatArray[i][10] + " " + newFloatArray[i][11] + " " + newFloatArray[i][12] + " " + newFloatArray[i][13] + " " + newFloatArray[i][14] + " " + newFloatArray[i][15] + " " + newFloatArray[i][16] + " " + newFloatArray[i][17] + " " + newFloatArray[i][18] + " " + newFloatArray[i][19] + " " + newFloatArray[i][20] + " " + newFloatArray[i][21] + " " + newFloatArray[i][22] + " " + newFloatArray[i][23] + " " + newFloatArray[i][24] + " " + newFloatArray[i][25] + " " + newFloatArray[i][26] + " " + newFloatArray[i][27] + " " + newFloatArray[i][28] + " " + newFloatArray[i][29] + " " + newFloatArray[i][30] + " " + newFloatArray[i][31] + " " + newFloatArray[i][32] + " " + newFloatArray[i][33] + " " + newFloatArray[i][34] + " " + newFloatArray[i][35] + " " + newFloatArray[i][36] + " " + newFloatArray[i][37] + " " + newFloatArray[i][38] + " " + newFloatArray[i][39] + " " + newFloatArray[i][40] + " " + newFloatArray[i][41] + " " + newFloatArray[i][42]);
-//            }
-            ArrayList<Integer> distinct = distinctChannels(crossCorrelationMatrix);
-            List<ImageChannel> channels = new ArrayList<>();
-            for(int i = 0; i < distinct.size(); i++) {
-                channels.add(imageData.getServer().getChannel(i));
-            }
-            BufferedImage finalImg = createNewBufferedImage(distinct, img);
+    public static ImageData concatDuplicateChannels(ImageData<BufferedImage> imageData, BufferedImage img, float[][] crossCorrelationMatrix, double similarityThreshold) {
+        ImageData resultImageData;
+        ArrayList<Integer> distinct = distinctChannels(crossCorrelationMatrix, similarityThreshold);
+        List<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < distinct.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+        BufferedImage finalImg = createNewBufferedImage(distinct, img);
             //writing a tiff file, not particularly useful
 //            File file = new File("D:\\Desktop\\QuPath\\newImage.tiff");
 //            try {
@@ -348,11 +326,11 @@ public class ConcatChannelsABI {
 //            } catch (IOException e) {
 //                e.printStackTrace();
 //            }
-            ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
-            ImageData imageData1 = new ImageData<BufferedImage>(newServer);
-            imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
-            //imageData1.setProperty()
-            setRegularChannelColours(imageData1);
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
+        ImageData imageData1 = new ImageData<BufferedImage>(newServer);
+        imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
+        //imageData1.setProperty()
+        setRegularChannelColours(imageData1);
 //            System.out.println("original URI: " + imageData.getServer().getURIs().toString());
 //            System.out.println("new URI: " + imageData1.getServer().getURIs().toString());
 //            System.out.println("original reference: " + imageData.getServer().getPath());
@@ -366,8 +344,7 @@ public class ConcatChannelsABI {
 //                e.printStackTrace();
 //            }
 //            System.out.println("updated URI: " + imageData1.getServer().getURIs().toString());
-            resultImageData = imageData1;
-        }
+        resultImageData = imageData1;
         setRegularChannelNames(resultImageData);
         return resultImageData;
     }

@@ -24,20 +24,15 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.Objects;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +40,6 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import qupath.lib.common.ConcatChannelsABI;
-import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
@@ -64,6 +58,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private static DecimalFormat df = new DecimalFormat("#.###");
 
     private QuPathGUI qupath;
+    private QuPathViewer viewer;
 
     private Stage dialog;
 
@@ -84,6 +79,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
+        viewer = qupath.getViewer();
         imageData = qupath.getImageData();
         size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
@@ -113,7 +109,8 @@ public class DuplicateMatrixCommand implements Runnable {
             String thresholdValue = thresholdTextField.getText();
             try{
                 if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
-                    //TODO: Call ConcatChannelsABI.concatDuplicateChannels when imageData is gathered correctly
+                    viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
+                    viewer.repaintEntireImage();
                     System.out.println(thresholdValue);
                 } else {
                     System.out.println("error");
