@@ -28,25 +28,27 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
+import java.util.Objects;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
-
-import static java.lang.Math.round;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -74,18 +76,19 @@ public class DuplicateMatrixCommand implements Runnable {
     private double[][] fakeMatrix = new double[size][size];
 
 
-    private ImageData imageData;
+    public ImageData<BufferedImage> imageData;
 
     /**
      * Constructor.
      * @param qupath
      */
-    public DuplicateMatrixCommand(final QuPathGUI qupath, ImageData<?> imageData) {
+    public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
-        this.imageData = imageData;
     }
 
-    protected Stage createDialog() throws IOException {
+    protected Stage createDialog() throws IOException, NullPointerException {
+
+        imageData = qupath.getImageData();
         //for testing matrix without image data
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
@@ -214,14 +217,16 @@ public class DuplicateMatrixCommand implements Runnable {
                 Button tempButton = new Button(tempString);
                 tempButton.setPrefSize(40,20);
                 tempButton.setAlignment(Pos.CENTER);
-                int tempI = i;
-                int tempJ = j;
+                int tempI = i + 1;
+                int tempJ = j + 1;
                 tempButton.setOnAction(e -> {
                     //set the correct images depending on button click
                     image1Label.setText("Channel " + tempI);
                     image2Label.setText("Channel " + tempJ);
-                    //imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
-                    //imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
+                    if(imageData != null) {
+                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
+                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
+                    }
                     System.out.println(tempString);
                 });
                 matrix.add(tempButton, i, j);

@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.Buffer;
 import java.util.*;
 import java.util.List;
 
@@ -283,7 +284,7 @@ public class ConcatChannelsABI {
      * @param imageData
      * @param channel
      */
-    public static BufferedImage singleChannelImage(ImageData imageData, int channel) {
+    public static BufferedImage singleChannelImage(ImageData<BufferedImage> imageData, int channel) {
         int[] channelArray = new int[1];
         channelArray[0] = channel;
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
@@ -291,9 +292,9 @@ public class ConcatChannelsABI {
         int height = imageData.getServer().getMetadata().getHeight();
         float[] tempFloatArray = new float[width * height];
 
-        //BufferedImage img = null;
+        BufferedImage img = null;
         try {
-            BufferedImage img = (BufferedImage) imageData.getServer().readBufferedImage(request);
+            img = imageData.getServer().readBufferedImage(request);
             SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(channelArray);
             WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
             BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
