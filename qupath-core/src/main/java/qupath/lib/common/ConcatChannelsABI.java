@@ -292,15 +292,18 @@ public class ConcatChannelsABI {
         int height = imageData.getServer().getMetadata().getHeight();
         float[] tempFloatArray = new float[width * height];
 
+        double max = 0;
+
         BufferedImage img = null;
         try {
             img = imageData.getServer().readBufferedImage(request);
-            SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(channelArray);
-            WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
-            BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
-            img.getRaster().getSamples(0, 0, width, height, channel, tempFloatArray);
-            resultImage.getRaster().setSamples(0, 0, width, height, channel, tempFloatArray);
-            return resultImage;
+            BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            for(int i = 0; i < width; i++) {
+                for(int j = 0; j < height; j++) {
+                    newImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                }
+            }
+            return newImage;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
