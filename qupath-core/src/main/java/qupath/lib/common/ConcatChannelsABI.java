@@ -285,14 +285,9 @@ public class ConcatChannelsABI {
      * @param channel
      */
     public static BufferedImage singleChannelImage(ImageData<BufferedImage> imageData, int channel) {
-        int[] channelArray = new int[1];
-        channelArray[0] = channel;
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
-        float[] tempFloatArray = new float[width * height];
-
-        double max = 0;
 
         BufferedImage img = null;
         try {
@@ -300,6 +295,7 @@ public class ConcatChannelsABI {
             BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < height; j++) {
+                    //set the red colour, leave the other colours as 0.
                     newImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
                 }
             }

@@ -72,7 +72,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
     private Stage dialog;
 
-    private int size = 5;
+    private int size = 12;
     private double[][] fakeMatrix = new double[size][size];
 
 
@@ -95,9 +95,6 @@ public class DuplicateMatrixCommand implements Runnable {
                 fakeMatrix[i][j] = Math.random();
             }
         }
-        //for testing images
-        InputStream stream = new FileInputStream("D:\\Desktop\\QuPath\\testimage.jpg");
-        Image img = new Image(stream);
 
         //to visualise and allow for dimensions
         //Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
@@ -165,8 +162,6 @@ public class DuplicateMatrixCommand implements Runnable {
         imageView2.setFitHeight(326);
         imageView2.setFitWidth(435);
         imageView2.setPreserveRatio(true);
-        imageView1.setImage(img);
-        imageView2.setImage(img);
         imagePane1.getChildren().add(imageView1);
         imagePane2.getChildren().add(imageView2);
         image1VBox.getChildren().addAll(image1Label, imagePane1);
