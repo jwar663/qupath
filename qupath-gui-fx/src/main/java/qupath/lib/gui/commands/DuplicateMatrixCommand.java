@@ -28,9 +28,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DecimalFormat;
-import java.util.concurrent.atomic.AtomicReference;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -42,9 +40,7 @@ import org.slf4j.LoggerFactory;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.display.ImageDisplay;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
@@ -74,8 +70,9 @@ public class DuplicateMatrixCommand implements Runnable {
 
     private Stage dialog;
 
-    private double[][] fakeMatrix = new double[42][42];
-    private int size;
+    private int size = 5;
+    private double[][] fakeMatrix = new double[size][size];
+
 
     private ImageData imageData;
 
@@ -90,7 +87,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createDialog() throws IOException {
         //for testing matrix without image data
-        size = 5;
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
                 fakeMatrix[i][j] = Math.random();
@@ -101,7 +97,7 @@ public class DuplicateMatrixCommand implements Runnable {
         Image img = new Image(stream);
 
         //to visualise and allow for dimensions
-        Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
+        //Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
         //larger panes
         Pane pane = new Pane();
@@ -111,7 +107,7 @@ public class DuplicateMatrixCommand implements Runnable {
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
-        //pane.setPadding(new Insets(10, 10, 10, 10));
+        overallPane.setPadding(new Insets(10, 10, 10, 10));
 
         //Threshold Part
         Label thresholdLabel = new Label("Please enter the correct threshold value:");
@@ -142,8 +138,9 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.setTop(thresholdGrid);
 
         //preview image section
-        HBox imageHBox = new HBox();
+        HBox imageHBox = new HBox(10);
         imageHBox.setPrefSize(880, 346);
+        imageHBox.setAlignment(Pos.CENTER);
         VBox image1VBox = new VBox();
         image1VBox.setPrefSize(435, 346);
         VBox image2VBox = new VBox();
@@ -178,39 +175,56 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixPane.setPrefSize(880, 394);
         //TableView<Double> matrixTable = new TableView<Double>();
         GridPane matrix = new GridPane();
+        GridPane labelVertical = new GridPane();
+        GridPane labelHorizontal = new GridPane();
+        labelHorizontal.setPrefSize(860, 20);
+        labelHorizontal.setMaxSize(860, 20);
+        labelVertical.setMaxSize(20, 374);
         matrix.setPrefSize(860,374);
-        for(int i = 0; i < size + 1; i++) {
-            for(int j = 0; j < size + 1; j++) {
-                if(i == 0 && j == 0) {
-
-                } else if(i == 0) {
-                    Label tempLabel = new Label(Integer.toString(j));
-                    tempLabel.setPrefSize(40,20);
-                    tempLabel.setAlignment(Pos.CENTER);
-                    matrix.add(tempLabel, i, j);
-                } else if(j == 0) {
-                    Label tempLabel = new Label(Integer.toString(i));
-                    tempLabel.setPrefSize(40,20);
-                    tempLabel.setAlignment(Pos.CENTER);
-                    matrix.add(tempLabel, i, j);
-                } else {
-                    String tempString = String.format("%.2f", fakeMatrix[i - 1][j - 1]);
-                    //set buttons to be the corresponding matrix
-                    Button tempButton = new Button(tempString);
-                    tempButton.setPrefSize(40,20);
-                    tempButton.setAlignment(Pos.CENTER);
-                    int tempI = i;
-                    int tempJ = j;
-                    tempButton.setOnAction(e -> {
-                        //set the correct images depending on button click
-                        image1Label.setText("Channel " + tempI);
-                        image2Label.setText("Channel " + tempJ);
-                        //imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
-                        //imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
-                        System.out.println(tempString);
-                    });
-                    matrix.add(tempButton, i, j);
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if(j == 0 && i== 0) {
+                    Label tempLabel1 = new Label(Integer.toString(j + 1));
+                    Label tempLabel2 = new Label(Integer.toString(i + 1));
+                    tempLabel1.setPrefSize(40,20);
+                    tempLabel1.setMaxSize(40,20);
+                    tempLabel1.setAlignment(Pos.CENTER);
+                    tempLabel2.setPrefSize(40,20);
+                    tempLabel2.setMaxSize(40,20);
+                    tempLabel2.setAlignment(Pos.CENTER);
+                    labelHorizontal.add(tempLabel1, i, j);
+                    labelVertical.add(tempLabel2, i, j);
                 }
+                else if(i == 0) {
+                    Label tempLabel = new Label(Integer.toString(j + 1));
+                    tempLabel.setPrefSize(40,20);
+                    tempLabel.setMaxSize(40,20);
+                    tempLabel.setAlignment(Pos.CENTER);
+                    labelHorizontal.add(tempLabel, i, j);
+                }
+                else if(j == 0) {
+                    Label tempLabel = new Label(Integer.toString(i + 1));
+                    tempLabel.setPrefSize(40,20);
+                    tempLabel.setMaxSize(40,20);
+                    tempLabel.setAlignment(Pos.CENTER);
+                    labelVertical.add(tempLabel, i, j);
+                }
+                String tempString = String.format("%.2f", fakeMatrix[i][j]);
+                //set buttons to be the corresponding matrix
+                Button tempButton = new Button(tempString);
+                tempButton.setPrefSize(40,20);
+                tempButton.setAlignment(Pos.CENTER);
+                int tempI = i;
+                int tempJ = j;
+                tempButton.setOnAction(e -> {
+                    //set the correct images depending on button click
+                    image1Label.setText("Channel " + tempI);
+                    image2Label.setText("Channel " + tempJ);
+                    //imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
+                    //imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
+                    System.out.println(tempString);
+                });
+                matrix.add(tempButton, i, j);
             }
         }
         matrix.setAlignment(Pos.BOTTOM_RIGHT);
@@ -223,6 +237,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixPane.setBottom(horizontalScrollBar);
         matrixPane.setRight(verticalScrollBar);
         matrixPane.setCenter(matrix);
+        matrixPane.setTop(labelHorizontal);
+        matrixPane.setLeft(labelVertical);
         overallPane.setCenter(matrixPane);
 
         //set borders
