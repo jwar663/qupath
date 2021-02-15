@@ -111,6 +111,8 @@ public class DuplicateMatrixCommand implements Runnable {
                 if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
                     viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                     viewer.repaintEntireImage();
+                    if(dialog.isShowing())
+                        dialog.close();
                     System.out.println(thresholdValue);
                 } else {
                     System.out.println("error");
