@@ -273,7 +273,6 @@ public class ConcatChannelsABI {
                 }
             }
         }
-        //System.out.println(channelMatrix);
         return channelMatrix;
     }
 
@@ -307,21 +306,31 @@ public class ConcatChannelsABI {
     }
 
     /**
+     * Use the image data to create the full buffered image for use in other methods.
+     *
+     * @param imageData
+     */
+    public static BufferedImage convertImageDataToImage(ImageData<BufferedImage> imageData) {
+        RegionRequest request = RegionRequest.createInstance(imageData.getServer());
+        BufferedImage img = null;
+        try {
+            img = imageData.getServer().readBufferedImage(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return img;
+    }
+
+    /**
      * Create the associated image whilst removing the duplicate channels.
      *
      * @param imageData
      */
-    public static ImageData concatDuplicateChannels(ImageData<?> imageData) {
+    public static ImageData concatDuplicateChannels(ImageData<BufferedImage> imageData) {
         ImageData resultImageData = imageData;
         int nChannels = imageData.getServer().nChannels();
         if(isExcessChannels(nChannels)) {
-            RegionRequest request = RegionRequest.createInstance(imageData.getServer());
-            BufferedImage img = null;
-            try {
-              img = (BufferedImage) imageData.getServer().readBufferedImage(request);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            BufferedImage img = convertImageDataToImage(imageData);
             float[][] crossCorrelationMatrix = createConcatMatrix(img);
 //            for(int i = 0; i < newFloatArray.length; i++) {
 //                System.out.println(newFloatArray[i][0] + " " + newFloatArray[i][1] + " " + newFloatArray[i][2] + " " + newFloatArray[i][3] + " " + newFloatArray[i][4] + " " + newFloatArray[i][5] + " " + newFloatArray[i][6] + " " + newFloatArray[i][7] + " " + newFloatArray[i][8] + " " + newFloatArray[i][9] + " " + newFloatArray[i][10] + " " + newFloatArray[i][11] + " " + newFloatArray[i][12] + " " + newFloatArray[i][13] + " " + newFloatArray[i][14] + " " + newFloatArray[i][15] + " " + newFloatArray[i][16] + " " + newFloatArray[i][17] + " " + newFloatArray[i][18] + " " + newFloatArray[i][19] + " " + newFloatArray[i][20] + " " + newFloatArray[i][21] + " " + newFloatArray[i][22] + " " + newFloatArray[i][23] + " " + newFloatArray[i][24] + " " + newFloatArray[i][25] + " " + newFloatArray[i][26] + " " + newFloatArray[i][27] + " " + newFloatArray[i][28] + " " + newFloatArray[i][29] + " " + newFloatArray[i][30] + " " + newFloatArray[i][31] + " " + newFloatArray[i][32] + " " + newFloatArray[i][33] + " " + newFloatArray[i][34] + " " + newFloatArray[i][35] + " " + newFloatArray[i][36] + " " + newFloatArray[i][37] + " " + newFloatArray[i][38] + " " + newFloatArray[i][39] + " " + newFloatArray[i][40] + " " + newFloatArray[i][41] + " " + newFloatArray[i][42]);
