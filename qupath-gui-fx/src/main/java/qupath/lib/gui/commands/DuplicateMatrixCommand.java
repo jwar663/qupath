@@ -102,7 +102,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //larger panes
         Pane pane = new Pane();
-        pane.setPrefSize(900.0, 800.0);
+        pane.setPrefSize(900.0, 805.0);
 
         BorderPane overallPane = new BorderPane();
         overallPane.setPrefSize(880.0, 780.0);
@@ -157,71 +157,99 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //preview image section
-//        HBox imageHBox = new HBox(10);
-//        VBox image1VBox = new VBox();
-//        VBox image2VBox = new VBox();
-//        Pane imagePane1 = new Pane();
-//        Pane imagePane2 = new Pane();
-//        imageHBox.getChildren().addAll(image1VBox, image2VBox);
-//        Label image1Label = new Label("Image 1");
-//        Label image2Label = new Label("Image 2");
-//        ImageView imageView1 = new ImageView();
-//        ImageView imageView2 = new ImageView();
-//        imagePane1.getChildren().add(imageView1);
-//        imagePane2.getChildren().add(imageView2);
-//        image1VBox.getChildren().addAll(image1Label, imagePane1);
-//        image2VBox.getChildren().addAll(image2Label, imagePane2);
-//        overallPane.setBottom(imageHBox);
-//
-//        //matrix part
-//        BorderPane matrixPane = new BorderPane();
-//        GridPane matrix = new GridPane();
-//        GridPane labelVertical = new GridPane();
-//        GridPane labelHorizontal = new GridPane();;
-//        for(int i = 0; i < size; i++) {
-//            for(int j = 0; j < size; j++) {
-//                if(j == 0 && i== 0) {
-//                    Label tempLabel1 = new Label(Integer.toString(j + 1));
-//                    Label tempLabel2 = new Label(Integer.toString(i + 1));
-//                    labelHorizontal.add(tempLabel1, i, j);
-//                    labelVertical.add(tempLabel2, i, j);
-//                }
-//                else if(i == 0) {
-//                    Label tempLabel = new Label(Integer.toString(j + 1));
-//                    labelHorizontal.add(tempLabel, i, j);
-//                }
-//                else if(j == 0) {
-//                    Label tempLabel = new Label(Integer.toString(i + 1));
-//                    labelVertical.add(tempLabel, i, j);
-//                }
-//                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
-//                //set buttons to be the corresponding matrix
-//                Button tempButton = new Button(tempString);
-//                int tempI = i + 1;
-//                int tempJ = j + 1;
-//                tempButton.setOnAction(e -> {
-//                    //set the correct images depending on button click
-//                    image1Label.setText("Channel " + tempI);
-//                    image2Label.setText("Channel " + tempJ);
-//                    if(imageData != null) {
-//                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
-//                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
-//                    }
-//                });
-//                matrix.add(tempButton, i, j);
-//            }
-//        }
-//        overallPane.setCenter(matrixPane);
+        HBox imageHBox = new HBox();
+        imageHBox.setPrefSize(880.0, 346.0);
+        imageHBox.setMaxSize(880.0, 346.0);
+        imageHBox.setMinSize(880.0, 346.0);
+        BorderPane.setAlignment(imageHBox, Pos.BOTTOM_CENTER);
+        VBox image1VBox = new VBox();
+        image1VBox.setPrefSize(435.0, 346.0);
+        image1VBox.setMaxSize(435.0, 346.0);
+        image1VBox.setMinSize(435.0, 346.0);
+        VBox image2VBox = new VBox();
+        image2VBox.setPrefSize(435.0, 346.0);
+        image2VBox.setMaxSize(435.0, 346.0);
+        image2VBox.setMinSize(435.0, 346.0);
+        image2VBox.setTranslateX(10);
+        ScrollPane image1Scroll = new ScrollPane();
+        image1Scroll.setPrefSize(435.0, 326.0);
+        image1Scroll.setMaxSize(435.0, 326.0);
+        image1Scroll.setMinSize(435.0, 326.0);
+        ScrollPane image2Scroll = new ScrollPane();
+        image2Scroll.setPrefSize(435.0, 326.0);
+        image2Scroll.setMaxSize(435.0, 326.0);
+        image2Scroll.setMinSize(435.0, 326.0);
+        imageHBox.getChildren().addAll(image1VBox, image2VBox);
+        Label image1Label = new Label("Image 1");
+        image1Label.setPrefSize(435.0, 25.0);
+        image1Label.setMaxSize(435.0, 25.0);
+        image1Label.setMinSize(435.0, 25.0);
+        image1Label.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image1Label, Priority.NEVER);
+        Label image2Label = new Label("Image 2");
+        image2Label.setPrefSize(435.0, 25.0);
+        image2Label.setMaxSize(435.0, 25.0);
+        image2Label.setMinSize(435.0, 25.0);
+        image2Label.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image2Label, Priority.NEVER);
+        ImageView imageView1 = new ImageView();
+        ImageView imageView2 = new ImageView();
+        image1Scroll.setContent(imageView1);
+        image2Scroll.setContent(imageView2);
+        image1VBox.getChildren().addAll(image1Label, image1Scroll);
+        image2VBox.getChildren().addAll(image2Label, image2Scroll);
+        overallPane.setBottom(imageHBox);
+
+        //matrix part
+        BorderPane matrixPane = new BorderPane();
+        ScrollPane matrixScrollPane = new ScrollPane();
+        GridPane matrix = new GridPane();
+        GridPane labelVertical = new GridPane();
+        GridPane labelHorizontal = new GridPane();;
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if(j == 0 && i== 0) {
+                    Label tempLabel1 = new Label(Integer.toString(j + 1));
+                    Label tempLabel2 = new Label(Integer.toString(i + 1));
+                    labelHorizontal.add(tempLabel1, i, j);
+                    labelVertical.add(tempLabel2, i, j);
+                }
+                else if(i == 0) {
+                    Label tempLabel = new Label(Integer.toString(j + 1));
+                    labelHorizontal.add(tempLabel, i, j);
+                }
+                else if(j == 0) {
+                    Label tempLabel = new Label(Integer.toString(i + 1));
+                    labelVertical.add(tempLabel, i, j);
+                }
+                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
+                //set buttons to be the corresponding matrix
+                Button tempButton = new Button(tempString);
+                int tempI = i + 1;
+                int tempJ = j + 1;
+                tempButton.setOnAction(e -> {
+                    //set the correct images depending on button click
+                    image1Label.setText("Channel " + tempI);
+                    image2Label.setText("Channel " + tempJ);
+                    if(imageData != null) {
+                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
+                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
+                    }
+                });
+                matrix.add(tempButton, i, j);
+            }
+        }
+        overallPane.setCenter(matrixPane);
 
 
         //pane.getChildren().add(overallPane);
 
-        Scene scene = new Scene(pane, 900, 800);
+        Scene scene = new Scene(pane, 900, 805);
         dialog.setScene(scene);
         dialog.setMinWidth(900);
-        dialog.setMinHeight(800);
+        dialog.setMinHeight(805);
         dialog.setMaxWidth(900);
-        dialog.setMaxHeight(800);
+        dialog.setMaxHeight(805);
 
         return dialog;
     }
