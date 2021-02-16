@@ -181,7 +181,6 @@ public class DuplicateMatrixCommand implements Runnable {
         //matrix part
         BorderPane matrixPane = new BorderPane();
         matrixPane.setPrefSize(880, 394);
-        //TableView<Double> matrixTable = new TableView<Double>();
         GridPane matrix = new GridPane();
         GridPane labelVertical = new GridPane();
         GridPane labelHorizontal = new GridPane();
@@ -253,16 +252,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixPane.setLeft(labelVertical);
         overallPane.setCenter(matrixPane);
 
-        //set borders
-        //overallPane.setBorder(border);
 
         pane.getChildren().add(overallPane);
-
-        //image data is bad
-        //image1 = ConcatChannelsABI.singleChannelImage(imageData, 0);
-        //Canvas canvas1 = new Canvas();
-        //canvas1.getGraphicsContext2D().drawImage(SwingFXUtils.toFXImage(image1, null), 0,0);
-        //largePane.getChildren().add(canvas1);
 
         Scene scene = new Scene(pane, 900, 800);
         dialog.setScene(scene);
