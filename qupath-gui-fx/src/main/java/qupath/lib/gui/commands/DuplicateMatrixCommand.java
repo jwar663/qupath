@@ -113,9 +113,10 @@ public class DuplicateMatrixCommand implements Runnable {
         GridPane thresholdPane = new GridPane();
         thresholdPane.setPrefSize(880.0, 25.0);
         //thresholdPane.setAlignment(Pos.CENTER);
-        ColumnConstraints labelColumn = new ColumnConstraints(750.0, 750.0, 750.0);
+        ColumnConstraints labelColumn = new ColumnConstraints(620.0, 620.0, 620.0);
         ColumnConstraints fieldColumn = new ColumnConstraints(80.0, 80.0, 80.0);
-        ColumnConstraints buttonColumn = new ColumnConstraints(50.0, 50.0, 50.0);
+        ColumnConstraints confirmColumn = new ColumnConstraints(90.0, 90.0, 90.0);
+        ColumnConstraints previewColumn = new ColumnConstraints(90.0, 90.0, 90.0);
         RowConstraints rowConstraints = new RowConstraints(25.0, 25.0, 25.0);
 
         //Threshold Part
@@ -129,10 +130,10 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdTextField.setMinSize(40.0, 25.0);
         thresholdTextField.setMaxSize(40.0, 25.0);
         GridPane.setHalignment(thresholdTextField, HPos.CENTER);
-        Button thresholdConfirm = new Button("OK");
-        thresholdConfirm.setPrefSize(40.0, 25.0);
-        thresholdConfirm.setMinSize(40.0, 25.0);
-        thresholdConfirm.setMaxSize(40.0, 25.0);
+        Button thresholdConfirm = new Button("Submit");
+        thresholdConfirm.setPrefSize(80.0, 25.0);
+        thresholdConfirm.setMinSize(80.0, 25.0);
+        thresholdConfirm.setMaxSize(80.0, 25.0);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
             String thresholdValue = thresholdTextField.getText();
@@ -147,10 +148,26 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
         });
+        Button thresholdPreview = new Button("Preview");
+        thresholdPreview.setPrefSize(80.0, 25.0);
+        thresholdPreview.setMinSize(80.0, 25.0);
+        thresholdPreview.setMaxSize(80.0, 25.0);
+        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+        thresholdPreview.setOnAction(event -> {
+            String thresholdValue = thresholdTextField.getText();
+            try{
+                if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
+
+                }
+            } catch(Exception e) {
+                System.out.println("Exception: " + e);
+            }
+        });
         thresholdPane.add(thresholdLabel, 0, 0);
         thresholdPane.add(thresholdTextField, 1, 0);
-        thresholdPane.add(thresholdConfirm, 2, 0);
-        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, buttonColumn);
+        thresholdPane.add(thresholdPreview, 2, 0);
+        thresholdPane.add(thresholdConfirm, 3, 0);
+        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn);
         thresholdPane.getRowConstraints().add(rowConstraints);
         overallPane.setTop(thresholdPane);
 
