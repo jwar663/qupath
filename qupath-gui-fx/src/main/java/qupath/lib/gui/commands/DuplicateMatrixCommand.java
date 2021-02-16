@@ -208,6 +208,7 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixScrollPane.setMaxSize(880.0, 384.0);
         matrixScrollPane.setMinSize(880.0, 384.0);
         BorderPane.setAlignment(matrixScrollPane, Pos.TOP_CENTER);
+        BorderPane.setMargin(matrixScrollPane, new Insets(10.0,0.0,0.0,0.0));
         GridPane matrix = new GridPane();
         matrix.setGridLinesVisible(true);
         for(int i = 0; i < size + 1; i++) {
@@ -243,8 +244,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempButton.setMaxSize(40.0, 25.0);
                     tempButton.setMinSize(40.0, 25.0);
                     //tempButton.setStyle("-fx-background-color: #FFFFFF");
-                    int tempI = i + 1;
-                    int tempJ = j + 1;
+                    int tempI = i;
+                    int tempJ = j;
                     tempButton.setOnAction(e -> {
                         //set the correct images depending on button click
                         image1Label.setText("Channel " + tempI);
