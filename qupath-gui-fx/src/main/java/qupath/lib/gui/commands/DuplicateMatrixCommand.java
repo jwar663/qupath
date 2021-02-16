@@ -119,11 +119,11 @@ public class DuplicateMatrixCommand implements Runnable {
         RowConstraints rowConstraints = new RowConstraints(25.0, 25.0, 25.0);
 
         //Threshold Part
-        Label thresholdLabel = new Label("Please enter the correct threshold value:");
+        Label thresholdLabel = new Label("Please enter a threshold value:");
         thresholdLabel.setPrefHeight(25.0);
         thresholdLabel.setMinHeight(25.0);
         thresholdLabel.setMaxHeight(25.0);
-        GridPane.setHalignment(thresholdLabel, HPos.CENTER);
+        GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
         TextField thresholdTextField = new TextField("0.90");
         thresholdTextField.setPrefSize(40.0, 25.0);
         thresholdTextField.setMinSize(40.0, 25.0);
