@@ -175,10 +175,12 @@ public class DuplicateMatrixCommand implements Runnable {
         image1Scroll.setPrefSize(435.0, 326.0);
         image1Scroll.setMaxSize(435.0, 326.0);
         image1Scroll.setMinSize(435.0, 326.0);
+        image1Scroll.setPannable(true);
         ScrollPane image2Scroll = new ScrollPane();
         image2Scroll.setPrefSize(435.0, 326.0);
         image2Scroll.setMaxSize(435.0, 326.0);
         image2Scroll.setMinSize(435.0, 326.0);
+        image2Scroll.setPannable(true);
         imageHBox.getChildren().addAll(image1VBox, image2VBox);
         Label image1Label = new Label("Image 1");
         image1Label.setPrefSize(435.0, 25.0);
@@ -201,45 +203,63 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.setBottom(imageHBox);
 
         //matrix part
-        BorderPane matrixPane = new BorderPane();
         ScrollPane matrixScrollPane = new ScrollPane();
+        matrixScrollPane.setPrefSize(880.0, 384.0);
+        matrixScrollPane.setMaxSize(880.0, 384.0);
+        matrixScrollPane.setMinSize(880.0, 384.0);
+        BorderPane.setAlignment(matrixScrollPane, Pos.TOP_CENTER);
         GridPane matrix = new GridPane();
-        GridPane labelVertical = new GridPane();
-        GridPane labelHorizontal = new GridPane();;
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
+        matrix.setGridLinesVisible(true);
+        for(int i = 0; i < size + 1; i++) {
+            for(int j = 0; j < size + 1; j++) {
                 if(j == 0 && i== 0) {
-                    Label tempLabel1 = new Label(Integer.toString(j + 1));
-                    Label tempLabel2 = new Label(Integer.toString(i + 1));
-                    labelHorizontal.add(tempLabel1, i, j);
-                    labelVertical.add(tempLabel2, i, j);
+//                    Label tempLabel1 = new Label(Integer.toString(j + 1));
+//                    Label tempLabel2 = new Label(Integer.toString(i + 1));
+//                    labelHorizontal.add(tempLabel1, i, j);
+//                    labelVertical.add(tempLabel2, i, j);
                 }
                 else if(i == 0) {
-                    Label tempLabel = new Label(Integer.toString(j + 1));
-                    labelHorizontal.add(tempLabel, i, j);
+                    Label tempLabel = new Label(Integer.toString(j));
+                    tempLabel.setPrefSize(40.0, 25.0);
+                    tempLabel.setMaxSize(40.0, 25.0);
+                    tempLabel.setMinSize(40.0, 25.0);
+                    tempLabel.setAlignment(Pos.CENTER);
+                    matrix.add(tempLabel, j, 0);
+                    //labelHorizontal.add(tempLabel, i, j);
                 }
                 else if(j == 0) {
-                    Label tempLabel = new Label(Integer.toString(i + 1));
-                    labelVertical.add(tempLabel, i, j);
+                    Label tempLabel = new Label(Integer.toString(i));
+                    tempLabel.setPrefSize(25.0, 25.0);
+                    tempLabel.setMaxSize(25.0, 25.0);
+                    tempLabel.setMinSize(25.0, 25.0);
+                    tempLabel.setAlignment(Pos.CENTER);
+                    matrix.add(tempLabel, 0, i);
+                    //labelVertical.add(tempLabel, i, j);
+                } else {
+                    String tempString = String.format("%.2f", duplicateMatrix[i - 1][j - 1]);
+                    //set buttons to be the corresponding matrix
+                    Button tempButton = new Button(tempString);
+                    tempButton.setPrefSize(40.0, 25.0);
+                    tempButton.setMaxSize(40.0, 25.0);
+                    tempButton.setMinSize(40.0, 25.0);
+                    //tempButton.setStyle("-fx-background-color: #FFFFFF");
+                    int tempI = i + 1;
+                    int tempJ = j + 1;
+                    tempButton.setOnAction(e -> {
+                        //set the correct images depending on button click
+                        image1Label.setText("Channel " + tempI);
+                        image2Label.setText("Channel " + tempJ);
+                        if(imageData != null) {
+                            imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
+                            imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
+                        }
+                    });
+                    matrix.add(tempButton, i, j);
                 }
-                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
-                //set buttons to be the corresponding matrix
-                Button tempButton = new Button(tempString);
-                int tempI = i + 1;
-                int tempJ = j + 1;
-                tempButton.setOnAction(e -> {
-                    //set the correct images depending on button click
-                    image1Label.setText("Channel " + tempI);
-                    image2Label.setText("Channel " + tempJ);
-                    if(imageData != null) {
-                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
-                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
-                    }
-                });
-                matrix.add(tempButton, i, j);
             }
         }
-        overallPane.setCenter(matrixPane);
+        matrixScrollPane.setContent(matrix);
+        overallPane.setCenter(matrixScrollPane);
 
 
         //pane.getChildren().add(overallPane);
