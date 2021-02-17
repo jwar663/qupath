@@ -282,11 +282,31 @@ public class ConcatChannelsABI {
                     newImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
                 }
             }
-            return newImage;
+            BufferedImage thumbnailImage = createThumbnailImage(newImage, 326,435);
+            return thumbnailImage;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Use a buffered image to create a thumbnail of that image given the requested size of the thumbnail.
+     *
+     * @param img
+     * @param height
+     * @param width
+     */
+    public static BufferedImage createThumbnailImage(BufferedImage img, int height, int width) {
+        BufferedImage thumbnailImage = new BufferedImage(width, height, img.getType());
+        Graphics2D graphics2D = thumbnailImage.createGraphics();
+        graphics2D.setComposite(AlphaComposite.Src);
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawImage(img, 0, 0, width, height, null);
+        graphics2D.dispose();
+        return thumbnailImage;
     }
 
     /**
