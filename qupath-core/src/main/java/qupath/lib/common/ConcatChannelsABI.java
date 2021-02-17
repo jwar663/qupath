@@ -266,27 +266,24 @@ public class ConcatChannelsABI {
      *
      * @param imageData
      * @param channel
-     * @param isThumbnail
      */
-    public static BufferedImage singleChannelImage(ImageData<BufferedImage> imageData, int channel, boolean isThumbnail) {
+    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight) {
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
-
+        BufferedImage[] bufferedImages = new BufferedImage[2];
         BufferedImage img = null;
         try {
             img = imageData.getServer().readBufferedImage(request);
-            BufferedImage newImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            bufferedImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < height; j++) {
                     //set the red colour, leave the other colours as 0.
-                    newImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                    bufferedImages[1].getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
                 }
             }
-            if(isThumbnail) {
-                newImage = createThumbnailImage(newImage, 326,435);
-            }
-            return newImage;
+            bufferedImages[0] = createThumbnailImage(bufferedImages[1], desiredHeight, desiredWidth);
+            return bufferedImages;
         } catch (IOException e) {
             e.printStackTrace();
             return null;

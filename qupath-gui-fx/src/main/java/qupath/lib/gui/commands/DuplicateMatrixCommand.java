@@ -26,6 +26,8 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -174,52 +176,96 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //preview image section
-        HBox imageHBox = new HBox();
-        imageHBox.setPrefSize(880.0, 321.0);
-        imageHBox.setMaxSize(880.0, 321.0);
-        imageHBox.setMinSize(880.0, 321.0);
-        BorderPane.setAlignment(imageHBox, Pos.BOTTOM_CENTER);
-        VBox image1VBox = new VBox();
-        image1VBox.setPrefSize(435.0, 321.0);
-        image1VBox.setMaxSize(435.0, 321.0);
-        image1VBox.setMinSize(435.0, 321.0);
-        VBox image2VBox = new VBox();
-        image2VBox.setPrefSize(435.0, 321.0);
-        image2VBox.setMaxSize(435.0, 321.0);
-        image2VBox.setMinSize(435.0, 321.0);
-        image2VBox.setTranslateX(10);
-        Pane image1Pane = new Pane();
-        image1Pane.setPrefSize(435.0, 301.0);
-        image1Pane.setMaxSize(435.0, 301.0);
-        image1Pane.setMinSize(435.0, 301.0);
-        Pane image2Pane = new Pane();
-        image2Pane.setPrefSize(435.0, 301.0);
-        image2Pane.setMaxSize(435.0, 301.0);
-        image2Pane.setMinSize(435.0, 301.0);
-        imageHBox.getChildren().addAll(image1VBox, image2VBox);
-        Label image1Label = new Label("Image 1");
-        image1Label.setPrefSize(435.0, 25.0);
-        image1Label.setMaxSize(435.0, 25.0);
-        image1Label.setMinSize(435.0, 25.0);
-        image1Label.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image1Label, Priority.NEVER);
-        Label image2Label = new Label("Image 2");
-        image2Label.setPrefSize(435.0, 25.0);
-        image2Label.setMaxSize(435.0, 25.0);
-        image2Label.setMinSize(435.0, 25.0);
-        image2Label.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image2Label, Priority.NEVER);
-        ImageView imageView1 = new ImageView();
-        ImageView imageView2 = new ImageView();
-        image1Pane.getChildren().add(imageView1);
-        image2Pane.getChildren().add(imageView2);
-        image1VBox.getChildren().addAll(image1Label, image1Pane);
-        image2VBox.getChildren().addAll(image2Label, image2Pane);
+        HBox imageScrollBox = new HBox();
+        imageScrollBox.setPrefSize(880.0, 321.0);
+        imageScrollBox.setMaxSize(880.0, 321.0);
+        imageScrollBox.setMinSize(880.0, 321.0);
+        BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
+        VBox image1ScrollVBox = new VBox();
+        image1ScrollVBox.setPrefSize(435.0, 321.0);
+        image1ScrollVBox.setMaxSize(435.0, 321.0);
+        image1ScrollVBox.setMinSize(435.0, 321.0);
+        VBox image2ScrollVBox = new VBox();
+        image2ScrollVBox.setPrefSize(435.0, 321.0);
+        image2ScrollVBox.setMaxSize(435.0, 321.0);
+        image2ScrollVBox.setMinSize(435.0, 321.0);
+        image2ScrollVBox.setTranslateX(10);
+        ScrollPane image1ScrollPane = new ScrollPane();
+        image1ScrollPane.setPannable(true);
+        image1ScrollPane.setPrefSize(435.0, 301.0);
+        image1ScrollPane.setMaxSize(435.0, 301.0);
+        image1ScrollPane.setMinSize(435.0, 301.0);
+        ScrollPane image2ScrollPane = new ScrollPane();
+        image2ScrollPane.setPannable(true);
+        image2ScrollPane.setPrefSize(435.0, 301.0);
+        image2ScrollPane.setMaxSize(435.0, 301.0);
+        image2ScrollPane.setMinSize(435.0, 301.0);
+        imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
+        Label image1ScrollLabel = new Label("Image 1");
+        image1ScrollLabel.setPrefSize(435.0, 25.0);
+        image1ScrollLabel.setMaxSize(435.0, 25.0);
+        image1ScrollLabel.setMinSize(435.0, 25.0);
+        image1ScrollLabel.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
+        Label image2ScrollLabel = new Label("Image 2");
+        image2ScrollLabel.setPrefSize(435.0, 25.0);
+        image2ScrollLabel.setMaxSize(435.0, 25.0);
+        image2ScrollLabel.setMinSize(435.0, 25.0);
+        image2ScrollLabel.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
+        ImageView imageScrollView1 = new ImageView();
+        ImageView imageScrollView2 = new ImageView();
+        image1ScrollPane.setContent(imageScrollView1);
+        image2ScrollPane.setContent(imageScrollView2);
+        image1ScrollVBox.getChildren().addAll(image1ScrollLabel, image1ScrollPane);
+        image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
+        Tab scrollTab = new Tab("Scroll", imageScrollBox);
+
+        HBox imageThumbnailBox = new HBox();
+        imageThumbnailBox.setPrefSize(880.0, 321.0);
+        imageThumbnailBox.setMaxSize(880.0, 321.0);
+        imageThumbnailBox.setMinSize(880.0, 321.0);
+        BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
+        VBox image1ThumbnailVBox = new VBox();
+        image1ThumbnailVBox.setPrefSize(435.0, 321.0);
+        image1ThumbnailVBox.setMaxSize(435.0, 321.0);
+        image1ThumbnailVBox.setMinSize(435.0, 321.0);
+        VBox image2ThumbnailVBox = new VBox();
+        image2ThumbnailVBox.setPrefSize(435.0, 321.0);
+        image2ThumbnailVBox.setMaxSize(435.0, 321.0);
+        image2ThumbnailVBox.setMinSize(435.0, 321.0);
+        image2ThumbnailVBox.setTranslateX(10);
+        Pane image1ThumbnailPane = new Pane();
+        image1ThumbnailPane.setPrefSize(435.0, 301.0);
+        image1ThumbnailPane.setMaxSize(435.0, 301.0);
+        image1ThumbnailPane.setMinSize(435.0, 301.0);
+        Pane image2ThumbnailPane = new Pane();
+        image2ThumbnailPane.setPrefSize(435.0, 301.0);
+        image2ThumbnailPane.setMaxSize(435.0, 301.0);
+        image2ThumbnailPane.setMinSize(435.0, 301.0);
+        imageThumbnailBox.getChildren().addAll(image1ThumbnailVBox, image2ThumbnailVBox);
+        Label image1ThumbnailLabel = new Label("Image 1");
+        image1ThumbnailLabel.setPrefSize(435.0, 25.0);
+        image1ThumbnailLabel.setMaxSize(435.0, 25.0);
+        image1ThumbnailLabel.setMinSize(435.0, 25.0);
+        image1ThumbnailLabel.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image1ThumbnailLabel, Priority.NEVER);
+        Label image2ThumbnailLabel = new Label("Image 2");
+        image2ThumbnailLabel.setPrefSize(435.0, 25.0);
+        image2ThumbnailLabel.setMaxSize(435.0, 25.0);
+        image2ThumbnailLabel.setMinSize(435.0, 25.0);
+        image2ThumbnailLabel.setAlignment(Pos.CENTER);
+        VBox.setVgrow(image2ThumbnailLabel, Priority.NEVER);
+        ImageView imageThumbnailView1 = new ImageView();
+        ImageView imageThumbnailView2 = new ImageView();
+        image1ThumbnailPane.getChildren().add(imageThumbnailView1);
+        image2ThumbnailPane.getChildren().add(imageThumbnailView2);
+        image1ThumbnailVBox.getChildren().addAll(image1ThumbnailLabel, image1ThumbnailPane);
+        image2ThumbnailVBox.getChildren().addAll(image2ThumbnailLabel, image2ThumbnailPane);
+        Tab thumbnailTab = new Tab("Thumbnail", imageThumbnailBox);
 
 
         //tab pane
-        Tab scrollTab = new Tab("Scroll", imageHBox);
-        Tab thumbnailTab = new Tab("Thumbnail", imageHBox);
         TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
         imageTabPane.setSide(Side.BOTTOM);
         imageTabPane.setPrefSize(880.0, 346.0);
@@ -239,10 +285,6 @@ public class DuplicateMatrixCommand implements Runnable {
         for(int i = 0; i < size + 1; i++) {
             for(int j = 0; j < size + 1; j++) {
                 if(j == 0 && i== 0) {
-//                    Label tempLabel1 = new Label(Integer.toString(j + 1));
-//                    Label tempLabel2 = new Label(Integer.toString(i + 1));
-//                    labelHorizontal.add(tempLabel1, i, j);
-//                    labelVertical.add(tempLabel2, i, j);
                 }
                 else if(i == 0) {
                     Label tempLabel = new Label(Integer.toString(j));
@@ -251,7 +293,6 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempLabel.setMinSize(40.0, 25.0);
                     tempLabel.setAlignment(Pos.CENTER);
                     matrix.add(tempLabel, j, 0);
-                    //labelHorizontal.add(tempLabel, i, j);
                 }
                 else if(j == 0) {
                     Label tempLabel = new Label(Integer.toString(i));
@@ -260,7 +301,6 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempLabel.setMinSize(25.0, 25.0);
                     tempLabel.setAlignment(Pos.CENTER);
                     matrix.add(tempLabel, 0, i);
-                    //labelVertical.add(tempLabel, i, j);
                 } else {
                     String tempString = String.format("%.2f", duplicateMatrix[i - 1][j - 1]);
                     //set buttons to be the corresponding matrix
@@ -268,15 +308,20 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempButton.setPrefSize(40.0, 25.0);
                     tempButton.setMaxSize(40.0, 25.0);
                     tempButton.setMinSize(40.0, 25.0);
-                    //tempButton.setStyle("-fx-background-color: #FFFFFF");
                     int tempI = i;
                     int tempJ = j;
                     tempButton.setOnAction(e -> {
                         //set the correct images depending on button click
-                        image1Label.setText("Channel " + tempI);
-                        image2Label.setText("Channel " + tempJ);
-                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI - 1, true), null));
-                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ - 1, true), null));
+                        image1ScrollLabel.setText("Channel " + tempI);
+                        image2ScrollLabel.setText("Channel " + tempJ);
+                        image1ThumbnailLabel.setText("Channel " + tempI);
+                        image2ThumbnailLabel.setText("Channel " + tempJ);
+                        BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI - 1, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                        BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ - 1, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                        imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
+                        imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
+                        imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
+                        imageThumbnailView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[0], null));
                     });
                     matrix.add(tempButton, i, j);
                 }
