@@ -175,29 +175,27 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //preview image section
         HBox imageHBox = new HBox();
-        imageHBox.setPrefSize(880.0, 346.0);
-        imageHBox.setMaxSize(880.0, 346.0);
-        imageHBox.setMinSize(880.0, 346.0);
+        imageHBox.setPrefSize(880.0, 321.0);
+        imageHBox.setMaxSize(880.0, 321.0);
+        imageHBox.setMinSize(880.0, 321.0);
         BorderPane.setAlignment(imageHBox, Pos.BOTTOM_CENTER);
         VBox image1VBox = new VBox();
-        image1VBox.setPrefSize(435.0, 346.0);
-        image1VBox.setMaxSize(435.0, 346.0);
-        image1VBox.setMinSize(435.0, 346.0);
+        image1VBox.setPrefSize(435.0, 321.0);
+        image1VBox.setMaxSize(435.0, 321.0);
+        image1VBox.setMinSize(435.0, 321.0);
         VBox image2VBox = new VBox();
-        image2VBox.setPrefSize(435.0, 346.0);
-        image2VBox.setMaxSize(435.0, 346.0);
-        image2VBox.setMinSize(435.0, 346.0);
+        image2VBox.setPrefSize(435.0, 321.0);
+        image2VBox.setMaxSize(435.0, 321.0);
+        image2VBox.setMinSize(435.0, 321.0);
         image2VBox.setTranslateX(10);
-        ScrollPane image1Scroll = new ScrollPane();
-        image1Scroll.setPrefSize(435.0, 326.0);
-        image1Scroll.setMaxSize(435.0, 326.0);
-        image1Scroll.setMinSize(435.0, 326.0);
-        image1Scroll.setPannable(true);
-        ScrollPane image2Scroll = new ScrollPane();
-        image2Scroll.setPrefSize(435.0, 326.0);
-        image2Scroll.setMaxSize(435.0, 326.0);
-        image2Scroll.setMinSize(435.0, 326.0);
-        image2Scroll.setPannable(true);
+        Pane image1Pane = new Pane();
+        image1Pane.setPrefSize(435.0, 301.0);
+        image1Pane.setMaxSize(435.0, 301.0);
+        image1Pane.setMinSize(435.0, 301.0);
+        Pane image2Pane = new Pane();
+        image2Pane.setPrefSize(435.0, 301.0);
+        image2Pane.setMaxSize(435.0, 301.0);
+        image2Pane.setMinSize(435.0, 301.0);
         imageHBox.getChildren().addAll(image1VBox, image2VBox);
         Label image1Label = new Label("Image 1");
         image1Label.setPrefSize(435.0, 25.0);
@@ -213,11 +211,21 @@ public class DuplicateMatrixCommand implements Runnable {
         VBox.setVgrow(image2Label, Priority.NEVER);
         ImageView imageView1 = new ImageView();
         ImageView imageView2 = new ImageView();
-        image1Scroll.setContent(imageView1);
-        image2Scroll.setContent(imageView2);
-        image1VBox.getChildren().addAll(image1Label, image1Scroll);
-        image2VBox.getChildren().addAll(image2Label, image2Scroll);
-        overallPane.setBottom(imageHBox);
+        image1Pane.getChildren().add(imageView1);
+        image2Pane.getChildren().add(imageView2);
+        image1VBox.getChildren().addAll(image1Label, image1Pane);
+        image2VBox.getChildren().addAll(image2Label, image2Pane);
+
+
+        //tab pane
+        Tab scrollTab = new Tab("Scroll", imageHBox);
+        Tab thumbnailTab = new Tab("Thumbnail", imageHBox);
+        TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
+        imageTabPane.setSide(Side.BOTTOM);
+        imageTabPane.setPrefSize(880.0, 346.0);
+        imageTabPane.setMaxSize(880.0, 346.0);
+        imageTabPane.setMinSize(880.0, 346.0);
+        overallPane.setBottom(imageTabPane);
 
         //matrix part
         ScrollPane matrixScrollPane = new ScrollPane();
@@ -267,10 +275,8 @@ public class DuplicateMatrixCommand implements Runnable {
                         //set the correct images depending on button click
                         image1Label.setText("Channel " + tempI);
                         image2Label.setText("Channel " + tempJ);
-                        if(imageData != null) {
-                            imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI), null));
-                            imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ), null));
-                        }
+                        imageView1.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempI - 1, true), null));
+                        imageView2.setImage(SwingFXUtils.toFXImage(ConcatChannelsABI.singleChannelImage(imageData, tempJ - 1, true), null));
                     });
                     matrix.add(tempButton, i, j);
                 }

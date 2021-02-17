@@ -266,8 +266,9 @@ public class ConcatChannelsABI {
      *
      * @param imageData
      * @param channel
+     * @param isThumbnail
      */
-    public static BufferedImage singleChannelImage(ImageData<BufferedImage> imageData, int channel) {
+    public static BufferedImage singleChannelImage(ImageData<BufferedImage> imageData, int channel, boolean isThumbnail) {
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
@@ -282,8 +283,10 @@ public class ConcatChannelsABI {
                     newImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
                 }
             }
-            BufferedImage thumbnailImage = createThumbnailImage(newImage, 326,435);
-            return thumbnailImage;
+            if(isThumbnail) {
+                newImage = createThumbnailImage(newImage, 326,435);
+            }
+            return newImage;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
