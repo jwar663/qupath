@@ -72,12 +72,12 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
-    protected static void bindMatrixToHeaders(ScrollPane matrix, AnchorPane horizontalLabels, AnchorPane verticalLabels, int size) {
+    protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
         matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-
+            AnchorPane.setTopAnchor(verticalLabels, ((size * 25.0 - 347.0) * newValue.doubleValue()) * -1.0);
         });
         matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-
+            AnchorPane.setLeftAnchor(horizontalLabels, ((size * 40.0 - 843.0) * newValue.doubleValue()) * -1.0);
         });
     }
 
@@ -317,10 +317,10 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setMaxSize(880.0, 384.0);
         matrixBorder.setMinSize(880.0, 384.0);
         GridPane verticalLabelPane = new GridPane();
-        verticalLabelPane.setGridLinesVisible(true);
+        //verticalLabelPane.setGridLinesVisible(true);
 
         GridPane horizontalLabelPane = new GridPane();
-        horizontalLabelPane.setGridLinesVisible(true);
+        //horizontalLabelPane.setGridLinesVisible(true);
 
 
         RowConstraints labelRowConstraint = new RowConstraints(25.0, 25.0, 25.0);
@@ -409,7 +409,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         }
 
-        bindMatrixToHeaders(matrixScrollPane, horizontalAnchor, verticalAnchor, size);
+        bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
