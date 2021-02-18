@@ -36,6 +36,7 @@ import javafx.stage.Modality;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
@@ -91,6 +92,8 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     protected Stage createDialog() throws IOException, NullPointerException {
+
+
 
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
@@ -357,6 +360,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
         matrix.setGridLinesVisible(true);
+        Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
+        matrixButtonTooltip.setShowDelay(Duration.seconds(1));
         for(int i = 0; i < size; i++) {
             Label tempVerticalLabel = new Label(Integer.toString(i + 1));
             Label tempHorizontalLabel = new Label(Integer.toString(i + 1));
@@ -397,6 +402,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     tempButton.setPrefSize(40.0, 25.0);
                     tempButton.setMaxSize(40.0, 25.0);
                     tempButton.setMinSize(40.0, 25.0);
+                    tempButton.setTooltip(matrixButtonTooltip);
                     int tempI = i;
                     int tempJ = j;
                     tempButton.setOnAction(e -> {
@@ -425,7 +431,13 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
 
-
+        //tooltips
+        thresholdTextField.setTooltip(new Tooltip("Select a value between -1.0 and 1.0"));
+        scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
+        thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
+        thresholdPreview.setTooltip(new Tooltip("I dont even know"));
+        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
+        
         //pane.getChildren().add(overallPane);
 
         Scene scene = new Scene(pane, 900, 805);
