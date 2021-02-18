@@ -26,8 +26,6 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -70,6 +68,17 @@ public class DuplicateMatrixCommand implements Runnable {
      */
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
+    }
+
+    protected static void bindImages(ScrollPane image1Scroll, ImageView image2) {
+        image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
+            AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - 321.0) * newValue.doubleValue()) * -1.0);
+            System.out.println("height: " + image2.getImage().getHeight());
+        });
+        image1Scroll.hvalueProperty().addListener((ov, oldValue, newValue) -> {
+            AnchorPane.setLeftAnchor(image2, ((image2.getImage().getWidth() - 415.0) * newValue.doubleValue()) * -1.0);
+            System.out.println("width: " + image2.getImage().getWidth());
+        });
     }
 
     protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
@@ -203,6 +212,7 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ScrollPane.setPrefSize(415.0, 321.0);
         image1ScrollPane.setMaxSize(415.0, 321.0);
         image1ScrollPane.setMinSize(415.0, 321.0);
+        image1ScrollPane.setPannable(true);
         ScrollPane image2ScrollPane = new ScrollPane();
         image2ScrollPane.setPrefSize(415.0, 321.0);
         image2ScrollPane.setMaxSize(415.0, 321.0);
@@ -232,7 +242,7 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ScrollPane.setContent(image1Anchor);
         image2ScrollPane.setContent(image2Anchor);
         image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        image2ScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         image1ScrollVBox.getChildren().addAll(image1ScrollLabel, image1ScrollPane);
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
@@ -409,6 +419,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         }
 
+        bindImages(image1ScrollPane, imageScrollView2);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
