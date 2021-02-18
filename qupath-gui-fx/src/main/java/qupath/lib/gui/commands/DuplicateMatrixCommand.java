@@ -26,6 +26,8 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -68,6 +70,15 @@ public class DuplicateMatrixCommand implements Runnable {
      */
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
+    }
+
+    protected static void bindMatrixToHeaders(ScrollPane matrix, AnchorPane horizontalLabels, AnchorPane verticalLabels, int size) {
+        matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
+
+        });
+        matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
+
+        });
     }
 
     protected Stage createDialog() throws IOException, NullPointerException {
@@ -287,9 +298,9 @@ public class DuplicateMatrixCommand implements Runnable {
         AnchorPane horizontalAnchor = new AnchorPane();
 
         ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPrefSize(868.0, 25.0);
-        horizontalLabelScroll.setMaxSize(868.0, 25.0);
-        horizontalLabelScroll.setMinSize(868.0, 25.0);
+        horizontalLabelScroll.setPrefSize(843.0, 25.0);
+        horizontalLabelScroll.setMaxSize(843.0, 25.0);
+        horizontalLabelScroll.setMinSize(843.0, 25.0);
         horizontalLabelScroll.setPannable(false);
         horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -397,6 +408,9 @@ public class DuplicateMatrixCommand implements Runnable {
                 }
             }
         }
+
+        bindMatrixToHeaders(matrixScrollPane, horizontalAnchor, verticalAnchor, size);
+
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
 
