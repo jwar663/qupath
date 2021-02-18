@@ -112,7 +112,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
         GridPane thresholdPane = new GridPane();
         thresholdPane.setPrefSize(880.0, 25.0);
-        //thresholdPane.setAlignment(Pos.CENTER);
         ColumnConstraints labelColumn = new ColumnConstraints(620.0, 620.0, 620.0);
         ColumnConstraints fieldColumn = new ColumnConstraints(80.0, 80.0, 80.0);
         ColumnConstraints confirmColumn = new ColumnConstraints(90.0, 90.0, 90.0);
@@ -277,6 +276,9 @@ public class DuplicateMatrixCommand implements Runnable {
         //matrix part
         BorderPane matrixBorder = new BorderPane();
 
+        AnchorPane verticalAnchor = new AnchorPane();
+        AnchorPane horizontalAnchor = new AnchorPane();
+
         ScrollPane horizontalLabelScroll = new ScrollPane();
         horizontalLabelScroll.setPrefSize(868.0, 25.0);
         horizontalLabelScroll.setMaxSize(868.0, 25.0);
@@ -298,16 +300,11 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setMinSize(880.0, 384.0);
         GridPane verticalLabelPane = new GridPane();
         verticalLabelPane.setGridLinesVisible(true);
+
         GridPane horizontalLabelPane = new GridPane();
-        horizontalLabelPane.setPrefSize(880.0, 25.0);
-        horizontalLabelPane.setMaxSize(880.0, 25.0);
-        horizontalLabelPane.setMinSize(880.0, 25.0);
         horizontalLabelPane.setGridLinesVisible(true);
-        Label placeholderLabel = new Label("");
-        placeholderLabel.setPrefSize(25.0, 25.0);
-        placeholderLabel.setMaxSize(25.0, 25.0);
-        placeholderLabel.setMinSize(25.0, 25.0);
-        horizontalLabelPane.add(placeholderLabel, 0, 0);
+
+
         RowConstraints labelRowConstraint = new RowConstraints(25.0, 25.0, 25.0);
         horizontalLabelPane.getRowConstraints().add(labelRowConstraint);
         ColumnConstraints labelColumnConstraint = new ColumnConstraints(25.0, 25.0, 25.0);
@@ -320,9 +317,15 @@ public class DuplicateMatrixCommand implements Runnable {
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
         BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
         matrixBorder.setCenter(matrixScrollPane);
-        horizontalLabelScroll.setContent(horizontalLabelPane);
+        horizontalLabelScroll.setContent(horizontalAnchor);
+
+        horizontalAnchor.getChildren().add(horizontalLabelPane);
+
+        horizontalLabelScroll.setTranslateX(25.0);
+
         matrixBorder.setTop(horizontalLabelScroll);
-        verticalLabelScroll.setContent(verticalLabelPane);
+        verticalAnchor.getChildren().add(verticalLabelPane);
+        verticalLabelScroll.setContent(verticalAnchor);
         matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
         matrix.setGridLinesVisible(true);
@@ -337,8 +340,8 @@ public class DuplicateMatrixCommand implements Runnable {
             tempHorizontalLabel.setMaxSize(40.0, 25.0);
             tempHorizontalLabel.setMinSize(40.0, 25.0);
             tempHorizontalLabel.setAlignment(Pos.CENTER);
-            horizontalLabelPane.add(tempHorizontalLabel, i + 1, 0);
-            verticalLabelPane.add(tempVerticalLabel, 0, i + 1);
+            horizontalLabelPane.add(tempHorizontalLabel, i, 0);
+            verticalLabelPane.add(tempVerticalLabel, 0, i);
         }
         for(int i = 0; i < size + 1; i++) {
             for(int j = 0; j < size + 1; j++) {
@@ -370,6 +373,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     int tempJ = j;
                     tempButton.setOnAction(e -> {
                         //set the correct images depending on button click
+                        AnchorPane.setTopAnchor(verticalLabelPane, -25.0);
+                        AnchorPane.setLeftAnchor(horizontalLabelPane, -40.0);
                         image1ScrollLabel.setText("Channel " + tempI);
                         image2ScrollLabel.setText("Channel " + tempJ);
                         image1ThumbnailLabel.setText("Channel " + tempI);
