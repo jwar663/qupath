@@ -189,12 +189,10 @@ public class DuplicateMatrixCommand implements Runnable {
         image2ScrollVBox.setMinSize(415.0, 341.0);
         image2ScrollVBox.setTranslateX(20);
         ScrollPane image1ScrollPane = new ScrollPane();
-        image1ScrollPane.setPannable(true);
         image1ScrollPane.setPrefSize(415.0, 321.0);
         image1ScrollPane.setMaxSize(415.0, 321.0);
         image1ScrollPane.setMinSize(415.0, 321.0);
         ScrollPane image2ScrollPane = new ScrollPane();
-        image2ScrollPane.setPannable(true);
         image2ScrollPane.setPrefSize(415.0, 321.0);
         image2ScrollPane.setMaxSize(415.0, 321.0);
         image2ScrollPane.setMinSize(415.0, 321.0);
@@ -213,8 +211,17 @@ public class DuplicateMatrixCommand implements Runnable {
         VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
         ImageView imageScrollView1 = new ImageView();
         ImageView imageScrollView2 = new ImageView();
-        image1ScrollPane.setContent(imageScrollView1);
-        image2ScrollPane.setContent(imageScrollView2);
+
+        AnchorPane image1Anchor = new AnchorPane();
+        image1Anchor.getChildren().add(imageScrollView1);
+
+        AnchorPane image2Anchor = new AnchorPane();
+        image2Anchor.getChildren().add(imageScrollView2);
+
+        image1ScrollPane.setContent(image1Anchor);
+        image2ScrollPane.setContent(image2Anchor);
+        image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         image1ScrollVBox.getChildren().addAll(image1ScrollLabel, image1ScrollPane);
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
