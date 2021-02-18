@@ -276,13 +276,27 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //matrix part
         BorderPane matrixBorder = new BorderPane();
+
+        ScrollPane horizontalLabelScroll = new ScrollPane();
+        horizontalLabelScroll.setPrefSize(868.0, 25.0);
+        horizontalLabelScroll.setMaxSize(868.0, 25.0);
+        horizontalLabelScroll.setMinSize(868.0, 25.0);
+        horizontalLabelScroll.setPannable(false);
+        horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        ScrollPane verticalLabelScroll = new ScrollPane();
+        verticalLabelScroll.setPrefSize(25.0, 347.0);
+        verticalLabelScroll.setMaxSize(25.0, 347.0);
+        verticalLabelScroll.setMinSize(25.0, 347.0);
+        verticalLabelScroll.setPannable(false);
+        verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
         matrixBorder.setPrefSize(880.0, 384.0);
         matrixBorder.setMaxSize(880.0, 384.0);
         matrixBorder.setMinSize(880.0, 384.0);
         GridPane verticalLabelPane = new GridPane();
-        verticalLabelPane.setPrefSize(25.0, 384.0);
-        verticalLabelPane.setMaxSize(25.0, 384.0);
-        verticalLabelPane.setMinSize(25.0, 384.0);
         verticalLabelPane.setGridLinesVisible(true);
         GridPane horizontalLabelPane = new GridPane();
         horizontalLabelPane.setPrefSize(880.0, 25.0);
@@ -302,11 +316,14 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixScrollPane.setPrefSize(855.0, 359.0);
         matrixScrollPane.setMaxSize(855.0, 359.0);
         matrixScrollPane.setMinSize(855.0, 359.0);
+        matrixScrollPane.setStyle("-fx-font-size: 12px");
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
         BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
         matrixBorder.setCenter(matrixScrollPane);
-        matrixBorder.setTop(horizontalLabelPane);
-        matrixBorder.setLeft(verticalLabelPane);
+        horizontalLabelScroll.setContent(horizontalLabelPane);
+        matrixBorder.setTop(horizontalLabelScroll);
+        verticalLabelScroll.setContent(verticalLabelPane);
+        matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
         matrix.setGridLinesVisible(true);
         for(int i = 0; i < size; i++) {
