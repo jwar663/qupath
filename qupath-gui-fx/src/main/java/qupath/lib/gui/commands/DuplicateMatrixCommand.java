@@ -26,8 +26,6 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
@@ -277,33 +275,73 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.setBottom(imageTabPane);
 
         //matrix part
+        BorderPane matrixBorder = new BorderPane();
+        matrixBorder.setPrefSize(880.0, 384.0);
+        matrixBorder.setMaxSize(880.0, 384.0);
+        matrixBorder.setMinSize(880.0, 384.0);
+        GridPane verticalLabelPane = new GridPane();
+        verticalLabelPane.setPrefSize(25.0, 384.0);
+        verticalLabelPane.setMaxSize(25.0, 384.0);
+        verticalLabelPane.setMinSize(25.0, 384.0);
+        verticalLabelPane.setGridLinesVisible(true);
+        GridPane horizontalLabelPane = new GridPane();
+        horizontalLabelPane.setPrefSize(880.0, 25.0);
+        horizontalLabelPane.setMaxSize(880.0, 25.0);
+        horizontalLabelPane.setMinSize(880.0, 25.0);
+        horizontalLabelPane.setGridLinesVisible(true);
+        Label placeholderLabel = new Label("");
+        placeholderLabel.setPrefSize(25.0, 25.0);
+        placeholderLabel.setMaxSize(25.0, 25.0);
+        placeholderLabel.setMinSize(25.0, 25.0);
+        horizontalLabelPane.add(placeholderLabel, 0, 0);
+        RowConstraints labelRowConstraint = new RowConstraints(25.0, 25.0, 25.0);
+        horizontalLabelPane.getRowConstraints().add(labelRowConstraint);
+        ColumnConstraints labelColumnConstraint = new ColumnConstraints(25.0, 25.0, 25.0);
+        verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
         ScrollPane matrixScrollPane = new ScrollPane();
-        matrixScrollPane.setPrefSize(880.0, 384.0);
-        matrixScrollPane.setMaxSize(880.0, 384.0);
-        matrixScrollPane.setMinSize(880.0, 384.0);
-        BorderPane.setAlignment(matrixScrollPane, Pos.TOP_CENTER);
-        BorderPane.setMargin(matrixScrollPane, new Insets(10.0,0.0,0.0,0.0));
+        matrixScrollPane.setPrefSize(855.0, 359.0);
+        matrixScrollPane.setMaxSize(855.0, 359.0);
+        matrixScrollPane.setMinSize(855.0, 359.0);
+        BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
+        BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
+        matrixBorder.setCenter(matrixScrollPane);
+        matrixBorder.setTop(horizontalLabelPane);
+        matrixBorder.setLeft(verticalLabelPane);
         GridPane matrix = new GridPane();
         matrix.setGridLinesVisible(true);
+        for(int i = 0; i < size; i++) {
+            Label tempVerticalLabel = new Label(Integer.toString(i + 1));
+            Label tempHorizontalLabel = new Label(Integer.toString(i + 1));
+            tempVerticalLabel.setPrefSize(25.0, 25.0);
+            tempVerticalLabel.setMinSize(25.0, 25.0);
+            tempVerticalLabel.setMaxSize(25.0, 25.0);
+            tempVerticalLabel.setAlignment(Pos.CENTER);
+            tempHorizontalLabel.setPrefSize(40.0, 25.0);
+            tempHorizontalLabel.setMaxSize(40.0, 25.0);
+            tempHorizontalLabel.setMinSize(40.0, 25.0);
+            tempHorizontalLabel.setAlignment(Pos.CENTER);
+            horizontalLabelPane.add(tempHorizontalLabel, i + 1, 0);
+            verticalLabelPane.add(tempVerticalLabel, 0, i + 1);
+        }
         for(int i = 0; i < size + 1; i++) {
             for(int j = 0; j < size + 1; j++) {
                 if(j == 0 && i== 0) {
                 }
                 else if(i == 0) {
-                    Label tempLabel = new Label(Integer.toString(j));
-                    tempLabel.setPrefSize(40.0, 25.0);
-                    tempLabel.setMaxSize(40.0, 25.0);
-                    tempLabel.setMinSize(40.0, 25.0);
-                    tempLabel.setAlignment(Pos.CENTER);
-                    matrix.add(tempLabel, j, 0);
+//                    Label tempLabel = new Label(Integer.toString(j));
+//                    tempLabel.setPrefSize(40.0, 25.0);
+//                    tempLabel.setMaxSize(40.0, 25.0);
+//                    tempLabel.setMinSize(40.0, 25.0);
+//                    tempLabel.setAlignment(Pos.CENTER);
+//                    matrix.add(tempLabel, j, 0);
                 }
                 else if(j == 0) {
-                    Label tempLabel = new Label(Integer.toString(i));
-                    tempLabel.setPrefSize(25.0, 25.0);
-                    tempLabel.setMaxSize(25.0, 25.0);
-                    tempLabel.setMinSize(25.0, 25.0);
-                    tempLabel.setAlignment(Pos.CENTER);
-                    matrix.add(tempLabel, 0, i);
+//                    Label tempLabel = new Label(Integer.toString(i));
+//                    tempLabel.setPrefSize(25.0, 25.0);
+//                    tempLabel.setMaxSize(25.0, 25.0);
+//                    tempLabel.setMinSize(25.0, 25.0);
+//                    tempLabel.setAlignment(Pos.CENTER);
+//                    matrix.add(tempLabel, 0, i);
                 } else {
                     String tempString = String.format("%.2f", duplicateMatrix[i - 1][j - 1]);
                     //set buttons to be the corresponding matrix
@@ -331,7 +369,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         }
         matrixScrollPane.setContent(matrix);
-        overallPane.setCenter(matrixScrollPane);
+        overallPane.setCenter(matrixBorder);
 
 
         //pane.getChildren().add(overallPane);
