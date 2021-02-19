@@ -93,8 +93,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
-
-
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
@@ -119,9 +117,6 @@ public class DuplicateMatrixCommand implements Runnable {
         duplicateMatrix = new float[size][size];
         img = ConcatChannelsABI.convertImageDataToImage(imageData);
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
-
-        //to visualise and allow for dimensions
-        //Border border = new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,CornerRadii.EMPTY, BorderWidths.DEFAULT));
 
         //larger panes
         Pane pane = new Pane();
@@ -376,52 +371,31 @@ public class DuplicateMatrixCommand implements Runnable {
             horizontalLabelPane.add(tempHorizontalLabel, i, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
         }
-        for(int i = 0; i < size + 1; i++) {
-            for(int j = 0; j < size + 1; j++) {
-                if(j == 0 && i== 0) {
-                }
-                else if(i == 0) {
-//                    Label tempLabel = new Label(Integer.toString(j));
-//                    tempLabel.setPrefSize(40.0, 25.0);
-//                    tempLabel.setMaxSize(40.0, 25.0);
-//                    tempLabel.setMinSize(40.0, 25.0);
-//                    tempLabel.setAlignment(Pos.CENTER);
-//                    matrix.add(tempLabel, j, 0);
-                }
-                else if(j == 0) {
-//                    Label tempLabel = new Label(Integer.toString(i));
-//                    tempLabel.setPrefSize(25.0, 25.0);
-//                    tempLabel.setMaxSize(25.0, 25.0);
-//                    tempLabel.setMinSize(25.0, 25.0);
-//                    tempLabel.setAlignment(Pos.CENTER);
-//                    matrix.add(tempLabel, 0, i);
-                } else {
-                    String tempString = String.format("%.2f", duplicateMatrix[i - 1][j - 1]);
-                    //set buttons to be the corresponding matrix
-                    Button tempButton = new Button(tempString);
-                    tempButton.setPrefSize(40.0, 25.0);
-                    tempButton.setMaxSize(40.0, 25.0);
-                    tempButton.setMinSize(40.0, 25.0);
-                    tempButton.setTooltip(matrixButtonTooltip);
-                    int tempI = i;
-                    int tempJ = j;
-                    tempButton.setOnAction(e -> {
-                        //set the correct images depending on button click
-                        AnchorPane.setTopAnchor(verticalLabelPane, -25.0);
-                        AnchorPane.setLeftAnchor(horizontalLabelPane, -40.0);
-                        image1ScrollLabel.setText("Channel " + tempI);
-                        image2ScrollLabel.setText("Channel " + tempJ);
-                        image1ThumbnailLabel.setText("Channel " + tempI);
-                        image2ThumbnailLabel.setText("Channel " + tempJ);
-                        BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI - 1, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
-                        BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ - 1, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
-                        imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
-                        imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
-                        imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
-                        imageThumbnailView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[0], null));
-                    });
-                    matrix.add(tempButton, i, j);
-                }
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
+                //set buttons to be the corresponding matrix
+                Button tempButton = new Button(tempString);
+                tempButton.setPrefSize(40.0, 25.0);
+                tempButton.setMaxSize(40.0, 25.0);
+                tempButton.setMinSize(40.0, 25.0);
+                tempButton.setTooltip(matrixButtonTooltip);
+                int tempI = i;
+                int tempJ = j;
+                tempButton.setOnAction(e -> {
+                    //set the correct images depending on button click
+                    image1ScrollLabel.setText("Channel " + (tempI + 1));
+                    image2ScrollLabel.setText("Channel " + (tempJ + 1));
+                    image1ThumbnailLabel.setText("Channel " + (tempI + 1));
+                    image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
+                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                    imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
+                    imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
+                    imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
+                    imageThumbnailView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[0], null));
+                });
+                matrix.add(tempButton, i, j);
             }
         }
 
@@ -437,7 +411,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
         thresholdPreview.setTooltip(new Tooltip("I dont even know"));
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
-        
+
         //pane.getChildren().add(overallPane);
 
         Scene scene = new Scene(pane, 900, 805);
