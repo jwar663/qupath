@@ -107,6 +107,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 error.close();
             });
             VBox vbox = new VBox(new Text("Please open an image before selecting this feature"), confirmButton);
+            vbox.setSpacing(10.0);
             vbox.setAlignment(Pos.CENTER);
             vbox.setPadding(new Insets(15));
 
