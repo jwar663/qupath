@@ -29,6 +29,7 @@ import java.io.IOException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
+import javafx.scene.effect.Shadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -355,7 +356,7 @@ public class DuplicateMatrixCommand implements Runnable {
         verticalLabelScroll.setContent(verticalAnchor);
         matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
-        matrix.setGridLinesVisible(true);
+        //matrix.setGridLinesVisible(true);
         Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
         matrixButtonTooltip.setShowDelay(Duration.seconds(1));
         for(int i = 0; i < size; i++) {
@@ -365,9 +366,9 @@ public class DuplicateMatrixCommand implements Runnable {
             tempVerticalLabel.setMinSize(25.0, 25.0);
             tempVerticalLabel.setMaxSize(25.0, 25.0);
             tempVerticalLabel.setAlignment(Pos.CENTER);
-            tempHorizontalLabel.setPrefSize(45.0, 25.0);
-            tempHorizontalLabel.setMaxSize(45.0, 25.0);
-            tempHorizontalLabel.setMinSize(45.0, 25.0);
+            tempHorizontalLabel.setPrefSize(42.0, 25.0);
+            tempHorizontalLabel.setMaxSize(42.0, 25.0);
+            tempHorizontalLabel.setMinSize(42.0, 25.0);
             tempHorizontalLabel.setAlignment(Pos.CENTER);
             horizontalLabelPane.add(tempHorizontalLabel, i, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
@@ -377,12 +378,11 @@ public class DuplicateMatrixCommand implements Runnable {
                 String tempString = String.format("%.2f", duplicateMatrix[i][j]);
                 //set buttons to be the corresponding matrix
                 Button tempButton = new Button(tempString);
-                tempButton.setPrefSize(45.0, 25.0);
-                tempButton.setMaxSize(45.0, 25.0);
-                tempButton.setMinSize(45.0, 25.0);
-                GridPane.setHalignment(tempButton, HPos.CENTER);
-                GridPane.setValignment(tempButton, VPos.CENTER);
+                tempButton.setPrefSize(42.0, 25.0);
+                tempButton.setMaxSize(42.0, 25.0);
+                tempButton.setMinSize(42.0, 25.0);
                 tempButton.setTooltip(matrixButtonTooltip);
+                tempButton.setAlignment(Pos.CENTER_RIGHT);
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
