@@ -386,6 +386,18 @@ public class DuplicateMatrixCommand implements Runnable {
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
+                tempButton.setOnMouseEntered(e -> {
+                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
+                });
+                tempButton.setOnMouseExited(e -> {
+                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                });
+                tempButton.setOnMousePressed(e -> {
+                    tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                });
+                tempButton.setOnMouseReleased(e -> {
+                    tempButton.setStyle("-fx-border-color: #ffffff; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                });
                 tempButton.setOnAction(e -> {
                     //set the correct images depending on button click
                     image1ScrollLabel.setText("Channel " + (tempI + 1));
