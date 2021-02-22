@@ -365,9 +365,9 @@ public class DuplicateMatrixCommand implements Runnable {
             tempVerticalLabel.setMinSize(25.0, 25.0);
             tempVerticalLabel.setMaxSize(25.0, 25.0);
             tempVerticalLabel.setAlignment(Pos.CENTER);
-            tempHorizontalLabel.setPrefSize(40.0, 25.0);
-            tempHorizontalLabel.setMaxSize(40.0, 25.0);
-            tempHorizontalLabel.setMinSize(40.0, 25.0);
+            tempHorizontalLabel.setPrefSize(45.0, 25.0);
+            tempHorizontalLabel.setMaxSize(45.0, 25.0);
+            tempHorizontalLabel.setMinSize(45.0, 25.0);
             tempHorizontalLabel.setAlignment(Pos.CENTER);
             horizontalLabelPane.add(tempHorizontalLabel, i, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
@@ -377,10 +377,13 @@ public class DuplicateMatrixCommand implements Runnable {
                 String tempString = String.format("%.2f", duplicateMatrix[i][j]);
                 //set buttons to be the corresponding matrix
                 Button tempButton = new Button(tempString);
-                tempButton.setPrefSize(40.0, 25.0);
-                tempButton.setMaxSize(40.0, 25.0);
-                tempButton.setMinSize(40.0, 25.0);
+                tempButton.setPrefSize(45.0, 25.0);
+                tempButton.setMaxSize(45.0, 25.0);
+                tempButton.setMinSize(45.0, 25.0);
+                GridPane.setHalignment(tempButton, HPos.CENTER);
+                GridPane.setValignment(tempButton, VPos.CENTER);
                 tempButton.setTooltip(matrixButtonTooltip);
+                tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
                 tempButton.setOnAction(e -> {
