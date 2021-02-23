@@ -98,10 +98,26 @@ public class DuplicateMatrixCommand implements Runnable {
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
 
+        Stage invalidInput = new Stage();
+        invalidInput.setTitle("Invalid Input");
+        invalidInput.initModality(Modality.WINDOW_MODAL);
+        invalidInput.initOwner(dialog);
+        Button invalidInputConfirmButton = new Button("OK");
+        invalidInputConfirmButton.setOnAction(ev -> {
+            invalidInput.close();
+        });
+        VBox invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
+        invalidInputVbox.setSpacing(10.0);
+        invalidInputVbox.setAlignment(Pos.CENTER);
+        invalidInputVbox.setPadding(new Insets(15));
+
+        invalidInput.setScene(new Scene(invalidInputVbox));
+
         viewer = qupath.getViewer();
         imageData = qupath.getImageData();
         if(imageData == null) {
             Stage error = new Stage();
+            error.setTitle("Error");
             error.initModality(Modality.WINDOW_MODAL);
             Button confirmButton = new Button("OK");
             confirmButton.setOnAction(e -> {
@@ -156,15 +172,20 @@ public class DuplicateMatrixCommand implements Runnable {
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
             String thresholdValue = thresholdTextField.getText();
+            Double confirmDouble = 0.0;
             try{
-                if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
+                confirmDouble = Double.parseDouble(thresholdValue);
+                if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                     viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                     viewer.repaintEntireImage();
                     if(dialog.isShowing())
                         dialog.close();
+                } else {
+                    invalidInput.showAndWait();
                 }
             } catch(Exception e) {
                 System.out.println("Exception: " + e);
+                invalidInput.showAndWait();
             }
         });
         Button thresholdPreview = new Button("Preview");
@@ -174,12 +195,17 @@ public class DuplicateMatrixCommand implements Runnable {
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
             String thresholdValue = thresholdTextField.getText();
+            Double confirmDouble = 0.0;
             try{
-                if(Double.parseDouble(thresholdValue) >= -1 && Double.parseDouble(thresholdValue) <= 1) {
+                confirmDouble = Double.parseDouble(thresholdValue);
+                if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
 
+                } else {
+                    invalidInput.showAndWait();
                 }
             } catch(Exception e) {
                 System.out.println("Exception: " + e);
+                invalidInput.showAndWait();
             }
         });
         thresholdPane.add(thresholdLabel, 0, 0);
