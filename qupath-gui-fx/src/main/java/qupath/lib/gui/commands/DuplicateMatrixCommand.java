@@ -64,6 +64,92 @@ public class DuplicateMatrixCommand implements Runnable {
 
     public ImageData<BufferedImage> imageData;
 
+    //MAX/PREF
+
+    //OVERALL MACROS MAX/PREF
+    private static final double OVERALL_WIDTH_MAX = 900.0;
+    private static final double OVERALL_HEIGHT_MAX = 800.0;
+
+    //THRESHOLD MACROS MAX/PREF
+    private static final double THRESHOLD_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
+    private static final double THRESHOLD_HEIGHT_MAX = 25.0;
+
+    private static final double THRESHOLD_BUTTONS_WIDTH_MAX = 80.0;
+    private static final double THRESHOLD_TEXT_FIELD_WIDTH_MAX = 40.0;
+    private static final double THRESHOLD_LABEL_WIDTH_MAX = 620.0;
+
+    //MATRIX MACROS MAX/PREF
+    private static final double MATRIX_BORDER_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
+    private static final double MATRIX_BORDER_HEIGHT_MAX = 384.0;
+
+    private static final double MATRIX_LABELS_VERTICAL_WIDTH_MAX = 25.0;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - 25.0;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - 42.0;
+    private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX = 25.0;
+    private static final double MATRIX_SCROLL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX;
+    private static final double MATRIX_SCROLL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - MATRIX_LABELS_VERTICAL_WIDTH_MAX;
+
+    //IMAGE MACROS MAX/PREF
+    private static final double TAB_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
+    private static final double TAB_HEIGHT_MAX = 326.0;
+    private static final double TAB_SIZE = 20.0;
+
+    private static final double IMAGE_HBOX_WIDTH_MAX = TAB_WIDTH_MAX - TAB_SIZE;
+    private static final double IMAGE_HBOX_HEIGHT_MAX = TAB_HEIGHT_MAX;
+
+    private static final double IMAGE_VBOX_WIDTH_MAX = IMAGE_HBOX_WIDTH_MAX/2 - 10.0;
+    private static final double IMAGE_VBOX_HEIGHT_MAX = TAB_HEIGHT_MAX;
+
+    private static final double IMAGE_LABEL_WIDTH_MAX = IMAGE_VBOX_WIDTH_MAX;
+    private static final double IMAGE_LABEL_HEIGHT_MAX = 25.0;
+
+    private static final double IMAGE_WIDTH_MAX = IMAGE_VBOX_WIDTH_MAX;
+    private static final double IMAGE_HEIGHT_MAX = IMAGE_VBOX_HEIGHT_MAX - IMAGE_LABEL_HEIGHT_MAX;
+
+    //MIN
+
+    //OVERALL MACROS MAX/PREF
+    private static final double OVERALL_WIDTH_MIN = 500.0;
+    private static final double OVERALL_HEIGHT_MIN = 565.0;
+
+    //THRESHOLD MACROS MAX/PREF
+    private static final double THRESHOLD_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
+    private static final double THRESHOLD_HEIGHT_MIN = 25.0;
+
+    private static final double THRESHOLD_BUTTONS_WIDTH_MIN = 80.0;
+    private static final double THRESHOLD_TEXT_FIELD_WIDTH_MIN = 40.0;
+    private static final double THRESHOLD_LABEL_WIDTH_MIN = 220.0;
+
+    //MATRIX MACROS MAX/PREF
+    private static final double MATRIX_BORDER_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
+    private static final double MATRIX_BORDER_HEIGHT_MIN = 250.0;
+
+    private static final double MATRIX_LABELS_VERTICAL_WIDTH_MIN = 25.0;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - 25.0;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - 42.0;
+    private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN = 25.0;
+    private static final double MATRIX_SCROLL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN;
+    private static final double MATRIX_SCROLL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - MATRIX_LABELS_VERTICAL_WIDTH_MIN;
+
+    //IMAGE MACROS MAX/PREF
+    private static final double TAB_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
+    private static final double TAB_HEIGHT_MIN = 250.0;
+
+    private static final double IMAGE_HBOX_WIDTH_MIN = TAB_WIDTH_MIN - TAB_SIZE;
+    private static final double IMAGE_HBOX_HEIGHT_MIN = TAB_HEIGHT_MIN;
+
+    private static final double IMAGE_VBOX_WIDTH_MIN = IMAGE_HBOX_WIDTH_MIN/2 - 10.0;
+    private static final double IMAGE_VBOX_HEIGHT_MIN = TAB_HEIGHT_MIN;
+
+    private static final double IMAGE_LABEL_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
+    private static final double IMAGE_LABEL_HEIGHT_MIN = 25.0;
+
+    private static final double IMAGE_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
+    private static final double IMAGE_HEIGHT_MIN = IMAGE_VBOX_HEIGHT_MIN - IMAGE_LABEL_HEIGHT_MIN;
+
+
+
+
     /**
      * Constructor.
      * @param qupath
@@ -137,14 +223,9 @@ public class DuplicateMatrixCommand implements Runnable {
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
 
         //larger panes
-        Pane pane = new Pane();
-        pane.setPrefSize(900.0, 805.0);
 
         BorderPane overallPane = new BorderPane();
-        overallPane.setPrefSize(880.0, 780.0);
-        overallPane.setLayoutX(10.0);
-        overallPane.setLayoutY(10.0);
-        pane.getChildren().add(overallPane);
+        overallPane.setPrefSize(900.0, 800.0);
 
         GridPane thresholdPane = new GridPane();
         thresholdPane.setPrefSize(880.0, 25.0);
@@ -153,6 +234,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ColumnConstraints confirmColumn = new ColumnConstraints(90.0, 90.0, 90.0);
         ColumnConstraints previewColumn = new ColumnConstraints(90.0, 90.0, 90.0);
         RowConstraints rowConstraints = new RowConstraints(25.0, 25.0, 25.0);
+
 
         //Threshold Part
         Label thresholdLabel = new Label("Please enter a threshold value:");
@@ -456,12 +538,12 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //pane.getChildren().add(overallPane);
 
-        Scene scene = new Scene(pane, 900, 805);
+        Scene scene = new Scene(overallPane, 900, 800);
         dialog.setScene(scene);
         dialog.setMinWidth(900);
-        dialog.setMinHeight(805);
+        dialog.setMinHeight(800);
         dialog.setMaxWidth(900);
-        dialog.setMaxHeight(805);
+        dialog.setMaxHeight(800);
 
         return dialog;
     }
