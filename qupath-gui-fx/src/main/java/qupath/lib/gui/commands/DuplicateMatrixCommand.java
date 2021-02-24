@@ -29,7 +29,6 @@ import java.io.IOException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
 import javafx.scene.control.*;
-import javafx.scene.effect.Shadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -64,6 +63,10 @@ public class DuplicateMatrixCommand implements Runnable {
 
     public ImageData<BufferedImage> imageData;
 
+    //CONSTANT MACROS
+    private static final double BUTTON_WIDTH = 42.0;
+    private static final double BUTTON_LABEL_HEIGHT = 25.0;
+
     //MAX/PREF
 
     //OVERALL MACROS MAX/PREF
@@ -77,6 +80,9 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double THRESHOLD_BUTTONS_WIDTH_MAX = 80.0;
     private static final double THRESHOLD_TEXT_FIELD_WIDTH_MAX = 40.0;
     private static final double THRESHOLD_LABEL_WIDTH_MAX = 620.0;
+
+    private static final double THRESHOLD_FIELD_COLUMN_MAX = THRESHOLD_TEXT_FIELD_WIDTH_MAX * 2;
+    private static final double THRESHOLD_BUTTON_COLUMN_MAX = THRESHOLD_BUTTONS_WIDTH_MAX + 10.0;
 
     //MATRIX MACROS MAX/PREF
     private static final double MATRIX_BORDER_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
@@ -119,6 +125,8 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double THRESHOLD_BUTTONS_WIDTH_MIN = 80.0;
     private static final double THRESHOLD_TEXT_FIELD_WIDTH_MIN = 40.0;
     private static final double THRESHOLD_LABEL_WIDTH_MIN = 220.0;
+    private static final double THRESHOLD_FIELD_COLUMN_MIN = THRESHOLD_TEXT_FIELD_WIDTH_MIN * 2;
+    private static final double THRESHOLD_BUTTON_COLUMN_MIN = THRESHOLD_BUTTONS_WIDTH_MIN + 10.0;
 
     //MATRIX MACROS MAX/PREF
     private static final double MATRIX_BORDER_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
@@ -225,32 +233,33 @@ public class DuplicateMatrixCommand implements Runnable {
         //larger panes
 
         BorderPane overallPane = new BorderPane();
-        overallPane.setPrefSize(900.0, 800.0);
+        overallPane.setPrefSize(OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
 
         GridPane thresholdPane = new GridPane();
-        thresholdPane.setPrefSize(880.0, 25.0);
-        ColumnConstraints labelColumn = new ColumnConstraints(620.0, 620.0, 620.0);
-        ColumnConstraints fieldColumn = new ColumnConstraints(80.0, 80.0, 80.0);
-        ColumnConstraints confirmColumn = new ColumnConstraints(90.0, 90.0, 90.0);
-        ColumnConstraints previewColumn = new ColumnConstraints(90.0, 90.0, 90.0);
-        RowConstraints rowConstraints = new RowConstraints(25.0, 25.0, 25.0);
+        thresholdPane.setPrefSize(THRESHOLD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH_MIN, THRESHOLD_LABEL_WIDTH_MAX, THRESHOLD_LABEL_WIDTH_MAX
+        );
+        ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN_MIN, THRESHOLD_FIELD_COLUMN_MAX, THRESHOLD_FIELD_COLUMN_MAX);
+        ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN_MIN, THRESHOLD_BUTTON_COLUMN_MAX, THRESHOLD_BUTTON_COLUMN_MAX);
+        ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN_MIN, THRESHOLD_BUTTON_COLUMN_MAX, THRESHOLD_BUTTON_COLUMN_MAX);
+        RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
 
         //Threshold Part
         Label thresholdLabel = new Label("Please enter a threshold value:");
-        thresholdLabel.setPrefHeight(25.0);
-        thresholdLabel.setMinHeight(25.0);
-        thresholdLabel.setMaxHeight(25.0);
+        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT_MAX);
+        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT_MIN);
+        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
         TextField thresholdTextField = new TextField("0.90");
-        thresholdTextField.setPrefSize(40.0, 25.0);
-        thresholdTextField.setMinSize(40.0, 25.0);
-        thresholdTextField.setMaxSize(40.0, 25.0);
+        thresholdTextField.setPrefSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        thresholdTextField.setMinSize(THRESHOLD_TEXT_FIELD_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
+        thresholdTextField.setMaxSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdTextField, HPos.CENTER);
         Button thresholdConfirm = new Button("Submit");
-        thresholdConfirm.setPrefSize(80.0, 25.0);
-        thresholdConfirm.setMinSize(80.0, 25.0);
-        thresholdConfirm.setMaxSize(80.0, 25.0);
+        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
+        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
             String thresholdValue = thresholdTextField.getText();
@@ -271,9 +280,9 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
         Button thresholdPreview = new Button("Preview");
-        thresholdPreview.setPrefSize(80.0, 25.0);
-        thresholdPreview.setMinSize(80.0, 25.0);
-        thresholdPreview.setMaxSize(80.0, 25.0);
+        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
+        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
             String thresholdValue = thresholdTextField.getText();
@@ -302,40 +311,40 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //preview image section
         HBox imageScrollBox = new HBox();
-        imageScrollBox.setPrefSize(840.0, 341.0);
-        imageScrollBox.setMaxSize(840.0, 341.0);
-        imageScrollBox.setMinSize(840.0, 341.0);
+        imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
+        imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
+        imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH_MIN, IMAGE_HBOX_HEIGHT_MIN);
         BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
         VBox image1ScrollVBox = new VBox();
-        image1ScrollVBox.setPrefSize(415.0, 341.0);
-        image1ScrollVBox.setMaxSize(415.0, 341.0);
-        image1ScrollVBox.setMinSize(415.0, 341.0);
-        image1ScrollVBox.setTranslateX(10);
+        image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        //image1ScrollVBox.setTranslateX(10);
         VBox image2ScrollVBox = new VBox();
-        image2ScrollVBox.setPrefSize(415.0, 341.0);
-        image2ScrollVBox.setMaxSize(415.0, 341.0);
-        image2ScrollVBox.setMinSize(415.0, 341.0);
-        image2ScrollVBox.setTranslateX(20);
+        image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        //image2ScrollVBox.setTranslateX(20);
         ScrollPane image1ScrollPane = new ScrollPane();
-        image1ScrollPane.setPrefSize(415.0, 321.0);
-        image1ScrollPane.setMaxSize(415.0, 321.0);
-        image1ScrollPane.setMinSize(415.0, 321.0);
+        image1ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image1ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image1ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
         image1ScrollPane.setPannable(true);
         ScrollPane image2ScrollPane = new ScrollPane();
-        image2ScrollPane.setPrefSize(415.0, 321.0);
-        image2ScrollPane.setMaxSize(415.0, 321.0);
-        image2ScrollPane.setMinSize(415.0, 321.0);
+        image2ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image2ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image2ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
         Label image1ScrollLabel = new Label("Image 1");
-        image1ScrollLabel.setPrefSize(415.0, 25.0);
-        image1ScrollLabel.setMaxSize(415.0, 25.0);
-        image1ScrollLabel.setMinSize(415.0, 25.0);
+        image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image1ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
         Label image2ScrollLabel = new Label("Image 2");
-        image2ScrollLabel.setPrefSize(415.0, 25.0);
-        image2ScrollLabel.setMaxSize(415.0, 25.0);
-        image2ScrollLabel.setMinSize(415.0, 25.0);
+        image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image2ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
         ImageView imageScrollView1 = new ImageView();
@@ -356,39 +365,39 @@ public class DuplicateMatrixCommand implements Runnable {
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
         HBox imageThumbnailBox = new HBox();
-        imageThumbnailBox.setPrefSize(840.0, 341.0);
-        imageThumbnailBox.setMaxSize(840.0, 341.0);
-        imageThumbnailBox.setMinSize(840.0, 341.0);
+        imageThumbnailBox.setPrefSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
+        imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
+        imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH_MIN, IMAGE_HBOX_HEIGHT_MIN);
         BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
         VBox image1ThumbnailVBox = new VBox();
-        image1ThumbnailVBox.setPrefSize(415.0, 341.0);
-        image1ThumbnailVBox.setMaxSize(415.0, 341.0);
-        image1ThumbnailVBox.setMinSize(415.0, 341.0);
-        image1ThumbnailVBox.setTranslateX(10);
+        image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        //image1ThumbnailVBox.setTranslateX(10);
         VBox image2ThumbnailVBox = new VBox();
-        image2ThumbnailVBox.setPrefSize(415.0, 341.0);
-        image2ThumbnailVBox.setMaxSize(415.0, 341.0);
-        image2ThumbnailVBox.setMinSize(415.0, 341.0);
-        image2ThumbnailVBox.setTranslateX(20);
+        image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
+        image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        //image2ThumbnailVBox.setTranslateX(20);
         Pane image1ThumbnailPane = new Pane();
-        image1ThumbnailPane.setPrefSize(415.0, 321.0);
-        image1ThumbnailPane.setMaxSize(415.0, 321.0);
-        image1ThumbnailPane.setMinSize(415.0, 321.0);
+        image1ThumbnailPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image1ThumbnailPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image1ThumbnailPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
         Pane image2ThumbnailPane = new Pane();
-        image2ThumbnailPane.setPrefSize(415.0, 321.0);
-        image2ThumbnailPane.setMaxSize(415.0, 321.0);
-        image2ThumbnailPane.setMinSize(415.0, 321.0);
+        image2ThumbnailPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image2ThumbnailPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
+        image2ThumbnailPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
         imageThumbnailBox.getChildren().addAll(image1ThumbnailVBox, image2ThumbnailVBox);
         Label image1ThumbnailLabel = new Label("Image 1");
-        image1ThumbnailLabel.setPrefSize(415.0, 25.0);
-        image1ThumbnailLabel.setMaxSize(415.0, 25.0);
-        image1ThumbnailLabel.setMinSize(415.0, 25.0);
+        image1ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image1ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image1ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image1ThumbnailLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image1ThumbnailLabel, Priority.NEVER);
         Label image2ThumbnailLabel = new Label("Image 2");
-        image2ThumbnailLabel.setPrefSize(415.0, 25.0);
-        image2ThumbnailLabel.setMaxSize(415.0, 25.0);
-        image2ThumbnailLabel.setMinSize(415.0, 25.0);
+        image2ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image2ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
+        image2ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image2ThumbnailLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image2ThumbnailLabel, Priority.NEVER);
         ImageView imageThumbnailView1 = new ImageView();
@@ -404,9 +413,9 @@ public class DuplicateMatrixCommand implements Runnable {
         TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
         imageTabPane.setSide(Side.LEFT);
         imageTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        imageTabPane.setPrefSize(880.0, 346.0);
-        imageTabPane.setMaxSize(880.0, 346.0);
-        imageTabPane.setMinSize(880.0, 346.0);
+        imageTabPane.setPrefSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
+        imageTabPane.setMaxSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
+        imageTabPane.setMinSize(TAB_WIDTH_MIN, TAB_HEIGHT_MIN);
         overallPane.setBottom(imageTabPane);
 
         //matrix part
@@ -416,24 +425,24 @@ public class DuplicateMatrixCommand implements Runnable {
         AnchorPane horizontalAnchor = new AnchorPane();
 
         ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPrefSize(843.0, 25.0);
-        horizontalLabelScroll.setMaxSize(843.0, 25.0);
-        horizontalLabelScroll.setMinSize(843.0, 25.0);
+        horizontalLabelScroll.setPrefSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MAX, MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX);
+        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MAX, MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX);
+        horizontalLabelScroll.setMinSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MIN, MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN);
         horizontalLabelScroll.setPannable(false);
         horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         ScrollPane verticalLabelScroll = new ScrollPane();
-        verticalLabelScroll.setPrefSize(25.0, 347.0);
-        verticalLabelScroll.setMaxSize(25.0, 347.0);
-        verticalLabelScroll.setMinSize(25.0, 347.0);
+        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH_MAX, MATRIX_LABELS_VERTICAL_HEIGHT_MAX);
+        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH_MAX, MATRIX_LABELS_VERTICAL_HEIGHT_MAX);
+        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH_MIN, MATRIX_LABELS_VERTICAL_HEIGHT_MIN);
         verticalLabelScroll.setPannable(false);
         verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        matrixBorder.setPrefSize(880.0, 384.0);
-        matrixBorder.setMaxSize(880.0, 384.0);
-        matrixBorder.setMinSize(880.0, 384.0);
+        matrixBorder.setPrefSize(MATRIX_BORDER_WIDTH_MAX, MATRIX_BORDER_HEIGHT_MAX);
+        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH_MAX, MATRIX_BORDER_HEIGHT_MAX);
+        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_MIN, MATRIX_BORDER_HEIGHT_MIN);
         GridPane verticalLabelPane = new GridPane();
         //verticalLabelPane.setGridLinesVisible(true);
 
@@ -441,17 +450,17 @@ public class DuplicateMatrixCommand implements Runnable {
         //horizontalLabelPane.setGridLinesVisible(true);
 
 
-        RowConstraints labelRowConstraint = new RowConstraints(25.0, 25.0, 25.0);
+        RowConstraints labelRowConstraint = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
         horizontalLabelPane.getRowConstraints().add(labelRowConstraint);
-        ColumnConstraints labelColumnConstraint = new ColumnConstraints(25.0, 25.0, 25.0);
+        ColumnConstraints labelColumnConstraint = new ColumnConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
         verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
         ScrollPane matrixScrollPane = new ScrollPane();
-        matrixScrollPane.setPrefSize(855.0, 359.0);
-        matrixScrollPane.setMaxSize(855.0, 359.0);
-        matrixScrollPane.setMinSize(855.0, 359.0);
+        matrixScrollPane.setPrefSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
+        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
+        matrixScrollPane.setMinSize(MATRIX_SCROLL_WIDTH_MIN, MATRIX_SCROLL_HEIGHT_MIN);
         matrixScrollPane.setStyle("-fx-font-size: 12px");
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
-        BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
+        //BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
         matrixBorder.setCenter(matrixScrollPane);
         horizontalLabelScroll.setContent(horizontalAnchor);
 
@@ -470,13 +479,13 @@ public class DuplicateMatrixCommand implements Runnable {
         for(int i = 0; i < size; i++) {
             Label tempVerticalLabel = new Label(Integer.toString(i + 1));
             Label tempHorizontalLabel = new Label(Integer.toString(i + 1));
-            tempVerticalLabel.setPrefSize(25.0, 25.0);
-            tempVerticalLabel.setMinSize(25.0, 25.0);
-            tempVerticalLabel.setMaxSize(25.0, 25.0);
+            tempVerticalLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
+            tempVerticalLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
+            tempVerticalLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
             tempVerticalLabel.setAlignment(Pos.CENTER);
-            tempHorizontalLabel.setPrefSize(42.0, 25.0);
-            tempHorizontalLabel.setMaxSize(42.0, 25.0);
-            tempHorizontalLabel.setMinSize(42.0, 25.0);
+            tempHorizontalLabel.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+            tempHorizontalLabel.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+            tempHorizontalLabel.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
             tempHorizontalLabel.setAlignment(Pos.CENTER);
             horizontalLabelPane.add(tempHorizontalLabel, i, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
@@ -486,9 +495,9 @@ public class DuplicateMatrixCommand implements Runnable {
                 String tempString = String.format("%.2f", duplicateMatrix[i][j]);
                 //set buttons to be the corresponding matrix
                 Button tempButton = new Button(tempString);
-                tempButton.setPrefSize(42.0, 25.0);
-                tempButton.setMaxSize(42.0, 25.0);
-                tempButton.setMinSize(42.0, 25.0);
+                tempButton.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+                tempButton.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+                tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
                 tempButton.setTooltip(matrixButtonTooltip);
                 tempButton.setAlignment(Pos.CENTER_RIGHT);
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
@@ -538,12 +547,12 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //pane.getChildren().add(overallPane);
 
-        Scene scene = new Scene(overallPane, 900, 800);
+        Scene scene = new Scene(overallPane, OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
         dialog.setScene(scene);
-        dialog.setMinWidth(900);
-        dialog.setMinHeight(800);
-        dialog.setMaxWidth(900);
-        dialog.setMaxHeight(800);
+        dialog.setMinWidth(OVERALL_WIDTH_MIN);
+        dialog.setMinHeight(OVERALL_HEIGHT_MIN);
+        dialog.setMaxWidth(OVERALL_WIDTH_MAX);
+        dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
 
         return dialog;
     }
