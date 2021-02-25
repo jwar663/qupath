@@ -23,12 +23,18 @@
 
 package qupath.lib.gui.commands;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
@@ -179,14 +185,35 @@ public class DuplicateMatrixCommand implements Runnable {
     protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
         matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(verticalLabels, ((size * BUTTON_LABEL_HEIGHT - matrix.getHeight() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
-            System.out.println("matrix height" + matrix.getHeight());
         });
         matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setLeftAnchor(horizontalLabels, ((size * BUTTON_WIDTH - matrix.getWidth() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
-            System.out.println("matrix width" + matrix.getWidth());
         });
     }
-    
+
+    protected static String getHeatmapColour(double value) {
+        double maxColour = 255;
+        double maxValue = 1;
+        //double minValue = 0;
+
+        String redValue = Integer.toHexString((int) ((maxColour * (maxValue - value)) / maxValue));
+        String greenValue = Integer.toHexString((int) ((maxColour * value) / maxValue));
+        String blueValue = Integer.toHexString(0);
+        if(redValue.length() < 2) {
+            redValue = "0" + redValue;
+        }
+        if(greenValue.length() < 2) {
+            greenValue = "0" + greenValue;
+        }
+        if(blueValue.length() < 2) {
+            blueValue = "0" + blueValue;
+        }
+        System.out.println("red: " + redValue);
+        System.out.println("green: " + greenValue);
+        System.out.println("blue: " + blueValue);
+        return "#" + redValue + greenValue + blueValue;
+    }
+
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
@@ -469,7 +496,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixScrollPane.setPrefSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
         matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
         matrixScrollPane.setMinSize(MATRIX_SCROLL_WIDTH_MIN, MATRIX_SCROLL_HEIGHT_MIN);
-        matrixScrollPane.setStyle("-fx-font-size: 12px");
+
+        matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
         matrixBorder.setCenter(matrixScrollPane);
         horizontalLabelScroll.setContent(horizontalAnchor);
@@ -510,20 +538,22 @@ public class DuplicateMatrixCommand implements Runnable {
                 tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
                 tempButton.setTooltip(matrixButtonTooltip);
                 tempButton.setAlignment(Pos.CENTER_RIGHT);
-                tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
+                //System.out.println("current colour" + tempButtonColour);
+                tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
                 tempButton.setOnMouseEntered(e -> {
                     tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
                 });
                 tempButton.setOnMouseExited(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 });
                 tempButton.setOnMousePressed(e -> {
-                    tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                    tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 });
                 tempButton.setOnMouseReleased(e -> {
-                    tempButton.setStyle("-fx-border-color: #ffffff; -fx-border-radius: 0; -fx-background-color: #ffffff; -fx-background-radius: 0");
+                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 });
                 tempButton.setOnAction(e -> {
                     //set the correct images depending on button click
