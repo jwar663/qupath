@@ -66,6 +66,8 @@ public class DuplicateMatrixCommand implements Runnable {
     //CONSTANT MACROS
     private static final double BUTTON_WIDTH = 42.0;
     private static final double BUTTON_LABEL_HEIGHT = 25.0;
+    private static final double SCROLL_BAR_FONT_SIZE = 12.0;
+    private static final double TAB_SIZE = 30.0;
 
     //MAX/PREF
 
@@ -89,8 +91,8 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double MATRIX_BORDER_HEIGHT_MAX = 384.0;
 
     private static final double MATRIX_LABELS_VERTICAL_WIDTH_MAX = 25.0;
-    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - 25.0;
-    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - 42.0;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - SCROLL_BAR_FONT_SIZE;
     private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX = 25.0;
     private static final double MATRIX_SCROLL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX;
     private static final double MATRIX_SCROLL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - MATRIX_LABELS_VERTICAL_WIDTH_MAX;
@@ -98,7 +100,6 @@ public class DuplicateMatrixCommand implements Runnable {
     //IMAGE MACROS MAX/PREF
     private static final double TAB_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
     private static final double TAB_HEIGHT_MAX = 326.0;
-    private static final double TAB_SIZE = 20.0;
 
     private static final double IMAGE_HBOX_WIDTH_MAX = TAB_WIDTH_MAX - TAB_SIZE;
     private static final double IMAGE_HBOX_HEIGHT_MAX = TAB_HEIGHT_MAX;
@@ -114,11 +115,11 @@ public class DuplicateMatrixCommand implements Runnable {
 
     //MIN
 
-    //OVERALL MACROS MAX/PREF
+    //OVERALL MACROS MIN
     private static final double OVERALL_WIDTH_MIN = 500.0;
     private static final double OVERALL_HEIGHT_MIN = 565.0;
 
-    //THRESHOLD MACROS MAX/PREF
+    //THRESHOLD MACROS MIN
     private static final double THRESHOLD_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
     private static final double THRESHOLD_HEIGHT_MIN = 25.0;
 
@@ -128,18 +129,18 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double THRESHOLD_FIELD_COLUMN_MIN = THRESHOLD_TEXT_FIELD_WIDTH_MIN * 2;
     private static final double THRESHOLD_BUTTON_COLUMN_MIN = THRESHOLD_BUTTONS_WIDTH_MIN + 10.0;
 
-    //MATRIX MACROS MAX/PREF
+    //MATRIX MACROS MIN
     private static final double MATRIX_BORDER_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
     private static final double MATRIX_BORDER_HEIGHT_MIN = 250.0;
 
     private static final double MATRIX_LABELS_VERTICAL_WIDTH_MIN = 25.0;
-    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - 25.0;
-    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - 42.0;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - SCROLL_BAR_FONT_SIZE;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - BUTTON_WIDTH - SCROLL_BAR_FONT_SIZE;
     private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN = 25.0;
     private static final double MATRIX_SCROLL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN;
     private static final double MATRIX_SCROLL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - MATRIX_LABELS_VERTICAL_WIDTH_MIN;
 
-    //IMAGE MACROS MAX/PREF
+    //IMAGE MACROS MIN
     private static final double TAB_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
     private static final double TAB_HEIGHT_MIN = 250.0;
 
@@ -168,23 +169,24 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected static void bindImages(ScrollPane image1Scroll, ImageView image2) {
         image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - 321.0) * newValue.doubleValue()) * -1.0);
-            System.out.println("height: " + image2.getImage().getHeight());
+            AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
         });
         image1Scroll.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(image2, ((image2.getImage().getWidth() - 415.0) * newValue.doubleValue()) * -1.0);
-            System.out.println("width: " + image2.getImage().getWidth());
+            AnchorPane.setLeftAnchor(image2, ((image2.getImage().getWidth() - image1Scroll.getWidth()) * newValue.doubleValue()) * -1.0);
         });
     }
 
     protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
         matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setTopAnchor(verticalLabels, ((size * 25.0 - 347.0) * newValue.doubleValue()) * -1.0);
+            AnchorPane.setTopAnchor(verticalLabels, ((size * BUTTON_LABEL_HEIGHT - matrix.getHeight() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
+            System.out.println("matrix height" + matrix.getHeight());
         });
         matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(horizontalLabels, ((size * 40.0 - 843.0) * newValue.doubleValue()) * -1.0);
+            AnchorPane.setLeftAnchor(horizontalLabels, ((size * BUTTON_WIDTH - matrix.getWidth() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
+            System.out.println("matrix width" + matrix.getWidth());
         });
     }
+    
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
@@ -236,6 +238,7 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.setPrefSize(OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
 
         GridPane thresholdPane = new GridPane();
+        thresholdPane.setPadding(new Insets(10,10,5,10));
         thresholdPane.setPrefSize(THRESHOLD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH_MIN, THRESHOLD_LABEL_WIDTH_MAX, THRESHOLD_LABEL_WIDTH_MAX
         );
@@ -315,38 +318,45 @@ public class DuplicateMatrixCommand implements Runnable {
         imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
         imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH_MIN, IMAGE_HBOX_HEIGHT_MIN);
         BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
+
         VBox image1ScrollVBox = new VBox();
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
-        //image1ScrollVBox.setTranslateX(10);
+        image1ScrollVBox.setPadding(new Insets(0,10,0,0));
+
         VBox image2ScrollVBox = new VBox();
         image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
-        //image2ScrollVBox.setTranslateX(20);
+
         ScrollPane image1ScrollPane = new ScrollPane();
         image1ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
         image1ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
         image1ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
         image1ScrollPane.setPannable(true);
+
         ScrollPane image2ScrollPane = new ScrollPane();
         image2ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
         image2ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
         image2ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
+
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
+
         Label image1ScrollLabel = new Label("Image 1");
         image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
         image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
         image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image1ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
+
         Label image2ScrollLabel = new Label("Image 2");
         image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
         image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
         image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
         image2ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
+
         ImageView imageScrollView1 = new ImageView();
         ImageView imageScrollView2 = new ImageView();
 
@@ -373,6 +383,7 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        image1ThumbnailVBox.setPadding(new Insets(0,10,0,0));
         //image1ThumbnailVBox.setTranslateX(10);
         VBox image2ThumbnailVBox = new VBox();
         image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
@@ -416,10 +427,12 @@ public class DuplicateMatrixCommand implements Runnable {
         imageTabPane.setPrefSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
         imageTabPane.setMaxSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
         imageTabPane.setMinSize(TAB_WIDTH_MIN, TAB_HEIGHT_MIN);
+        imageTabPane.setPadding(new Insets(5, 10,10,10));
         overallPane.setBottom(imageTabPane);
 
         //matrix part
         BorderPane matrixBorder = new BorderPane();
+        matrixBorder.setPadding(new Insets(5,10,5,10));
 
         AnchorPane verticalAnchor = new AnchorPane();
         AnchorPane horizontalAnchor = new AnchorPane();
@@ -444,10 +457,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH_MAX, MATRIX_BORDER_HEIGHT_MAX);
         matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_MIN, MATRIX_BORDER_HEIGHT_MIN);
         GridPane verticalLabelPane = new GridPane();
-        //verticalLabelPane.setGridLinesVisible(true);
 
         GridPane horizontalLabelPane = new GridPane();
-        //horizontalLabelPane.setGridLinesVisible(true);
 
 
         RowConstraints labelRowConstraint = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
@@ -460,13 +471,12 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixScrollPane.setMinSize(MATRIX_SCROLL_WIDTH_MIN, MATRIX_SCROLL_HEIGHT_MIN);
         matrixScrollPane.setStyle("-fx-font-size: 12px");
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
-        //BorderPane.setMargin(matrixBorder, new Insets(10.0,0.0,0.0,0.0));
         matrixBorder.setCenter(matrixScrollPane);
         horizontalLabelScroll.setContent(horizontalAnchor);
 
         horizontalAnchor.getChildren().add(horizontalLabelPane);
 
-        horizontalLabelScroll.setTranslateX(25.0);
+        horizontalLabelScroll.setPadding(new Insets(0,0,0,25));
 
         matrixBorder.setTop(horizontalLabelScroll);
         verticalAnchor.getChildren().add(verticalLabelPane);
@@ -545,7 +555,6 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setTooltip(new Tooltip("I dont even know"));
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
-        //pane.getChildren().add(overallPane);
 
         Scene scene = new Scene(overallPane, OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
         dialog.setScene(scene);
@@ -553,6 +562,7 @@ public class DuplicateMatrixCommand implements Runnable {
         dialog.setMinHeight(OVERALL_HEIGHT_MIN);
         dialog.setMaxWidth(OVERALL_WIDTH_MAX);
         dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
+
 
         return dialog;
     }
