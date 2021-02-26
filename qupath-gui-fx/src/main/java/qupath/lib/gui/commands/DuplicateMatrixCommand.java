@@ -193,11 +193,23 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected static String getHeatmapColour(double value) {
         double maxColour = 255;
-        double maxValue = 1;
-        //double minValue = 0;
+        double minColour = 0;
+        double maxValue = 0.5;
+        value = value - 0.5;
 
-        String redValue = Integer.toHexString((int) ((maxColour * (maxValue - value)) / maxValue));
-        String greenValue = Integer.toHexString((int) ((maxColour * value) / maxValue));
+        String redValue = "";
+        String greenValue = "";
+
+        if(value <= 0) {
+            redValue = Integer.toHexString((int) maxColour);
+            greenValue = Integer.toHexString((int) minColour);
+        } else if(value > maxValue / 2) {
+            redValue = Integer.toHexString((int) ((1 - 2 * (value - maxValue / 2) / maxValue) * maxColour));
+            greenValue = Integer.toHexString((int) (maxColour));
+        } else {
+            redValue = Integer.toHexString((int) maxColour);
+            greenValue = Integer.toHexString((int) ((2 * value / maxValue) * maxColour));
+        }
         String blueValue = Integer.toHexString(0);
         if(redValue.length() < 2) {
             redValue = "0" + redValue;
@@ -208,9 +220,6 @@ public class DuplicateMatrixCommand implements Runnable {
         if(blueValue.length() < 2) {
             blueValue = "0" + blueValue;
         }
-        System.out.println("red: " + redValue);
-        System.out.println("green: " + greenValue);
-        System.out.println("blue: " + blueValue);
         return "#" + redValue + greenValue + blueValue;
     }
 
@@ -539,7 +548,6 @@ public class DuplicateMatrixCommand implements Runnable {
                 tempButton.setTooltip(matrixButtonTooltip);
                 tempButton.setAlignment(Pos.CENTER_RIGHT);
                 String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
-                //System.out.println("current colour" + tempButtonColour);
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
