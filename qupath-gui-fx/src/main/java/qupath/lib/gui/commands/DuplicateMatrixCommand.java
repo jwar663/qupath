@@ -48,6 +48,8 @@ import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 
+import javax.swing.event.ChangeListener;
+
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
  * is the best to properly represent the image.
@@ -171,6 +173,22 @@ public class DuplicateMatrixCommand implements Runnable {
      */
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
+    }
+
+    protected static void bindResize(Scene scene, ImageView image1, ImageView image2) {
+        scene.widthProperty().addListener(e -> {
+            image1.setImage(null);
+            image2.setImage(null);
+//            image1.resize(imagePane.getWidth(), imagePane.getHeight());
+//            image2.resize(imagePane.getWidth(), imagePane.getHeight());
+        });
+
+        scene.heightProperty().addListener(e -> {
+            image1.setImage(null);
+            image2.setImage(null);
+//            image1.resize(imagePane.getWidth(), imagePane.getHeight());
+//            image2.resize(imagePane.getWidth(), imagePane.getHeight());
+        });
     }
 
     protected static void bindImages(ScrollPane image1Scroll, ImageView image2) {
@@ -420,12 +438,10 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
         image1ThumbnailVBox.setPadding(new Insets(0,10,0,0));
-        //image1ThumbnailVBox.setTranslateX(10);
         VBox image2ThumbnailVBox = new VBox();
         image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
-        //image2ThumbnailVBox.setTranslateX(20);
         Pane image1ThumbnailPane = new Pane();
         image1ThumbnailPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
         image1ThumbnailPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
@@ -601,6 +617,7 @@ public class DuplicateMatrixCommand implements Runnable {
         dialog.setMaxWidth(OVERALL_WIDTH_MAX);
         dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
 
+        bindResize(scene, imageThumbnailView1, imageThumbnailView2);
 
         return dialog;
     }
