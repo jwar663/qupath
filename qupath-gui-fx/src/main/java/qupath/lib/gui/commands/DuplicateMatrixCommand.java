@@ -67,7 +67,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private int size;
     private float[][] duplicateMatrix;
     private BufferedImage img;
-
+    private Double confirmDouble = 0.0;
 
     public ImageData<BufferedImage> imageData;
 
@@ -164,7 +164,9 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double IMAGE_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
     private static final double IMAGE_HEIGHT_MIN = IMAGE_VBOX_HEIGHT_MIN - IMAGE_LABEL_HEIGHT_MIN;
 
+    private static final String START_THRESHOLD = "0.90";
 
+    String thresholdValue = START_THRESHOLD;
 
 
     /**
@@ -179,15 +181,11 @@ public class DuplicateMatrixCommand implements Runnable {
         scene.widthProperty().addListener(e -> {
             image1.setImage(null);
             image2.setImage(null);
-//            image1.resize(imagePane.getWidth(), imagePane.getHeight());
-//            image2.resize(imagePane.getWidth(), imagePane.getHeight());
         });
 
         scene.heightProperty().addListener(e -> {
             image1.setImage(null);
             image2.setImage(null);
-//            image1.resize(imagePane.getWidth(), imagePane.getHeight());
-//            image2.resize(imagePane.getWidth(), imagePane.getHeight());
         });
     }
 
@@ -308,7 +306,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdLabel.setMinHeight(THRESHOLD_HEIGHT_MIN);
         thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
-        TextField thresholdTextField = new TextField("0.90");
+        TextField thresholdTextField = new TextField(START_THRESHOLD);
         thresholdTextField.setPrefSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         thresholdTextField.setMinSize(THRESHOLD_TEXT_FIELD_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
         thresholdTextField.setMaxSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
@@ -319,20 +317,22 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
-            String thresholdValue = thresholdTextField.getText();
-            Double confirmDouble = 0.0;
+            thresholdValue = thresholdTextField.getText();
             try{
+                System.out.println(thresholdValue);
                 confirmDouble = Double.parseDouble(thresholdValue);
-                if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                    viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
-                    viewer.repaintEntireImage();
-                    if(dialog.isShowing())
-                        dialog.close();
-                } else {
-                    invalidInput.showAndWait();
-                }
+                System.out.println(confirmDouble);
             } catch(Exception e) {
+                confirmDouble = 1.01;
                 System.out.println("Exception: " + e);
+            }
+            if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
+                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
+                viewer.repaintEntireImage();
+                if(dialog.isShowing()) {
+                    dialog.close();
+                }
+            } else {
                 invalidInput.showAndWait();
             }
         });
@@ -342,17 +342,16 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            String thresholdValue = thresholdTextField.getText();
-            Double confirmDouble = 0.0;
+            thresholdValue = thresholdTextField.getText();
             try{
                 confirmDouble = Double.parseDouble(thresholdValue);
-                if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-
-                } else {
-                    invalidInput.showAndWait();
-                }
             } catch(Exception e) {
+                confirmDouble = 1.01;
                 System.out.println("Exception: " + e);
+            }
+            if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
+
+            } else {
                 invalidInput.showAndWait();
             }
         });

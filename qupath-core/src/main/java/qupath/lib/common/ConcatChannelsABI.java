@@ -96,7 +96,7 @@ public class ConcatChannelsABI {
     public static void setChannelColors(ImageData<?> imageData, Integer... colors) {
         List<ImageChannel> oldChannels = imageData.getServer().getMetadata().getChannels();
         List<ImageChannel> newChannels = new ArrayList<>(oldChannels);
-        for (int i = 0; i < colors.length; i++) {
+        for (int i = 0; i < oldChannels.size(); i++) {
             Integer color = colors[i];
             if (color == null)
                 continue;
@@ -339,31 +339,10 @@ public class ConcatChannelsABI {
             channels.add(imageData.getServer().getChannel(i));
         }
         BufferedImage finalImg = createNewBufferedImage(distinct, img);
-            //writing a tiff file, not particularly useful
-//            File file = new File("D:\\Desktop\\QuPath\\newImage.tiff");
-//            try {
-//                ImageIO.write(finalImg, "tiff", file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
         ImageData imageData1 = new ImageData<BufferedImage>(newServer);
         imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
-        //imageData1.setProperty()
         setRegularChannelColours(imageData1);
-//            System.out.println("original URI: " + imageData.getServer().getURIs().toString());
-//            System.out.println("new URI: " + imageData1.getServer().getURIs().toString());
-//            System.out.println("original reference: " + imageData.getServer().getPath());
-//            System.out.println("reference: " + imageData1.getServer().getPath());
-//            try {
-//                imageData1.getServer()
-//                        .getBuilder()
-//                        .updateURIs(getCorrectURIMap(new URI(imageData1.getServer().getPath()), imageData.getServer().getURIs()))
-//                        .build();
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println("updated URI: " + imageData1.getServer().getURIs().toString());
         resultImageData = imageData1;
         setRegularChannelNames(resultImageData);
         return resultImageData;
