@@ -271,19 +271,24 @@ public class ConcatChannelsABI {
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
-        BufferedImage[] bufferedImages = new BufferedImage[2];
+        BufferedImage bufferedImage;
+        BufferedImage[] grayScaleImages = new BufferedImage[2];
         BufferedImage img = null;
         try {
             img = imageData.getServer().readBufferedImage(request);
-            bufferedImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < height; j++) {
                     //set the red colour, leave the other colours as 0.
-                    bufferedImages[1].getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                    bufferedImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
                 }
             }
-            bufferedImages[0] = createThumbnailImage(bufferedImages[1], desiredHeight, desiredWidth);
-            return bufferedImages;
+            grayScaleImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            Graphics graphics = grayScaleImages[1].getGraphics();
+            graphics.drawImage(bufferedImage, 0, 0, null);
+            graphics.dispose();
+            grayScaleImages[0] = createThumbnailImage(grayScaleImages[1], desiredHeight, desiredWidth);
+            return grayScaleImages;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
