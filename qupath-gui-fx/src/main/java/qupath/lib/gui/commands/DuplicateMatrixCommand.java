@@ -23,9 +23,9 @@
 
 package qupath.lib.gui.commands;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
@@ -47,8 +47,6 @@ import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
-
-import javax.swing.event.ChangeListener;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -175,6 +173,15 @@ public class DuplicateMatrixCommand implements Runnable {
      */
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
+    }
+
+    protected static float[][] createPreviewMatrix(float[][] currentMatrix, ArrayList<Integer> selectedChannels) {
+        int selectedChannelsSize = selectedChannels.size();
+        float[][] previewMatrix = new float[selectedChannelsSize][selectedChannelsSize];
+        for(int i = 0; i < selectedChannelsSize; i++) {
+            previewMatrix[i] = currentMatrix[selectedChannels.get(i)];
+        }
+        return previewMatrix;
     }
 
     protected static void bindResize(Scene scene, ImageView image1, ImageView image2) {
@@ -342,6 +349,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
+            ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
             try{
                 confirmDouble = Double.parseDouble(thresholdValue);
@@ -350,7 +358,9 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-
+                distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
+                float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
+                previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
             } else {
                 invalidInput.showAndWait();
             }
@@ -535,7 +545,6 @@ public class DuplicateMatrixCommand implements Runnable {
         verticalLabelScroll.setContent(verticalAnchor);
         matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
-        //matrix.setGridLinesVisible(true);
         Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
         matrixButtonTooltip.setShowDelay(Duration.seconds(1));
         for(int i = 0; i < size; i++) {
