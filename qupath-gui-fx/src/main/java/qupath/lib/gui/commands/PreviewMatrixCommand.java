@@ -23,30 +23,27 @@
 
 package qupath.lib.gui.commands;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.ArrayList;
-
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.*;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
-
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
+
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -55,7 +52,7 @@ import qupath.lib.images.ImageData;
  * @author Jaedyn Ward
  *
  */
-public class DuplicateMatrixCommand implements Runnable {
+public class PreviewMatrixCommand implements Runnable {
 
     private QuPathGUI qupath;
     private QuPathViewer viewer;
@@ -171,7 +168,7 @@ public class DuplicateMatrixCommand implements Runnable {
      * Constructor.
      * @param qupath
      */
-    public DuplicateMatrixCommand(final QuPathGUI qupath) {
+    public PreviewMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
     }
 
@@ -249,8 +246,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
-
-        PreviewMatrixCommand newPreview = new PreviewMatrixCommand(qupath);
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
@@ -351,7 +346,6 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            Stage previewDialog = new Stage();
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
             try{
@@ -364,14 +358,6 @@ public class DuplicateMatrixCommand implements Runnable {
                 distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
                 previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
-                try {
-                   previewDialog = newPreview.createDialog();
-                   previewDialog.initOwner(qupath.getStage());
-                   previewDialog.initModality(Modality.WINDOW_MODAL);
-                   previewDialog.showAndWait();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             } else {
                 invalidInput.showAndWait();
             }
