@@ -52,15 +52,13 @@ import java.util.ArrayList;
  * @author Jaedyn Ward
  *
  */
-public class PreviewMatrixCommand implements Runnable {
+public class PreviewMatrixCommand {
 
     private QuPathGUI qupath;
     private QuPathViewer viewer;
 
     private Stage dialog;
 
-    private int size;
-    private float[][] duplicateMatrix;
     private BufferedImage img;
     private Double confirmDouble = 0.0;
 
@@ -172,83 +170,11 @@ public class PreviewMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
-    protected static float[][] createPreviewMatrix(float[][] currentMatrix, ArrayList<Integer> selectedChannels) {
-        int selectedChannelsSize = selectedChannels.size();
-        float[][] previewMatrix = new float[selectedChannelsSize][selectedChannelsSize];
-        for(int i = 0; i < selectedChannelsSize; i++) {
-            previewMatrix[i] = currentMatrix[selectedChannels.get(i)];
-        }
-        return previewMatrix;
-    }
-
-    protected static void bindResize(Scene scene, ImageView image1, ImageView image2) {
-        scene.widthProperty().addListener(e -> {
-            image1.setImage(null);
-            image2.setImage(null);
-        });
-
-        scene.heightProperty().addListener(e -> {
-            image1.setImage(null);
-            image2.setImage(null);
-        });
-    }
-
-    protected static void bindImages(ScrollPane image1Scroll, ImageView image2) {
-        image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
-        });
-        image1Scroll.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(image2, ((image2.getImage().getWidth() - image1Scroll.getWidth()) * newValue.doubleValue()) * -1.0);
-        });
-    }
-
-    protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
-        matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setTopAnchor(verticalLabels, ((size * BUTTON_LABEL_HEIGHT - matrix.getHeight() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
-        });
-        matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(horizontalLabels, ((size * BUTTON_WIDTH - matrix.getWidth() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
-        });
-    }
-
-    protected static String getHeatmapColour(double value) {
-        double maxColour = 255;
-        double minColour = 0;
-        double maxValue = 0.5;
-        value = value - 0.5;
-
-        String redValue = "";
-        String greenValue = "";
-
-        if(value <= 0) {
-            redValue = Integer.toHexString((int) maxColour);
-            greenValue = Integer.toHexString((int) minColour);
-        } else if(value > maxValue / 2) {
-            redValue = Integer.toHexString((int) ((1 - 2 * (value - maxValue / 2) / maxValue) * maxColour));
-            greenValue = Integer.toHexString((int) (maxColour));
-        } else {
-            redValue = Integer.toHexString((int) maxColour);
-            greenValue = Integer.toHexString((int) ((2 * value / maxValue) * maxColour));
-        }
-        String blueValue = Integer.toHexString(0);
-        if(redValue.length() < 2) {
-            redValue = "0" + redValue;
-        }
-        if(greenValue.length() < 2) {
-            greenValue = "0" + greenValue;
-        }
-        if(blueValue.length() < 2) {
-            blueValue = "0" + blueValue;
-        }
-        return "#" + redValue + greenValue + blueValue;
-    }
-
-
-    protected Stage createDialog() throws IOException, NullPointerException {
+    protected Stage createDialog(float[][] duplicateMatrix) throws IOException, NullPointerException {
 
         Stage dialog = new Stage();
-        dialog.initOwner(qupath.getStage());
-        dialog.setTitle("Duplicate Matrix");
+        dialog.setTitle("Preview");
+        int size = duplicateMatrix.length;
 
         Stage invalidInput = new Stage();
         invalidInput.setTitle("Invalid Input");
@@ -266,27 +192,7 @@ public class PreviewMatrixCommand implements Runnable {
         invalidInput.setScene(new Scene(invalidInputVbox));
 
         viewer = qupath.getViewer();
-        imageData = qupath.getImageData();
-        if(imageData == null) {
-            Stage error = new Stage();
-            error.setTitle("Error");
-            error.initModality(Modality.WINDOW_MODAL);
-            Button confirmButton = new Button("OK");
-            confirmButton.setOnAction(e -> {
-                error.close();
-            });
-            VBox vbox = new VBox(new Text("Please open an image before selecting this feature"), confirmButton);
-            vbox.setSpacing(10.0);
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setPadding(new Insets(15));
-
-            error.setScene(new Scene(vbox));
-            return error;
-        }
-        size = imageData.getServer().nChannels();
-        duplicateMatrix = new float[size][size];
         img = ConcatChannelsABI.convertImageDataToImage(imageData);
-        duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
 
         //larger panes
 
@@ -357,7 +263,7 @@ public class PreviewMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
-                previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
+                previewMatrix = DuplicateMatrixCommand.createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
             } else {
                 invalidInput.showAndWait();
             }
@@ -568,7 +474,7 @@ public class PreviewMatrixCommand implements Runnable {
                 tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
                 tempButton.setTooltip(matrixButtonTooltip);
                 tempButton.setAlignment(Pos.CENTER_RIGHT);
-                String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
+                String tempButtonColour = DuplicateMatrixCommand.getHeatmapColour(duplicateMatrix[i][j]);
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
                 int tempI = i;
                 int tempJ = j;
@@ -601,8 +507,8 @@ public class PreviewMatrixCommand implements Runnable {
             }
         }
 
-        bindImages(image1ScrollPane, imageScrollView2);
-        bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
+        DuplicateMatrixCommand.bindImages(image1ScrollPane, imageScrollView2);
+        DuplicateMatrixCommand.bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
@@ -622,24 +528,24 @@ public class PreviewMatrixCommand implements Runnable {
         dialog.setMaxWidth(OVERALL_WIDTH_MAX);
         dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
 
-        bindResize(scene, imageThumbnailView1, imageThumbnailView2);
+        DuplicateMatrixCommand.bindResize(scene, imageThumbnailView1, imageThumbnailView2);
 
         return dialog;
     }
 
-    @Override
-    public void run() {
-        if (dialog == null) {
-            try{
-                dialog = createDialog();
-            } catch (IOException e) {
-            }
-        } else if(!dialog.isShowing()) {
-            try {
-                dialog = createDialog();
-            } catch (IOException e) {
-            }
-        }
-        dialog.show();
-    }
+//    @Override
+//    public void run() {
+//        if (dialog == null) {
+//            try{
+//                dialog = createDialog();
+//            } catch (IOException e) {
+//            }
+//        } else if(!dialog.isShowing()) {
+//            try {
+//                dialog = createDialog();
+//            } catch (IOException e) {
+//            }
+//        }
+//        dialog.show();
+//    }
 }

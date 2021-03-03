@@ -175,7 +175,7 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
-    protected static float[][] createPreviewMatrix(float[][] currentMatrix, ArrayList<Integer> selectedChannels) {
+    public static float[][] createPreviewMatrix(float[][] currentMatrix, ArrayList<Integer> selectedChannels) {
         int selectedChannelsSize = selectedChannels.size();
         float[][] previewMatrix = new float[selectedChannelsSize][selectedChannelsSize];
         for(int i = 0; i < selectedChannelsSize; i++) {
@@ -184,7 +184,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewMatrix;
     }
 
-    protected static void bindResize(Scene scene, ImageView image1, ImageView image2) {
+    public static void bindResize(Scene scene, ImageView image1, ImageView image2) {
         scene.widthProperty().addListener(e -> {
             image1.setImage(null);
             image2.setImage(null);
@@ -196,7 +196,7 @@ public class DuplicateMatrixCommand implements Runnable {
         });
     }
 
-    protected static void bindImages(ScrollPane image1Scroll, ImageView image2) {
+    public static void bindImages(ScrollPane image1Scroll, ImageView image2) {
         image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
         });
@@ -205,7 +205,7 @@ public class DuplicateMatrixCommand implements Runnable {
         });
     }
 
-    protected static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
+    public static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
         matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(verticalLabels, ((size * BUTTON_LABEL_HEIGHT - matrix.getHeight() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
         });
@@ -214,7 +214,7 @@ public class DuplicateMatrixCommand implements Runnable {
         });
     }
 
-    protected static String getHeatmapColour(double value) {
+    public static String getHeatmapColour(double value) {
         double maxColour = 255;
         double minColour = 0;
         double maxValue = 0.5;
@@ -365,7 +365,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
                 previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
-                   previewDialog = newPreview.createDialog();
+                   previewDialog = newPreview.createDialog(previewMatrix);
                    previewDialog.initOwner(qupath.getStage());
                    previewDialog.initModality(Modality.WINDOW_MODAL);
                    previewDialog.showAndWait();
