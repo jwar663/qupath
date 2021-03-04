@@ -197,7 +197,9 @@ public class DuplicateMatrixCommand implements Runnable {
         int selectedChannelsSize = selectedChannels.size();
         float[][] previewMatrix = new float[selectedChannelsSize][selectedChannelsSize];
         for(int i = 0; i < selectedChannelsSize; i++) {
-            previewMatrix[i] = currentMatrix[selectedChannels.get(i)];
+            for(int j = 0; j < selectedChannelsSize; j++) {
+                previewMatrix[i][j] = currentMatrix[selectedChannels.get(i)][selectedChannels.get(j)];
+            }
         }
         return previewMatrix;
     }
