@@ -145,15 +145,14 @@ public class DuplicateMatrixCommand implements Runnable {
 
     public static void exportImage(QuPathViewer viewer) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
-        PathObject pathObject = viewer.getSelectedObject();
-        ROI roi = pathObject == null ? null : pathObject.getROI();
-        Double downsample = 1.0;
-        double regionWidth = roi == null ? imageServer.getWidth() : roi.getBoundsWidth();
-        double regionHeight = roi == null ? imageServer.getHeight() : roi.getBoundsHeight();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        //RegionRequest request = RegionRequest.createInstance(imageServer.getPath(), downsample, roi);
         File fileName = new File(GeneralTools.getNameWithoutExtension(new File(ServerTools.getDisplayableImageName(imageServer))) + "-distinct." + writer.getDefaultExtension());
+        try{
+            writer.writeImage(imageServer, fileName.getAbsolutePath());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static Stage createInvalidInputStage(Stage dialog) {
