@@ -230,26 +230,13 @@ public class PreviewMatrixCommand {
                 DuplicateMatrixCommand.createInvalidInputStage(dialog).showAndWait();
             }
         });
-        Button thresholdPreview = new Button("Preview");
+        Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            ArrayList<Integer> distinctPreviewChannels;
-            thresholdValue = thresholdTextField.getText();
-            try{
-                confirmDouble = Double.parseDouble(thresholdValue);
-            } catch(Exception e) {
-                confirmDouble = 1.01;
-                System.out.println("Exception: " + e);
-            }
-            if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
-                float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
-                previewMatrix = DuplicateMatrixCommand.createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
-            } else {
-            }
+            dialog.close();
         });
         thresholdPane.add(thresholdLabel, 0, 0);
         thresholdPane.add(thresholdTextField, 1, 0);
