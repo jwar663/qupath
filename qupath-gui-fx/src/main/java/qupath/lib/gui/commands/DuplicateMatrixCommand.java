@@ -365,10 +365,9 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
-                float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
-                previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
+                float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
-                   previewDialog = newPreview.createDialog(previewMatrix, confirmDouble);
+                   previewDialog = newPreview.createDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels);
                    previewDialog.initOwner(qupath.getStage());
                    previewDialog.initModality(Modality.WINDOW_MODAL);
                    previewDialog.showAndWait();

@@ -57,13 +57,6 @@ public class PreviewMatrixCommand {
     private QuPathGUI qupath;
     private QuPathViewer viewer;
 
-    private Stage dialog;
-
-    private BufferedImage img;
-    private Double confirmDouble = 0.0;
-
-    public ImageData<BufferedImage> imageData;
-
     //CONSTANT MACROS
     private static final double BUTTON_WIDTH = 42.0;
     private static final double BUTTON_LABEL_HEIGHT = 25.0;
@@ -166,7 +159,7 @@ public class PreviewMatrixCommand {
         this.qupath = qupath;
     }
 
-    protected Stage createDialog(float[][] duplicateMatrix, Double thresholdValue) throws IOException, NullPointerException {
+    protected Stage createDialog(float[][] duplicateMatrix, Double thresholdValue, ImageData<BufferedImage> imageData, BufferedImage img, ArrayList<Integer> distinctChannels) throws IOException, NullPointerException {
 
         Stage dialog = new Stage();
         dialog.setTitle("Preview");
@@ -202,7 +195,6 @@ public class PreviewMatrixCommand {
         thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
-            //need to change imagedata and img
             viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
             viewer.repaintEntireImage();
         });
@@ -396,8 +388,8 @@ public class PreviewMatrixCommand {
         Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
         matrixButtonTooltip.setShowDelay(Duration.seconds(1));
         for(int i = 0; i < size; i++) {
-            Label tempVerticalLabel = new Label(Integer.toString(i + 1));
-            Label tempHorizontalLabel = new Label(Integer.toString(i + 1));
+            Label tempVerticalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
+            Label tempHorizontalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
             tempVerticalLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
             tempVerticalLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
             tempVerticalLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
@@ -421,8 +413,9 @@ public class PreviewMatrixCommand {
                 tempButton.setAlignment(Pos.CENTER_RIGHT);
                 String tempButtonColour = DuplicateMatrixCommand.getHeatmapColour(duplicateMatrix[i][j]);
                 tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                int tempI = i;
-                int tempJ = j;
+                //alter for previews
+                int tempI = distinctChannels.get(i);
+                int tempJ = distinctChannels.get(j);
                 tempButton.setOnMouseEntered(e -> {
                     tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
                 });
