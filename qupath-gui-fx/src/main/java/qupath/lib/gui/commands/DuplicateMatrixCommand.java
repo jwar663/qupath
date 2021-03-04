@@ -368,7 +368,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
                 previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
-                   previewDialog = newPreview.createDialog(previewMatrix);
+                   previewDialog = newPreview.createDialog(previewMatrix, confirmDouble);
                    previewDialog.initOwner(qupath.getStage());
                    previewDialog.initModality(Modality.WINDOW_MODAL);
                    previewDialog.showAndWait();

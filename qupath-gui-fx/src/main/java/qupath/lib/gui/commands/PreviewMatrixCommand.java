@@ -157,10 +157,6 @@ public class PreviewMatrixCommand {
     private static final double IMAGE_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
     private static final double IMAGE_HEIGHT_MIN = IMAGE_VBOX_HEIGHT_MIN - IMAGE_LABEL_HEIGHT_MIN;
 
-    private static final String START_THRESHOLD = "0.90";
-
-    String thresholdValue = START_THRESHOLD;
-
 
     /**
      * Constructor.
@@ -170,7 +166,7 @@ public class PreviewMatrixCommand {
         this.qupath = qupath;
     }
 
-    protected Stage createDialog(float[][] duplicateMatrix) throws IOException, NullPointerException {
+    protected Stage createDialog(float[][] duplicateMatrix, Double thresholdValue) throws IOException, NullPointerException {
 
         Stage dialog = new Stage();
         dialog.setTitle("Preview");
@@ -195,40 +191,20 @@ public class PreviewMatrixCommand {
 
 
         //Threshold Part
-        Label thresholdLabel = new Label("Please enter a threshold value:");
+        Label thresholdLabel = new Label("Threshold value selected: " + String.format("%.2f", thresholdValue));
         thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT_MAX);
         thresholdLabel.setMinHeight(THRESHOLD_HEIGHT_MIN);
         thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
-        TextField thresholdTextField = new TextField(START_THRESHOLD);
-        thresholdTextField.setPrefSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
-        thresholdTextField.setMinSize(THRESHOLD_TEXT_FIELD_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
-        thresholdTextField.setMaxSize(THRESHOLD_TEXT_FIELD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
-        GridPane.setHalignment(thresholdTextField, HPos.CENTER);
         Button thresholdConfirm = new Button("Submit");
         thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
         thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
-            thresholdValue = thresholdTextField.getText();
-            try{
-                System.out.println(thresholdValue);
-                confirmDouble = Double.parseDouble(thresholdValue);
-                System.out.println(confirmDouble);
-            } catch(Exception e) {
-                confirmDouble = 1.01;
-                System.out.println("Exception: " + e);
-            }
-            if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
-                viewer.repaintEntireImage();
-                if(dialog.isShowing()) {
-                    dialog.close();
-                }
-            } else {
-                DuplicateMatrixCommand.createInvalidInputStage(dialog).showAndWait();
-            }
+            //need to change imagedata and img
+            viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
+            viewer.repaintEntireImage();
         });
         Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
@@ -239,7 +215,6 @@ public class PreviewMatrixCommand {
             dialog.close();
         });
         thresholdPane.add(thresholdLabel, 0, 0);
-        thresholdPane.add(thresholdTextField, 1, 0);
         thresholdPane.add(thresholdPreview, 2, 0);
         thresholdPane.add(thresholdConfirm, 3, 0);
         thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn);
@@ -484,7 +459,6 @@ public class PreviewMatrixCommand {
         overallPane.setCenter(matrixBorder);
 
         //tooltips
-        thresholdTextField.setTooltip(new Tooltip("Select a value between -1.0 and 1.0"));
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
         thresholdPreview.setTooltip(new Tooltip("I dont even know"));
