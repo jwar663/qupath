@@ -204,18 +204,6 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewMatrix;
     }
 
-    public static void bindResize(Scene scene, ImageView image1, ImageView image2) {
-        scene.widthProperty().addListener(e -> {
-            image1.setImage(null);
-            image2.setImage(null);
-        });
-
-        scene.heightProperty().addListener(e -> {
-            image1.setImage(null);
-            image2.setImage(null);
-        });
-    }
-
     public static void bindImages(ScrollPane image1Scroll, ImageView image2) {
         image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
@@ -639,8 +627,6 @@ public class DuplicateMatrixCommand implements Runnable {
         dialog.setMinHeight(OVERALL_HEIGHT_MIN);
         dialog.setMaxWidth(OVERALL_WIDTH_MAX);
         dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
-
-        bindResize(scene, imageThumbnailView1, imageThumbnailView2);
 
         return dialog;
     }

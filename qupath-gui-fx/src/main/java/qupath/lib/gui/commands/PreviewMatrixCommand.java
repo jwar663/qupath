@@ -465,8 +465,6 @@ public class PreviewMatrixCommand {
         dialog.setMaxWidth(OVERALL_WIDTH_MAX);
         dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
 
-        DuplicateMatrixCommand.bindResize(scene, imageThumbnailView1, imageThumbnailView2);
-
         return dialog;
     }
 }
