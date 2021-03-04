@@ -629,7 +629,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdTextField.setTooltip(new Tooltip("Select a value between -1.0 and 1.0"));
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-        thresholdPreview.setTooltip(new Tooltip("I dont even know"));
+        thresholdPreview.setTooltip(new Tooltip("Show only the distinct channels with the selected threshold value"));
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 

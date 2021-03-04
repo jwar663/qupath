@@ -454,7 +454,7 @@ public class PreviewMatrixCommand {
         //tooltips
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-        thresholdPreview.setTooltip(new Tooltip("I dont even know"));
+        thresholdPreview.setTooltip(new Tooltip("Go back to the previous window"));
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
