@@ -176,23 +176,7 @@ public class PreviewMatrixCommand {
         dialog.setTitle("Preview");
         int size = duplicateMatrix.length;
 
-        Stage invalidInput = new Stage();
-        invalidInput.setTitle("Invalid Input");
-        invalidInput.initModality(Modality.WINDOW_MODAL);
-        invalidInput.initOwner(dialog);
-        Button invalidInputConfirmButton = new Button("OK");
-        invalidInputConfirmButton.setOnAction(ev -> {
-            invalidInput.close();
-        });
-        VBox invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
-        invalidInputVbox.setSpacing(10.0);
-        invalidInputVbox.setAlignment(Pos.CENTER);
-        invalidInputVbox.setPadding(new Insets(15));
-
-        invalidInput.setScene(new Scene(invalidInputVbox));
-
         viewer = qupath.getViewer();
-        img = ConcatChannelsABI.convertImageDataToImage(imageData);
 
         //larger panes
 
@@ -243,7 +227,7 @@ public class PreviewMatrixCommand {
                     dialog.close();
                 }
             } else {
-                invalidInput.showAndWait();
+                DuplicateMatrixCommand.createInvalidInputStage(dialog).showAndWait();
             }
         });
         Button thresholdPreview = new Button("Preview");
@@ -265,7 +249,6 @@ public class PreviewMatrixCommand {
                 float[][] previewMatrix = new float[distinctPreviewChannels.size()][distinctPreviewChannels.size()];
                 previewMatrix = DuplicateMatrixCommand.createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
             } else {
-                invalidInput.showAndWait();
             }
         });
         thresholdPane.add(thresholdLabel, 0, 0);

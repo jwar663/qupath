@@ -175,6 +175,24 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
+    public static Stage createInvalidInputStage(Stage dialog) {
+        Stage invalidInput = new Stage();
+        invalidInput.setTitle("Invalid Input");
+        invalidInput.initModality(Modality.WINDOW_MODAL);
+        invalidInput.initOwner(dialog);
+        Button invalidInputConfirmButton = new Button("OK");
+        invalidInputConfirmButton.setOnAction(ev -> {
+            invalidInput.close();
+        });
+        VBox invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
+        invalidInputVbox.setSpacing(10.0);
+        invalidInputVbox.setAlignment(Pos.CENTER);
+        invalidInputVbox.setPadding(new Insets(15));
+
+        invalidInput.setScene(new Scene(invalidInputVbox));
+        return invalidInput;
+    }
+
     public static float[][] createPreviewMatrix(float[][] currentMatrix, ArrayList<Integer> selectedChannels) {
         int selectedChannelsSize = selectedChannels.size();
         float[][] previewMatrix = new float[selectedChannelsSize][selectedChannelsSize];
@@ -255,21 +273,6 @@ public class DuplicateMatrixCommand implements Runnable {
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
 
-        Stage invalidInput = new Stage();
-        invalidInput.setTitle("Invalid Input");
-        invalidInput.initModality(Modality.WINDOW_MODAL);
-        invalidInput.initOwner(dialog);
-        Button invalidInputConfirmButton = new Button("OK");
-        invalidInputConfirmButton.setOnAction(ev -> {
-            invalidInput.close();
-        });
-        VBox invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
-        invalidInputVbox.setSpacing(10.0);
-        invalidInputVbox.setAlignment(Pos.CENTER);
-        invalidInputVbox.setPadding(new Insets(15));
-
-        invalidInput.setScene(new Scene(invalidInputVbox));
-
         viewer = qupath.getViewer();
         imageData = qupath.getImageData();
         if(imageData == null) {
@@ -342,7 +345,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     dialog.close();
                 }
             } else {
-                invalidInput.showAndWait();
+                createInvalidInputStage(dialog).showAndWait();
             }
         });
         Button thresholdPreview = new Button("Preview");
@@ -373,7 +376,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                invalidInput.showAndWait();
+                createInvalidInputStage(dialog).showAndWait();
             }
         });
         thresholdPane.add(thresholdLabel, 0, 0);
