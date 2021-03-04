@@ -6,7 +6,10 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
+import qupath.lib.images.writers.ImageWriter;
+import qupath.lib.objects.PathObject;
 import qupath.lib.regions.RegionRequest;
+import qupath.lib.roi.interfaces.ROI;
 
 import java.awt.*;
 import java.awt.image.*;

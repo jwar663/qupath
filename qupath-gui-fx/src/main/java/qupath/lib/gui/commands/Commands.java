@@ -293,7 +293,6 @@ public class Commands {
 			Dialogs.showErrorMessage("Export image region", "No viewer & image selected!");
 			return;
 		}
-		
 		ImageServer<BufferedImage> server = viewer.getServer();
 		if (renderedImage)
 			server = RenderedImageServer.createRenderedServer(viewer);
@@ -368,6 +367,8 @@ public class Commands {
 				long h = (long)(regionHeight / downsample.get() + 0.5);
 				String warning = "";
 				var writer = comboImageType.getSelectionModel().getSelectedItem();
+				System.out.println(comboImageType.getSelectionModel().getSelectedItem().toString());
+				System.out.println(comboImageType.getSelectionModel().getSelectedItem());
 				boolean supportsPyramid = writer == null ? false : writer.supportsPyramidal();
 				if (!supportsPyramid && w * h > maxPixels) {
 					labelSize.setStyle("-fx-text-fill: red;");

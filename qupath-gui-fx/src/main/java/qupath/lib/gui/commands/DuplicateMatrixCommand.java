@@ -25,7 +25,9 @@ package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.*;
@@ -47,6 +49,11 @@ import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
+import qupath.lib.images.servers.ImageServer;
+import qupath.lib.images.writers.ImageWriter;
+import qupath.lib.images.writers.ImageWriterTools;
+import qupath.lib.objects.PathObject;
+import qupath.lib.roi.interfaces.ROI;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -130,6 +137,17 @@ public class DuplicateMatrixCommand implements Runnable {
      */
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
+    }
+
+    public static void exportImage(QuPathViewer viewer) {
+        ImageServer<BufferedImage> imageServer = viewer.getServer();
+        PathObject pathObject = viewer.getSelectedObject();
+        ROI roi = pathObject == null ? null : pathObject.getROI();
+        double regionWidth = roi == null ? imageServer.getWidth() : roi.getBoundsWidth();
+        double regionHeight = roi == null ? imageServer.getHeight() : roi.getBoundsHeight();
+        List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
+        ImageWriter<BufferedImage> writer = writers.get(0);
+        System.out.println(writer.toString());
     }
 
     public static Stage createInvalidInputStage(Stage dialog) {
@@ -288,6 +306,7 @@ public class DuplicateMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
+                exportImage(viewer);
                 if(dialog.isShowing()) {
                     dialog.close();
                 }
