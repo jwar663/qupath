@@ -226,7 +226,7 @@ public class PreviewMatrixCommand {
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
-        image1ScrollVBox.setPadding(new Insets(0,10,0,0));
+        image1ScrollVBox.setPadding(new Insets(0,10,0,10));
 
         VBox image2ScrollVBox = new VBox();
         image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
@@ -286,7 +286,7 @@ public class PreviewMatrixCommand {
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
-        image1ThumbnailVBox.setPadding(new Insets(0,10,0,0));
+        image1ThumbnailVBox.setPadding(new Insets(0,10,0,10));
         VBox image2ThumbnailVBox = new VBox();
         image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
         image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
