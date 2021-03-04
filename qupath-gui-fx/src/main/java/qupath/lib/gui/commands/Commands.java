@@ -367,8 +367,8 @@ public class Commands {
 				long h = (long)(regionHeight / downsample.get() + 0.5);
 				String warning = "";
 				var writer = comboImageType.getSelectionModel().getSelectedItem();
-				System.out.println(comboImageType.getSelectionModel().getSelectedItem().toString());
-				System.out.println(comboImageType.getSelectionModel().getSelectedItem());
+				//System.out.println(comboImageType.getSelectionModel().getSelectedItem().toString());
+				//System.out.println(comboImageType.getSelectionModel().getSelectedItem());
 				boolean supportsPyramid = writer == null ? false : writer.supportsPyramidal();
 				if (!supportsPyramid && w * h > maxPixels) {
 					labelSize.setStyle("-fx-text-fill: red;");
@@ -426,6 +426,9 @@ public class Commands {
 		String ext = writer.getDefaultExtension();
 		String writerName = writer.getName();
 		String defaultName = GeneralTools.getNameWithoutExtension(new File(ServerTools.getDisplayableImageName(server)));
+		System.out.println("ext: " + ext);
+		System.out.println("writerName: " + writerName);
+		System.out.println("defaultName: " + defaultName);
 		if (roi != null) {
 			defaultName = String.format("%s (%s, x=%d, y=%d, w=%d, h=%d)", defaultName,
 					GeneralTools.formatNumber(request.getDownsample(), 2),

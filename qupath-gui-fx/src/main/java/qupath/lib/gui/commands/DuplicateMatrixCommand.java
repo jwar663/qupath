@@ -24,6 +24,7 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -46,13 +47,16 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import qupath.lib.common.ConcatChannelsABI;
+import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageServer;
+import qupath.lib.images.servers.ServerTools;
 import qupath.lib.images.writers.ImageWriter;
 import qupath.lib.images.writers.ImageWriterTools;
 import qupath.lib.objects.PathObject;
+import qupath.lib.regions.RegionRequest;
 import qupath.lib.roi.interfaces.ROI;
 
 /**
@@ -143,11 +147,13 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         PathObject pathObject = viewer.getSelectedObject();
         ROI roi = pathObject == null ? null : pathObject.getROI();
+        Double downsample = 1.0;
         double regionWidth = roi == null ? imageServer.getWidth() : roi.getBoundsWidth();
         double regionHeight = roi == null ? imageServer.getHeight() : roi.getBoundsHeight();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        System.out.println(writer.toString());
+        //RegionRequest request = RegionRequest.createInstance(imageServer.getPath(), downsample, roi);
+        File fileName = new File(GeneralTools.getNameWithoutExtension(new File(ServerTools.getDisplayableImageName(imageServer))) + "-distinct." + writer.getDefaultExtension());
     }
 
     public static Stage createInvalidInputStage(Stage dialog) {
@@ -320,6 +326,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
+            exportImage(viewer);
             Stage previewDialog;
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
