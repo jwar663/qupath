@@ -66,90 +66,46 @@ public class PreviewMatrixCommand {
     //MAX/PREF
 
     //OVERALL MACROS MAX/PREF
-    private static final double OVERALL_WIDTH_MAX = 900.0;
-    private static final double OVERALL_HEIGHT_MAX = 800.0;
+    private static final double OVERALL_WIDTH = 900.0;
+    private static final double OVERALL_HEIGHT = 800.0;
 
     //THRESHOLD MACROS MAX/PREF
-    private static final double THRESHOLD_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
-    private static final double THRESHOLD_HEIGHT_MAX = 25.0;
+    private static final double THRESHOLD_WIDTH = OVERALL_WIDTH - 20.0;
+    private static final double THRESHOLD_HEIGHT = 25.0;
 
-    private static final double THRESHOLD_BUTTONS_WIDTH_MAX = 80.0;
-    private static final double THRESHOLD_TEXT_FIELD_WIDTH_MAX = 40.0;
-    private static final double THRESHOLD_LABEL_WIDTH_MAX = 620.0;
+    private static final double THRESHOLD_BUTTONS_WIDTH = 80.0;
+    private static final double THRESHOLD_TEXT_FIELD_WIDTH = 40.0;
+    private static final double THRESHOLD_LABEL_WIDTH = 620.0;
 
-    private static final double THRESHOLD_FIELD_COLUMN_MAX = THRESHOLD_TEXT_FIELD_WIDTH_MAX * 2;
-    private static final double THRESHOLD_BUTTON_COLUMN_MAX = THRESHOLD_BUTTONS_WIDTH_MAX + 10.0;
+    private static final double THRESHOLD_FIELD_COLUMN = THRESHOLD_TEXT_FIELD_WIDTH * 2;
+    private static final double THRESHOLD_BUTTON_COLUMN = THRESHOLD_BUTTONS_WIDTH + 10.0;
 
     //MATRIX MACROS MAX/PREF
-    private static final double MATRIX_BORDER_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
-    private static final double MATRIX_BORDER_HEIGHT_MAX = 384.0;
+    private static final double MATRIX_BORDER_WIDTH = OVERALL_WIDTH - 20.0;
+    private static final double MATRIX_BORDER_HEIGHT = 384.0;
 
-    private static final double MATRIX_LABELS_VERTICAL_WIDTH_MAX = 25.0;
-    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE;
-    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - SCROLL_BAR_FONT_SIZE;
-    private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX = 25.0;
-    private static final double MATRIX_SCROLL_HEIGHT_MAX = MATRIX_BORDER_HEIGHT_MAX - MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX;
-    private static final double MATRIX_SCROLL_WIDTH_MAX = MATRIX_BORDER_WIDTH_MAX - MATRIX_LABELS_VERTICAL_WIDTH_MAX;
+    private static final double MATRIX_LABELS_VERTICAL_WIDTH = 25.0;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT = MATRIX_BORDER_HEIGHT - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH = MATRIX_BORDER_WIDTH - SCROLL_BAR_FONT_SIZE;
+    private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT = 25.0;
+    private static final double MATRIX_SCROLL_HEIGHT = MATRIX_BORDER_HEIGHT - MATRIX_LABELS_HORIZONTAL_HEIGHT;
+    private static final double MATRIX_SCROLL_WIDTH = MATRIX_BORDER_WIDTH - MATRIX_LABELS_VERTICAL_WIDTH;
 
     //IMAGE MACROS MAX/PREF
-    private static final double TAB_WIDTH_MAX = OVERALL_WIDTH_MAX - 20.0;
-    private static final double TAB_HEIGHT_MAX = 326.0;
+    private static final double TAB_WIDTH = OVERALL_WIDTH - 20.0;
+    private static final double TAB_HEIGHT = 326.0;
 
-    private static final double IMAGE_HBOX_WIDTH_MAX = TAB_WIDTH_MAX - TAB_SIZE;
-    private static final double IMAGE_HBOX_HEIGHT_MAX = TAB_HEIGHT_MAX;
+    private static final double IMAGE_HBOX_WIDTH = TAB_WIDTH - TAB_SIZE;
+    private static final double IMAGE_HBOX_HEIGHT = TAB_HEIGHT;
 
-    private static final double IMAGE_VBOX_WIDTH_MAX = IMAGE_HBOX_WIDTH_MAX/2 - 10.0;
-    private static final double IMAGE_VBOX_HEIGHT_MAX = TAB_HEIGHT_MAX;
+    private static final double IMAGE_VBOX_WIDTH = IMAGE_HBOX_WIDTH/2 - 10.0;
+    private static final double IMAGE_VBOX_HEIGHT = TAB_HEIGHT;
 
-    private static final double IMAGE_LABEL_WIDTH_MAX = IMAGE_VBOX_WIDTH_MAX;
-    private static final double IMAGE_LABEL_HEIGHT_MAX = 25.0;
+    private static final double IMAGE_LABEL_WIDTH = IMAGE_VBOX_WIDTH;
+    private static final double IMAGE_LABEL_HEIGHT = 25.0;
 
-    private static final double IMAGE_WIDTH_MAX = IMAGE_VBOX_WIDTH_MAX;
-    private static final double IMAGE_HEIGHT_MAX = IMAGE_VBOX_HEIGHT_MAX - IMAGE_LABEL_HEIGHT_MAX;
-
-    //MIN
-
-    //OVERALL MACROS MIN
-    private static final double OVERALL_WIDTH_MIN = 500.0;
-    private static final double OVERALL_HEIGHT_MIN = 565.0;
-
-    //THRESHOLD MACROS MIN
-    private static final double THRESHOLD_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
-    private static final double THRESHOLD_HEIGHT_MIN = 25.0;
-
-    private static final double THRESHOLD_BUTTONS_WIDTH_MIN = 80.0;
-    private static final double THRESHOLD_TEXT_FIELD_WIDTH_MIN = 40.0;
-    private static final double THRESHOLD_LABEL_WIDTH_MIN = 220.0;
-    private static final double THRESHOLD_FIELD_COLUMN_MIN = THRESHOLD_TEXT_FIELD_WIDTH_MIN * 2;
-    private static final double THRESHOLD_BUTTON_COLUMN_MIN = THRESHOLD_BUTTONS_WIDTH_MIN + 10.0;
-
-    //MATRIX MACROS MIN
-    private static final double MATRIX_BORDER_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
-    private static final double MATRIX_BORDER_HEIGHT_MIN = 250.0;
-
-    private static final double MATRIX_LABELS_VERTICAL_WIDTH_MIN = 25.0;
-    private static final double MATRIX_LABELS_VERTICAL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - SCROLL_BAR_FONT_SIZE;
-    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - BUTTON_WIDTH - SCROLL_BAR_FONT_SIZE;
-    private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN = 25.0;
-    private static final double MATRIX_SCROLL_HEIGHT_MIN = MATRIX_BORDER_HEIGHT_MIN - MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN;
-    private static final double MATRIX_SCROLL_WIDTH_MIN = MATRIX_BORDER_WIDTH_MIN - MATRIX_LABELS_VERTICAL_WIDTH_MIN;
-
-    //IMAGE MACROS MIN
-    private static final double TAB_WIDTH_MIN = OVERALL_WIDTH_MIN - 20.0;
-    private static final double TAB_HEIGHT_MIN = 250.0;
-
-    private static final double IMAGE_HBOX_WIDTH_MIN = TAB_WIDTH_MIN - TAB_SIZE;
-    private static final double IMAGE_HBOX_HEIGHT_MIN = TAB_HEIGHT_MIN;
-
-    private static final double IMAGE_VBOX_WIDTH_MIN = IMAGE_HBOX_WIDTH_MIN/2 - 10.0;
-    private static final double IMAGE_VBOX_HEIGHT_MIN = TAB_HEIGHT_MIN;
-
-    private static final double IMAGE_LABEL_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
-    private static final double IMAGE_LABEL_HEIGHT_MIN = 25.0;
-
-    private static final double IMAGE_WIDTH_MIN = IMAGE_VBOX_WIDTH_MIN;
-    private static final double IMAGE_HEIGHT_MIN = IMAGE_VBOX_HEIGHT_MIN - IMAGE_LABEL_HEIGHT_MIN;
-
+    private static final double IMAGE_WIDTH = IMAGE_VBOX_WIDTH;
+    private static final double IMAGE_HEIGHT = IMAGE_VBOX_HEIGHT - IMAGE_LABEL_HEIGHT;
 
     /**
      * Constructor.
@@ -170,38 +126,38 @@ public class PreviewMatrixCommand {
         //larger panes
 
         BorderPane overallPane = new BorderPane();
-        overallPane.setPrefSize(OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
+        overallPane.setPrefSize(OVERALL_WIDTH, OVERALL_HEIGHT);
 
         GridPane thresholdPane = new GridPane();
         thresholdPane.setPadding(new Insets(10,10,5,10));
-        thresholdPane.setPrefSize(THRESHOLD_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
-        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH_MIN, THRESHOLD_LABEL_WIDTH_MAX, THRESHOLD_LABEL_WIDTH_MAX
+        thresholdPane.setPrefSize(THRESHOLD_WIDTH, THRESHOLD_HEIGHT);
+        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH
         );
-        ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN_MIN, THRESHOLD_FIELD_COLUMN_MAX, THRESHOLD_FIELD_COLUMN_MAX);
-        ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN_MIN, THRESHOLD_BUTTON_COLUMN_MAX, THRESHOLD_BUTTON_COLUMN_MAX);
-        ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN_MIN, THRESHOLD_BUTTON_COLUMN_MAX, THRESHOLD_BUTTON_COLUMN_MAX);
+        ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
+        ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
+        ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
 
         //Threshold Part
         Label thresholdLabel = new Label("Threshold value selected: " + String.format("%.2f", thresholdValue));
-        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT_MAX);
-        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT_MIN);
-        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT_MAX);
+        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT);
+        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT);
+        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
         Button thresholdConfirm = new Button("Submit");
-        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
-        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
-        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
             viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
             viewer.repaintEntireImage();
         });
         Button thresholdPreview = new Button("End Preview");
-        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
-        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH_MIN, THRESHOLD_HEIGHT_MIN);
-        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
+        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
             dialog.close();
@@ -217,46 +173,46 @@ public class PreviewMatrixCommand {
 
         //preview image section
         HBox imageScrollBox = new HBox();
-        imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
-        imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
-        imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH_MIN, IMAGE_HBOX_HEIGHT_MIN);
+        imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
 
         VBox image1ScrollVBox = new VBox();
-        image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ScrollVBox.setPadding(new Insets(0,10,0,10));
 
         VBox image2ScrollVBox = new VBox();
-        image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
 
         ScrollPane image1ScrollPane = new ScrollPane();
-        image1ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image1ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image1ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
+        image1ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image1ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image1ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image1ScrollPane.setPannable(true);
 
         ScrollPane image2ScrollPane = new ScrollPane();
-        image2ScrollPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image2ScrollPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image2ScrollPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
+        image2ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
 
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
 
         Label image1ScrollLabel = new Label("Image 1");
-        image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
+        image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
         image1ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
 
         Label image2ScrollLabel = new Label("Image 2");
-        image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
+        image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
         image2ScrollLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
 
@@ -278,38 +234,38 @@ public class PreviewMatrixCommand {
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
         HBox imageThumbnailBox = new HBox();
-        imageThumbnailBox.setPrefSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
-        imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH_MAX, IMAGE_HBOX_HEIGHT_MAX);
-        imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH_MIN, IMAGE_HBOX_HEIGHT_MIN);
+        imageThumbnailBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
         VBox image1ThumbnailVBox = new VBox();
-        image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setPadding(new Insets(0,10,0,10));
         VBox image2ThumbnailVBox = new VBox();
-        image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH_MAX, IMAGE_VBOX_HEIGHT_MAX);
-        image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH_MIN, IMAGE_VBOX_HEIGHT_MIN);
+        image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         Pane image1ThumbnailPane = new Pane();
-        image1ThumbnailPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image1ThumbnailPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image1ThumbnailPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
+        image1ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image1ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image1ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         Pane image2ThumbnailPane = new Pane();
-        image2ThumbnailPane.setPrefSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image2ThumbnailPane.setMaxSize(IMAGE_WIDTH_MAX, IMAGE_HEIGHT_MAX);
-        image2ThumbnailPane.setMinSize(IMAGE_WIDTH_MIN, IMAGE_HEIGHT_MIN);
+        image2ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         imageThumbnailBox.getChildren().addAll(image1ThumbnailVBox, image2ThumbnailVBox);
         Label image1ThumbnailLabel = new Label("Image 1");
-        image1ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image1ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image1ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
+        image1ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image1ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image1ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
         image1ThumbnailLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image1ThumbnailLabel, Priority.NEVER);
         Label image2ThumbnailLabel = new Label("Image 2");
-        image2ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image2ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH_MAX, IMAGE_LABEL_HEIGHT_MAX);
-        image2ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH_MIN, IMAGE_LABEL_HEIGHT_MIN);
+        image2ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image2ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        image2ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
         image2ThumbnailLabel.setAlignment(Pos.CENTER);
         VBox.setVgrow(image2ThumbnailLabel, Priority.NEVER);
         ImageView imageThumbnailView1 = new ImageView();
@@ -325,9 +281,9 @@ public class PreviewMatrixCommand {
         TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
         imageTabPane.setSide(Side.LEFT);
         imageTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        imageTabPane.setPrefSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
-        imageTabPane.setMaxSize(TAB_WIDTH_MAX, TAB_HEIGHT_MAX);
-        imageTabPane.setMinSize(TAB_WIDTH_MIN, TAB_HEIGHT_MIN);
+        imageTabPane.setPrefSize(TAB_WIDTH, TAB_HEIGHT);
+        imageTabPane.setMaxSize(TAB_WIDTH, TAB_HEIGHT);
+        imageTabPane.setMinSize(TAB_WIDTH, TAB_HEIGHT);
         imageTabPane.setPadding(new Insets(5, 10,10,10));
         overallPane.setBottom(imageTabPane);
 
@@ -339,24 +295,24 @@ public class PreviewMatrixCommand {
         AnchorPane horizontalAnchor = new AnchorPane();
 
         ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPrefSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MAX, MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX);
-        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MAX, MATRIX_LABELS_HORIZONTAL_HEIGHT_MAX);
-        horizontalLabelScroll.setMinSize(MATRIX_LABELS_HORIZONTAL_WIDTH_MIN, MATRIX_LABELS_HORIZONTAL_HEIGHT_MIN);
+        horizontalLabelScroll.setPrefSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelScroll.setMinSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
         horizontalLabelScroll.setPannable(false);
         horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         ScrollPane verticalLabelScroll = new ScrollPane();
-        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH_MAX, MATRIX_LABELS_VERTICAL_HEIGHT_MAX);
-        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH_MAX, MATRIX_LABELS_VERTICAL_HEIGHT_MAX);
-        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH_MIN, MATRIX_LABELS_VERTICAL_HEIGHT_MIN);
+        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
+        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
+        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
         verticalLabelScroll.setPannable(false);
         verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
-        matrixBorder.setPrefSize(MATRIX_BORDER_WIDTH_MAX, MATRIX_BORDER_HEIGHT_MAX);
-        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH_MAX, MATRIX_BORDER_HEIGHT_MAX);
-        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_MIN, MATRIX_BORDER_HEIGHT_MIN);
+        matrixBorder.setPrefSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
+        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
+        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
         GridPane verticalLabelPane = new GridPane();
 
         GridPane horizontalLabelPane = new GridPane();
@@ -367,9 +323,9 @@ public class PreviewMatrixCommand {
         ColumnConstraints labelColumnConstraint = new ColumnConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
         verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
         ScrollPane matrixScrollPane = new ScrollPane();
-        matrixScrollPane.setPrefSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
-        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH_MAX, MATRIX_SCROLL_HEIGHT_MAX);
-        matrixScrollPane.setMinSize(MATRIX_SCROLL_WIDTH_MIN, MATRIX_SCROLL_HEIGHT_MIN);
+        matrixScrollPane.setPrefSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
+        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
+        matrixScrollPane.setMinSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
 
         matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
         BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
@@ -458,12 +414,12 @@ public class PreviewMatrixCommand {
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
-        Scene scene = new Scene(overallPane, OVERALL_WIDTH_MAX, OVERALL_HEIGHT_MAX);
+        Scene scene = new Scene(overallPane, OVERALL_WIDTH, OVERALL_HEIGHT);
         dialog.setScene(scene);
-        dialog.setMinWidth(OVERALL_WIDTH_MIN);
-        dialog.setMinHeight(OVERALL_HEIGHT_MIN);
-        dialog.setMaxWidth(OVERALL_WIDTH_MAX);
-        dialog.setMaxHeight(OVERALL_HEIGHT_MAX);
+        dialog.setMinWidth(OVERALL_WIDTH);
+        dialog.setMinHeight(OVERALL_HEIGHT);
+        dialog.setMaxWidth(OVERALL_WIDTH);
+        dialog.setMaxHeight(OVERALL_HEIGHT);
 
         return dialog;
     }
