@@ -356,7 +356,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH_MAX, THRESHOLD_HEIGHT_MAX);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            Stage previewDialog = new Stage();
+            Stage previewDialog;
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
             try{

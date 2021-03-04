@@ -469,20 +469,4 @@ public class PreviewMatrixCommand {
 
         return dialog;
     }
-
-//    @Override
-//    public void run() {
-//        if (dialog == null) {
-//            try{
-//                dialog = createDialog();
-//            } catch (IOException e) {
-//            }
-//        } else if(!dialog.isShowing()) {
-//            try {
-//                dialog = createDialog();
-//            } catch (IOException e) {
-//            }
-//        }
-//        dialog.show();
-//    }
 }
