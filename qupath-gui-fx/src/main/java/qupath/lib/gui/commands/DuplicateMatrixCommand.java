@@ -148,11 +148,16 @@ public class DuplicateMatrixCommand implements Runnable {
     public static String getFilePath(QuPathViewer viewer, Double thresholdValue) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
-        URI Uri = uris.iterator().next();
-        return GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
+        String filePath = "";
+        URI Uri = null;
+        if(uris.iterator().hasNext()) {
+            Uri = uris.iterator().next();
+            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
+        }
+        return filePath;
     }
 
-    public static void exportImage(QuPathViewer viewer, String filePath) {
+    public static void exportImage(QuPathViewer viewer, String filePath, Stage dialog) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
@@ -163,7 +168,33 @@ public class DuplicateMatrixCommand implements Runnable {
             } catch(Exception e) {
                 e.printStackTrace();
             }
+        } else {
+            createFileExistsAlert(dialog).showAndWait();
         }
+    }
+
+    public static Stage createFileExistsAlert(Stage dialog) {
+        Stage fileExistsAlert = new Stage();
+        fileExistsAlert.setTitle("Alert");
+        fileExistsAlert.initModality(Modality.WINDOW_MODAL);
+        fileExistsAlert.initOwner(dialog);
+        Button yesButton = new Button("Yes");
+        yesButton.setOnAction(ev -> {
+            fileExistsAlert.close();
+        });
+        Button noButton = new Button("No");
+        yesButton.setOnAction(ev -> {
+            fileExistsAlert.close();
+        });
+        HBox buttonBox = new HBox(yesButton, noButton);
+        buttonBox.setSpacing(10);
+        buttonBox.setAlignment(Pos.CENTER);
+        VBox fileExistsAlertVbox = new VBox(new Text("This file already exists, do you want to overwrite it?"), buttonBox);
+        fileExistsAlertVbox.setSpacing(10.0);
+        fileExistsAlertVbox.setAlignment(Pos.CENTER);
+        fileExistsAlertVbox.setPadding(new Insets(15));
+        fileExistsAlert.setScene(new Scene(fileExistsAlertVbox));
+        return fileExistsAlert;
     }
 
     public static Stage createInvalidInputStage(Stage dialog) {
@@ -323,7 +354,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 String filePath = getFilePath(viewer, confirmDouble);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
-                exportImage(viewer, filePath);
+                exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();
                 }
