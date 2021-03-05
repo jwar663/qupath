@@ -145,11 +145,11 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
-    public static String getFilePath(QuPathViewer viewer) {
+    public static String getFilePath(QuPathViewer viewer, Double thresholdValue) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
         URI Uri = uris.iterator().next();
-        return GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct";
+        return GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
     }
 
     public static void exportImage(QuPathViewer viewer, String filePath) {
@@ -320,7 +320,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                String filePath = getFilePath(viewer);
+                String filePath = getFilePath(viewer, confirmDouble);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
                 exportImage(viewer, filePath);
