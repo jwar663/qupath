@@ -156,11 +156,13 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        String fileNamePath = filePath + "." + writer.getDefaultExtension();
-        try{
-            writer.writeImage(imageServer, fileNamePath);
-        } catch(Exception e) {
-            e.printStackTrace();
+        File file = new File(filePath + "." + writer.getDefaultExtension());
+        if(!file.exists()) {
+            try{
+                writer.writeImage(imageServer, file.getPath());
+            } catch(Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -318,9 +320,10 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
+                String filePath = getFilePath(viewer);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
-                //exportImage(viewer);
+                exportImage(viewer, filePath);
                 if(dialog.isShowing()) {
                     dialog.close();
                 }
@@ -334,8 +337,6 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            String filePath = getFilePath(viewer);
-            exportImage(viewer, filePath);
             Stage previewDialog;
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
