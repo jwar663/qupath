@@ -115,7 +115,7 @@ public class PreviewMatrixCommand {
         this.qupath = qupath;
     }
 
-    protected Stage createDialog(float[][] duplicateMatrix, Double thresholdValue, ImageData<BufferedImage> imageData, BufferedImage img, ArrayList<Integer> distinctChannels) throws IOException, NullPointerException {
+    protected Stage createDialog(float[][] duplicateMatrix, Double thresholdValue, ImageData<BufferedImage> imageData, BufferedImage img, ArrayList<Integer> distinctChannels, Stage duplicateDialog) throws IOException, NullPointerException {
 
         Stage dialog = new Stage();
         dialog.setTitle("Preview");
@@ -151,8 +151,12 @@ public class PreviewMatrixCommand {
         thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdConfirm.setOnAction(event -> {
+            String filePath = DuplicateMatrixCommand.getFilePath(viewer, thresholdValue);
             viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
             viewer.repaintEntireImage();
+            DuplicateMatrixCommand.exportImage(viewer, filePath, dialog);
+            duplicateDialog.close();
+            dialog.close();
         });
         Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
@@ -160,6 +164,7 @@ public class PreviewMatrixCommand {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
+            duplicateDialog.show();
             dialog.close();
         });
         thresholdPane.add(thresholdLabel, 0, 0);

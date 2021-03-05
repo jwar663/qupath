@@ -343,9 +343,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdConfirm.setOnAction(event -> {
             thresholdValue = thresholdTextField.getText();
             try{
-                System.out.println(thresholdValue);
                 confirmDouble = Double.parseDouble(thresholdValue);
-                System.out.println(confirmDouble);
             } catch(Exception e) {
                 confirmDouble = 1.01;
                 System.out.println("Exception: " + e);
@@ -381,10 +379,11 @@ public class DuplicateMatrixCommand implements Runnable {
                 distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
-                   previewDialog = newPreview.createDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels);
+                   previewDialog = newPreview.createDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels, dialog);
                    previewDialog.initOwner(qupath.getStage());
                    previewDialog.initModality(Modality.WINDOW_MODAL);
-                   previewDialog.showAndWait();
+                   dialog.hide();
+                   previewDialog.show();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
