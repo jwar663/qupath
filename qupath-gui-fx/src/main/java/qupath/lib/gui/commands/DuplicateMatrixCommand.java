@@ -26,8 +26,10 @@ package qupath.lib.gui.commands;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
@@ -143,13 +145,20 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
     }
 
-    public static void exportImage(QuPathViewer viewer) {
+    public static String getFilePath(QuPathViewer viewer) {
+        ImageServer<BufferedImage> imageServer = viewer.getServer();
+        Collection<URI> uris = imageServer.getURIs();
+        URI Uri = uris.iterator().next();
+        return GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct";
+    }
+
+    public static void exportImage(QuPathViewer viewer, String filePath) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        File fileName = new File(GeneralTools.getNameWithoutExtension(new File(ServerTools.getDisplayableImageName(imageServer))) + "-distinct." + writer.getDefaultExtension());
+        String fileNamePath = filePath + "." + writer.getDefaultExtension();
         try{
-            writer.writeImage(imageServer, fileName.getAbsolutePath());
+            writer.writeImage(imageServer, fileNamePath);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -311,7 +320,7 @@ public class DuplicateMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
-                exportImage(viewer);
+                //exportImage(viewer);
                 if(dialog.isShowing()) {
                     dialog.close();
                 }
@@ -325,7 +334,8 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            exportImage(viewer);
+            String filePath = getFilePath(viewer);
+            exportImage(viewer, filePath);
             Stage previewDialog;
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
