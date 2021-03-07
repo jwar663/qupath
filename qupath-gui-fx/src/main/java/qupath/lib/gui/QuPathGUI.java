@@ -2986,7 +2986,7 @@ public class QuPathGUI {
 	 * @throws IOException
 	 */
 	public void openImage(QuPathViewer viewer, String pathNew) throws IOException {
-		
+
 		ImageServer<BufferedImage> serverNew = null;
 
 		UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);

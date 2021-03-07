@@ -146,10 +146,10 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
         String filePath = "";
-        URI Uri = null;
+        URI Uri;
         if(uris.iterator().hasNext()) {
             Uri = uris.iterator().next();
-            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
+            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue) + ".tif";
         }
         return filePath;
     }
@@ -158,7 +158,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        File file = new File(filePath + "." + writer.getDefaultExtension());
+        File file = new File(filePath);
         if(!file.exists()) {
             try{
                 writer.writeImage(imageServer, file.getPath());
