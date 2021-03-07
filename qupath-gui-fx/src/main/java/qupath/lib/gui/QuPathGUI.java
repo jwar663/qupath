@@ -2816,7 +2816,7 @@ public class QuPathGUI {
 				return false;
 			}
 		}
-		
+
 		ImageServer<BufferedImage> server = viewer.getServer();
 		String pathOld = null;
 		File fileBase = null;
@@ -2877,7 +2877,7 @@ public class QuPathGUI {
 				}
 		}
 
-		
+
 		// Try opening an image, unless it's the same as the image currently open
 		if (!pathNew.equals(pathOld)) {
 			// If we have a project, show the import dialog
@@ -2893,7 +2893,7 @@ public class QuPathGUI {
 			UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);
 			List<ServerBuilder<BufferedImage>> builders = support == null ? Collections.emptyList() : support.getBuilders();
 //			List<ImageServer<BufferedImage>> serverList = ImageServerProvider.getServerList(pathNew, BufferedImage.class);
-			
+
 			if (builders.isEmpty()) {
 				String message = "Unable to build ImageServer for " + pathNew + ".\nSee View > Show log for more details";
 				Dialogs.showErrorMessage("Unable to build server", message);
@@ -2902,7 +2902,7 @@ public class QuPathGUI {
 			else if (builders.size() == 1) {
 				try {
 					serverNew = builders.get(0).build();
-				} catch (Exception e) {	
+				} catch (Exception e) {
 					logger.error("Error building server: " + e.getLocalizedMessage(), e);
 				}
 			} else {
@@ -2962,7 +2962,7 @@ public class QuPathGUI {
 //				// Reset the object hierarchy to clear any ROIs etc.
 //				hierarchy.clearAll();
 //				hierarchy.getSelectionModel().resetSelection();
-				
+
 				return true;
 			} else {
 				// Show an error message if we can't open the file
@@ -2985,208 +2985,23 @@ public class QuPathGUI {
 	 * @return true if the server was set for this GUI, false otherwise
 	 * @throws IOException
 	 */
-	public boolean openImage(QuPathViewer viewer, String pathNew) throws IOException {
+	public void openImage(QuPathViewer viewer, String pathNew) throws IOException {
+		
+		ImageServer<BufferedImage> serverNew = null;
 
-
-		if (viewer == null) {
-			System.out.println(1);
-			if (getViewers().size() == 1) {
-				System.out.println(2);
-				viewer = getViewer();
-			}
-			else {
-				System.out.println(3);
-				Dialogs.showErrorMessage("Open image", "Please specify the viewer where the image should be opened!");
-				return false;
-			}
+		UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);
+		List<ServerBuilder<BufferedImage>> builders = support == null ? Collections.emptyList() : support.getBuilders();
+		try {
+			serverNew = builders.get(0).build();
+		} catch (Exception e) {
+			logger.error("Error building server: " + e.getLocalizedMessage(), e);
 		}
-
-		ImageServer<BufferedImage> server = viewer.getServer();
-		String pathOld = null;
-		File fileBase = null;
-		if (server != null) {
-			System.out.println(4);
-			var uris = server.getURIs();
-			if (uris.size() == 1) {
-				System.out.println(5);
-				var uri = uris.iterator().next();
-				pathOld = uri.toString();
-				try {
-					var path = GeneralTools.toPath(uri);
-					if (path != null)
-						System.out.println(6);
-					fileBase = path.toFile().getParentFile();
-				} catch (Exception e) {};
-			}
-//			pathOld = server.getPath();
-//			try {
-//				fileBase = new File(pathOld).getParentFile();
-//			} catch (Exception e) {};
+		ImageData<BufferedImage> imageData = null;
+		if (serverNew != null) {
+			imageData = createNewImageData(serverNew);
 		}
-		// Prompt for a path, if required
-		File fileNew = null;
-		if (pathNew == null) {
-			System.out.println(7);
-			if (includeURLs) {
-				System.out.println(8);
-				pathNew = Dialogs.promptForFilePathOrURL("Choose path", pathOld, fileBase, null);
-				if (pathNew == null) {
-					System.out.println(9);
-					return false;
-				}
-				fileNew = new File(pathNew);
-			} else {
-				System.out.println(10);
-				fileNew = Dialogs.promptForFile(null, fileBase, null);
-				if (fileNew == null) {
-					System.out.println(11);
-					return false;
-				}
-				pathNew = fileNew.getAbsolutePath();
-			}
-		} else {
-			System.out.println(12);
-			fileNew = new File(pathNew);
-		}
-		// If we have a file, check if it is a data file - if so, handle differently
-		if (fileNew.isFile() && GeneralTools.checkExtensions(pathNew, PathPrefs.getSerializationExtension())) {
-			System.out.println(13);
-			return openSavedData(viewer, fileNew, false, true);
-		}
-
-
-		// Check for project file
-		if (fileNew.isFile() && GeneralTools.checkExtensions(pathNew, ProjectIO.getProjectExtension())) {
-			System.out.println(14);
-			logger.info("Trying to load project {}", fileNew.getAbsolutePath());
-			try {
-				Project<BufferedImage> project = ProjectIO.loadProject(fileNew, BufferedImage.class);
-				if (project != null) {
-					System.out.println(15);
-					setProject(project);
-					return true;
-				}
-			} catch (Exception e) {
-				System.out.println(16);
-				Dialogs.showErrorMessage("Open project", e);
-				logger.error("Error opening project " + fileNew.getAbsolutePath(), e);
-				return false;
-			}
-		}
-
-
-		// Try opening an image, unless it's the same as the image currently open
-		if (!pathNew.equals(pathOld)) {
-			System.out.println(17);
-			// If we have a project, show the import dialog
-			if (getProject() != null) {
-				System.out.println(18);
-				List<ProjectImageEntry<BufferedImage>> entries = ProjectCommands.promptToImportImages(this, pathNew);
-				if (entries.isEmpty()) {
-					System.out.println(19);
-					return false;
-				}
-				return openImageEntry(entries.get(0));
-			}
-			ImageServer<BufferedImage> serverNew = null;
-
-			UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);
-			List<ServerBuilder<BufferedImage>> builders = support == null ? Collections.emptyList() : support.getBuilders();
-//			List<ImageServer<BufferedImage>> serverList = ImageServerProvider.getServerList(pathNew, BufferedImage.class);
-
-			if (builders.isEmpty()) {
-				System.out.println(20);
-				String message = "Unable to build ImageServer for " + pathNew + ".\nSee View > Show log for more details";
-				Dialogs.showErrorMessage("Unable to build server", message);
-				return false;
-			}
-			else if (builders.size() == 1) {
-				System.out.println(21);
-				try {
-					serverNew = builders.get(0).build();
-				} catch (Exception e) {
-					logger.error("Error building server: " + e.getLocalizedMessage(), e);
-				}
-			} else {
-				System.out.println(22);
-				var selector = new ServerSelector(builders);
-				serverNew = selector.promptToSelectServer();
-				if (serverNew == null)
-					System.out.println(23);
-				return false;
-			}
-
-			if (serverNew != null) {
-				System.out.println(24);
-				if (pathOld != null && prompt && !viewer.getHierarchy().isEmpty()) {
-					System.out.println(25);
-					if (!Dialogs.showYesNoDialog("Replace open image", "Close " + ServerTools.getDisplayableImageName(server) + "?")) {
-						System.out.println(26);
-						return false;
-					}
-				}
-				ImageData<BufferedImage> imageData = null;
-				if (serverNew != null) {
-					System.out.println(27);
-					int minSize = PathPrefs.minPyramidDimensionProperty().get();
-					if (serverNew.nResolutions() == 1 && Math.max(serverNew.getWidth(), serverNew.getHeight()) > minSize) {
-						System.out.println(28);
-						// Check if we have any hope at all with the current settings
-						long estimatedBytes = (long)serverNew.getWidth() * (long)serverNew.getHeight() * (long)serverNew.nChannels() * (long)serverNew.getPixelType().getBytesPerPixel();
-						double requiredBytes = estimatedBytes * (4.0/3.0);
-						if (prompt && imageRegionStore != null && requiredBytes >= imageRegionStore.getTileCacheSize()) {
-							System.out.println(29);
-							logger.warn("Selected image is {} x {} x {} pixels ({})", serverNew.getWidth(), serverNew.getHeight(), serverNew.nChannels(), serverNew.getPixelType());
-							Dialogs.showErrorMessage("Image too large",
-									"Non-pyramidal image is too large for the available tile cache!\n" +
-											"Try converting the image to a pyramidal file format, or increasing the memory available to QuPath.");
-							return false;
-						}
-						// Offer to pyramidalize
-						var serverWrapped = ImageServers.pyramidalize(serverNew);
-						if (serverWrapped.nResolutions() > 1) {
-							System.out.println(30);
-							if (prompt) {
-								System.out.println(31);
-								var response = Dialogs.showYesNoCancelDialog("Auto pyramidalize",
-										"QuPath works best with large images saved in a pyramidal format.\n\n" +
-												"Do you want to generate a pyramid dynamically from " + ServerTools.getDisplayableImageName(serverNew) + "?" +
-												"\n(This requires more memory, but is usually worth it)");
-								if (response == DialogButton.CANCEL) {
-									System.out.println(32);
-									return false;
-								}
-								if (response == DialogButton.YES) {
-									System.out.println(33);
-									serverNew = serverWrapped;
-								}
-							}
-						}
-					}
-					imageData = createNewImageData(serverNew);
-				}
-				viewer.setImageData(imageData);
-//				setInitialLocationAndMagnification(viewer);
-
-				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT) {
-					System.out.println(34);
-					ImageDetailsPane.promptToSetImageType(imageData);
-				}
-
-
-//				// Reset the object hierarchy to clear any ROIs etc.
-//				hierarchy.clearAll();
-//				hierarchy.getSelectionModel().resetSelection();
-
-				return true;
-			} else {
-				System.out.println(35);
-				// Show an error message if we can't open the file
-				Dialogs.showErrorNotification("Open image", "Sorry, I can't open " + pathNew);
-//				logger.error("Unable to build whole slide server for path '{}'", pathNew);
-			}
-		}
-		return false;
+		viewer.setImageData(imageData);
+		imageData.setImageType(ImageType.FLUORESCENCE);
 	}
 	
 
