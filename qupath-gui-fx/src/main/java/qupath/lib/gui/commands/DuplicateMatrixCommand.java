@@ -30,6 +30,7 @@ import java.net.URI;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
@@ -53,13 +54,9 @@ import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
-import qupath.lib.images.servers.ImageServer;
-import qupath.lib.images.servers.ServerTools;
+import qupath.lib.images.servers.*;
 import qupath.lib.images.writers.ImageWriter;
 import qupath.lib.images.writers.ImageWriterTools;
-import qupath.lib.objects.PathObject;
-import qupath.lib.regions.RegionRequest;
-import qupath.lib.roi.interfaces.ROI;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -353,6 +350,11 @@ public class DuplicateMatrixCommand implements Runnable {
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
                 viewer.repaintEntireImage();
                 exportImage(viewer, filePath, dialog);
+                try {
+                    QuPathGUI.getInstance().openImage(viewer, filePath);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if(dialog.isShowing()) {
                     dialog.close();
                 }
