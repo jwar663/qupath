@@ -348,15 +348,14 @@ public class DuplicateMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
-                viewer.repaintEntireImage();
                 exportImage(viewer, filePath, dialog);
-                try {
-                    QuPathGUI.getInstance().openImage(viewer, filePath);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
                 if(dialog.isShowing()) {
                     dialog.close();
+                }
+                try {
+                    QuPathGUI.getInstance().openImage(viewer, filePath, false, false);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             } else {
                 createInvalidInputStage(dialog).showAndWait();

@@ -2972,39 +2972,6 @@ public class QuPathGUI {
 		}
 		return false;
 	}
-
-	/**
-	 * Open a new whole slide image server, or ImageData.
-	 * If the path is the same as a currently-open server, do nothing.
-	 * This method is modified for use with ABI.
-	 *
-	 * @author Jaedyn Ward
-	 *
-	 * @param viewer the viewer into which the image should be opened
-	 * @param pathNew
-	 * @return true if the server was set for this GUI, false otherwise
-	 * @throws IOException
-	 */
-	public void openImage(QuPathViewer viewer, String pathNew) throws IOException {
-
-		ImageServer<BufferedImage> serverNew = null;
-
-		UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);
-		List<ServerBuilder<BufferedImage>> builders = support == null ? Collections.emptyList() : support.getBuilders();
-		try {
-			serverNew = builders.get(0).build();
-		} catch (Exception e) {
-			logger.error("Error building server: " + e.getLocalizedMessage(), e);
-		}
-		ImageData<BufferedImage> imageData = null;
-		if (serverNew != null) {
-			imageData = createNewImageData(serverNew);
-		}
-		viewer.setImageData(imageData);
-		imageData.setImageType(ImageType.FLUORESCENCE);
-	}
-	
-
 	
 	/**
 	 * Create a new {@link ImageData} from the specified server.

@@ -157,6 +157,11 @@ public class PreviewMatrixCommand {
             DuplicateMatrixCommand.exportImage(viewer, filePath, dialog);
             duplicateDialog.close();
             dialog.close();
+            try {
+                QuPathGUI.getInstance().openImage(viewer, filePath, false, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
         Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
