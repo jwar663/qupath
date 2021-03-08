@@ -685,36 +685,36 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdLabel.setMinHeight(THRESHOLD_HEIGHT);
         thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
-        Button thresholdConfirm = new Button("Submit");
-        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
-        thresholdConfirm.setOnAction(event -> {
-            String filePath = getFilePath(viewer, thresholdValue);
-            viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
-            viewer.repaintEntireImage();
-            exportImage(viewer, filePath, previewDialog);
-            try {
-                qupath.openImage(viewer, filePath  + ".tif", false, false);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            duplicateDialog.close();
-            previewDialog.close();
-        });
+//        Button thresholdConfirm = new Button("Submit");
+//        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+//        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+//        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+//        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+//        thresholdConfirm.setOnAction(event -> {
+//            String filePath = getFilePath(viewer, thresholdValue);
+//            viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
+//            viewer.repaintEntireImage();
+//            exportImage(viewer, filePath, previewDialog);
+//            try {
+//                qupath.openImage(viewer, filePath  + ".tif", false, false);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            duplicateDialog.close();
+//            previewDialog.close();
+//        });
         Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+        GridPane.setHalignment(thresholdPreview, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
             duplicateDialog.show();
             previewDialog.close();
         });
         thresholdPane.add(thresholdLabel, 0, 0);
         thresholdPane.add(thresholdPreview, 2, 0);
-        thresholdPane.add(thresholdConfirm, 3, 0);
+//        thresholdPane.add(thresholdConfirm, 3, 0);
         thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn);
         thresholdPane.getRowConstraints().add(rowConstraints);
         overallPane.setTop(thresholdPane);
@@ -892,7 +892,6 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setLeft(verticalLabelScroll);
         GridPane matrix = new GridPane();
         Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
-        matrixButtonTooltip.setShowDelay(Duration.seconds(1));
         for(int i = 0; i < size; i++) {
             Label tempVerticalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
             Label tempHorizontalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
@@ -961,7 +960,7 @@ public class DuplicateMatrixCommand implements Runnable {
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
         thresholdPreview.setTooltip(new Tooltip("Go back to the previous window"));
-        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
+//        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
         Scene scene = new Scene(overallPane, OVERALL_WIDTH, OVERALL_HEIGHT);
