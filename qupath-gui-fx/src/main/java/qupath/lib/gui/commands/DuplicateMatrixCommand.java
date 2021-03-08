@@ -389,10 +389,9 @@ public class DuplicateMatrixCommand implements Runnable {
                 float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
                    previewDialog = createPreviewDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels, dialog);
-                   previewDialog.initOwner(qupath.getStage());
+                   previewDialog.initOwner(dialog);
                    previewDialog.initModality(Modality.WINDOW_MODAL);
-                   dialog.hide();
-                   previewDialog.show();
+                   previewDialog.showAndWait();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -716,7 +715,6 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdPreview, HPos.CENTER);
         thresholdPreview.setOnAction(event -> {
-            duplicateDialog.show();
             previewDialog.close();
         });
         thresholdPane.add(thresholdLabel, 0, 0);
