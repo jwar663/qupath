@@ -143,11 +143,13 @@ public class DuplicateMatrixCommand implements Runnable {
     public static String getFilePath(QuPathViewer viewer, Double thresholdValue) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
+        //remove "." from the name of the file
+        String thresholdString = Double.toString(thresholdValue * 100).substring(0,2);
         String filePath = "";
         URI Uri;
         if(uris.iterator().hasNext()) {
             Uri = uris.iterator().next();
-            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
+            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + thresholdString;
         }
         return filePath;
     }
