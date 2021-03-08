@@ -80,13 +80,13 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double BUTTON_WIDTH = 42.0;
     private static final double BUTTON_LABEL_HEIGHT = 25.0;
     private static final double SCROLL_BAR_FONT_SIZE = 12.0;
-    private static final double TAB_SIZE = 30.0;
+    private static final double TAB_SIZE = 40.0;
 
     //MAX/PREF
 
     //OVERALL MACROS MAX/PREF
     private static final double OVERALL_WIDTH = 900.0;
-    private static final double OVERALL_HEIGHT = 800.0;
+    private static final double OVERALL_HEIGHT = 700.0;
 
     //THRESHOLD MACROS MAX/PREF
     private static final double THRESHOLD_WIDTH = OVERALL_WIDTH - 20.0;
@@ -101,7 +101,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
     //MATRIX MACROS MAX/PREF
     private static final double MATRIX_BORDER_WIDTH = OVERALL_WIDTH - 20.0;
-    private static final double MATRIX_BORDER_HEIGHT = 384.0;
+    private static final double MATRIX_BORDER_HEIGHT = 334.0;
 
     private static final double MATRIX_LABELS_VERTICAL_WIDTH = 25.0;
     private static final double MATRIX_LABELS_VERTICAL_HEIGHT = MATRIX_BORDER_HEIGHT - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE;
@@ -112,7 +112,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
     //IMAGE MACROS MAX/PREF
     private static final double TAB_WIDTH = OVERALL_WIDTH - 20.0;
-    private static final double TAB_HEIGHT = 326.0;
+    private static final double TAB_HEIGHT = 276.0;
 
     private static final double IMAGE_HBOX_WIDTH = TAB_WIDTH - TAB_SIZE;
     private static final double IMAGE_HBOX_HEIGHT = TAB_HEIGHT;
@@ -358,7 +358,6 @@ public class DuplicateMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
-                //viewer.repaintEntireImage();
                 exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();
@@ -417,13 +416,14 @@ public class DuplicateMatrixCommand implements Runnable {
         imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageScrollBox.setSpacing(10.0);
+        imageScrollBox.setPadding(new Insets(0,10,0,10));
         BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
 
         VBox image1ScrollVBox = new VBox();
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setPadding(new Insets(0,10,0,10));
 
         VBox image2ScrollVBox = new VBox();
         image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -435,11 +435,13 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image1ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image1ScrollPane.setPannable(true);
+        image1ScrollPane.setVisible(false);
 
         ScrollPane image2ScrollPane = new ScrollPane();
         image2ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image2ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image2ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ScrollPane.setVisible(false);
 
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
 
@@ -480,11 +482,12 @@ public class DuplicateMatrixCommand implements Runnable {
         imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
+        imageThumbnailBox.setSpacing(10.0);
+        imageThumbnailBox.setPadding(new Insets(0,10,0,10));
         VBox image1ThumbnailVBox = new VBox();
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setPadding(new Insets(0,10,0,10));
         VBox image2ThumbnailVBox = new VBox();
         image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -637,6 +640,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
                     imageThumbnailView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[0], null));
+                    image1ScrollPane.setVisible(true);
+                    image2ScrollPane.setVisible(true);
                 });
                 matrix.add(tempButton, i, j);
             }
@@ -735,12 +740,13 @@ public class DuplicateMatrixCommand implements Runnable {
         imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
+        imageScrollBox.setSpacing(10.0);
+        imageScrollBox.setPadding(new Insets(0,10,0,10));
 
         VBox image1ScrollVBox = new VBox();
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setPadding(new Insets(0,10,0,10));
 
         VBox image2ScrollVBox = new VBox();
         image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -752,11 +758,13 @@ public class DuplicateMatrixCommand implements Runnable {
         image1ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image1ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image1ScrollPane.setPannable(true);
+        image1ScrollPane.setVisible(false);
 
         ScrollPane image2ScrollPane = new ScrollPane();
         image2ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image2ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
         image2ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        image2ScrollPane.setVisible(false);
 
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
 
@@ -797,11 +805,12 @@ public class DuplicateMatrixCommand implements Runnable {
         imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
         BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
+        imageThumbnailBox.setSpacing(10.0);
+        imageThumbnailBox.setPadding(new Insets(0,10,0,10));
         VBox image1ThumbnailVBox = new VBox();
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setPadding(new Insets(0,10,0,10));
         VBox image2ThumbnailVBox = new VBox();
         image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -954,6 +963,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
                     imageThumbnailView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[0], null));
+                    image1ScrollPane.setVisible(true);
+                    image2ScrollPane.setVisible(true);
                 });
                 matrix.add(tempButton, i, j);
             }
