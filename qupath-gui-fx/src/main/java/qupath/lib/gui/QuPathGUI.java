@@ -2972,7 +2972,7 @@ public class QuPathGUI {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Create a new {@link ImageData} from the specified server.
 	 * @param server

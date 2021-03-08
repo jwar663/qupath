@@ -149,7 +149,7 @@ public class DuplicateMatrixCommand implements Runnable {
         URI Uri;
         if(uris.iterator().hasNext()) {
             Uri = uris.iterator().next();
-            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue) + ".tif";
+            filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + String.format("%.2f", thresholdValue);
         }
         return filePath;
     }
@@ -158,7 +158,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        File file = new File(filePath);
+        File file = new File(filePath + "." + writer.getDefaultExtension());
         if(!file.exists()) {
             try{
                 writer.writeImage(imageServer, file.getPath());
@@ -166,17 +166,22 @@ public class DuplicateMatrixCommand implements Runnable {
                 e.printStackTrace();
             }
         } else {
-            createFileExistsAlert(dialog).showAndWait();
+            createFileExistsAlert(dialog, writer, imageServer, file).showAndWait();
         }
     }
 
-    public static Stage createFileExistsAlert(Stage dialog) {
+    public static Stage createFileExistsAlert(Stage dialog, ImageWriter<BufferedImage> writer, ImageServer<BufferedImage> imageServer, File file) {
         Stage fileExistsAlert = new Stage();
         fileExistsAlert.setTitle("Alert");
         fileExistsAlert.initModality(Modality.WINDOW_MODAL);
         fileExistsAlert.initOwner(dialog);
         Button yesButton = new Button("Yes");
         yesButton.setOnAction(ev -> {
+            try {
+                writer.writeImage(imageServer, file.getPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             fileExistsAlert.close();
         });
         Button noButton = new Button("No");
@@ -348,14 +353,15 @@ public class DuplicateMatrixCommand implements Runnable {
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
                 viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
+                viewer.repaintEntireImage();
                 exportImage(viewer, filePath, dialog);
-                if(dialog.isShowing()) {
-                    dialog.close();
-                }
                 try {
-                    QuPathGUI.getInstance().openImage(viewer, filePath, false, false);
+                    qupath.openImage(viewer, filePath + ".tif", false, false);
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+                if(dialog.isShowing()) {
+                    dialog.close();
                 }
             } else {
                 createInvalidInputStage(dialog).showAndWait();

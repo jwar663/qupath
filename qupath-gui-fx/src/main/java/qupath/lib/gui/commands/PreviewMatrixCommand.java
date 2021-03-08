@@ -121,6 +121,7 @@ public class PreviewMatrixCommand {
         dialog.setTitle("Preview");
         int size = duplicateMatrix.length;
 
+
         viewer = qupath.getViewer();
 
         //larger panes
@@ -155,13 +156,13 @@ public class PreviewMatrixCommand {
             viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, thresholdValue));
             viewer.repaintEntireImage();
             DuplicateMatrixCommand.exportImage(viewer, filePath, dialog);
-            duplicateDialog.close();
-            dialog.close();
             try {
-                QuPathGUI.getInstance().openImage(viewer, filePath, false, false);
+                qupath.openImage(viewer, filePath  + ".tif", false, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            duplicateDialog.close();
+            dialog.close();
         });
         Button thresholdPreview = new Button("End Preview");
         thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
