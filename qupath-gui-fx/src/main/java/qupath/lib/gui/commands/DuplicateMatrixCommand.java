@@ -157,15 +157,15 @@ public class DuplicateMatrixCommand implements Runnable {
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
         File file = new File(filePath + "." + writer.getDefaultExtension());
-        if(!file.exists()) {
+//        if(!file.exists()) {
             try{
                 writer.writeImage(imageServer, file.getPath());
             } catch(Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            createFileExistsAlert(dialog, writer, imageServer, file).showAndWait();
-        }
+//        } else {
+//            createFileExistsAlert(dialog, writer, imageServer, file).showAndWait();
+//        }
     }
 
     public static Stage createFileExistsAlert(Stage dialog, ImageWriter<BufferedImage> writer, ImageServer<BufferedImage> imageServer, File file) {
@@ -175,8 +175,9 @@ public class DuplicateMatrixCommand implements Runnable {
         fileExistsAlert.initOwner(dialog);
         Button yesButton = new Button("Yes");
         yesButton.setOnAction(ev -> {
+            Boolean fileDelete = file.delete();
+            System.out.println("did it delete" + fileDelete);
             try {
-                file.delete();
                 writer.writeImage(imageServer, file.getPath());
             } catch (IOException e) {
                 e.printStackTrace();
