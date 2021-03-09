@@ -32,6 +32,8 @@ import java.util.Collection;
 import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -40,6 +42,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -107,8 +110,8 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double MATRIX_BORDER_HEIGHT_PREF = BUTTON_LABEL_HEIGHT * 2;
 
     private static final double MATRIX_LABELS_VERTICAL_WIDTH = 25.0;
-    private static final double MATRIX_LABELS_VERTICAL_HEIGHT = MATRIX_BORDER_HEIGHT - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE;
-    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH = MATRIX_BORDER_WIDTH - SCROLL_BAR_FONT_SIZE;
+    private static final double MATRIX_LABELS_VERTICAL_HEIGHT = MATRIX_BORDER_HEIGHT - BUTTON_LABEL_HEIGHT - SCROLL_BAR_FONT_SIZE - 2;
+    private static final double MATRIX_LABELS_HORIZONTAL_WIDTH = MATRIX_BORDER_WIDTH - SCROLL_BAR_FONT_SIZE - 2;
     private static final double MATRIX_LABELS_HORIZONTAL_HEIGHT = 25.0;
     private static final double MATRIX_SCROLL_HEIGHT = MATRIX_BORDER_HEIGHT - MATRIX_LABELS_HORIZONTAL_HEIGHT;
     private static final double MATRIX_SCROLL_WIDTH = MATRIX_BORDER_WIDTH - MATRIX_LABELS_VERTICAL_WIDTH;
@@ -255,6 +258,7 @@ public class DuplicateMatrixCommand implements Runnable {
         matrix.hvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setLeftAnchor(horizontalLabels, ((size * BUTTON_WIDTH - matrix.getWidth() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
         });
+
     }
 
     public static String getHeatmapColour(double value) {
@@ -441,37 +445,33 @@ public class DuplicateMatrixCommand implements Runnable {
         return matrixBorder;
     }
 
-    protected ScrollPane createHorizontalLabelScroll(GridPane matrix) {
-        ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPannable(false);
-        horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalLabelScroll.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        return horizontalLabelScroll;
+    protected ScrollPane createHorizontalLabelConfinePane(GridPane matrix) {
+        ScrollPane horizontalLabelConfinePane = new ScrollPane();
+        horizontalLabelConfinePane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalLabelConfinePane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalLabelConfinePane.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelConfinePane.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelConfinePane.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        return horizontalLabelConfinePane;
     }
 
-    protected ScrollPane createVerticalLabelScroll(GridPane matrix) {
-        ScrollPane verticalLabelScroll = new ScrollPane();
-        verticalLabelScroll.setPannable(false);
-        verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, matrix.getHeight());
-        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
-        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
-        return verticalLabelScroll;
+    protected ScrollPane createVerticalLabelConfinePane(GridPane matrix) {
+        ScrollPane verticalLabelConfinePane = new ScrollPane();
+        verticalLabelConfinePane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        verticalLabelConfinePane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        verticalLabelConfinePane.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, matrix.getHeight());
+        verticalLabelConfinePane.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
+        verticalLabelConfinePane.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
+        return verticalLabelConfinePane;
     }
 
     protected AnchorPane createHorizontalAnchor(GridPane horizontalLabelPane) {
-        AnchorPane horizontalAnchor = new AnchorPane();
-        horizontalAnchor.getChildren().add(horizontalLabelPane);
+        AnchorPane horizontalAnchor = new AnchorPane(horizontalLabelPane);
         return horizontalAnchor;
     }
 
     protected AnchorPane createVerticalAnchor(GridPane verticalLabelPane) {
-        AnchorPane verticalAnchor = new AnchorPane();
-        verticalAnchor.getChildren().add(verticalLabelPane);
+        AnchorPane verticalAnchor = new AnchorPane(verticalLabelPane);
         return verticalAnchor;
     }
 
@@ -744,10 +744,10 @@ public class DuplicateMatrixCommand implements Runnable {
         AnchorPane verticalAnchor = createVerticalAnchor(verticalLabelPane);
         AnchorPane horizontalAnchor = createHorizontalAnchor(horizontalLabelPane);
 
-        ScrollPane horizontalLabelScroll = createHorizontalLabelScroll(matrix);
+        ScrollPane horizontalLabelScroll = createHorizontalLabelConfinePane(matrix);
         horizontalLabelScroll.setContent(horizontalAnchor);
 
-        ScrollPane verticalLabelScroll = createVerticalLabelScroll(matrix);
+        ScrollPane verticalLabelScroll = createVerticalLabelConfinePane(matrix);
         verticalLabelScroll.setContent(verticalAnchor);
 
         BorderPane matrixBorder = createMatrixBorder(matrix);
@@ -931,16 +931,16 @@ public class DuplicateMatrixCommand implements Runnable {
         AnchorPane verticalAnchor = createVerticalAnchor(verticalLabelPane);
         AnchorPane horizontalAnchor = createHorizontalAnchor(horizontalLabelPane);
 
-        ScrollPane horizontalLabelScroll = createHorizontalLabelScroll(matrix);
+        ScrollPane horizontalLabelScroll = createHorizontalLabelConfinePane(matrix);
         horizontalLabelScroll.setContent(horizontalAnchor);
 
-        ScrollPane verticalLabelScroll = createVerticalLabelScroll(matrix);
+        ScrollPane verticalLabelScroll = createVerticalLabelConfinePane(matrix);
         verticalLabelScroll.setContent(verticalAnchor);
 
         BorderPane matrixBorder = createMatrixBorder(matrix);
+        matrixBorder.setTop(horizontalLabelScroll);
         matrixBorder.setCenter(matrixScrollPane);
         matrixBorder.setLeft(verticalLabelScroll);
-        matrixBorder.setTop(horizontalLabelScroll);
 
         bindImages(image1ScrollPane, imageScrollView2, image2ScrollPane, imageScrollView1);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
