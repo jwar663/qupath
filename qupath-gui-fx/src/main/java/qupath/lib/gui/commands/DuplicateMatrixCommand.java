@@ -329,6 +329,7 @@ public class DuplicateMatrixCommand implements Runnable {
         thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
 
+        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
         return thresholdConfirm;
     }
 
@@ -356,6 +357,178 @@ public class DuplicateMatrixCommand implements Runnable {
         BorderPane.setAlignment(imageHBox, Pos.BOTTOM_CENTER);
         return imageHBox;
     }
+
+    protected VBox createImageVBox() {
+        VBox imageVBox = new VBox();
+        imageVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        imageVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        imageVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        imageVBox.setSpacing(5);
+        return imageVBox;
+    }
+
+    protected ScrollPane createImageScrollPane(Boolean isImage1) {
+        ScrollPane imageScrollPane = new ScrollPane();
+        imageScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        imageScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        imageScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        imageScrollPane.setVisible(false);
+        if(!isImage1) {
+            imageScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            imageScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            imageScrollPane.setPannable(false);
+        } else {
+            imageScrollPane.setPannable(true);
+        }
+        return imageScrollPane;
+    }
+
+    protected Label createImageLabel(Boolean isImage1) {
+        Label imageLabel = new Label();
+        if(isImage1) {
+            imageLabel.setText("Image 1");
+        } else {
+            imageLabel.setText("Image 2");
+        }
+        imageLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        imageLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        imageLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
+        imageLabel.setAlignment(Pos.CENTER);
+        return imageLabel;
+    }
+
+    protected TabPane createImageTabPane(HBox imageScrollBox, HBox imageThumbnailBox) {
+        Tab scrollTab = new Tab("Scroll", imageScrollBox);
+        Tab thumbnailTab = new Tab("Thumbnail", imageThumbnailBox);
+
+        scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
+        thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
+
+        TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
+        imageTabPane.setSide(Side.LEFT);
+        imageTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        imageTabPane.setPrefSize(TAB_WIDTH, TAB_HEIGHT);
+        imageTabPane.setMaxSize(TAB_WIDTH, TAB_HEIGHT);
+        imageTabPane.setMinSize(TAB_WIDTH, TAB_HEIGHT);
+        imageTabPane.setPadding(new Insets(10, 10,10,10));
+        return imageTabPane;
+    }
+
+    protected ImageView createImageView() {
+        ImageView imageView = new ImageView();
+        return imageView;
+    }
+
+    protected AnchorPane createImageScrollAnchor() {
+        AnchorPane imageScrollAnchor = new AnchorPane();
+        return imageScrollAnchor;
+    }
+
+    protected Pane createImageThumbnailPane() {
+        Pane imageThumbnailPane = new Pane();
+        imageThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        imageThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        imageThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        return imageThumbnailPane;
+    }
+
+    protected BorderPane createMatrixBorder(GridPane matrix) {
+        BorderPane matrixBorder = new BorderPane();
+        BorderPane.setAlignment(matrixBorder, Pos.CENTER);
+        matrixBorder.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, matrix.getHeight() + BUTTON_LABEL_HEIGHT);
+        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
+        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_PREF, MATRIX_BORDER_HEIGHT_PREF);
+        return matrixBorder;
+    }
+
+    protected ScrollPane createHorizontalLabelScroll(GridPane matrix) {
+        ScrollPane horizontalLabelScroll = new ScrollPane();
+        horizontalLabelScroll.setPannable(false);
+        horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        horizontalLabelScroll.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        horizontalLabelScroll.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        return horizontalLabelScroll;
+    }
+
+    protected ScrollPane createVerticalLabelScroll(GridPane matrix) {
+        ScrollPane verticalLabelScroll = new ScrollPane();
+        verticalLabelScroll.setPannable(false);
+        verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, matrix.getHeight());
+        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
+        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
+        return verticalLabelScroll;
+    }
+
+    protected AnchorPane createHorizontalAnchor(GridPane horizontalLabelPane) {
+        AnchorPane horizontalAnchor = new AnchorPane();
+        horizontalAnchor.getChildren().add(horizontalLabelPane);
+        return horizontalAnchor;
+    }
+
+    protected AnchorPane createVerticalAnchor(GridPane verticalLabelPane) {
+        AnchorPane verticalAnchor = new AnchorPane();
+        verticalAnchor.getChildren().add(verticalLabelPane);
+        return verticalAnchor;
+    }
+
+    protected ScrollPane createMatrixScrollPane(GridPane matrix) {
+        ScrollPane matrixScrollPane = new ScrollPane();
+        matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
+        matrixScrollPane.setPrefSize(matrix.getWidth(), matrix.getHeight());
+        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
+        matrixScrollPane.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        return matrixScrollPane;
+    }
+
+    protected GridPane createMatrix() {
+        GridPane matrix = new GridPane();
+        return matrix;
+    }
+
+    protected Label createMatrixLabel(String labelName, Boolean isSquare) {
+        Double width = BUTTON_WIDTH;
+        Double height = BUTTON_LABEL_HEIGHT;
+        Label label = new Label(labelName);
+        if(isSquare) {
+            width = BUTTON_LABEL_HEIGHT;
+        }
+        label.setPrefSize(width, height);
+        label.setMinSize(width, height);
+        label.setMaxSize(width, height);
+        label.setAlignment(Pos.CENTER);
+        return label;
+    }
+
+    protected Button createMatrixButton(float[][] duplicateMatrix, int i, int j) {
+        String tempString = String.format("%.2f", duplicateMatrix[i][j]);
+        //set buttons to be the corresponding matrix
+        Button tempButton = new Button(tempString);
+        tempButton.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        tempButton.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        tempButton.setTooltip(new Tooltip("Select which channels to compare images"));
+        tempButton.setAlignment(Pos.CENTER_RIGHT);
+        String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
+        tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
+        tempButton.setOnMouseEntered(e -> {
+            tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
+        });
+        tempButton.setOnMouseExited(e -> {
+            tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
+        });
+        tempButton.setOnMousePressed(e -> {
+            tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
+        });
+        tempButton.setOnMouseReleased(e -> {
+            tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
+        });
+        return tempButton;
+    }
+
 
 
     protected Stage createDialog() throws IOException, NullPointerException {
@@ -466,135 +639,59 @@ public class DuplicateMatrixCommand implements Runnable {
         //preview image section
         HBox imageScrollBox = createImageHBox();
 
-        VBox image1ScrollVBox = new VBox();
-        image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        VBox image1ScrollVBox = createImageVBox();
 
-        VBox image2ScrollVBox = new VBox();
-        image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setSpacing(5);
-        image2ScrollVBox.setSpacing(5);
+        VBox image2ScrollVBox = createImageVBox();
 
-        ScrollPane image1ScrollPane = new ScrollPane();
-        image1ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setPannable(true);
-        image1ScrollPane.setVisible(false);
+        ScrollPane image1ScrollPane = createImageScrollPane(true);
 
-        ScrollPane image2ScrollPane = new ScrollPane();
-        image2ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setVisible(false);
+
+        ScrollPane image2ScrollPane = createImageScrollPane(false);
 
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
 
-        Label image1ScrollLabel = new Label("Image 1");
-        image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
+        Label image1ScrollLabel = createImageLabel(true);
 
-        Label image2ScrollLabel = new Label("Image 2");
-        image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
+        Label image2ScrollLabel = createImageLabel(false);
 
-        ImageView imageScrollView1 = new ImageView();
-        ImageView imageScrollView2 = new ImageView();
+        ImageView imageScrollView1 = createImageView();
+        ImageView imageScrollView2 = createImageView();
 
-        AnchorPane image1Anchor = new AnchorPane();
+        AnchorPane image1Anchor = createImageScrollAnchor();
         image1Anchor.getChildren().add(imageScrollView1);
 
-        AnchorPane image2Anchor = new AnchorPane();
+        AnchorPane image2Anchor = createImageScrollAnchor();
         image2Anchor.getChildren().add(imageScrollView2);
 
         image1ScrollPane.setContent(image1Anchor);
         image2ScrollPane.setContent(image2Anchor);
-        image1ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        image1ScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        image2ScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        image2ScrollPane.setPannable(false);
         image1ScrollVBox.getChildren().addAll(image1ScrollLabel, image1ScrollPane);
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
-        Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
         HBox imageThumbnailBox = createImageHBox();
-        VBox image1ThumbnailVBox = new VBox();
-        image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        VBox image2ThumbnailVBox = new VBox();
-        image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setSpacing(5);
-        image2ThumbnailVBox.setSpacing(5);
+        VBox image1ThumbnailVBox = createImageVBox();
+        VBox image2ThumbnailVBox = createImageVBox();
 
-        Pane image1ThumbnailPane = new Pane();
-        image1ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        Pane image2ThumbnailPane = new Pane();
-        image2ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        Pane image1ThumbnailPane = createImageThumbnailPane();
+        Pane image2ThumbnailPane = createImageThumbnailPane();
         imageThumbnailBox.getChildren().addAll(image1ThumbnailVBox, image2ThumbnailVBox);
-        Label image1ThumbnailLabel = new Label("Image 1");
-        image1ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image1ThumbnailLabel, Priority.NEVER);
-        Label image2ThumbnailLabel = new Label("Image 2");
-        image2ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image2ThumbnailLabel, Priority.NEVER);
-        ImageView imageThumbnailView1 = new ImageView();
-        ImageView imageThumbnailView2 = new ImageView();
+        Label image1ThumbnailLabel = createImageLabel(true);
+        Label image2ThumbnailLabel = createImageLabel(false);
+        ImageView imageThumbnailView1 = createImageView();
+        ImageView imageThumbnailView2 = createImageView();
         image1ThumbnailPane.getChildren().add(imageThumbnailView1);
         image2ThumbnailPane.getChildren().add(imageThumbnailView2);
         image1ThumbnailVBox.getChildren().addAll(image1ThumbnailLabel, image1ThumbnailPane);
         image2ThumbnailVBox.getChildren().addAll(image2ThumbnailLabel, image2ThumbnailPane);
-        Tab thumbnailTab = new Tab("Thumbnail", imageThumbnailBox);
 
 
         //tab pane
-        TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
-        imageTabPane.setSide(Side.LEFT);
-        imageTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        imageTabPane.setPrefSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setMaxSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setMinSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setPadding(new Insets(10, 10,10,10));
+        TabPane imageTabPane = createImageTabPane(imageScrollBox, imageThumbnailBox);
         overallPane.setBottom(imageTabPane);
 
         //matrix part
-        BorderPane matrixBorder = new BorderPane();
-        BorderPane.setAlignment(matrixBorder, Pos.CENTER);
 
-        AnchorPane verticalAnchor = new AnchorPane();
-        AnchorPane horizontalAnchor = new AnchorPane();
 
-        ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPannable(false);
-        horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        ScrollPane verticalLabelScroll = new ScrollPane();
-        verticalLabelScroll.setPannable(false);
-        verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         GridPane verticalLabelPane = new GridPane();
 
@@ -605,68 +702,23 @@ public class DuplicateMatrixCommand implements Runnable {
         horizontalLabelPane.getRowConstraints().add(labelRowConstraint);
         ColumnConstraints labelColumnConstraint = new ColumnConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
         verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
-        ScrollPane matrixScrollPane = new ScrollPane();
 
-        matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
-        BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
-        matrixBorder.setCenter(matrixScrollPane);
-        horizontalLabelScroll.setContent(horizontalAnchor);
+        GridPane matrix = createMatrix();
 
-        horizontalAnchor.getChildren().add(horizontalLabelPane);
-
-        horizontalLabelScroll.setPadding(new Insets(0,0,0,25));
-
-        matrixBorder.setTop(horizontalLabelScroll);
-        verticalAnchor.getChildren().add(verticalLabelPane);
-        verticalLabelScroll.setContent(verticalAnchor);
-        matrixBorder.setLeft(verticalLabelScroll);
-        GridPane matrix = new GridPane();
-        Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
-        Label placeholderLabel = new Label();
-        placeholderLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-        placeholderLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-        placeholderLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
+        Label placeholderLabel = createMatrixLabel("", true);
         horizontalLabelPane.add(placeholderLabel, 0, 0);
         for(int i = 0; i < size; i++) {
-            Label tempVerticalLabel = new Label(Integer.toString(i + 1));
-            Label tempHorizontalLabel = new Label(Integer.toString(i + 1));
-            tempVerticalLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setAlignment(Pos.CENTER);
-            tempHorizontalLabel.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setAlignment(Pos.CENTER);
+            Label tempVerticalLabel = createMatrixLabel(Integer.toString(i + 1), true);
+            Label tempHorizontalLabel = createMatrixLabel(Integer.toString(i + 1), false);
+
             horizontalLabelPane.add(tempHorizontalLabel, i + 1, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
         }
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
-                //set buttons to be the corresponding matrix
-                Button tempButton = new Button(tempString);
-                tempButton.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setTooltip(matrixButtonTooltip);
-                tempButton.setAlignment(Pos.CENTER_RIGHT);
-                String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
-                tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
+                Button tempButton = createMatrixButton(duplicateMatrix, i, j);
                 int tempI = i;
                 int tempJ = j;
-                tempButton.setOnMouseEntered(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
-                });
-                tempButton.setOnMouseExited(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
-                tempButton.setOnMousePressed(e -> {
-                    tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
-                tempButton.setOnMouseReleased(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
                 tempButton.setOnAction(e -> {
                     //set the correct images depending on button click
                     image1ScrollLabel.setText("Channel " + (tempI + 1));
@@ -686,32 +738,28 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         }
 
-        horizontalLabelScroll.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
 
-        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, matrix.getHeight());
-        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
-        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
+        ScrollPane matrixScrollPane = createMatrixScrollPane(matrix);
 
-        matrixBorder.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, matrix.getHeight() + BUTTON_LABEL_HEIGHT);
-        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
-        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_PREF, MATRIX_BORDER_HEIGHT_PREF);
+        AnchorPane verticalAnchor = createVerticalAnchor(verticalLabelPane);
+        AnchorPane horizontalAnchor = createHorizontalAnchor(horizontalLabelPane);
 
-        matrixScrollPane.setPrefSize(matrix.getWidth(), matrix.getHeight());
-        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
-        matrixScrollPane.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        ScrollPane horizontalLabelScroll = createHorizontalLabelScroll(matrix);
+        horizontalLabelScroll.setContent(horizontalAnchor);
+
+        ScrollPane verticalLabelScroll = createVerticalLabelScroll(matrix);
+        verticalLabelScroll.setContent(verticalAnchor);
+
+        BorderPane matrixBorder = createMatrixBorder(matrix);
+        matrixBorder.setTop(horizontalLabelScroll);
+        matrixBorder.setCenter(matrixScrollPane);
+        matrixBorder.setLeft(verticalLabelScroll);
 
         bindImages(image1ScrollPane, imageScrollView2, image2ScrollPane, imageScrollView1);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
-
-        //tooltips
-        scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
-        thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
         Scene scene = new Scene(overallPane, OVERALL_WIDTH, OVERALL_HEIGHT);
@@ -779,136 +827,57 @@ public class DuplicateMatrixCommand implements Runnable {
         //preview image section
         HBox imageScrollBox = createImageHBox();
 
-        VBox image1ScrollVBox = new VBox();
-        image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        VBox image1ScrollVBox = createImageVBox();
 
-        VBox image2ScrollVBox = new VBox();
-        image2ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ScrollVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ScrollVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ScrollVBox.setSpacing(5);
-        image2ScrollVBox.setSpacing(5);
+        VBox image2ScrollVBox = createImageVBox();
 
-        ScrollPane image1ScrollPane = new ScrollPane();
-        image1ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ScrollPane.setPannable(true);
-        image1ScrollPane.setVisible(false);
+        ScrollPane image1ScrollPane = createImageScrollPane(true);
 
-        ScrollPane image2ScrollPane = new ScrollPane();
-        image2ScrollPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ScrollPane.setVisible(false);
+        ScrollPane image2ScrollPane = createImageScrollPane(false);
 
         imageScrollBox.getChildren().addAll(image1ScrollVBox, image2ScrollVBox);
 
-        Label image1ScrollLabel = new Label("Image 1");
-        image1ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ScrollLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image1ScrollLabel, Priority.NEVER);
+        Label image1ScrollLabel = createImageLabel(true);
 
-        Label image2ScrollLabel = new Label("Image 2");
-        image2ScrollLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ScrollLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image2ScrollLabel, Priority.NEVER);
+        Label image2ScrollLabel = createImageLabel(false);
 
-        ImageView imageScrollView1 = new ImageView();
-        ImageView imageScrollView2 = new ImageView();
+        ImageView imageScrollView1 = createImageView();
+        ImageView imageScrollView2 = createImageView();
 
-        AnchorPane image1Anchor = new AnchorPane();
+        AnchorPane image1Anchor = createImageScrollAnchor();
         image1Anchor.getChildren().add(imageScrollView1);
 
-        AnchorPane image2Anchor = new AnchorPane();
+        AnchorPane image2Anchor = createImageScrollAnchor();
         image2Anchor.getChildren().add(imageScrollView2);
 
         image1ScrollPane.setContent(image1Anchor);
         image2ScrollPane.setContent(image2Anchor);
-        image1ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        image1ScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
-        image2ScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        image2ScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         image2ScrollPane.setPannable(false);
         image1ScrollVBox.getChildren().addAll(image1ScrollLabel, image1ScrollPane);
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
-        Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
         HBox imageThumbnailBox = createImageHBox();
-        VBox image1ThumbnailVBox = new VBox();
-        image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image1ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        VBox image2ThumbnailVBox = new VBox();
-        image2ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
-        image2ThumbnailVBox.setMinSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
+        VBox image1ThumbnailVBox = createImageVBox();
+        VBox image2ThumbnailVBox = createImageVBox();
 
-        image1ThumbnailVBox.setSpacing(5);
-        image2ThumbnailVBox.setSpacing(5);
-
-        Pane image1ThumbnailPane = new Pane();
-        image1ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image1ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        Pane image2ThumbnailPane = new Pane();
-        image2ThumbnailPane.setPrefSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ThumbnailPane.setMaxSize(IMAGE_WIDTH, IMAGE_HEIGHT);
-        image2ThumbnailPane.setMinSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+        Pane image1ThumbnailPane = createImageThumbnailPane();
+        Pane image2ThumbnailPane = createImageThumbnailPane();
         imageThumbnailBox.getChildren().addAll(image1ThumbnailVBox, image2ThumbnailVBox);
-        Label image1ThumbnailLabel = new Label("Image 1");
-        image1ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image1ThumbnailLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image1ThumbnailLabel, Priority.NEVER);
-        Label image2ThumbnailLabel = new Label("Image 2");
-        image2ThumbnailLabel.setPrefSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setMaxSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setMinSize(IMAGE_LABEL_WIDTH, IMAGE_LABEL_HEIGHT);
-        image2ThumbnailLabel.setAlignment(Pos.CENTER);
-        VBox.setVgrow(image2ThumbnailLabel, Priority.NEVER);
-        ImageView imageThumbnailView1 = new ImageView();
-        ImageView imageThumbnailView2 = new ImageView();
+        Label image1ThumbnailLabel = createImageLabel(true);
+        Label image2ThumbnailLabel = createImageLabel(false);
+        ImageView imageThumbnailView1 = createImageView();
+        ImageView imageThumbnailView2 = createImageView();
         image1ThumbnailPane.getChildren().add(imageThumbnailView1);
         image2ThumbnailPane.getChildren().add(imageThumbnailView2);
         image1ThumbnailVBox.getChildren().addAll(image1ThumbnailLabel, image1ThumbnailPane);
         image2ThumbnailVBox.getChildren().addAll(image2ThumbnailLabel, image2ThumbnailPane);
-        Tab thumbnailTab = new Tab("Thumbnail", imageThumbnailBox);
 
 
         //tab pane
-        TabPane imageTabPane = new TabPane(scrollTab, thumbnailTab);
-        imageTabPane.setSide(Side.LEFT);
-        imageTabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-        imageTabPane.setPrefSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setMaxSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setMinSize(TAB_WIDTH, TAB_HEIGHT);
-        imageTabPane.setPadding(new Insets(10, 10,10,10));
+        TabPane imageTabPane = createImageTabPane(imageScrollBox, imageThumbnailBox);
         overallPane.setBottom(imageTabPane);
 
         //matrix part
-        BorderPane matrixBorder = new BorderPane();
-        BorderPane.setAlignment(matrixBorder, Pos.CENTER);
-
-        AnchorPane verticalAnchor = new AnchorPane();
-        AnchorPane horizontalAnchor = new AnchorPane();
-
-        ScrollPane horizontalLabelScroll = new ScrollPane();
-        horizontalLabelScroll.setPannable(false);
-        horizontalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        horizontalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-
-        ScrollPane verticalLabelScroll = new ScrollPane();
-        verticalLabelScroll.setPannable(false);
-        verticalLabelScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
-        verticalLabelScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         GridPane verticalLabelPane = new GridPane();
 
@@ -919,69 +888,24 @@ public class DuplicateMatrixCommand implements Runnable {
         horizontalLabelPane.getRowConstraints().add(labelRowConstraint);
         ColumnConstraints labelColumnConstraint = new ColumnConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
         verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
-        ScrollPane matrixScrollPane = new ScrollPane();
 
-        matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
-        BorderPane.setAlignment(matrixBorder, Pos.TOP_CENTER);
-        matrixBorder.setCenter(matrixScrollPane);
-        horizontalLabelScroll.setContent(horizontalAnchor);
-
-        horizontalAnchor.getChildren().add(horizontalLabelPane);
-
-        //horizontalLabelScroll.setPadding(new Insets(0,0,0,25));
-
-        matrixBorder.setTop(horizontalLabelScroll);
-        verticalAnchor.getChildren().add(verticalLabelPane);
-        verticalLabelScroll.setContent(verticalAnchor);
-        matrixBorder.setLeft(verticalLabelScroll);
-        GridPane matrix = new GridPane();
+        GridPane matrix = createMatrix();
         Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
-        Label placeholderLabel = new Label();
-        placeholderLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-        placeholderLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-        placeholderLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
+        Label placeholderLabel = createMatrixLabel("", true);
         horizontalLabelPane.add(placeholderLabel, 0, 0);
         for(int i = 0; i < size; i++) {
-            Label tempVerticalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
-            Label tempHorizontalLabel = new Label(Integer.toString(distinctChannels.get(i) + 1));
-            tempVerticalLabel.setPrefSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setMinSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setMaxSize(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
-            tempVerticalLabel.setAlignment(Pos.CENTER);
-            tempHorizontalLabel.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-            tempHorizontalLabel.setAlignment(Pos.CENTER);
+            Label tempVerticalLabel = createMatrixLabel(Integer.toString(i + 1), true);
+            Label tempHorizontalLabel = createMatrixLabel(Integer.toString(i + 1), false);
+
             horizontalLabelPane.add(tempHorizontalLabel, i + 1, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
         }
         for(int i = 0; i < size; i++) {
             for(int j = 0; j < size; j++) {
-                String tempString = String.format("%.2f", duplicateMatrix[i][j]);
-                //set buttons to be the corresponding matrix
-                Button tempButton = new Button(tempString);
-                tempButton.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setMaxSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
-                tempButton.setTooltip(matrixButtonTooltip);
-                tempButton.setAlignment(Pos.CENTER_RIGHT);
-                String tempButtonColour = getHeatmapColour(duplicateMatrix[i][j]);
-                tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                //alter for previews
+                Button tempButton = createMatrixButton(duplicateMatrix, i, j);
+
                 int tempI = distinctChannels.get(i);
                 int tempJ = distinctChannels.get(j);
-                tempButton.setOnMouseEntered(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: #C4C4C4; -fx-background-radius: 0");
-                });
-                tempButton.setOnMouseExited(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
-                tempButton.setOnMousePressed(e -> {
-                    tempButton.setStyle("-fx-border-color: #0DD5FC; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
-                tempButton.setOnMouseReleased(e -> {
-                    tempButton.setStyle("-fx-border-color: #000000; -fx-border-radius: 0; -fx-background-color: " + tempButtonColour + "; -fx-background-radius: 0");
-                });
                 tempButton.setOnAction(e -> {
                     //set the correct images depending on button click
                     image1ScrollLabel.setText("Channel " + (tempI + 1));
@@ -1001,33 +925,28 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         }
 
-        horizontalLabelScroll.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMaxSize(MATRIX_LABELS_HORIZONTAL_WIDTH, MATRIX_LABELS_HORIZONTAL_HEIGHT);
-        horizontalLabelScroll.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
 
-        verticalLabelScroll.setPrefSize(MATRIX_LABELS_VERTICAL_WIDTH, matrix.getHeight());
-        verticalLabelScroll.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, MATRIX_LABELS_VERTICAL_HEIGHT);
-        verticalLabelScroll.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
+        ScrollPane matrixScrollPane = createMatrixScrollPane(matrix);
 
-        matrixBorder.setPrefSize(matrix.getWidth() + BUTTON_LABEL_HEIGHT, matrix.getHeight() + BUTTON_LABEL_HEIGHT);
-        matrixBorder.setMaxSize(MATRIX_BORDER_WIDTH, MATRIX_BORDER_HEIGHT);
-        matrixBorder.setMinSize(MATRIX_BORDER_WIDTH_PREF, MATRIX_BORDER_HEIGHT_PREF);
+        AnchorPane verticalAnchor = createVerticalAnchor(verticalLabelPane);
+        AnchorPane horizontalAnchor = createHorizontalAnchor(horizontalLabelPane);
 
-        matrixScrollPane.setPrefSize(matrix.getWidth(), matrix.getHeight());
-        matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
-        matrixScrollPane.setMinSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
+        ScrollPane horizontalLabelScroll = createHorizontalLabelScroll(matrix);
+        horizontalLabelScroll.setContent(horizontalAnchor);
+
+        ScrollPane verticalLabelScroll = createVerticalLabelScroll(matrix);
+        verticalLabelScroll.setContent(verticalAnchor);
+
+        BorderPane matrixBorder = createMatrixBorder(matrix);
+        matrixBorder.setCenter(matrixScrollPane);
+        matrixBorder.setLeft(verticalLabelScroll);
+        matrixBorder.setTop(horizontalLabelScroll);
 
         bindImages(image1ScrollPane, imageScrollView2, image2ScrollPane, imageScrollView1);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
         overallPane.setCenter(matrixBorder);
-
-        //tooltips
-        scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
-        thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-//        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
-
 
         Scene scene = new Scene(overallPane, OVERALL_WIDTH, OVERALL_HEIGHT);
         previewDialog.setScene(scene);
