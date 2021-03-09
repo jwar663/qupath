@@ -130,7 +130,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double IMAGE_LABEL_HEIGHT = 25.0;
 
     private static final double IMAGE_WIDTH = IMAGE_VBOX_WIDTH;
-    private static final double IMAGE_HEIGHT = IMAGE_VBOX_HEIGHT - IMAGE_LABEL_HEIGHT - 5;
+    private static final double IMAGE_HEIGHT = IMAGE_VBOX_HEIGHT - IMAGE_LABEL_HEIGHT - 25;
 
     private static final String START_THRESHOLD = "0.90";
 
