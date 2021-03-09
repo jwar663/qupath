@@ -109,7 +109,7 @@ import qupath.lib.scripting.QP;
 /**
  * A panel used for displaying basic info about an image, e.g. its path, width, height, pixel size etc.
  * <p>
- * It also includes displaying color deconvolution vectors for RGB brightfield images.
+ * It also includes displaying color deconvolution vectors for RFGB brightfield images.
  * 
  * @author Pete Bankhead
  *

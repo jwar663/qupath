@@ -6,18 +6,16 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
-import qupath.lib.images.writers.ImageWriterTools;
+import qupath.lib.images.writers.ImageWriter;
+import qupath.lib.objects.PathObject;
 import qupath.lib.regions.RegionRequest;
+import qupath.lib.roi.interfaces.ROI;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.SampleModel;
-import java.awt.image.WritableRaster;
-import java.io.File;
+import java.awt.*;
+import java.awt.image.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.net.URI;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -30,8 +28,6 @@ import java.util.List;
 public class ConcatChannelsABI {
 
     //Macros
-    private static final double SIMILARITY_THRESHOLD = 0.95;
-    private static final int NUMBER_FOR_EXCESS_CHANNELS = 42;
     private static final int[] ALEXA_488 = {0, 204, 0}; //GREEN
     private static final int[] ALEXA_555 = {255, 255, 0}; //YELLOW
     private static final int[] ALEXA_594 = {255, 0, 0}; //RED
@@ -46,44 +42,47 @@ public class ConcatChannelsABI {
      * @param firstChannel
      * @param secondChannel
      */
-    public static boolean normCrossCorrelation(float[] firstChannel, float[] secondChannel) {
+    public static float normCrossCorrelationFloat(float[] firstChannel, float[] secondChannel) {
         float nominator = 0;
         float firstDenominator = 0;
         float secondDenominator = 0;
-        float result = 0;
-        System.out.println("channelLength: " + firstChannel.length);
         for(int i = 0; i < firstChannel.length; i++) {
             nominator += firstChannel[i] * secondChannel[i];
             firstDenominator += (firstChannel[i] * firstChannel[i]);
             secondDenominator += (secondChannel[i] * secondChannel[i]);
         }
-        System.out.println("nominator: " + nominator);
-        System.out.println("firstDenominator: " + firstDenominator);
-        System.out.println("secondDenominator: " + secondDenominator);
-        result = nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
-        System.out.println("result: " + result);
-        if(result > SIMILARITY_THRESHOLD) {
-            System.out.println("dupeChannel: true");
-            return true;
-        } else {
-            System.out.println("dupeChannel: false");
-            return false;
-        }
+        return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
     }
 
     /**
-     * This method is used to check if there are more than 7 channels and therefore whether channels should be concatenated or not.
+     * This method uses the Normalised Cross Correlation Matrix to return which channels are
+     * distinct channels.
      *
-     * @param nChannels
+     * @param crossCorrelationMatrix
+     * @param similarityThreshold
      */
-    public static boolean isExcessChannels(int nChannels) {
-        if(nChannels >= NUMBER_FOR_EXCESS_CHANNELS) {
-            System.out.println("excessChannels: true");
-            return true;
-        } else {
-            System.out.println("excessChannels: false");
-            return false;
+    public static ArrayList<Integer> distinctChannels(float[][] crossCorrelationMatrix, double similarityThreshold) {
+        ArrayList<Integer> duplicates = new ArrayList<>();
+        ArrayList<Integer> distinct = new ArrayList<>();
+        int nChannels = crossCorrelationMatrix.length;
+        for(int i = 0; i < nChannels - 1; i++) {
+            //only check for duplicates in channels that aren't already considered duplicates
+            if(!duplicates.contains(i)) {
+                for(int j = i + 1; j < crossCorrelationMatrix.length; j++) {
+                    if(!duplicates.contains(j)) {
+                        if(crossCorrelationMatrix[i][j] > similarityThreshold) {
+                            duplicates.add(j);
+                        }
+                    }
+                }
+            }
         }
+        for(int i = 0; i < nChannels; i++) {
+            if(!duplicates.contains(i)) {
+                distinct.add(i);
+            }
+        }
+        return distinct;
     }
 
     /**
@@ -99,7 +98,7 @@ public class ConcatChannelsABI {
     public static void setChannelColors(ImageData<?> imageData, Integer... colors) {
         List<ImageChannel> oldChannels = imageData.getServer().getMetadata().getChannels();
         List<ImageChannel> newChannels = new ArrayList<>(oldChannels);
-        for (int i = 0; i < colors.length; i++) {
+        for (int i = 0; i < oldChannels.size(); i++) {
             Integer color = colors[i];
             if (color == null)
                 continue;
@@ -212,8 +211,6 @@ public class ConcatChannelsABI {
         SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(notDuplicatesArray);
         WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
         BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
-        //May need to create a new image rather than duplicating
-        //need to set 3 to number of channels. Currently does not work as channels are limited to 3 rather than 7.
         for(int i = 0; i < notDuplicates.size(); i++) {
             img.getRaster().getSamples(0, 0, width, height, notDuplicates.get(i), tempFloatArray);
             resultImage.getRaster().setSamples(0, 0, width, height, i, tempFloatArray);
@@ -221,60 +218,139 @@ public class ConcatChannelsABI {
         return resultImage;
     }
 
-    public static ImageData concatDuplicateChannels(ImageData<?> imageData) {
-        ImageData resultImageData = imageData;
-        int nChannels = imageData.getServer().nChannels();
-        if(isExcessChannels(nChannels)) {
-            RegionRequest request = RegionRequest.createInstance(imageData.getServer());
-            BufferedImage img = null;
-            try {
-              img = (BufferedImage) imageData.getServer().readBufferedImage(request);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ArrayList<Integer> duplicates = new ArrayList<>();
-            int width = img.getWidth();
-            int height = img.getHeight();
-            float[] channelOneArray = new float[width * height];
-            float[] channelTwoArray = new float[width * height];
-            float[] array = new float[width * height];
-            for(int channelOne = 0; channelOne < nChannels - 1; channelOne++) {
-                //only check for duplicates in channels that aren't already considered duplicates
-                if(!duplicates.contains(channelOne)) {
-                    img.getRaster().getSamples(0 , 0, width, height, channelOne, channelOneArray);
-                    for(int channelTwo = channelOne + 1; channelTwo < nChannels; channelTwo++) {
-                        if(!duplicates.contains(channelTwo)) {
-                            img.getRaster().getSamples(0, 0, width, height, channelTwo, channelTwoArray);
-                            if(normCrossCorrelation(channelOneArray, channelTwoArray)) {
-                                duplicates.add(channelTwo);
-                            }
-                        }
-                    }
-                }
-            }
-            ArrayList<Integer> notDuplicates = new ArrayList<>();
-            List<ImageChannel> channels = new ArrayList<>();
-            for(int i = 0; i < nChannels; i++) {
-                if(!duplicates.contains(i)) {
-                    notDuplicates.add(i);
-                    channels.add(imageData.getServer().getChannel(i));
-                }
-            }
-            BufferedImage finalImg = createNewBufferedImage(notDuplicates, img);
-            //writing a tiff file, not particularly useful
-//            File file = new File("D:\\Desktop\\QuPath\\newImage.tiff");
-//            try {
-//                ImageIO.write(finalImg, "tiff", file);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-            ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
-            ImageData imageData1 = new ImageData<BufferedImage>(newServer);
-            imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
-            //imageData1.setProperty()
-            setRegularChannelColours(imageData1);
-            resultImageData = imageData1;
+    /**
+     * Use the original and new URI to create a new mapping.
+     *
+     * @param originalURI
+     * @param newURIs
+     */
+    public static Map<URI, URI> getCorrectURIMap(URI originalURI, Collection<URI> newURIs) {
+        URI[] newURIArray = newURIs.toArray(new URI[newURIs.size()]);
+        Map<URI, URI> uriMap = new HashMap<URI, URI>();
+        for(int i = 0; i < newURIs.size(); i++) {
+            uriMap.put(originalURI, newURIArray[i]);
         }
+        return uriMap;
+    }
+
+    /**
+     * Perform normalised cross correlation for each channel of the image then put it into a matrix.
+     *
+     * @param img
+     */
+    public static float[][] createConcatMatrix(BufferedImage img) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        float[] channelOneArray = new float[width * height];
+        float[] channelTwoArray = new float[width * height];
+        int nChannels = img.getRaster().getNumBands();
+        float[][] channelMatrix = new float[nChannels][nChannels];
+        float result = 0;
+        for(int i = 0; i < nChannels; i++) {
+            for(int j = i; j < nChannels; j++) {
+                if(i == j) {
+                    channelMatrix[i][j] = 1;
+                } else {
+                    img.getRaster().getSamples(0, 0, width, height, i, channelOneArray);
+                    img.getRaster().getSamples(0, 0, width, height, j, channelTwoArray);
+                    result = normCrossCorrelationFloat(channelOneArray, channelTwoArray);
+                    channelMatrix[i][j] = result;
+                    channelMatrix[j][i] = result;
+                }
+            }
+        }
+        return channelMatrix;
+    }
+
+    /**
+     * Use the image data to create an associated image with the specified channel.
+     * This image will be used to compare to see if the channels are actually different.
+     *
+     * @param imageData
+     * @param channel
+     */
+    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight) {
+        RegionRequest request = RegionRequest.createInstance(imageData.getServer());
+        int width = imageData.getServer().getMetadata().getWidth();
+        int height = imageData.getServer().getMetadata().getHeight();
+        BufferedImage bufferedImage;
+        BufferedImage[] grayScaleImages = new BufferedImage[2];
+        BufferedImage img = null;
+        try {
+            img = imageData.getServer().readBufferedImage(request);
+            bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            for(int i = 0; i < width; i++) {
+                for(int j = 0; j < height; j++) {
+                    //set the red colour, leave the other colours as 0.
+                    bufferedImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                }
+            }
+            grayScaleImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+            Graphics graphics = grayScaleImages[1].getGraphics();
+            graphics.drawImage(bufferedImage, 0, 0, null);
+            graphics.dispose();
+            grayScaleImages[0] = createThumbnailImage(grayScaleImages[1], desiredHeight, desiredWidth);
+            return grayScaleImages;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Use a buffered image to create a thumbnail of that image given the requested size of the thumbnail.
+     *
+     * @param img
+     * @param height
+     * @param width
+     */
+    public static BufferedImage createThumbnailImage(BufferedImage img, int height, int width) {
+        BufferedImage thumbnailImage = new BufferedImage(width, height, img.getType());
+        Graphics2D graphics2D = thumbnailImage.createGraphics();
+        graphics2D.setComposite(AlphaComposite.Src);
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.drawImage(img, 0, 0, width, height, null);
+        graphics2D.dispose();
+        return thumbnailImage;
+    }
+
+    /**
+     * Use the image data to create the full buffered image for use in other methods.
+     *
+     * @param imageData
+     */
+    public static BufferedImage convertImageDataToImage(ImageData<BufferedImage> imageData) {
+        RegionRequest request = RegionRequest.createInstance(imageData.getServer());
+        BufferedImage img = null;
+        try {
+            img = imageData.getServer().readBufferedImage(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return img;
+    }
+
+    /**
+     * Create the associated image whilst removing the duplicate channels.
+     *
+     * @param imageData
+     * @param img
+     */
+    public static ImageData concatDuplicateChannels(ImageData<BufferedImage> imageData, BufferedImage img, float[][] crossCorrelationMatrix, double similarityThreshold) {
+        ImageData resultImageData;
+        ArrayList<Integer> distinct = distinctChannels(crossCorrelationMatrix, similarityThreshold);
+        List<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < distinct.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+        BufferedImage finalImg = createNewBufferedImage(distinct, img);
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
+        ImageData imageData1 = new ImageData<BufferedImage>(newServer);
+        imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
+        setRegularChannelColours(imageData1);
+        resultImageData = imageData1;
         setRegularChannelNames(resultImageData);
         return resultImageData;
     }

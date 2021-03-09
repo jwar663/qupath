@@ -165,12 +165,7 @@ import qupath.lib.common.ThreadTools;
 import qupath.lib.gui.ActionTools.ActionAccelerator;
 import qupath.lib.gui.ActionTools.ActionDescription;
 import qupath.lib.gui.ActionTools.ActionIcon;
-import qupath.lib.gui.commands.BrightnessContrastCommand;
-import qupath.lib.gui.commands.Commands;
-import qupath.lib.gui.commands.CountingPanelCommand;
-import qupath.lib.gui.commands.LogViewerCommand;
-import qupath.lib.gui.commands.ProjectCommands;
-import qupath.lib.gui.commands.TMACommands;
+import qupath.lib.gui.commands.*;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.dialogs.ParameterPanelFX;
 import qupath.lib.gui.dialogs.Dialogs.DialogButton;
@@ -178,13 +173,7 @@ import qupath.lib.gui.extensions.QuPathExtension;
 import qupath.lib.gui.images.stores.DefaultImageRegionStore;
 import qupath.lib.gui.images.stores.ImageRegionStoreFactory;
 import qupath.lib.gui.logging.LogManager;
-import qupath.lib.gui.panes.AnnotationPane;
-import qupath.lib.gui.panes.ImageDetailsPane;
-import qupath.lib.gui.panes.PathObjectHierarchyView;
-import qupath.lib.gui.panes.PreferencePane;
-import qupath.lib.gui.panes.ProjectBrowser;
-import qupath.lib.gui.panes.SelectedMeasurementTableView;
-import qupath.lib.gui.panes.WorkflowCommandLogView;
+import qupath.lib.gui.panes.*;
 import qupath.lib.gui.plugins.ParameterDialogWrapper;
 import qupath.lib.gui.plugins.PluginRunnerFX;
 import qupath.lib.gui.prefs.PathPrefs;
@@ -527,7 +516,13 @@ public class QuPathGUI {
 		@ActionIcon(PathIcons.CONTRAST)
 		@ActionAccelerator("shift+c")
 		public final Action BRIGHTNESS_CONTRAST = ActionTools.createAction(new BrightnessContrastCommand(QuPathGUI.this), "Brightness/Contrast");
-		
+
+		/**
+		 * Show the Duplicate Matrix dialog.
+		 */
+		@ActionAccelerator("shift+j")
+		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
+
 		/**
 		 * Toggle the image overview display on the viewers.
 		 */
@@ -2380,6 +2375,18 @@ public class QuPathGUI {
 				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 10), "10%"),
 				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 100), "1%")
 				);
+
+		Menu matrixView = MenuTools.createMenu(
+				"Display",
+				ActionTools.createCheckMenuItem(defaultActions.SHOW_ANALYSIS_PANE, null),
+				defaultActions.DUPLICATE_MATRIX,
+				null,
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 0.25), "400%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 1), "100%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 2), "50%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 10), "10%"),
+				ActionTools.createAction(() -> Commands.setViewerDownsample(viewer, 100), "1%")
+		);
 		
 		ToggleGroup groupTools = new ToggleGroup();
 		Menu menuTools = MenuTools.createMenu(
@@ -2514,6 +2521,7 @@ public class QuPathGUI {
 				menuMultiview,
 				menuCells,
 				menuView,
+				matrixView,
 				menuTools
 				);
 		
@@ -2797,16 +2805,18 @@ public class QuPathGUI {
 	 * @throws IOException 
 	 */
 	public boolean openImage(QuPathViewer viewer, String pathNew, boolean prompt, boolean includeURLs) throws IOException {
-		
+
+
 		if (viewer == null) {
-			if (getViewers().size() == 1)
+			if (getViewers().size() == 1) {
 				viewer = getViewer();
+			}
 			else {
 				Dialogs.showErrorMessage("Open image", "Please specify the viewer where the image should be opened!");
 				return false;
 			}
 		}
-		
+
 		ImageServer<BufferedImage> server = viewer.getServer();
 		String pathOld = null;
 		File fileBase = null;
@@ -2831,21 +2841,25 @@ public class QuPathGUI {
 		if (pathNew == null) {
 			if (includeURLs) {
 				pathNew = Dialogs.promptForFilePathOrURL("Choose path", pathOld, fileBase, null);
-				if (pathNew == null)
+				if (pathNew == null) {
 					return false;
+				}
 				fileNew = new File(pathNew);
 			} else {
 				fileNew = Dialogs.promptForFile(null, fileBase, null);
-				if (fileNew == null)
+				if (fileNew == null) {
 					return false;
+				}
 				pathNew = fileNew.getAbsolutePath();
 			}
-		} else
+		} else {
 			fileNew = new File(pathNew);
-		
+		}
 		// If we have a file, check if it is a data file - if so, handle differently
-		if (fileNew.isFile() && GeneralTools.checkExtensions(pathNew, PathPrefs.getSerializationExtension()))
+		if (fileNew.isFile() && GeneralTools.checkExtensions(pathNew, PathPrefs.getSerializationExtension())) {
 			return openSavedData(viewer, fileNew, false, true);
+		}
+
 
 		// Check for project file
 		if (fileNew.isFile() && GeneralTools.checkExtensions(pathNew, ProjectIO.getProjectExtension())) {
@@ -2863,14 +2877,15 @@ public class QuPathGUI {
 				}
 		}
 
-		
+
 		// Try opening an image, unless it's the same as the image currently open
 		if (!pathNew.equals(pathOld)) {
 			// If we have a project, show the import dialog
 			if (getProject() != null) {
 				List<ProjectImageEntry<BufferedImage>> entries = ProjectCommands.promptToImportImages(this, pathNew);
-				if (entries.isEmpty())
+				if (entries.isEmpty()) {
 					return false;
+				}
 				return openImageEntry(entries.get(0));
 			}
 			ImageServer<BufferedImage> serverNew = null;
@@ -2878,7 +2893,7 @@ public class QuPathGUI {
 			UriImageSupport<BufferedImage> support = ImageServerProvider.getPreferredUriImageSupport(BufferedImage.class, pathNew);
 			List<ServerBuilder<BufferedImage>> builders = support == null ? Collections.emptyList() : support.getBuilders();
 //			List<ImageServer<BufferedImage>> serverList = ImageServerProvider.getServerList(pathNew, BufferedImage.class);
-			
+
 			if (builders.isEmpty()) {
 				String message = "Unable to build ImageServer for " + pathNew + ".\nSee View > Show log for more details";
 				Dialogs.showErrorMessage("Unable to build server", message);
@@ -2887,7 +2902,7 @@ public class QuPathGUI {
 			else if (builders.size() == 1) {
 				try {
 					serverNew = builders.get(0).build();
-				} catch (Exception e) {	
+				} catch (Exception e) {
 					logger.error("Error building server: " + e.getLocalizedMessage(), e);
 				}
 			} else {
@@ -2899,8 +2914,9 @@ public class QuPathGUI {
 
 			if (serverNew != null) {
 				if (pathOld != null && prompt && !viewer.getHierarchy().isEmpty()) {
-					if (!Dialogs.showYesNoDialog("Replace open image", "Close " + ServerTools.getDisplayableImageName(server) + "?"))
+					if (!Dialogs.showYesNoDialog("Replace open image", "Close " + ServerTools.getDisplayableImageName(server) + "?")) {
 						return false;
+					}
 				}
 				ImageData<BufferedImage> imageData = null;
 				if (serverNew != null) {
@@ -2924,26 +2940,29 @@ public class QuPathGUI {
 										"QuPath works best with large images saved in a pyramidal format.\n\n" +
 										"Do you want to generate a pyramid dynamically from " + ServerTools.getDisplayableImageName(serverNew) + "?" +
 										"\n(This requires more memory, but is usually worth it)");
-								if (response == DialogButton.CANCEL)
+								if (response == DialogButton.CANCEL) {
 									return false;
-								if (response == DialogButton.YES)
+								}
+								if (response == DialogButton.YES) {
 									serverNew = serverWrapped;
+								}
 							}
 						}
 					}
 					imageData = createNewImageData(serverNew);
 				}
-				ImageData imageData1 = ConcatChannelsABI.concatDuplicateChannels(imageData);
-				viewer.setImageData(imageData1);
+				viewer.setImageData(imageData);
 //				setInitialLocationAndMagnification(viewer);
 
-				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT)
+				if (imageData.getImageType() == ImageType.UNSET && PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.PROMPT) {
 					ImageDetailsPane.promptToSetImageType(imageData);
+				}
+
 
 //				// Reset the object hierarchy to clear any ROIs etc.
 //				hierarchy.clearAll();
 //				hierarchy.getSelectionModel().resetSelection();
-				
+
 				return true;
 			} else {
 				// Show an error message if we can't open the file
@@ -2953,15 +2972,13 @@ public class QuPathGUI {
 		}
 		return false;
 	}
-	
 
-	
 	/**
 	 * Create a new {@link ImageData} from the specified server.
 	 * @param server
 	 * @return
 	 */
-	private ImageData<BufferedImage> createNewImageData(final ImageServer<BufferedImage> server) {
+	public ImageData<BufferedImage> createNewImageData(final ImageServer<BufferedImage> server) {
 		return createNewImageData(server, PathPrefs.imageTypeSettingProperty().get() == ImageTypeSetting.AUTO_ESTIMATE);
 	}
 	

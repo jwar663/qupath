@@ -640,6 +640,10 @@ class Menus {
 				+ "This enables changing how the image is displayed, but not the image data itself.")
 		public final Action BRIGHTNESS_CONTRAST = actionManager.BRIGHTNESS_CONTRAST;
 		public final Action SEP_1 = ActionTools.createSeparator();
+		@ActionDescription("Show the brightness/contrast dialog. "
+				+ "This enables changing how the image is displayed, but not the image data itself.")
+		public final Action DUPLICATE_MATRIX = actionManager.DUPLICATE_MATRIX;
+		public final Action SEP_10 = ActionTools.createSeparator();
 		
 		@ActionDescription("Synchronize panning and zooming when working with images open in multiple viewers.")
 		public final Action TOGGLE_SYNCHRONIZE_VIEWERS = actionManager.TOGGLE_SYNCHRONIZE_VIEWERS;
