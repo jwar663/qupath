@@ -289,6 +289,74 @@ public class DuplicateMatrixCommand implements Runnable {
         return "#" + redValue + greenValue + blueValue;
     }
 
+    protected BorderPane createOverallPane() {
+        BorderPane overallPane = new BorderPane();
+        overallPane.setPrefSize(OVERALL_WIDTH, OVERALL_HEIGHT);
+        return overallPane;
+    }
+
+    protected GridPane createThresholdPane() {
+        GridPane thresholdPane = new GridPane();
+        thresholdPane.setPadding(new Insets(10,10,10,10));
+        thresholdPane.setPrefSize(THRESHOLD_WIDTH, THRESHOLD_HEIGHT);
+        return thresholdPane;
+    }
+
+    protected Label createThresholdLabel(String label) {
+        Label thresholdLabel = new Label(label);
+        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT);
+        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT);
+        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT);
+        GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
+        return thresholdLabel;
+    }
+
+    protected TextField createThresholdTextField() {
+        TextField thresholdTextField = new TextField(START_THRESHOLD);
+        thresholdTextField.setPrefSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
+        thresholdTextField.setMinSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
+        thresholdTextField.setMaxSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
+        GridPane.setHalignment(thresholdTextField, HPos.CENTER);
+        thresholdTextField.setTooltip(new Tooltip("Select a value between -1.0 and 1.0"));
+
+        return thresholdTextField;
+    }
+
+    protected Button createThresholdConfirm() {
+        Button thresholdConfirm = new Button("Submit");
+        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+
+        return thresholdConfirm;
+    }
+
+    protected Button createThresholdPreview(String label) {
+        Button thresholdPreview = new Button(label);
+        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        GridPane.setHalignment(thresholdPreview, HPos.CENTER);
+        if(label.equals("Preview")) {
+            thresholdPreview.setTooltip(new Tooltip("Show only the distinct channels with the selected threshold value"));
+        } else {
+            thresholdPreview.setTooltip(new Tooltip("Go back to the previous window"));
+        }
+        return thresholdPreview;
+    }
+
+    protected HBox createImageHBox() {
+        HBox imageHBox = new HBox();
+        imageHBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageHBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageHBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
+        imageHBox.setSpacing(10.0);
+        imageHBox.setPadding(new Insets(0,0,0,10));
+        BorderPane.setAlignment(imageHBox, Pos.BOTTOM_CENTER);
+        return imageHBox;
+    }
+
 
     protected Stage createDialog() throws IOException, NullPointerException {
 
@@ -320,14 +388,11 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //larger panes
 
-        BorderPane overallPane = new BorderPane();
-        overallPane.setPrefSize(OVERALL_WIDTH, OVERALL_HEIGHT);
+        BorderPane overallPane = createOverallPane();
 
-        GridPane thresholdPane = new GridPane();
-        thresholdPane.setPadding(new Insets(10,10,10,10));
-        thresholdPane.setPrefSize(THRESHOLD_WIDTH, THRESHOLD_HEIGHT);
-        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH
-        );
+
+        GridPane thresholdPane = createThresholdPane();
+        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH);
         ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
         ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
@@ -335,21 +400,9 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //Threshold Part
-        Label thresholdLabel = new Label("Please enter a threshold value:");
-        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT);
-        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT);
-        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
-        TextField thresholdTextField = new TextField(START_THRESHOLD);
-        thresholdTextField.setPrefSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
-        thresholdTextField.setMinSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
-        thresholdTextField.setMaxSize(THRESHOLD_TEXT_FIELD_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdTextField, HPos.CENTER);
-        Button thresholdConfirm = new Button("Submit");
-        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdConfirm.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+        Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
+        TextField thresholdTextField = createThresholdTextField();
+        Button thresholdConfirm = createThresholdConfirm();
         thresholdConfirm.setOnAction(event -> {
             thresholdValue = thresholdTextField.getText();
             try{
@@ -374,11 +427,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 createInvalidInputStage(dialog).showAndWait();
             }
         });
-        Button thresholdPreview = new Button("Preview");
-        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdConfirm, HPos.CENTER);
+        Button thresholdPreview = createThresholdPreview("Preview");
         thresholdPreview.setOnAction(event -> {
             Stage previewDialog;
             ArrayList<Integer> distinctPreviewChannels;
@@ -415,13 +464,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //preview image section
-        HBox imageScrollBox = new HBox();
-        imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageScrollBox.setSpacing(10.0);
-        imageScrollBox.setPadding(new Insets(0,0,0,10));
-        BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
+        HBox imageScrollBox = createImageHBox();
 
         VBox image1ScrollVBox = new VBox();
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -484,13 +527,7 @@ public class DuplicateMatrixCommand implements Runnable {
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
-        HBox imageThumbnailBox = new HBox();
-        imageThumbnailBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
-        imageThumbnailBox.setSpacing(10.0);
-        imageThumbnailBox.setPadding(new Insets(0,0,0,10));
+        HBox imageThumbnailBox = createImageHBox();
         VBox image1ThumbnailVBox = new VBox();
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -672,10 +709,8 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.setCenter(matrixBorder);
 
         //tooltips
-        thresholdTextField.setTooltip(new Tooltip("Select a value between -1.0 and 1.0"));
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-        thresholdPreview.setTooltip(new Tooltip("Show only the distinct channels with the selected threshold value"));
         thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
@@ -697,12 +732,9 @@ public class DuplicateMatrixCommand implements Runnable {
 
         //larger panes
 
-        BorderPane overallPane = new BorderPane();
-        overallPane.setPrefSize(OVERALL_WIDTH, OVERALL_HEIGHT);
+        BorderPane overallPane = createOverallPane();
 
-        GridPane thresholdPane = new GridPane();
-        thresholdPane.setPadding(new Insets(10,10,5,10));
-        thresholdPane.setPrefSize(THRESHOLD_WIDTH, THRESHOLD_HEIGHT);
+        GridPane thresholdPane = createThresholdPane();
         ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH
         );
         ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
@@ -712,11 +744,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //Threshold Part
-        Label thresholdLabel = new Label("Threshold value selected: " + String.format("%.2f", thresholdValue));
-        thresholdLabel.setPrefHeight(THRESHOLD_HEIGHT);
-        thresholdLabel.setMinHeight(THRESHOLD_HEIGHT);
-        thresholdLabel.setMaxHeight(THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdLabel, HPos.RIGHT);
+        Label thresholdLabel = createThresholdLabel("Threshold value selected: " + String.format("%.2f", thresholdValue));
 //        Button thresholdConfirm = new Button("Submit");
 //        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
 //        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
@@ -735,11 +763,7 @@ public class DuplicateMatrixCommand implements Runnable {
 //            duplicateDialog.close();
 //            previewDialog.close();
 //        });
-        Button thresholdPreview = new Button("End Preview");
-        thresholdPreview.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdPreview.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        thresholdPreview.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
-        GridPane.setHalignment(thresholdPreview, HPos.CENTER);
+        Button thresholdPreview = createThresholdPreview("End Preview");
         thresholdPreview.setOnAction(event -> {
             previewDialog.close();
         });
@@ -753,13 +777,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //preview image section
-        HBox imageScrollBox = new HBox();
-        imageScrollBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageScrollBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageScrollBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        BorderPane.setAlignment(imageScrollBox, Pos.BOTTOM_CENTER);
-        imageScrollBox.setSpacing(10.0);
-        imageScrollBox.setPadding(new Insets(0,0,0,10));
+        HBox imageScrollBox = createImageHBox();
 
         VBox image1ScrollVBox = new VBox();
         image1ScrollVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -822,13 +840,7 @@ public class DuplicateMatrixCommand implements Runnable {
         image2ScrollVBox.getChildren().addAll(image2ScrollLabel, image2ScrollPane);
         Tab scrollTab = new Tab("Scroll", imageScrollBox);
 
-        HBox imageThumbnailBox = new HBox();
-        imageThumbnailBox.setPrefSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageThumbnailBox.setMaxSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        imageThumbnailBox.setMinSize(IMAGE_HBOX_WIDTH, IMAGE_HBOX_HEIGHT);
-        BorderPane.setAlignment(imageThumbnailBox, Pos.BOTTOM_CENTER);
-        imageThumbnailBox.setSpacing(10.0);
-        imageThumbnailBox.setPadding(new Insets(0,0,0,10));
+        HBox imageThumbnailBox = createImageHBox();
         VBox image1ThumbnailVBox = new VBox();
         image1ThumbnailVBox.setPrefSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
         image1ThumbnailVBox.setMaxSize(IMAGE_VBOX_WIDTH, IMAGE_VBOX_HEIGHT);
@@ -1014,7 +1026,6 @@ public class DuplicateMatrixCommand implements Runnable {
         //tooltips
         scrollTab.setTooltip(new Tooltip("View real size image with scroll"));
         thumbnailTab.setTooltip(new Tooltip("View a thumbnail of the real image"));
-        thresholdPreview.setTooltip(new Tooltip("Go back to the previous window"));
 //        thresholdConfirm.setTooltip(new Tooltip("Apply this threshold value to project"));
 
 
