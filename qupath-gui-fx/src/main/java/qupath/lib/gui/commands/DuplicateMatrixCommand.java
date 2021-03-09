@@ -236,18 +236,21 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewMatrix;
     }
 
-    public static void bindImages(ScrollPane image1Scroll, ImageView image2, ScrollPane image2Scroll, ImageView image1) {
+    public static void bindImages(ScrollPane image1Scroll, ImageView image2) {
         image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
         });
         image1Scroll.hvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setLeftAnchor(image2, ((image2.getImage().getWidth() - image1Scroll.getWidth()) * newValue.doubleValue()) * -1.0);
         });
-        image2Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setTopAnchor(image1, ((image1.getImage().getHeight() - image2Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
-        });
-        image2Scroll.hvalueProperty().addListener((ov, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(image1, ((image1.getImage().getWidth() - image2Scroll.getWidth()) * newValue.doubleValue()) * -1.0);
+    }
+
+    public static void counterMouseWheel(ScrollPane labelScroll) {
+        labelScroll.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
+            @Override
+            public void handle(ScrollEvent scrollEvent) {
+                scrollEvent.consume();
+            }
         });
     }
 
@@ -469,6 +472,7 @@ public class DuplicateMatrixCommand implements Runnable {
             horizontalLabelConfinePane.setMaxSize(size * BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
         }
         horizontalLabelConfinePane.setMinSize(BUTTON_WIDTH + BUTTON_LABEL_HEIGHT, MATRIX_LABELS_HORIZONTAL_HEIGHT);
+        counterMouseWheel(horizontalLabelConfinePane);
         return horizontalLabelConfinePane;
     }
 
@@ -483,6 +487,7 @@ public class DuplicateMatrixCommand implements Runnable {
             verticalLabelConfinePane.setMaxSize(MATRIX_LABELS_VERTICAL_WIDTH, size * BUTTON_LABEL_HEIGHT);
         }
         verticalLabelConfinePane.setMinSize(MATRIX_LABELS_VERTICAL_WIDTH, BUTTON_LABEL_HEIGHT);
+        counterMouseWheel(verticalLabelConfinePane);
         return verticalLabelConfinePane;
     }
 
@@ -500,8 +505,6 @@ public class DuplicateMatrixCommand implements Runnable {
         ScrollPane matrixScrollPane = new ScrollPane();
         matrixScrollPane.setStyle("-fx-font-size: " + SCROLL_BAR_FONT_SIZE + "px");
         matrixScrollPane.setPrefSize(size * BUTTON_WIDTH, size * BUTTON_LABEL_HEIGHT);
-        System.out.println("height: " + size * BUTTON_LABEL_HEIGHT);
-        System.out.println("width: " + size * BUTTON_WIDTH);
         if(size * BUTTON_WIDTH > MATRIX_SCROLL_WIDTH) {
             if(size * BUTTON_LABEL_HEIGHT > MATRIX_SCROLL_HEIGHT) {
                 matrixScrollPane.setMaxSize(MATRIX_SCROLL_WIDTH, MATRIX_SCROLL_HEIGHT);
@@ -793,7 +796,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setCenter(matrixScrollPane);
         matrixBorder.setLeft(verticalLabelScroll);
 
-        bindImages(image1ScrollPane, imageScrollView2, image2ScrollPane, imageScrollView1);
+        bindImages(image1ScrollPane, imageScrollView2);
+        bindImages(image2ScrollPane, imageScrollView1);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
@@ -980,7 +984,8 @@ public class DuplicateMatrixCommand implements Runnable {
         matrixBorder.setCenter(matrixScrollPane);
         matrixBorder.setLeft(verticalLabelScroll);
 
-        bindImages(image1ScrollPane, imageScrollView2, image2ScrollPane, imageScrollView1);
+        bindImages(image1ScrollPane, imageScrollView2);
+        bindImages(image2ScrollPane, imageScrollView1);
         bindMatrixToHeaders(matrixScrollPane, horizontalLabelPane, verticalLabelPane, size);
 
         matrixScrollPane.setContent(matrix);
