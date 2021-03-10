@@ -282,7 +282,8 @@ allprojects {
 
   dependencies {
 
-    jts "org.locationtech.jts:jts-core:${jtsVersion}"
+    implementation 'junit:junit:4.12'
+      jts "org.locationtech.jts:jts-core:${jtsVersion}"
     // Optionally add GeoJSON support (brings in json-simple as sub-dependency)
     // However, the use of simple-json is troublesome since it brings in an old version of junit
 //   jts "org.locationtech.jts.io:jts-io-common:${jtsVersion}"
