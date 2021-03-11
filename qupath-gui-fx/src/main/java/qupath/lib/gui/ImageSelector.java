@@ -21,6 +21,7 @@ public class ImageSelector {
      */
     public List<ImageData<BufferedImage>> initialiseImageDataList(ImageData<BufferedImage> firstImageData) {
         this.imageDataList.add(firstImageData);
+        //TODO: update GUI when image is added
         return imageDataList;
     }
 
@@ -30,10 +31,21 @@ public class ImageSelector {
 
     public void addImage(ImageData<BufferedImage> imageData) {
         this.imageDataList.add(imageData);
+        //TODO: update GUI when image is added
     }
 
     public void setAsActiveImage(ImageData<BufferedImage> imageData, QuPathViewer viewer) {
         viewer.setImageData(imageData);
+        //TODO: update GUI when image is selected
     }
 
+    public boolean deleteImageFromList(ImageData<BufferedImage> imageData) {
+        boolean didDelete = false;
+        if(this.imageDataList.contains(imageData)) {
+            this.imageDataList.remove(imageData);
+            didDelete = true;
+            //TODO: update GUI when image is deleted
+        }
+        return didDelete;
+    }
 }
