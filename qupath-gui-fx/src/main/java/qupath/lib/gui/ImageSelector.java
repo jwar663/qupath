@@ -79,4 +79,13 @@ public class ImageSelector {
     public boolean checkIfDuplicateImage(ImageData<BufferedImage> imageData) {
         return this.imageDataList.contains(imageData);
     }
+
+
+    /**
+     * Check if the image list of image data has already been initialised.
+     *
+     */
+    public boolean checkIfImageListInitialised() {
+        return !(imageDataList == null);
+    }
 }
