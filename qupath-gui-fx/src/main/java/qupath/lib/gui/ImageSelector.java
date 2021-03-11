@@ -1,7 +1,9 @@
 package qupath.lib.gui;
 
+import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 
@@ -12,22 +14,26 @@ import java.util.List;
  */
 public class ImageSelector {
 
-    private List<ImageData> imageDataList = null;
+    private List<ImageData<BufferedImage>> imageDataList = null;
 
     /**
      * Return the list of image data when the first image is opened.
      */
-    public List<ImageData> initialiseImageDataList(ImageData firstImageData) {
+    public List<ImageData<BufferedImage>> initialiseImageDataList(ImageData<BufferedImage> firstImageData) {
         this.imageDataList.add(firstImageData);
         return imageDataList;
     }
 
-    public List<ImageData> getImageDataList() {
+    public List<ImageData<BufferedImage>> getImageDataList() {
         return this.imageDataList;
     }
 
-    public void addImage(ImageData imageData) {
+    public void addImage(ImageData<BufferedImage> imageData) {
         this.imageDataList.add(imageData);
+    }
+
+    public void setAsActiveImage(ImageData<BufferedImage> imageData, QuPathViewer viewer) {
+        viewer.setImageData(imageData);
     }
 
 }
