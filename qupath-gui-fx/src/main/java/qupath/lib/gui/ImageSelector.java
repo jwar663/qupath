@@ -4,6 +4,7 @@ import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -14,15 +15,15 @@ import java.util.List;
  */
 public class ImageSelector {
 
-    private List<ImageData<BufferedImage>> imageDataList = null;
+    private static List<ImageData<BufferedImage>> imageDataList = new ArrayList<ImageData<BufferedImage>>();
 
     /**
      * Return the list of image data when the first image is opened.
      *
      * @param firstImageData
      */
-    public List<ImageData<BufferedImage>> initialiseImageDataList(ImageData<BufferedImage> firstImageData) {
-        this.imageDataList.add(firstImageData);
+    public static List<ImageData<BufferedImage>> initialiseImageDataList(ImageData<BufferedImage> firstImageData) {
+        imageDataList.add(firstImageData);
         //TODO: update GUI when image is added
         return imageDataList;
     }
@@ -31,8 +32,8 @@ public class ImageSelector {
      * Return the current list of image data objects.
      *
      */
-    public List<ImageData<BufferedImage>> getImageDataList() {
-        return this.imageDataList;
+    public static List<ImageData<BufferedImage>> getImageDataList() {
+        return imageDataList;
     }
 
     /**
@@ -40,8 +41,8 @@ public class ImageSelector {
      *
      * @param imageData
      */
-    public void addImage(ImageData<BufferedImage> imageData) {
-        this.imageDataList.add(imageData);
+    public static void addImage(ImageData<BufferedImage> imageData) {
+        imageDataList.add(imageData);
         //TODO: update GUI when image is added
     }
 
@@ -51,7 +52,7 @@ public class ImageSelector {
      * @param imageData
      * @param
      */
-    public void setAsActiveImage(ImageData<BufferedImage> imageData, QuPathViewer viewer) {
+    public static void setAsActiveImage(ImageData<BufferedImage> imageData, QuPathViewer viewer) {
         viewer.setImageData(imageData);
         //TODO: update GUI when image is selected
     }
@@ -61,10 +62,10 @@ public class ImageSelector {
      *
      * @param imageData
      */
-    public boolean deleteImageFromList(ImageData<BufferedImage> imageData) {
+    public static boolean deleteImageFromList(ImageData<BufferedImage> imageData) {
         boolean didDelete = false;
-        if(this.imageDataList.contains(imageData)) {
-            this.imageDataList.remove(imageData);
+        if(imageDataList.contains(imageData)) {
+            imageDataList.remove(imageData);
             didDelete = true;
             //TODO: update GUI when image is deleted
         }
@@ -76,8 +77,8 @@ public class ImageSelector {
      *
      * @param imageData
      */
-    public boolean checkIfDuplicateImage(ImageData<BufferedImage> imageData) {
-        return this.imageDataList.contains(imageData);
+    public static boolean checkIfDuplicateImage(ImageData<BufferedImage> imageData) {
+        return imageDataList.contains(imageData);
     }
 
 
@@ -85,7 +86,7 @@ public class ImageSelector {
      * Check if the image list of image data has already been initialised.
      *
      */
-    public boolean checkIfImageListInitialised() {
-        return !(imageDataList == null);
+    public static boolean checkIfImageListInitialised() {
+        return !imageDataList.isEmpty();
     }
 }
