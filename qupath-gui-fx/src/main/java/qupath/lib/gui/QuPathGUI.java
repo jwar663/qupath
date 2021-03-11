@@ -2806,7 +2806,6 @@ public class QuPathGUI {
 	 */
 	public boolean openImage(QuPathViewer viewer, String pathNew, boolean prompt, boolean includeURLs) throws IOException {
 
-
 		if (viewer == null) {
 			if (getViewers().size() == 1) {
 				viewer = getViewer();
@@ -2958,7 +2957,16 @@ public class QuPathGUI {
 					ImageDetailsPane.promptToSetImageType(imageData);
 				}
 
-
+				//Added for image select
+				if(!ImageSelector.checkIfImageListInitialised()) {
+					System.out.println("before: " + ImageSelector.checkIfImageListInitialised());
+					ImageSelector.initialiseImageDataList(imageData);
+					System.out.println("after: " + ImageSelector.checkIfImageListInitialised());
+				} else {
+					System.out.println("before: " + ImageSelector.checkIfImageListInitialised());
+					ImageSelector.addImage(imageData);
+					System.out.println("after: " + ImageSelector.checkIfImageListInitialised());
+				}
 //				// Reset the object hierarchy to clear any ROIs etc.
 //				hierarchy.clearAll();
 //				hierarchy.getSelectionModel().resetSelection();
