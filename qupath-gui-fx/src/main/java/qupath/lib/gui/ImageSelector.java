@@ -48,4 +48,8 @@ public class ImageSelector {
         }
         return didDelete;
     }
+
+    public boolean checkIfDuplicateImage(ImageData<BufferedImage> imageData) {
+        return this.imageDataList.contains(imageData);
+    }
 }
