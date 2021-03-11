@@ -18,6 +18,8 @@ public class ImageSelector {
 
     /**
      * Return the list of image data when the first image is opened.
+     *
+     * @param firstImageData
      */
     public List<ImageData<BufferedImage>> initialiseImageDataList(ImageData<BufferedImage> firstImageData) {
         this.imageDataList.add(firstImageData);
@@ -25,20 +27,40 @@ public class ImageSelector {
         return imageDataList;
     }
 
+    /**
+     * Return the current list of image data objects.
+     *
+     */
     public List<ImageData<BufferedImage>> getImageDataList() {
         return this.imageDataList;
     }
 
+    /**
+     * Add an image to the list of image data.
+     *
+     * @param imageData
+     */
     public void addImage(ImageData<BufferedImage> imageData) {
         this.imageDataList.add(imageData);
         //TODO: update GUI when image is added
     }
 
+    /**
+     * Specify the image to be set as the current image.
+     *
+     * @param imageData
+     * @param
+     */
     public void setAsActiveImage(ImageData<BufferedImage> imageData, QuPathViewer viewer) {
         viewer.setImageData(imageData);
         //TODO: update GUI when image is selected
     }
 
+    /**
+     * Delete the specified image from the list of image data.
+     *
+     * @param imageData
+     */
     public boolean deleteImageFromList(ImageData<BufferedImage> imageData) {
         boolean didDelete = false;
         if(this.imageDataList.contains(imageData)) {
@@ -49,6 +71,11 @@ public class ImageSelector {
         return didDelete;
     }
 
+    /**
+     * Check if the image is already included in the list of image data.
+     *
+     * @param imageData
+     */
     public boolean checkIfDuplicateImage(ImageData<BufferedImage> imageData) {
         return this.imageDataList.contains(imageData);
     }
