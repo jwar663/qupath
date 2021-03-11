@@ -12,13 +12,22 @@ import java.util.List;
  */
 public class ImageSelector {
 
+    private List<ImageData> imageDataList = null;
+
     /**
      * Return the list of image data when the first image is opened.
      */
     public List<ImageData> initialiseImageDataList(ImageData firstImageData) {
-        List<ImageData> imageDataList = null;
-        imageDataList.add(firstImageData);
+        this.imageDataList.add(firstImageData);
         return imageDataList;
+    }
+
+    public List<ImageData> getImageDataList() {
+        return this.imageDataList;
+    }
+
+    public void addImage(ImageData imageData) {
+        this.imageDataList.add(imageData);
     }
 
 }
