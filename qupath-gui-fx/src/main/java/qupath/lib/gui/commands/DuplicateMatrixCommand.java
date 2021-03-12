@@ -634,12 +634,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     dialog.close();
                 }
                 try {
-                    //only open image normally if it is not part of a project
-                    if(qupath.getProject().getImageList().isEmpty()) {
-                        qupath.openImage(viewer, filePath + ".tif", false, false);
-                    } else {
-                    }
-
+                    qupath.openImage(viewer, filePath + ".tif", false, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
