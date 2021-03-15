@@ -23,20 +23,19 @@
 
 package qupath.lib.gui.commands;
 
-import javafx.scene.layout.*;
-
 import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.viewer.QuPathViewer;
 
 /**
- * Command to prompt the user to import images that will create an image stack
+ * Command to prompt the user to open a project that already contains a stack.
  *
  * @author Jaedyn Ward
  *
  */
-public class ImportImageStackCommand implements Runnable {
+public class OpenStackProjectCommand implements Runnable {
 
 	private QuPathGUI qupath;
 	private QuPathViewer viewer;
@@ -48,7 +47,7 @@ public class ImportImageStackCommand implements Runnable {
 	 * Constructor.
 	 * @param qupath
 	 */
-	public ImportImageStackCommand(final QuPathGUI qupath) {
+	public OpenStackProjectCommand(final QuPathGUI qupath) {
 		this.qupath = qupath;
 		this.viewer = qupath.getViewer();
 	}
@@ -57,7 +56,7 @@ public class ImportImageStackCommand implements Runnable {
 
 		Stage dialog = new Stage();
 		dialog.initOwner(qupath.getStage());
-		dialog.setTitle("Import Image Stack");
+		dialog.setTitle("Open Stack Project");
 		Pane overallPane = new Pane();
 
 		Scene scene = new Scene(overallPane, 300, 300);

@@ -159,7 +159,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import jfxtras.scene.menu.CirclePopupMenu;
-import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.common.ThreadTools;
 import qupath.lib.gui.ActionTools.ActionAccelerator;
@@ -524,10 +523,21 @@ public class QuPathGUI {
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
-		 * Show the Duplicate Matrix dialog.
+		 * Show the Create Image Stack dialog.
 		 */
 		@ActionAccelerator("shortcut+w")
-		public final Action IMPORT_STACK = ActionTools.createAction(new ImportImageStackCommand(QuPathGUI.this), "Import Image Stack");
+		public final Action CREATE_STACK = ActionTools.createAction(new CreateImageStackCommand(QuPathGUI.this), "Create Image Stack");
+
+		/**
+		 * Show the Create Image Stack dialog.
+		 */
+		@ActionAccelerator("shortcut+e")
+		public final Action OPEN_STACK = ActionTools.createAction(new OpenStackCommand(QuPathGUI.this), "Open Stack");
+		/**
+		 * Show the Create Image Stack dialog.
+		 */
+		@ActionAccelerator("shortcut+r")
+		public final Action OPEN_STACK_PROJECT = ActionTools.createAction(new OpenStackProjectCommand(QuPathGUI.this), "Open Stack Project");
 
 		/**
 		 * Toggle the image overview display on the viewers.

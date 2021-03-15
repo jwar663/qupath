@@ -354,10 +354,23 @@ class Menus {
 		@ActionAccelerator("shortcut+shift+o")
 		public final Action OPEN_IMAGE_OR_URL = createAction(() -> qupath.openImage(null, true, true));
 
-		@ActionDescription("Open a collection of images as a stack.")
-		@ActionMenu("Import Stack...")
+		@ActionMenu("Stack...>")
+		public final Action SEP_STACK= ActionTools.createSeparator();
+
+		@ActionDescription("Create a stack from a collection of images")
+		@ActionMenu("Stack...>Create Stack")
 		@ActionAccelerator("shortcut+w")
-		public final Action OPEN_STACK = actionManager.IMPORT_STACK;
+		public final Action CREATE_STACK = actionManager.CREATE_STACK;
+
+		@ActionDescription("Open a stack from a singular .tif file")
+		@ActionMenu("Stack...>Open Stack")
+		@ActionAccelerator("shortcut+e")
+		public final Action OPEN_STACK = actionManager.OPEN_STACK;
+
+		@ActionDescription("Open a stack from a singular .tif file")
+		@ActionMenu("Stack...>Open Stack Project")
+		@ActionAccelerator("shortcut+r")
+		public final Action OPEN_STACK_PROJECT = actionManager.OPEN_STACK_PROJECT;
 
 		@ActionDescription("Reload any previously-saved data for the current image. " +
 				"This provides a more dramatic form of 'undo' (albeit without any 'redo' option).")
