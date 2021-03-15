@@ -26,8 +26,12 @@ package qupath.lib.gui.commands;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
+
+import java.io.File;
 
 /**
  * Command to prompt the user to open a single image that could be a stack.
@@ -53,7 +57,14 @@ public class OpenStackCommand implements Runnable {
 	}
 
 	protected Stage createDialog() {
+		File pathNew = Dialogs.promptForFile("Choose file", null, "TIFF", new String[] {".tif", ".tiff"});
+		if(pathNew == null) {
 
+		} else if(!GeneralTools.getExtension(pathNew).equals(".tif") && !GeneralTools.getExtension(pathNew).equals(".tiff")) {
+			Dialogs.showErrorMessage("Error", "Please choose a TIFF file");
+			pathNew = Dialogs.promptForFile("Choose file", null, "TIFF", new String[] {".tif", ".tiff"});
+		}
+		System.out.println(pathNew);
 		Stage dialog = new Stage();
 		dialog.initOwner(qupath.getStage());
 		dialog.setTitle("Open Stack");
