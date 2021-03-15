@@ -132,7 +132,7 @@ import qupath.lib.scripting.QP;
 public class Commands {
 	
 	private static Logger logger = LoggerFactory.getLogger(Commands.class);
-	
+
 	/**
 	 * Insert the selected objects in the hierarchy, resolving positions accordingly.
 	 * <p>

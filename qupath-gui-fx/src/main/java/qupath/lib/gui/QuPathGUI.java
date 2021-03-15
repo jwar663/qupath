@@ -524,6 +524,12 @@ public class QuPathGUI {
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
+		 * Show the Duplicate Matrix dialog.
+		 */
+		@ActionAccelerator("shortcut+w")
+		public final Action IMPORT_STACK = ActionTools.createAction(new ImportImageStackCommand(QuPathGUI.this), "Import Image Stack");
+
+		/**
 		 * Toggle the image overview display on the viewers.
 		 */
 		@ActionIcon(PathIcons.OVERVIEW)

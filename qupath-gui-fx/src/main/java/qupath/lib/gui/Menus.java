@@ -353,7 +353,12 @@ class Menus {
 		@ActionMenu("Open URI...")
 		@ActionAccelerator("shortcut+shift+o")
 		public final Action OPEN_IMAGE_OR_URL = createAction(() -> qupath.openImage(null, true, true));
-		
+
+		@ActionDescription("Open a collection of images as a stack.")
+		@ActionMenu("Import Stack...")
+		@ActionAccelerator("shortcut+w")
+		public final Action OPEN_STACK = actionManager.IMPORT_STACK;
+
 		@ActionDescription("Reload any previously-saved data for the current image. " +
 				"This provides a more dramatic form of 'undo' (albeit without any 'redo' option).")
 		@ActionMenu("Reload data")
@@ -640,8 +645,7 @@ class Menus {
 				+ "This enables changing how the image is displayed, but not the image data itself.")
 		public final Action BRIGHTNESS_CONTRAST = actionManager.BRIGHTNESS_CONTRAST;
 		public final Action SEP_1 = ActionTools.createSeparator();
-		@ActionDescription("Show the brightness/contrast dialog. "
-				+ "This enables changing how the image is displayed, but not the image data itself.")
+		@ActionDescription("Show the duplicate matrix dialog. ")
 		public final Action DUPLICATE_MATRIX = actionManager.DUPLICATE_MATRIX;
 		public final Action SEP_10 = ActionTools.createSeparator();
 		
