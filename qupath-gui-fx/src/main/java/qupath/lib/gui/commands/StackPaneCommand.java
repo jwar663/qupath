@@ -23,18 +23,23 @@
 
 package qupath.lib.gui.commands;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import qupath.lib.gui.QuPathGUI;
-import qupath.lib.gui.viewer.QuPathViewer;
-import qupath.lib.projects.Project;
 
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 /**
- * Command to show the pane of the how to interact with a stack of images.
+ * Open the pane of the how to interact with a stack of images.
  *
  * @author Jaedyn Ward
  *
@@ -42,43 +47,71 @@ import java.awt.image.BufferedImage;
 public class StackPaneCommand implements Runnable {
 
 	private QuPathGUI qupath;
-	private QuPathViewer viewer;
 
 	private Stage dialog;
 
-	private Project<BufferedImage> project;
+	private List<BufferedImage> images;
 
 
 	/**
 	 * Constructor.
 	 * @param qupath
 	 */
-	public StackPaneCommand(final QuPathGUI qupath) {
+	public StackPaneCommand(final QuPathGUI qupath, List<BufferedImage> images) {
 		this.qupath = qupath;
-		this.viewer = qupath.getViewer();
+		this.images = images;
+	}
+
+	protected String getImageLabel(BufferedImage currentImage) {
+		return images.indexOf(currentImage) + "/" + images.size() + "; " + currentImage.getWidth()
+				+ "x" + currentImage.getHeight() + " pixels; " + "-insert image type-" + "; " + "-insert image size-";
 	}
 
 	protected Stage createDialog() {
 
-		project = qupath.getProject();
+		//project = qupath.getProject();
 		Stage dialog = new Stage();
+		String imageLabel = getImageLabel(images.get(0));
+		dialog.initOwner(qupath.getStage());
+		dialog.setTitle("Stack Viewer");
+		BorderPane overallPane = new BorderPane();
 
-		if(project.isEmpty()) {
-			dialog.close();
-		} else {
-			dialog.initOwner(qupath.getStage());
-			dialog.setTitle("Image Viewer");
-			BorderPane overallPane = new BorderPane();
+		Pane labelPane = new Pane();
+
+		Label label = new Label(imageLabel);
+
+		labelPane.getChildren().add(label);
+
+		Pane imagePane = new Pane();
+		ScrollBar scroll = new ScrollBar();
+		scroll.setMin(0);
+		scroll.setMax(images.size());
+		scroll.setValue(0);
+
+		ImageView imageView = new ImageView();
+
+		imageView.setImage(SwingFXUtils.toFXImage(images.get(0), null));
+
+		imagePane.getChildren().add(imageView);
 
 
 
-			Scene scene = new Scene(overallPane, 300, 300);
-			dialog.setScene(scene);
-			dialog.setMinWidth(300);
-			dialog.setMinHeight(300);
-			dialog.setMaxWidth(300);
-			dialog.setMaxHeight(300);
-		}
+		scroll.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov,
+								Number old_val, Number new_val) {
+				imageView.setImage(SwingFXUtils.toFXImage(images.get(new_val.intValue()), null));
+				label.setText(getImageLabel(images.get(new_val.intValue())));
+			}
+		});
+
+
+		Scene scene = new Scene(overallPane, 300, 300);
+		dialog.setScene(scene);
+		dialog.setMinWidth(300);
+		dialog.setMinHeight(300);
+		dialog.setMaxWidth(300);
+		dialog.setMaxHeight(300);
+
 		return dialog;
 	}
 
