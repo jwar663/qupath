@@ -532,7 +532,8 @@ public class QuPathGUI {
 		 * Show the Create Image Stack dialog.
 		 */
 		@ActionAccelerator("shortcut+e")
-		public final Action OPEN_STACK = ActionTools.createAction(new OpenStackCommand(QuPathGUI.this), "Open Stack");
+		//public final Action OPEN_STACK = ActionTools.createAction(new OpenStackCommand(QuPathGUI.this), "Open Stack");
+		public final Action OPEN_STACK = ActionTools.createAction(new StackPaneCommand(QuPathGUI.this), "Open Stack");
 		/**
 		 * Show the Create Image Stack dialog.
 		 */
