@@ -396,6 +396,22 @@ public class QuPathGUI {
 		action.disabledProperty().bind(noProject);
 		return action;
 	}
+
+	public Action createStackAction(Consumer<Project<BufferedImage>> command) {
+		var action = new Action(e -> {
+			var project = getProject();
+			if (project == null) {
+				Dialogs.showNoProjectError("No project");
+			} else if(project.isEmpty()) {
+				Dialogs.showErrorMessage("No Images", "Please add an image to open a stack");
+			} else {
+				command.accept(project);
+			}
+		});
+		action.disabledProperty().bind(noProject);
+		return action;
+	}
+
 	
 	/**
 	 * Install the specified actions. It is assumed that these have been configured via {@link ActionTools}, 
@@ -412,6 +428,7 @@ public class QuPathGUI {
 		var menuMap = new HashMap<String, Menu>();
 		
 		for (var action : actions) {
+			System.out.println("action: " + action.getText());
 			var menuString = action.getProperties().get("MENU");
 			if (menuString instanceof String) {
 				var menu = menuMap.computeIfAbsent((String)menuString, s -> MenuTools.getMenu(menus, s, true));

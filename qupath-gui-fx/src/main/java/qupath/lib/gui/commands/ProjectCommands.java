@@ -45,6 +45,7 @@ import javafx.concurrent.Task;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.prefs.PathPrefs;
+import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData.ImageType;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerProvider;
@@ -87,6 +88,17 @@ public class ProjectCommands {
 	 */
 	public static List<ProjectImageEntry<BufferedImage>> promptToImportImages(QuPathGUI qupath, String... defaultPaths) {
 		return ProjectImportImagesCommand.promptToImportImages(qupath, defaultPaths);
+	}
+
+	public static void promptToToggleStack(QuPathGUI qupath) {
+		QuPathViewer viewer = qupath.getViewer();
+//		if(viewer.isStackViewer()) {
+		//TODO: implement setDefaultViewer()
+//			viewer.setDefaultViewer();
+//		} else {
+		//TODO: implement setStackViewer()
+//			viewer.setStackViewer();
+//		}
 	}
 	
 	/**

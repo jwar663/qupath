@@ -248,15 +248,8 @@ public class ProjectBrowser implements ChangeListener<ImageData<BufferedImage>> 
 		Button btnOpen = ActionTools.createButton(qupath.lookupActionByText("Open project"), false);
 		Button btnCreate = ActionTools.createButton(qupath.lookupActionByText("Create project"), false);
 		Button btnAdd = ActionTools.createButton(qupath.lookupActionByText("Add images"), false);
-		Button btnStack = new Button("Enable Stack");
-		btnStack.setOnAction(e -> {
-			if(btnStack.getText().equals("Enable Stack")) {
-				btnStack.setText("Disable Stack");
-			} else {
-				btnStack.setText("Enable Stack");
-			}
+		Button btnStack = ActionTools.createButton(qupath.lookupActionByText("Toggle stack"), false);
 
-		});
 		GridPane paneButtons = PaneTools.createColumnGridControls(btnCreate, btnOpen, btnAdd, btnStack);
 		paneButtons.prefWidthProperty().bind(panel.widthProperty());
 		paneButtons.setPadding(new Insets(5, 5, 5, 5));

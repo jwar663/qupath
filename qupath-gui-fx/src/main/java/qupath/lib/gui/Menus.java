@@ -304,6 +304,10 @@ class Menus {
 		@ActionMenu("Project...>Add images")
 		public final Action IMPORT_IMAGES = qupath.createProjectAction(project -> ProjectCommands.promptToImportImages(qupath));
 
+		@ActionDescription("Toggle stack with the images currently loaded in the current project")
+		@ActionMenu("Project...>Toggle stack")
+		public final Action TOGGLE_STACK = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+
 		@ActionDescription("Export a list of the image paths for images in the current project.")
 		@ActionMenu("Project...>Export image list")
 		public final Action EXPORT_IMAGE_LIST = qupath.createProjectAction(project -> ProjectCommands.promptToExportImageList(project));	
@@ -362,10 +366,6 @@ class Menus {
 		@ActionAccelerator("shortcut+w")
 		public final Action CREATE_STACK = actionManager.CREATE_STACK;
 
-		@ActionDescription("Open a stack from a singular .tif file")
-		@ActionMenu("Stack...>Open Stack")
-		@ActionAccelerator("shortcut+e")
-		public final Action OPEN_STACK = actionManager.OPEN_STACK;
 
 		@ActionDescription("Open a stack from a singular .tif file")
 		@ActionMenu("Stack...>Open Stack Project")
