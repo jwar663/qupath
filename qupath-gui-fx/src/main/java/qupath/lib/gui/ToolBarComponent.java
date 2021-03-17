@@ -115,8 +115,6 @@ class ToolBarComponent {
 			nodes.add(new Separator(Orientation.VERTICAL));
 
 			nodes.add(ActionTools.createButton(actionManager.BRIGHTNESS_CONTRAST, true));
-
-			nodes.add(ActionTools.createButton(actionManager.DUPLICATE_MATRIX, true));
 			
 			nodes.add(new Separator(Orientation.VERTICAL));
 			
