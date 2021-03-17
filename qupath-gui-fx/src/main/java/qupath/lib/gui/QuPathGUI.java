@@ -408,6 +408,7 @@ public class QuPathGUI {
 				command.accept(project);
 			}
 		});
+		action.setSelected(false);
 		action.disabledProperty().bind(noProject);
 		return action;
 	}

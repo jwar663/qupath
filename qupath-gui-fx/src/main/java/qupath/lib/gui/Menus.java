@@ -304,13 +304,16 @@ class Menus {
 		@ActionMenu("Project...>Add images")
 		public final Action IMPORT_IMAGES = qupath.createProjectAction(project -> ProjectCommands.promptToImportImages(qupath));
 
-		@ActionDescription("Toggle stack with the images currently loaded in the current project")
-		@ActionMenu("Project...>Toggle stack")
-		public final Action TOGGLE_STACK = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
-
 		@ActionDescription("Export a list of the image paths for images in the current project.")
 		@ActionMenu("Project...>Export image list")
-		public final Action EXPORT_IMAGE_LIST = qupath.createProjectAction(project -> ProjectCommands.promptToExportImageList(project));	
+		public final Action EXPORT_IMAGE_LIST = qupath.createProjectAction(project -> ProjectCommands.promptToExportImageList(project));
+
+		@ActionMenu("Project...>")
+		public final Action SEP_STACK = ActionTools.createSeparator();
+
+		@ActionDescription("Toggle stack with the images currently loaded in the current project")
+		@ActionMenu("Project...>Stack...>Toggle stack")
+		public final Action TOGGLE_STACK = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
 		
 		@ActionMenu("Project...>")
 		public final Action SEP_2 = ActionTools.createSeparator();
@@ -357,20 +360,6 @@ class Menus {
 		@ActionMenu("Open URI...")
 		@ActionAccelerator("shortcut+shift+o")
 		public final Action OPEN_IMAGE_OR_URL = createAction(() -> qupath.openImage(null, true, true));
-
-		@ActionMenu("Stack...>")
-		public final Action SEP_STACK= ActionTools.createSeparator();
-
-		@ActionDescription("Create a stack from a collection of images")
-		@ActionMenu("Stack...>Create Stack")
-		@ActionAccelerator("shortcut+w")
-		public final Action CREATE_STACK = actionManager.CREATE_STACK;
-
-
-		@ActionDescription("Open a stack from a singular .tif file")
-		@ActionMenu("Stack...>Open Stack Project")
-		@ActionAccelerator("shortcut+r")
-		public final Action OPEN_STACK_PROJECT = actionManager.OPEN_STACK_PROJECT;
 
 		@ActionDescription("Reload any previously-saved data for the current image. " +
 				"This provides a more dramatic form of 'undo' (albeit without any 'redo' option).")
