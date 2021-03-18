@@ -214,6 +214,8 @@ public class QuPathViewer implements TileListener<BufferedImage>, PathObjectHier
 	// Flag to indicate that repainting should occur faster if possible (less detail required)
 	// This can be useful when rapidly changing view, for example
 	private boolean doFasterRepaint = false;
+
+
 	
 	private Color background = ColorToolsAwt.getCachedColor(PathPrefs.viewerBackgroundColorProperty().get());
 

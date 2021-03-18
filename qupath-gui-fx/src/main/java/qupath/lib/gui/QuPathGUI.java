@@ -323,6 +323,7 @@ public class QuPathGUI {
 	}
 
 	public void initialiseScrollBar() {
+		setScrollBarVisibility(false);
 		stackScroll.setMin(0);
 		stackScroll.setMax(projectProperty.get().getImageList().size() - 1);
 		stackScroll.setValue(0);
@@ -426,7 +427,6 @@ public class QuPathGUI {
 		var menuMap = new HashMap<String, Menu>();
 		
 		for (var action : actions) {
-			System.out.println("action: " + action.getText());
 			var menuString = action.getProperties().get("MENU");
 			if (menuString instanceof String) {
 				var menu = menuMap.computeIfAbsent((String)menuString, s -> MenuTools.getMenu(menus, s, true));
