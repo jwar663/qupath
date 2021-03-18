@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import javafx.scene.control.ScrollBar;
 import org.controlsfx.dialog.ProgressDialog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,13 +93,14 @@ public class ProjectCommands {
 
 	public static void promptToToggleStack(QuPathGUI qupath) {
 		QuPathViewer viewer = qupath.getViewer();
-//		if(viewer.isStackViewer()) {
-		//TODO: implement setDefaultViewer()
-//			viewer.setDefaultViewer();
-//		} else {
-		//TODO: implement setStackViewer()
-//			viewer.setStackViewer();
-//		}
+		ScrollBar stackScroll = qupath.getStackScroll();
+		if(stackScroll.isDisabled()) {
+			qupath.setScrollBarVisibility(true);
+			viewer.setDoFasterRepaint(true);
+		} else {
+			qupath.setScrollBarVisibility(false);
+			viewer.setDoFasterRepaint(false);
+		}
 	}
 	
 	/**

@@ -73,6 +73,7 @@ import javax.imageio.ImageIO;
 import javax.script.ScriptException;
 import javax.swing.SwingUtilities;
 
+import javafx.scene.control.*;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
 import org.slf4j.Logger;
@@ -107,31 +108,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.RadioMenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.SplitPane.Divider;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.control.TabPane.TabClosingPolicy;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputControl;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.ToolBar;
-import javafx.scene.control.TreeTableView;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
@@ -251,6 +229,8 @@ public class QuPathGUI {
 	private ObservableList<PathTool> tools = FXCollections.observableArrayList(
 			PathTools.MOVE, PathTools.RECTANGLE, PathTools.ELLIPSE, PathTools.LINE, PathTools.POLYGON, PathTools.POLYLINE, PathTools.BRUSH, PathTools.POINTS
 			);
+
+	private ScrollBar stackScroll = new ScrollBar();
 	
 	private BooleanProperty selectedToolLocked = new SimpleBooleanProperty(false);
 	
@@ -331,7 +311,24 @@ public class QuPathGUI {
 	
 	
 	private BooleanProperty scriptRunning = new SimpleBooleanProperty(false);
-	
+
+
+	public void setScrollBarVisibility(boolean visibility) {
+		stackScroll.setDisable(!visibility);
+		stackScroll.setVisible(!visibility);
+	}
+
+	public ScrollBar getStackScroll() {
+		return stackScroll;
+	}
+
+	public void initialiseScrollBar() {
+		stackScroll.setMin(0);
+		stackScroll.setMax(projectProperty.get().getImageList().size() - 1);
+		stackScroll.setValue(0);
+		stackScroll.setBlockIncrement(1);
+		stackScroll.setUnitIncrement(1);
+	}
 	
 	/**
 	 * Create an {@link Action} that depends upon an {@link ImageData}.
