@@ -269,6 +269,7 @@ public class QuPathGUI {
 	private BorderPane pane; // Main component, to hold toolbar & splitpane
 	private TabPane analysisPanel = new TabPane();
 	private Region mainViewerPane;
+	private BorderPane paneWithScroll; //component to include scrollbar with main viewerpane
 	
 	private ViewerPlusDisplayOptions viewerDisplayOptions = new ViewerPlusDisplayOptions();
 	
@@ -325,10 +326,17 @@ public class QuPathGUI {
 	public void initialiseScrollBar() {
 		setScrollBarVisibility(false);
 		stackScroll.setMin(0);
-		stackScroll.setMax(projectProperty.get().getImageList().size() - 1);
+		if(noProject.get()){
+			stackScroll.setMax(0);
+		} else if(projectProperty.get().getImageList().size() <= 1) {
+			stackScroll.setMax(0);
+		} else {
+			stackScroll.setMax(projectProperty.get().getImageList().size() - 1);
+		}
 		stackScroll.setValue(0);
 		stackScroll.setBlockIncrement(1);
 		stackScroll.setUnitIncrement(1);
+		//stackScroll.setPadding(new Insets(5));
 	}
 	
 	/**
@@ -1969,7 +1977,8 @@ public class QuPathGUI {
 	private BorderPane initializeMainComponent() {
 		
 		pane = new BorderPane();
-		
+
+		paneWithScroll = new BorderPane();
 		// Create a reasonably-sized viewer
 		QuPathViewerPlus viewer = new QuPathViewerPlus(null, imageRegionStore, overlayOptions, viewerDisplayOptions);
 		
@@ -2002,9 +2011,12 @@ public class QuPathGUI {
 //		paneCommands.setRight(cbPin);
 		
 		mainViewerPane = CommandFinderTools.createCommandFinderPane(this, viewerManager.getNode(), CommandFinderTools.commandBarDisplayProperty());
+		paneWithScroll.setCenter(mainViewerPane);
+		initialiseScrollBar();
+		paneWithScroll.setBottom(stackScroll);
 //		paneViewer.setTop(tfCommands);
 //		paneViewer.setCenter(viewerManager.getNode());
-		splitPane.getItems().addAll(analysisPanel, mainViewerPane);
+		splitPane.getItems().addAll(analysisPanel, paneWithScroll);
 //		splitPane.getItems().addAll(viewerManager.getComponent());
 		SplitPane.setResizableWithParent(viewerManager.getNode(), Boolean.TRUE);
 		
