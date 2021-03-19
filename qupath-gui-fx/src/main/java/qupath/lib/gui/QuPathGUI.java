@@ -230,7 +230,7 @@ public class QuPathGUI {
 			PathTools.MOVE, PathTools.RECTANGLE, PathTools.ELLIPSE, PathTools.LINE, PathTools.POLYGON, PathTools.POLYLINE, PathTools.BRUSH, PathTools.POINTS
 			);
 
-	private ScrollBar stackScroll = new ScrollBar();
+	private ScrollBar stackScroll;
 	
 	private BooleanProperty selectedToolLocked = new SimpleBooleanProperty(false);
 	
@@ -316,7 +316,7 @@ public class QuPathGUI {
 
 	public void setScrollBarVisibility(boolean visibility) {
 		stackScroll.setDisable(!visibility);
-		stackScroll.setVisible(!visibility);
+		stackScroll.setVisible(visibility);
 	}
 
 	public ScrollBar getStackScroll() {
@@ -324,6 +324,7 @@ public class QuPathGUI {
 	}
 
 	public void initialiseScrollBar() {
+		stackScroll = new ScrollBar();
 		setScrollBarVisibility(false);
 		stackScroll.setMin(0);
 		if(noProject.get()){

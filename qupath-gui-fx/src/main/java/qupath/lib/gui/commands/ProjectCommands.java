@@ -94,9 +94,34 @@ public class ProjectCommands {
 	public static void promptToToggleStack(QuPathGUI qupath) {
 		QuPathViewer viewer = qupath.getViewer();
 		ScrollBar stackScroll = qupath.getStackScroll();
+		Boolean imageSameSize = true;
+		int[] image1Size = new int[2];
+		int[] image2Size = new int[2];
 		if(stackScroll.isDisabled()) {
-			qupath.setScrollBarVisibility(true);
-			viewer.setDoFasterRepaint(true);
+			//all images should be the same size to become a stack
+			if(qupath.getProject().getImageList().size() != 1) {
+				for(int i = 0; i < qupath.getProject().getImageList().size() - 1; i++) {
+					try {
+						image1Size[0] = qupath.getProject().getImageList().get(i).readImageData().getServer().getHeight();
+						image1Size[1] = qupath.getProject().getImageList().get(i).readImageData().getServer().getWidth();
+						image2Size[0] = qupath.getProject().getImageList().get(i + 1).readImageData().getServer().getHeight();
+						image2Size[1] = qupath.getProject().getImageList().get(i + 1).readImageData().getServer().getWidth();
+						System.out.println(i + " vs " + (i + 1) + ": " + image1Size[0] + ", " + image1Size[1] + ", " + image2Size[0] + ", " + image2Size[1]);
+						if(image1Size[0] != image2Size[0] || image1Size[1] != image2Size[1]) {
+							imageSameSize = false;
+							break;
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+			if(imageSameSize) {
+				qupath.setScrollBarVisibility(true);
+				viewer.setDoFasterRepaint(true);
+			} else {
+				Dialogs.showErrorMessage("Incompatible images", "Images need to be the same size to open as a stack");
+			}
 		} else {
 			qupath.setScrollBarVisibility(false);
 			viewer.setDoFasterRepaint(false);
