@@ -323,6 +323,7 @@ public class QuPathGUI {
 		return stackScroll;
 	}
 
+
 	public void initialiseScrollBar() {
 		stackScroll = new ScrollBar();
 		setScrollBarVisibility(false);

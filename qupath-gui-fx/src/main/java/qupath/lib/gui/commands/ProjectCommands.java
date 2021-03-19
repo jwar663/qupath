@@ -117,6 +117,7 @@ public class ProjectCommands {
 				}
 			}
 			if(imageSameSize) {
+				stackScroll.setMax(qupath.getProject().getImageList().size());
 				qupath.setScrollBarVisibility(true);
 				viewer.setDoFasterRepaint(true);
 			} else {
