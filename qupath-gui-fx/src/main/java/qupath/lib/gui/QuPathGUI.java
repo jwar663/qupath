@@ -73,6 +73,8 @@ import javax.imageio.ImageIO;
 import javax.script.ScriptException;
 import javax.swing.SwingUtilities;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import org.controlsfx.control.action.Action;
 import org.controlsfx.control.action.ActionUtils;
@@ -323,6 +325,18 @@ public class QuPathGUI {
 		return stackScroll;
 	}
 
+	private void bindScrollListener() {
+		stackScroll.valueProperty().addListener(new ChangeListener<Number>() {
+			public void changed(ObservableValue<? extends Number> ov,
+								Number old_val, Number new_val) {
+				try {
+					getViewer().setImageData(instance.getProject().getImageList().get(new_val.intValue()).readImageData());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	public void initialiseScrollBar() {
 		stackScroll = new ScrollBar();
@@ -338,6 +352,7 @@ public class QuPathGUI {
 		stackScroll.setValue(0);
 		stackScroll.setBlockIncrement(1);
 		stackScroll.setUnitIncrement(1);
+		bindScrollListener();
 		//stackScroll.setPadding(new Insets(5));
 	}
 	

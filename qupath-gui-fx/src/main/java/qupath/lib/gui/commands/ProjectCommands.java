@@ -117,9 +117,16 @@ public class ProjectCommands {
 				}
 			}
 			if(imageSameSize) {
-				stackScroll.setMax(qupath.getProject().getImageList().size());
+				stackScroll.setMax(qupath.getProject().getImageList().size() - 1);
+				stackScroll.setValue(0);
+				System.out.println("value: " + stackScroll.getValue());
 				qupath.setScrollBarVisibility(true);
 				viewer.setDoFasterRepaint(true);
+				try {
+					viewer.setImageData(qupath.getProject().getImageList().get(0).readImageData());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			} else {
 				Dialogs.showErrorMessage("Incompatible images", "Images need to be the same size to open as a stack");
 			}
