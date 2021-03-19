@@ -458,12 +458,20 @@ class ProjectImportImagesCommand {
 				Dialogs.showMessageDialog(commandName, textArea);
 		}
 		// TODO: Add failed and successful paths to pathFailed/pathSucceeded, so the line below prints something
-		if (sb.length() > 0)
+		if (sb.length() > 0) {
 			logger.info(sb.toString());
+		}
+
+		if(!qupath.getStackScroll().isDisabled()) {
+			if(!qupath.checkIfCorrectImageSizes(entries)) {
+				qupath.setScrollBarVisibility(false);
+			} else {
+				qupath.getStackScroll().setMax(entries.size() - 1);
+			}
+		}
 		return entries;
 	}
-	
-	
+
 	
 	public static ProjectImageEntry<BufferedImage> addSingleImageToProject(Project<BufferedImage> project, ImageServer<BufferedImage> server, ImageType type) {
 		try {

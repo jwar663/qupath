@@ -316,6 +316,31 @@ public class QuPathGUI {
 	private BooleanProperty scriptRunning = new SimpleBooleanProperty(false);
 
 
+
+	public boolean checkIfCorrectImageSizes(List<ProjectImageEntry<BufferedImage>> entries) {
+		int[] image1Size = new int[2];
+		int[] image2Size = new int[2];
+		System.out.println("size: " + entries.size());
+		//all images should be the same size to become a stack
+		if(entries.size() != 1) {
+			for(int i = 0; i < entries.size() - 1; i++) {
+				try {
+					image1Size[0] = entries.get(i).readImageData().getServer().getHeight();
+					image1Size[1] = entries.get(i).readImageData().getServer().getWidth();
+					image2Size[0] = entries.get(i + 1).readImageData().getServer().getHeight();
+					image2Size[1] = entries.get(i + 1).readImageData().getServer().getWidth();
+					System.out.println(i + " vs " + (i + 1) + ": " + image1Size[0] + ", " + image1Size[1] + ", " + image2Size[0] + ", " + image2Size[1]);
+					if(image1Size[0] != image2Size[0] || image1Size[1] != image2Size[1]) {
+						return false;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return true;
+	}
+
 	public void setScrollBarVisibility(boolean visibility) {
 		stackScroll.setDisable(!visibility);
 		stackScroll.setVisible(visibility);
