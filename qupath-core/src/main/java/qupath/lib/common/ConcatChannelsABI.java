@@ -118,7 +118,7 @@ public class ConcatChannelsABI {
     }
 
     /**
-     * @author Pete Bankhead
+     * @author Pete Bankhead/Jaedyn Ward
      * Set the channel colors for the specified ImageData.
      * It is not essential to pass names for all channels:
      * by passing n values, the first n channel names will be set.
@@ -130,7 +130,7 @@ public class ConcatChannelsABI {
     public static void setChannelColors(ImageData<?> imageData, Integer... colors) {
         List<ImageChannel> oldChannels = imageData.getServer().getMetadata().getChannels();
         List<ImageChannel> newChannels = new ArrayList<>(oldChannels);
-        for (int i = 0; i < oldChannels.size(); i++) {
+        for (int i = 0; i < colors.length; i++) {
             Integer color = colors[i];
             if (color == null)
                 continue;
