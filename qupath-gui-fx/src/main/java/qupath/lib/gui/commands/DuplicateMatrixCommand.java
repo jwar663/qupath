@@ -80,7 +80,7 @@ public class DuplicateMatrixCommand implements Runnable {
     public ImageData<BufferedImage> imageData;
 
     //CONSTANT MACROS
-    private static final double BUTTON_WIDTH = 42.0;
+    private static final double BUTTON_WIDTH = 52.0;
     private static final double BUTTON_LABEL_HEIGHT = 25.0;
     private static final double SCROLL_BAR_FONT_SIZE = 12.0;
     private static final double TAB_SIZE = 30.0;
@@ -97,7 +97,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double THRESHOLD_HEIGHT = 25.0;
 
     private static final double THRESHOLD_BUTTONS_WIDTH = 80.0;
-    private static final double THRESHOLD_TEXT_FIELD_WIDTH = 40.0;
+    private static final double THRESHOLD_TEXT_FIELD_WIDTH = BUTTON_WIDTH;
     private static final double THRESHOLD_LABEL_WIDTH = 620.0;
 
     private static final double THRESHOLD_FIELD_COLUMN = THRESHOLD_TEXT_FIELD_WIDTH * 2;
@@ -132,7 +132,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double IMAGE_WIDTH = IMAGE_VBOX_WIDTH;
     private static final double IMAGE_HEIGHT = IMAGE_VBOX_HEIGHT - IMAGE_LABEL_HEIGHT - 25;
 
-    private static final String START_THRESHOLD = "0.90";
+    private static final String START_THRESHOLD = "0.900";
 
     String thresholdValue = START_THRESHOLD;
 
@@ -150,7 +150,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
         //remove "." from the name of the file
-        String thresholdString = Double.toString(thresholdValue * 100).substring(0,2);
+        String thresholdString = Double.toString(thresholdValue * 1000).substring(0,3);
         String filePath = "";
         URI Uri;
         if(uris.iterator().hasNext()) {
@@ -546,7 +546,7 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     protected Button createMatrixButton(float[][] duplicateMatrix, int i, int j) {
-        String tempString = String.format("%.2f", duplicateMatrix[i][j]);
+        String tempString = String.format("%.3f", duplicateMatrix[i][j]);
         //set buttons to be the corresponding matrix
         Button tempButton = new Button(tempString);
         tempButton.setPrefSize(BUTTON_WIDTH, BUTTON_LABEL_HEIGHT);
@@ -834,7 +834,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         //Threshold Part
-        Label thresholdLabel = createThresholdLabel("Threshold value selected: " + String.format("%.2f", thresholdValue));
+        Label thresholdLabel = createThresholdLabel("Threshold value selected: " + String.format("%.3f", thresholdValue));
 //        Button thresholdConfirm = new Button("Submit");
 //        thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
 //        thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);

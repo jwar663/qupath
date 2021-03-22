@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ConcatChannelsABI {
 
-    //Macros
+    //MACROS
     private static final int[] ALEXA_488 = {0, 204, 0}; //GREEN
     private static final int[] ALEXA_555 = {255, 255, 0}; //YELLOW
     private static final int[] ALEXA_594 = {255, 0, 0}; //RED
