@@ -74,7 +74,10 @@ public class DuplicateMatrixCommand implements Runnable {
     private Stage dialog;
 
     private float[][] duplicateMatrix;
+    private BufferedImage originalImg;
+    private BufferedImage autofluorescenceImg;
     private BufferedImage img;
+
     private Double confirmDouble = 0.0;
 
     public ImageData<BufferedImage> imageData;
@@ -598,7 +601,13 @@ public class DuplicateMatrixCommand implements Runnable {
         }
         int size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
-        img = ConcatChannelsABI.convertImageDataToImage(imageData);
+        originalImg = ConcatChannelsABI.convertImageDataToImage(imageData);
+        if(!qupath.getProject().isEmpty()) {
+            autofluorescenceImg = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(1).readImageData());
+            img = ConcatChannelsABI.subtractAF(originalImg, autofluorescenceImg);
+        } else {
+            img = originalImg;
+        }
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
 
         //larger panes

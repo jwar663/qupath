@@ -6,10 +6,7 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
-import qupath.lib.images.writers.ImageWriter;
-import qupath.lib.objects.PathObject;
 import qupath.lib.regions.RegionRequest;
-import qupath.lib.roi.interfaces.ROI;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -35,6 +32,10 @@ public class ConcatChannelsABI {
     private static final int[] DAPI = {0, 0, 255}; //BLUE
     private static final int[] DL680_DUNBAR = {255, 255, 255}; //WHITE
     private static final int[] DL755_DUNBAR = {233, 150, 122}; //DARK SALMON
+    private static final int[] COLOUR8 = {0, 0, 0}; //BLACK
+    private static final int[] COLOUR9 = {255, 0, 255}; //FUCHSIA
+    private static final int[] COLOUR10 = {176, 48, 96}; //MAROON
+
 
     /**
      * This method is used to compare two channels together to see if they are similar or not using normalised cross-correlation.
@@ -102,10 +103,10 @@ public class ConcatChannelsABI {
             Integer color = colors[i];
             if (color == null)
                 continue;
-            newChannels.set(i, ImageChannel.getInstance(newChannels.get(i).getName(), color));
             if (i >= newChannels.size()) {
                 break;
             }
+            newChannels.set(i, ImageChannel.getInstance(newChannels.get(i).getName(), color));
         }
         setChannels(imageData, newChannels.toArray(ImageChannel[]::new));
     }
@@ -145,7 +146,7 @@ public class ConcatChannelsABI {
      * @param imageData
      */
     public static void setRegularChannelColours(ImageData imageData){
-        Integer[] regularChannelColourArray = new Integer[7];
+        Integer[] regularChannelColourArray = new Integer[10];
         regularChannelColourArray[0] = ColorTools.makeRGB(ALEXA_488[0], ALEXA_488[1], ALEXA_488[2]); //Alexa 488
         regularChannelColourArray[1] = ColorTools.makeRGB(ALEXA_555[0], ALEXA_555[1], ALEXA_555[2]); //Alexa 555
         regularChannelColourArray[2] = ColorTools.makeRGB(ALEXA_594[0], ALEXA_594[1], ALEXA_594[2]); //Alexa 594
@@ -153,7 +154,34 @@ public class ConcatChannelsABI {
         regularChannelColourArray[4] = ColorTools.makeRGB(DAPI[0], DAPI[1], DAPI[2]); //DAPI
         regularChannelColourArray[5] = ColorTools.makeRGB(DL680_DUNBAR[0], DL680_DUNBAR[1], DL680_DUNBAR[2]); //DL680_Dunbar
         regularChannelColourArray[6] = ColorTools.makeRGB(DL755_DUNBAR[0], DL755_DUNBAR[1], DL755_DUNBAR[2]); //DL755_Dunbar
+        regularChannelColourArray[7] = ColorTools.makeRGB(COLOUR8[0], COLOUR8[1], COLOUR8[2]);
+        regularChannelColourArray[8] = ColorTools.makeRGB(COLOUR9[0], COLOUR9[1], COLOUR9[2]);
+        regularChannelColourArray[9] = ColorTools.makeRGB(COLOUR10[0], COLOUR10[1], COLOUR10[2]);
         setChannelColors(imageData, regularChannelColourArray);
+    }
+
+    public static BufferedImage subtractAF(BufferedImage originalIMG, BufferedImage autofluorescenceIMG) {
+        if(originalIMG.getHeight() != autofluorescenceIMG.getHeight() || originalIMG.getWidth() != autofluorescenceIMG.getWidth()) {
+            return originalIMG;
+        } else {
+            float originalImgValue;
+            float autofluorescenceImgValue;
+            BufferedImage resultImage = new BufferedImage(originalIMG.getColorModel(), originalIMG.getRaster(), originalIMG.getColorModel().isAlphaPremultiplied(), null);
+            for(int i = 0; i < resultImage.getWidth(); i++) {
+                for(int j = 0; j < resultImage.getHeight(); j++) {
+                    autofluorescenceImgValue = autofluorescenceIMG.getRaster().getSample(i, j, autofluorescenceIMG.getRaster().getNumBands() - 1);
+                    for(int b = 0; b < resultImage.getRaster().getNumBands(); b++) {
+                        originalImgValue = originalIMG.getRaster().getSample(i, j, b);
+                        if(originalImgValue >= autofluorescenceImgValue) {
+                            resultImage.getRaster().setSample(i, j, b, originalImgValue - autofluorescenceImgValue);
+                        } else {
+                            resultImage.getRaster().setSample(i, j, b, originalImgValue);
+                        }
+                    }
+                }
+            }
+            return resultImage;
+        }
     }
 
     /**
