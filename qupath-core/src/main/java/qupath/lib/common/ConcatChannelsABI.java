@@ -361,6 +361,47 @@ public class ConcatChannelsABI {
     }
 
     /**
+     * Input a tiff image that includes the autofluorescence channel and subtract that from the image and return it.
+     *
+     * @param imageData
+     */
+    public static ImageData removeAF(boolean minusAll, ImageData<BufferedImage> imageData) {
+        ArrayList<Integer> notAF = new ArrayList<>();
+        List<ImageChannel> channels = new ArrayList<>();
+        for(int count = 0; count < imageData.getServer().nChannels() - 1; count++) {
+            notAF.add(count);
+            channels.add(imageData.getServer().getChannel(count));
+        }
+        BufferedImage startImg = convertImageDataToImage(imageData);
+        BufferedImage imageNoAF = createNewBufferedImage(notAF, startImg);
+        float originalImgValue;
+        float autofluorescenceImgValue;
+        BufferedImage resultImage = new BufferedImage(imageNoAF.getColorModel(), imageNoAF.getRaster(), imageNoAF.getColorModel().isAlphaPremultiplied(), null);
+        for(int i = 0; i < resultImage.getWidth(); i++) {
+            for(int j = 0; j < resultImage.getHeight(); j++) {
+                autofluorescenceImgValue = startImg.getRaster().getSample(i, j, startImg.getRaster().getNumBands() - 1);
+                for(int b = 0; b < resultImage.getRaster().getNumBands(); b++) {
+                    originalImgValue = imageNoAF.getRaster().getSample(i, j, b);
+                    if(originalImgValue >= autofluorescenceImgValue) {
+                        resultImage.getRaster().setSample(i, j, b, originalImgValue - autofluorescenceImgValue);
+                    } else {
+                        if(minusAll) {
+                            resultImage.getRaster().setSample(i, j, b, 0);
+                        } else {
+                            resultImage.getRaster().setSample(i, j, b, originalImgValue);
+                        }
+                    }
+                }
+            }
+        }
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        resultImageData.setImageType(ImageData.ImageType.FLUORESCENCE);
+        setRegularChannelNames(resultImageData);
+        return resultImageData;
+    }
+
+    /**
      * Create the associated image whilst removing the duplicate channels.
      *
      * @param imageData
