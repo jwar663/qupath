@@ -11,10 +11,16 @@ import qupath.lib.objects.PathObject;
 import qupath.lib.regions.RegionRequest;
 import qupath.lib.roi.interfaces.ROI;
 
+import javax.imageio.stream.FileCacheImageOutputStream;
+import javax.imageio.stream.FileImageOutputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.ImageOutputStreamImpl;
 import java.awt.*;
 import java.awt.image.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.Buffer;
 import java.util.*;
 import java.util.List;
 
@@ -83,6 +89,18 @@ public class ConcatChannelsABI {
             }
         }
         return distinct;
+    }
+
+    public static void createGIF(BufferedImage[] images, String filepath, int delayTime) throws Exception {
+        BufferedImage first = images[0];
+        ImageOutputStream output = new FileImageOutputStream(new File(filepath + ".gif"));
+        GifSequenceWriter writer = new GifSequenceWriter(output, first.getType(), delayTime, true);
+
+        for(BufferedImage image : images) {
+            writer.writeToSequence(image);
+        }
+        writer.close();
+        output.close();
     }
 
     /**

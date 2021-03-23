@@ -58,6 +58,7 @@ import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.*;
 import qupath.lib.images.writers.ImageWriter;
 import qupath.lib.images.writers.ImageWriterTools;
+import qupath.lib.regions.RegionRequest;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -578,6 +579,22 @@ public class DuplicateMatrixCommand implements Runnable {
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Duplicate Matrix");
+
+        try{
+            BufferedImage[] images = new BufferedImage[qupath.getProject().getImageList().size()];
+            for(int i = 0; i < qupath.getProject().getImageList().size(); i++) {
+                ImageServer currentServer = qupath.getProject().getImageList().get(i).readImageData().getServer();
+                RegionRequest request = RegionRequest.createInstance(currentServer);
+                BufferedImage newRGB = new BufferedImage(currentServer.getWidth(), currentServer.getHeight(), BufferedImage.TYPE_INT_RGB);
+                newRGB.createGraphics().drawImage((BufferedImage) currentServer.readBufferedImage(request), 0, 0, currentServer.getWidth(), currentServer.getHeight(), null);
+                images[i] = newRGB;
+            }
+            ConcatChannelsABI.createGIF(images, "D:\\Desktop\\QuPath\\testgif", 250);
+        } catch (Exception afdk) {
+            afdk.printStackTrace();
+        }
+
+
 
         imageData = qupath.getImageData();
         if(imageData == null) {
