@@ -354,10 +354,12 @@ public class QuPathGUI {
 		stackScroll.valueProperty().addListener(new ChangeListener<Number>() {
 			public void changed(ObservableValue<? extends Number> ov,
 								Number old_val, Number new_val) {
-				try {
-					getViewer().setImageData(instance.getProject().getImageList().get(new_val.intValue()).readImageData());
-				} catch (IOException e) {
-					e.printStackTrace();
+				if(old_val != new_val) {
+					try {
+						getViewer().setImageData(instance.getProject().getImageList().get(new_val.intValue()).readImageData());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		});
