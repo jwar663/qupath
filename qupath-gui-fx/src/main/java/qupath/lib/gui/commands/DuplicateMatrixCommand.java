@@ -209,7 +209,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return fileExistsAlert;
     }
 
-    public static Stage createInvalidInputStage(Stage dialog) {
+    public static Stage createInvalidInputStage(Stage dialog, boolean toggle, int numberOfChannels) {
         Stage invalidInput = new Stage();
         invalidInput.setTitle("Invalid Input");
         invalidInput.initModality(Modality.WINDOW_MODAL);
@@ -218,7 +218,12 @@ public class DuplicateMatrixCommand implements Runnable {
         invalidInputConfirmButton.setOnAction(ev -> {
             invalidInput.close();
         });
-        VBox invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
+        VBox invalidInputVbox;
+        if(!toggle) {
+            invalidInputVbox = new VBox(new Text("Please enter a value between -1.0 and 1.0"), invalidInputConfirmButton);
+        } else {
+            invalidInputVbox = new VBox(new Text("Please enter an integer between 1 and " + numberOfChannels), invalidInputConfirmButton);
+        }
         invalidInputVbox.setSpacing(10.0);
         invalidInputVbox.setAlignment(Pos.CENTER);
         invalidInputVbox.setPadding(new Insets(15));
@@ -661,7 +666,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                createInvalidInputStage(dialog).showAndWait();
+                createInvalidInputStage(dialog, thresholdToggle.isSelected(), size).showAndWait();
             }
         });
         Button thresholdPreview = createThresholdPreview("Preview");
@@ -691,7 +696,7 @@ public class DuplicateMatrixCommand implements Runnable {
                     e.printStackTrace();
                 }
             } else {
-                createInvalidInputStage(dialog).showAndWait();
+                createInvalidInputStage(dialog, thresholdToggle.isSelected(), size).showAndWait();
             }
         });
 
