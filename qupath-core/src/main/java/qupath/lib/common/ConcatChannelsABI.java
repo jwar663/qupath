@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.IOException;
 import java.net.URI;
+import java.sql.Time;
 import java.util.*;
 import java.util.List;
 
@@ -83,6 +84,37 @@ public class ConcatChannelsABI {
             }
         }
         return distinct;
+    }
+
+    public static double[] getAllThresholdValues(float[][] crossCorrelationMatrix) {
+        double[] result = new double[crossCorrelationMatrix.length - 1];
+        double thresholdValue = 0.50;
+        for(int i = 1; i < crossCorrelationMatrix.length; i++) {
+            result[i - 1] = getThresholdFromChannels(crossCorrelationMatrix, i, thresholdValue);
+            thresholdValue = result[i - 1];
+        }
+        return result;
+    }
+
+    public static double getThresholdFromChannels(float[][] crossCorrelationMatrix, int numberOfChannelsRequired, double startThreshold) {
+        double result = startThreshold;
+        double upperValue = 1;
+        double lowerValue = 0;
+        int returnedChannels;
+        int iteration = 0;
+        while(true) {
+            returnedChannels = distinctChannels(crossCorrelationMatrix, result).size();
+            if(returnedChannels == numberOfChannelsRequired || iteration >= 100) {
+                return result;
+            } else if(returnedChannels > numberOfChannelsRequired) {
+                upperValue = result;
+                result = result - (result - lowerValue)/2;
+            } else {
+                lowerValue = result;
+                result = result + (upperValue - result)/2;
+            }
+            iteration++;
+        }
     }
 
     /**

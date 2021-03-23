@@ -600,6 +600,9 @@ public class DuplicateMatrixCommand implements Runnable {
         duplicateMatrix = new float[size][size];
         img = ConcatChannelsABI.convertImageDataToImage(imageData);
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
+        double[] thresholdValues = new double[size];
+        thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
+//        System.out.println("threshold value: " + ConcatChannelsABI.getThresholdFromChannels(duplicateMatrix, 7, 0.50));
 
         //larger panes
 
