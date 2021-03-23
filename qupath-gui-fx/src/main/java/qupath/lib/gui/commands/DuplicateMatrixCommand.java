@@ -76,6 +76,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private float[][] duplicateMatrix;
     private BufferedImage img;
     private Double confirmDouble = 0.0;
+    double[] thresholdValues;
 
     public ImageData<BufferedImage> imageData;
 
@@ -98,10 +99,11 @@ public class DuplicateMatrixCommand implements Runnable {
 
     private static final double THRESHOLD_BUTTONS_WIDTH = 80.0;
     private static final double THRESHOLD_TEXT_FIELD_WIDTH = 40.0;
-    private static final double THRESHOLD_LABEL_WIDTH = 620.0;
 
     private static final double THRESHOLD_FIELD_COLUMN = THRESHOLD_TEXT_FIELD_WIDTH * 2;
     private static final double THRESHOLD_BUTTON_COLUMN = THRESHOLD_BUTTONS_WIDTH + 10.0;
+
+    private static final double THRESHOLD_LABEL_WIDTH = 620.0 - THRESHOLD_BUTTON_COLUMN;
 
     //MATRIX MACROS MAX/PREF
     private static final double MATRIX_BORDER_WIDTH = OVERALL_WIDTH - 20.0;
@@ -571,6 +573,17 @@ public class DuplicateMatrixCommand implements Runnable {
         return tempButton;
     }
 
+    protected ToggleButton createToggleButton() {
+        ToggleButton toggleButton = new ToggleButton();
+        toggleButton.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        toggleButton.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        toggleButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
+        toggleButton.setText("Threshold");
+        GridPane.setHalignment(toggleButton, HPos.CENTER);
+        toggleButton.setSelected(false);
+        return toggleButton;
+    }
+
 
 
     protected Stage createDialog() throws IOException, NullPointerException {
@@ -600,7 +613,7 @@ public class DuplicateMatrixCommand implements Runnable {
         duplicateMatrix = new float[size][size];
         img = ConcatChannelsABI.convertImageDataToImage(imageData);
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
-        double[] thresholdValues = new double[size];
+        thresholdValues = new double[size];
         thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
 //        System.out.println("threshold value: " + ConcatChannelsABI.getThresholdFromChannels(duplicateMatrix, 7, 0.50));
 
@@ -614,6 +627,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
         ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
+        ColumnConstraints toggleColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
 
@@ -621,10 +635,15 @@ public class DuplicateMatrixCommand implements Runnable {
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
         TextField thresholdTextField = createThresholdTextField();
         Button thresholdConfirm = createThresholdConfirm();
+        ToggleButton thresholdToggle = createToggleButton();
         thresholdConfirm.setOnAction(event -> {
             thresholdValue = thresholdTextField.getText();
-            try{
-                confirmDouble = Double.parseDouble(thresholdValue);
+            try {
+                if(!thresholdToggle.isSelected()) {
+                    confirmDouble = Double.parseDouble(thresholdValue);
+                } else {
+                    confirmDouble = thresholdValues[Integer.parseInt(thresholdValue) - 1];
+                }
             } catch(Exception e) {
                 confirmDouble = 1.01;
                 System.out.println("Exception: " + e);
@@ -651,7 +670,11 @@ public class DuplicateMatrixCommand implements Runnable {
             ArrayList<Integer> distinctPreviewChannels;
             thresholdValue = thresholdTextField.getText();
             try{
-                confirmDouble = Double.parseDouble(thresholdValue);
+                if(!thresholdToggle.isSelected()) {
+                    confirmDouble = Double.parseDouble(thresholdValue);
+                } else {
+                    confirmDouble = thresholdValues[Integer.parseInt(thresholdValue) - 1];
+                }
             } catch(Exception e) {
                 confirmDouble = 1.01;
                 System.out.println("Exception: " + e);
@@ -671,11 +694,23 @@ public class DuplicateMatrixCommand implements Runnable {
                 createInvalidInputStage(dialog).showAndWait();
             }
         });
+
+        thresholdToggle.setOnAction(e -> {
+            if(thresholdToggle.getText().equals("Channels")) {
+                thresholdToggle.setText("Threshold");
+                thresholdLabel.setText("Please enter a threshold value: ");
+            } else {
+                thresholdToggle.setText("Channels");
+                thresholdLabel.setText("Please enter the required number of channels: ");
+            }
+        });
+
         thresholdPane.add(thresholdLabel, 0, 0);
         thresholdPane.add(thresholdTextField, 1, 0);
         thresholdPane.add(thresholdPreview, 2, 0);
         thresholdPane.add(thresholdConfirm, 3, 0);
-        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn);
+        thresholdPane.add(thresholdToggle, 4, 0);
+        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn, toggleColumn);
         thresholdPane.getRowConstraints().add(rowConstraints);
         overallPane.setTop(thresholdPane);
 
