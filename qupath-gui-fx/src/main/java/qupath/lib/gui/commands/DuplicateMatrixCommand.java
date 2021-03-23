@@ -182,6 +182,22 @@ public class DuplicateMatrixCommand implements Runnable {
 //        }
     }
 
+    public static void exportImage(QuPathViewer viewer, String filePath) {
+        ImageServer<BufferedImage> imageServer = viewer.getServer();
+        List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
+        ImageWriter<BufferedImage> writer = writers.get(0);
+        File file = new File(filePath + "." + writer.getDefaultExtension());
+//        if(!file.exists()) {
+        try{
+            writer.writeImage(imageServer, file.getPath());
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+//        } else {
+//            createFileExistsAlert(dialog, writer, imageServer, file).showAndWait();
+//        }
+    }
+
     public static Stage createFileExistsAlert(Stage dialog, ImageWriter<BufferedImage> writer, ImageServer<BufferedImage> imageServer, File file) {
         Stage fileExistsAlert = new Stage();
         fileExistsAlert.setTitle("Alert");
@@ -313,7 +329,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return overallPane;
     }
 
-    protected GridPane createThresholdPane() {
+    public static GridPane createThresholdPane() {
         GridPane thresholdPane = new GridPane();
         thresholdPane.setPadding(new Insets(10,10,10,10));
         thresholdPane.setPrefSize(THRESHOLD_WIDTH, THRESHOLD_HEIGHT);
@@ -340,7 +356,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return thresholdTextField;
     }
 
-    protected Button createThresholdConfirm() {
+    public static Button createThresholdConfirm() {
         Button thresholdConfirm = new Button("Submit");
         thresholdConfirm.setPrefSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);
         thresholdConfirm.setMinSize(THRESHOLD_BUTTONS_WIDTH, THRESHOLD_HEIGHT);

@@ -524,6 +524,12 @@ public class QuPathGUI {
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
+		 * Show the Remove AF dialog.
+		 */
+		@ActionAccelerator("shift+p")
+		public final Action REMOVE_AF = ActionTools.createAction(new RemoveAFCommand(QuPathGUI.this), "Remove AF");
+
+		/**
 		 * Toggle the image overview display on the viewers.
 		 */
 		@ActionIcon(PathIcons.OVERVIEW)

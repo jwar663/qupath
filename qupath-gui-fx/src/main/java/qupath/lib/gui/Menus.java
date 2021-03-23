@@ -411,6 +411,12 @@ class Menus {
 		@ActionMenu("TMA data...>Launch TMA data viewer")
 		public final Action TMA_VIEWER = createAction(() -> Commands.launchTMADataViewer(qupath));
 
+		public final Action SEP_AF = ActionTools.createSeparator();
+
+		@ActionDescription("Launch the Remove AF command")
+		@ActionMenu("Remove AF")
+		public final Action REMOVE_AF = actionManager.REMOVE_AF;
+
 		public final Action SEP_7 = ActionTools.createSeparator();
 
 		@ActionDescription("Quit QuPath.")
