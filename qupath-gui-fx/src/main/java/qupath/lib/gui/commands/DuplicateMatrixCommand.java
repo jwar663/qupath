@@ -135,6 +135,7 @@ public class DuplicateMatrixCommand implements Runnable {
     private static final double IMAGE_HEIGHT = IMAGE_VBOX_HEIGHT - IMAGE_LABEL_HEIGHT - 25;
 
     private static final String START_THRESHOLD = "0.90";
+    private static final String START_CHANNEL = "7";
 
     String thresholdValue = START_THRESHOLD;
 
@@ -704,9 +705,11 @@ public class DuplicateMatrixCommand implements Runnable {
             if(thresholdToggle.getText().equals("Channels")) {
                 thresholdToggle.setText("Threshold");
                 thresholdLabel.setText("Please enter a threshold value: ");
+                thresholdTextField.setText(START_THRESHOLD);
             } else {
                 thresholdToggle.setText("Channels");
                 thresholdLabel.setText("Please enter the required number of channels: ");
+                thresholdTextField.setText(START_CHANNEL);
             }
         });
 
