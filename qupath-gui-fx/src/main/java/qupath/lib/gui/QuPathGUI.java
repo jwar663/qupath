@@ -218,6 +218,8 @@ public class QuPathGUI {
 	private final static Logger logger = LoggerFactory.getLogger(QuPathGUI.class);
 	
 	private static QuPathGUI instance;
+
+	String stackFilePath;
 	
 	private ScriptEditor scriptEditor = null;
 	
@@ -315,6 +317,7 @@ public class QuPathGUI {
 	
 	private BooleanProperty scriptRunning = new SimpleBooleanProperty(false);
 
+	private int StackDelay = 250;
 
 
 	public boolean checkIfCorrectImageSizes(List<ProjectImageEntry<BufferedImage>> entries) {
@@ -502,8 +505,16 @@ public class QuPathGUI {
 			}
 		}
 	}
-	
-	
+
+	public String getStackFilePath() {
+		return stackFilePath;
+	}
+
+	public int getStackDelay() {
+		return StackDelay;
+	}
+
+
 	/**
 	 * Default actions associated with a specific QuPath instance.
 	 * These are useful for generating toolbars and context menus, ensuring that the same actions are used consistently.

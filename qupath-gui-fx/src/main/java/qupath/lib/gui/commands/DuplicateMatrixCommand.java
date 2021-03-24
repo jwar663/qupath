@@ -949,7 +949,6 @@ public class DuplicateMatrixCommand implements Runnable {
         verticalLabelPane.getColumnConstraints().add(labelColumnConstraint);
 
         GridPane matrix = createMatrix();
-        Tooltip matrixButtonTooltip = new Tooltip("Select which channels to compare images");
         Label placeholderLabel = createMatrixLabel("", true);
         horizontalLabelPane.add(placeholderLabel, 0, 0);
         for(int i = 0; i < size; i++) {

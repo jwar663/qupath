@@ -314,6 +314,22 @@ class Menus {
 		@ActionDescription("Toggle stack with the images currently loaded in the current project")
 		@ActionMenu("Project...>Stack...>Toggle stack")
 		public final Action TOGGLE_STACK = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+
+		@ActionDescription("Alter the settings for how to animate the stack")
+		@ActionMenu("Project...>Stack...>Animation...>Settings")
+		public final Action ANIMATION_SETTINGS = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+
+		@ActionDescription("Start the animation of the stack")
+		@ActionMenu("Project...>Stack...>Animation...>Start")
+		public final Action ANIMATION_START = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+
+		@ActionDescription("Stop the animation of the stack")
+		@ActionMenu("Project...>Stack...>Animation...>Stop")
+		public final Action ANIMATION_STOP = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+
+		@ActionDescription("Export the stack as a GIF")
+		@ActionMenu("Project...>Stack...>Animation...>Export as GIF")
+		public final Action EXPORT_ANIMATION = qupath.createStackAction(project -> ProjectCommands.exportStackAsGIF(qupath));
 		
 		@ActionMenu("Project...>")
 		public final Action SEP_2 = ActionTools.createSeparator();

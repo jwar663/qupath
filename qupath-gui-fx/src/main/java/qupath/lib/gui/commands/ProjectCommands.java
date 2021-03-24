@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.concurrent.Task;
+import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.prefs.PathPrefs;
@@ -113,6 +114,24 @@ public class ProjectCommands {
 		} else {
 			qupath.setScrollBarVisibility(false);
 			viewer.setDoFasterRepaint(false);
+		}
+	}
+
+	public static void exportStackAsGIF(QuPathGUI qupath){
+		BufferedImage[] images = new BufferedImage[qupath.getProject().getImageList().size()];
+		String filePath = qupath.getStackFilePath();
+		int delay = qupath.getStackDelay();
+		for(int i = 0; i < images.length; i++) {
+			try {
+				images[i] = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(i).readImageData());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		try {
+			ConcatChannelsABI.createGIF(images, filePath + "gif", delay);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	
