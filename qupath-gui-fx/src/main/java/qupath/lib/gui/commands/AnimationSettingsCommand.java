@@ -46,6 +46,13 @@ public class AnimationSettingsCommand implements Runnable {
 
     private Stage dialog;
 
+    private String stackFilePath;
+
+    private boolean isStack;
+
+    private int delay;
+
+
     private double BASE_WIDTH = 60;
     private double BASE_HEIGHT = 25;
 
@@ -68,6 +75,12 @@ public class AnimationSettingsCommand implements Runnable {
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Animation Settings");
+
+        stackFilePath = qupath.getStackFilePath();
+
+        isStack = qupath.getIsStack();
+
+        delay = qupath.getStackDelay();
 
         GridPane overallPane = new GridPane();
         overallPane.setMaxSize(OVERALL_WIDTH - (PADDING * 2), OVERALL_HEIGHT - (PADDING * 2));
@@ -94,7 +107,6 @@ public class AnimationSettingsCommand implements Runnable {
             }
         });
 
-
         Label delayLabel = new Label("Delay(ms)");
         GridPane.setHalignment(delayLabel, HPos.CENTER);
         GridPane.setValignment(delayLabel, VPos.CENTER);
@@ -109,7 +121,6 @@ public class AnimationSettingsCommand implements Runnable {
         delayField.setMinSize(BASE_WIDTH, BASE_HEIGHT);
         delayField.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
-
         Button chooseFolderButton = new Button("Choose Folder");
         GridPane.setHalignment(chooseFolderButton, HPos.CENTER);
         GridPane.setValignment(chooseFolderButton, VPos.CENTER);
@@ -117,12 +128,19 @@ public class AnimationSettingsCommand implements Runnable {
         chooseFolderButton.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
         chooseFolderButton.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
 
-        Label exportLabel = new Label("Export to: ");
+        Label exportLabel = new Label("Export to: " + stackFilePath);
         GridPane.setHalignment(exportLabel, HPos.CENTER);
         GridPane.setValignment(exportLabel, VPos.CENTER);
         exportLabel.setMaxSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
         exportLabel.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
         exportLabel.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
+
+        chooseFolderButton.setOnAction(e -> {
+            //TODO: implement or connect a function to choose where to export file
+            String filePath = "get file path command here";
+            qupath.setStackFilePath(filePath);
+            exportLabel.setText("Export to: " + filePath);
+        });
 
         Button confirmButton = new Button("Confirm");
         GridPane.setHalignment(confirmButton, HPos.CENTER);
@@ -131,12 +149,30 @@ public class AnimationSettingsCommand implements Runnable {
         confirmButton.setMinSize(BASE_WIDTH, BASE_HEIGHT);
         confirmButton.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
+        confirmButton.setOnAction(e -> {
+            int delayFieldInt = delay;
+            try{
+                delayFieldInt = Integer.parseInt(delayField.getText());
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            qupath.setStackDelay(delayFieldInt);
+        });
+
         Button cancelButton = new Button("Cancel");
         GridPane.setHalignment(cancelButton, HPos.CENTER);
         GridPane.setValignment(cancelButton, VPos.CENTER);
         cancelButton.setMaxSize(BASE_WIDTH, BASE_HEIGHT);
         cancelButton.setMinSize(BASE_WIDTH, BASE_HEIGHT);
         cancelButton.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
+
+        cancelButton.setOnAction(e -> {
+            qupath.setIsStack(isStack);
+            qupath.setStackDelay(delay);
+            qupath.setStackFilePath(stackFilePath);
+            exportLabel.setText("Export to: " + stackFilePath);
+            dialog.close();
+        });
 
         overallPane.add(singleStackToggle, 0, 0, 2, 1);
         overallPane.add(delayLabel, 0, 1, 1, 1);
@@ -169,6 +205,6 @@ public class AnimationSettingsCommand implements Runnable {
             } catch (IOException e) {
             }
         }
-        dialog.show();
+        dialog.showAndWait();
     }
 }
