@@ -317,7 +317,7 @@ class Menus {
 
 		@ActionDescription("Alter the settings for how to animate the stack")
 		@ActionMenu("Project...>Stack...>Animation...>Settings")
-		public final Action ANIMATION_SETTINGS = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+		public final Action ANIMATION_SETTINGS = actionManager.ANIMATION_SETTINGS;
 
 		//TODO: implement starting and stopping the animation
 //		@ActionDescription("Start the animation of the stack")
