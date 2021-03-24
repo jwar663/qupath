@@ -84,6 +84,16 @@ public class AnimationSettingsCommand implements Runnable {
         singleStackToggle.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
         singleStackToggle.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
 
+        singleStackToggle.setOnAction(e -> {
+            if(singleStackToggle.getText().equals("Single")) {
+                singleStackToggle.setText("Stack");
+                qupath.setIsStack(true);
+            } else {
+                singleStackToggle.setText("Single");
+                qupath.setIsStack(false);
+            }
+        });
+
 
         Label delayLabel = new Label("Delay(ms)");
         GridPane.setHalignment(delayLabel, HPos.CENTER);

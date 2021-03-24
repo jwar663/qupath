@@ -220,6 +220,8 @@ public class QuPathGUI {
 	private static QuPathGUI instance;
 
 	private String stackFilePath;
+
+	private boolean isStack = false;
 	
 	private ScriptEditor scriptEditor = null;
 	
@@ -520,6 +522,14 @@ public class QuPathGUI {
 
 	public void setStackDelay(int delay) {
 		stackDelay = delay;
+	}
+
+	public boolean getIsStack() {
+		return isStack;
+	}
+
+	public void setIsStack(boolean stackBoolean) {
+		isStack = stackBoolean;
 	}
 
 
