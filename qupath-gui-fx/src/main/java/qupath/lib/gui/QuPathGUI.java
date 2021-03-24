@@ -601,6 +601,11 @@ public class QuPathGUI {
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
+		 * Show the Animation Settings dialog.
+		 */
+		public final Action ANIMATION_SETTINGS = ActionTools.createAction(new AnimationSettingsCommand(QuPathGUI.this), "Duplicate Matrix");
+
+		/**
 		 * Show the Create Image Stack dialog.
 		 */
 		@ActionAccelerator("shortcut+w")
