@@ -30,6 +30,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
+
+import java.io.File;
 import java.io.IOException;
 
 
@@ -46,11 +49,17 @@ public class AnimationSettingsCommand implements Runnable {
 
     private Stage dialog;
 
-    private String stackFilePath;
+    private String oldStackFilePath;
 
-    private boolean isStack;
+    private boolean oldIsStack;
 
-    private int delay;
+    private int oldDelay;
+
+    private String newStackFilePath;
+
+    private boolean newIsStack;
+
+    private int newDelay;
 
 
     private double BASE_WIDTH = 60;
@@ -76,11 +85,14 @@ public class AnimationSettingsCommand implements Runnable {
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Animation Settings");
 
-        stackFilePath = qupath.getStackFilePath();
+        oldStackFilePath = qupath.getStackFilePath();
+        newStackFilePath = oldStackFilePath;
 
-        isStack = qupath.getIsStack();
+        oldIsStack = qupath.getIsStack();
+        newIsStack = oldIsStack;
 
-        delay = qupath.getStackDelay();
+        oldDelay = qupath.getStackDelay();
+        newDelay = oldDelay;
 
         GridPane overallPane = new GridPane();
         overallPane.setMaxSize(OVERALL_WIDTH - (PADDING * 2), OVERALL_HEIGHT - (PADDING * 2));
@@ -100,10 +112,10 @@ public class AnimationSettingsCommand implements Runnable {
         singleStackToggle.setOnAction(e -> {
             if(singleStackToggle.getText().equals("Single")) {
                 singleStackToggle.setText("Stack");
-                qupath.setIsStack(true);
+                newIsStack = true;
             } else {
                 singleStackToggle.setText("Single");
-                qupath.setIsStack(false);
+                newIsStack = false;
             }
         });
 
@@ -128,7 +140,7 @@ public class AnimationSettingsCommand implements Runnable {
         chooseFolderButton.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
         chooseFolderButton.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
 
-        Label exportLabel = new Label("Export to: " + stackFilePath);
+        Label exportLabel = new Label("Export to: " + oldStackFilePath);
         GridPane.setHalignment(exportLabel, HPos.CENTER);
         GridPane.setValignment(exportLabel, VPos.CENTER);
         exportLabel.setMaxSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
@@ -137,8 +149,8 @@ public class AnimationSettingsCommand implements Runnable {
 
         chooseFolderButton.setOnAction(e -> {
             //TODO: implement or connect a function to choose where to export file
-            String filePath = "get file path command here";
-            qupath.setStackFilePath(filePath);
+            File filePath = Dialogs.promptForDirectory(null);
+            newStackFilePath = filePath.toString();
             exportLabel.setText("Export to: " + filePath);
         });
 
@@ -150,13 +162,17 @@ public class AnimationSettingsCommand implements Runnable {
         confirmButton.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
         confirmButton.setOnAction(e -> {
-            int delayFieldInt = delay;
+            int delayFieldInt = oldDelay;
             try{
                 delayFieldInt = Integer.parseInt(delayField.getText());
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
-            qupath.setStackDelay(delayFieldInt);
+            newDelay = delayFieldInt;
+            qupath.setIsStack(newIsStack);
+            qupath.setStackDelay(newDelay);
+            qupath.setStackFilePath(newStackFilePath);
+            dialog.close();
         });
 
         Button cancelButton = new Button("Cancel");
@@ -167,10 +183,10 @@ public class AnimationSettingsCommand implements Runnable {
         cancelButton.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
         cancelButton.setOnAction(e -> {
-            qupath.setIsStack(isStack);
-            qupath.setStackDelay(delay);
-            qupath.setStackFilePath(stackFilePath);
-            exportLabel.setText("Export to: " + stackFilePath);
+            qupath.setIsStack(oldIsStack);
+            qupath.setStackDelay(oldDelay);
+            qupath.setStackFilePath(oldStackFilePath);
+            exportLabel.setText("Export to: " + oldStackFilePath);
             dialog.close();
         });
 
