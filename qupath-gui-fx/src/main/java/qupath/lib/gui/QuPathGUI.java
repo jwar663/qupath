@@ -219,7 +219,7 @@ public class QuPathGUI {
 	
 	private static QuPathGUI instance;
 
-	String stackFilePath;
+	private String stackFilePath;
 	
 	private ScriptEditor scriptEditor = null;
 	
@@ -317,7 +317,7 @@ public class QuPathGUI {
 	
 	private BooleanProperty scriptRunning = new SimpleBooleanProperty(false);
 
-	private int StackDelay = 250;
+	private int stackDelay = 250;
 
 
 	public boolean checkIfCorrectImageSizes(List<ProjectImageEntry<BufferedImage>> entries) {
@@ -511,7 +511,15 @@ public class QuPathGUI {
 	}
 
 	public int getStackDelay() {
-		return StackDelay;
+		return stackDelay;
+	}
+
+	public void setStackFilePath(String filePath) {
+		stackFilePath = filePath;
+	}
+
+	public void setStackDelay(int delay) {
+		stackDelay = delay;
 	}
 
 

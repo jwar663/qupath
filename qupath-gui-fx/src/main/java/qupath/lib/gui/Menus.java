@@ -319,13 +319,14 @@ class Menus {
 		@ActionMenu("Project...>Stack...>Animation...>Settings")
 		public final Action ANIMATION_SETTINGS = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
 
-		@ActionDescription("Start the animation of the stack")
-		@ActionMenu("Project...>Stack...>Animation...>Start")
-		public final Action ANIMATION_START = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+		//TODO: implement starting and stopping the animation
+//		@ActionDescription("Start the animation of the stack")
+//		@ActionMenu("Project...>Stack...>Animation...>Start")
+//		public final Action ANIMATION_START = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
 
-		@ActionDescription("Stop the animation of the stack")
-		@ActionMenu("Project...>Stack...>Animation...>Stop")
-		public final Action ANIMATION_STOP = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
+//		@ActionDescription("Stop the animation of the stack")
+//		@ActionMenu("Project...>Stack...>Animation...>Stop")
+//		public final Action ANIMATION_STOP = qupath.createStackAction(project -> ProjectCommands.promptToToggleStack(qupath));
 
 		@ActionDescription("Export the stack as a GIF")
 		@ActionMenu("Project...>Stack...>Animation...>Export as GIF")
