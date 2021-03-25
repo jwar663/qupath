@@ -80,6 +80,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
     private Double confirmDouble = 0.0;
     double[] thresholdValues;
+    private float maxPixelIntensity = 0;
 
     public ImageData<BufferedImage> imageData;
 
@@ -646,6 +647,7 @@ public class DuplicateMatrixCommand implements Runnable {
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
         thresholdValues = new double[size];
         thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
+        maxPixelIntensity = ConcatChannelsABI.findMaximumPixelIntensity(img);
 //        System.out.println("threshold value: " + ConcatChannelsABI.getThresholdFromChannels(duplicateMatrix, 7, 0.50));
 
         //larger panes
@@ -837,8 +839,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
@@ -1025,8 +1027,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight());
+                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));

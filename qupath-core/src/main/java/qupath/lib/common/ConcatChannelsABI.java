@@ -322,6 +322,29 @@ public class ConcatChannelsABI {
         return channelMatrix;
     }
 
+
+    /**
+     * Run through the whole image to find the greatest pixel intensity, so it is
+     * possible to find the correct ratio.
+     *
+     * @param img
+     */
+    public static float findMaximumPixelIntensity(BufferedImage img) {
+        float maxValue = 0;
+        float sample = 0;
+        for(int height = 0; height < img.getHeight(); height++) {
+            for(int width = 0; width < img.getWidth(); width++) {
+                for(int band = 0; band < img.getRaster().getNumBands(); band++) {
+                    sample = img.getRaster().getSample(width, height, band);
+                    if(sample > maxValue) {
+                        maxValue = sample;
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
     /**
      * Use the image data to create an associated image with the specified channel.
      * This image will be used to compare to see if the channels are actually different.
@@ -329,7 +352,7 @@ public class ConcatChannelsABI {
      * @param imageData
      * @param channel
      */
-    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight) {
+    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight, float maxValue) {
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
@@ -342,7 +365,7 @@ public class ConcatChannelsABI {
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < height; j++) {
                     //set the red colour, leave the other colours as 0.
-                    bufferedImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                    bufferedImage.getRaster().setSample(i, j, 0, (img.getRaster().getSample(i, j, channel)/maxValue) * 255);
                 }
             }
             grayScaleImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
