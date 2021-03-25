@@ -62,13 +62,13 @@ public class AnimationSettingsCommand implements Runnable {
     private int newDelay;
 
 
-    private double BASE_WIDTH = 60;
+    private double BASE_WIDTH = 100;
     private double BASE_HEIGHT = 25;
 
     private double PADDING = 5;
 
-    private double OVERALL_WIDTH = ((BASE_WIDTH + PADDING) * 2) + PADDING;
-    private double OVERALL_HEIGHT = (5 * (BASE_HEIGHT + PADDING)) + PADDING;
+    private double OVERALL_WIDTH = ((BASE_WIDTH + PADDING) * 5) + PADDING;
+    private double OVERALL_HEIGHT = (2 * (BASE_HEIGHT + PADDING)) + PADDING;
 
 
     /**
@@ -105,9 +105,9 @@ public class AnimationSettingsCommand implements Runnable {
         ToggleButton singleStackToggle = new ToggleButton("Single");
         GridPane.setHalignment(singleStackToggle, HPos.CENTER);
         GridPane.setValignment(singleStackToggle, VPos.CENTER);
-        singleStackToggle.setMaxSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        singleStackToggle.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        singleStackToggle.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
+        singleStackToggle.setMaxSize(BASE_WIDTH, BASE_HEIGHT);
+        singleStackToggle.setMinSize(BASE_WIDTH, BASE_HEIGHT);
+        singleStackToggle.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
         singleStackToggle.setOnAction(e -> {
             if(singleStackToggle.getText().equals("Single")) {
@@ -122,6 +122,7 @@ public class AnimationSettingsCommand implements Runnable {
         Label delayLabel = new Label("Delay(ms)");
         GridPane.setHalignment(delayLabel, HPos.CENTER);
         GridPane.setValignment(delayLabel, VPos.CENTER);
+        delayLabel.setAlignment(Pos.CENTER);
         delayLabel.setMaxSize(BASE_WIDTH, BASE_HEIGHT);
         delayLabel.setMinSize(BASE_WIDTH, BASE_HEIGHT);
         delayLabel.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
@@ -129,6 +130,7 @@ public class AnimationSettingsCommand implements Runnable {
         TextField delayField = new TextField("250");
         GridPane.setHalignment(delayField, HPos.CENTER);
         GridPane.setValignment(delayField, VPos.CENTER);
+        delayField.setAlignment(Pos.CENTER);
         delayField.setMaxSize(BASE_WIDTH, BASE_HEIGHT);
         delayField.setMinSize(BASE_WIDTH, BASE_HEIGHT);
         delayField.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
@@ -136,16 +138,16 @@ public class AnimationSettingsCommand implements Runnable {
         Button chooseFolderButton = new Button("Choose Folder");
         GridPane.setHalignment(chooseFolderButton, HPos.CENTER);
         GridPane.setValignment(chooseFolderButton, VPos.CENTER);
-        chooseFolderButton.setMaxSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        chooseFolderButton.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        chooseFolderButton.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
+        chooseFolderButton.setMaxSize(BASE_WIDTH, BASE_HEIGHT);
+        chooseFolderButton.setMinSize(BASE_WIDTH, BASE_HEIGHT);
+        chooseFolderButton.setPrefSize(BASE_WIDTH, BASE_HEIGHT);
 
         Label exportLabel = new Label("Export to: " + oldStackFilePath);
-        GridPane.setHalignment(exportLabel, HPos.CENTER);
+        GridPane.setHalignment(exportLabel, HPos.LEFT);
         GridPane.setValignment(exportLabel, VPos.CENTER);
-        exportLabel.setMaxSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        exportLabel.setMinSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
-        exportLabel.setPrefSize(OVERALL_WIDTH - (PADDING*2), BASE_HEIGHT);
+        exportLabel.setMaxSize(OVERALL_WIDTH - (PADDING * 3) - BASE_WIDTH, BASE_HEIGHT);
+        exportLabel.setMinSize(OVERALL_WIDTH - (PADDING * 3) - BASE_WIDTH, BASE_HEIGHT);
+        exportLabel.setPrefSize(OVERALL_WIDTH - (PADDING * 3) - BASE_WIDTH, BASE_HEIGHT);
 
         chooseFolderButton.setOnAction(e -> {
             //TODO: implement or connect a function to choose where to export file
@@ -190,13 +192,13 @@ public class AnimationSettingsCommand implements Runnable {
             dialog.close();
         });
 
-        overallPane.add(singleStackToggle, 0, 0, 2, 1);
-        overallPane.add(delayLabel, 0, 1, 1, 1);
-        overallPane.add(delayField, 1, 1, 1, 1);
-        overallPane.add(chooseFolderButton, 0, 2, 2, 1);
-        overallPane.add(exportLabel, 0, 3, 2, 1);
-        overallPane.add(confirmButton, 0, 4, 1, 1);
-        overallPane.add(cancelButton, 1, 4, 1, 1);
+        overallPane.add(singleStackToggle, 0, 1, 1, 1);
+        overallPane.add(delayLabel, 1, 1, 1, 1);
+        overallPane.add(delayField, 2, 1, 1, 1);
+        overallPane.add(chooseFolderButton, 0, 0, 1, 1);
+        overallPane.add(exportLabel, 1, 0, 4, 1);
+        overallPane.add(confirmButton, 3, 1, 1, 1);
+        overallPane.add(cancelButton, 4, 1, 1, 1);
 
         Scene scene = new Scene(overallPane, OVERALL_WIDTH, OVERALL_HEIGHT);
         dialog.setScene(scene);
