@@ -638,12 +638,23 @@ public class DuplicateMatrixCommand implements Runnable {
         int size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
         originalImg = ConcatChannelsABI.convertImageDataToImage(imageData);
+
+        //complete removing af for all values
+//        if(!qupath.getProject().isEmpty()) {
+//            autofluorescenceImg = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(1).readImageData());
+//            img = ConcatChannelsABI.subtractAF(originalImg, autofluorescenceImg, true);
+//        } else {
+//            img = originalImg;
+//        }
+
+        //complete without removing af when the value is less than af
         if(!qupath.getProject().isEmpty()) {
             autofluorescenceImg = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(1).readImageData());
-            img = ConcatChannelsABI.subtractAF(originalImg, autofluorescenceImg);
+            img = ConcatChannelsABI.subtractAF(originalImg, autofluorescenceImg, false);
         } else {
             img = originalImg;
         }
+       // img = originalImg;
         duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
         thresholdValues = new double[size];
         thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
@@ -683,7 +694,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
-                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
+                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
                 exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();

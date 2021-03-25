@@ -192,7 +192,10 @@ public class ConcatChannelsABI {
         setChannelColors(imageData, regularChannelColourArray);
     }
 
-    public static BufferedImage subtractAF(BufferedImage originalIMG, BufferedImage autofluorescenceIMG) {
+    public static BufferedImage subtractAF(BufferedImage originalIMG, BufferedImage autofluorescenceIMG, boolean minusAll) {
+        float maxOriginalPixel = findMaximumPixelIntensity(originalIMG);
+        float maxAFPixel = findMaximumPixelIntensity(autofluorescenceIMG);
+
         if(originalIMG.getHeight() != autofluorescenceIMG.getHeight() || originalIMG.getWidth() != autofluorescenceIMG.getWidth()) {
             return originalIMG;
         } else {
@@ -205,9 +208,14 @@ public class ConcatChannelsABI {
                     for(int b = 0; b < resultImage.getRaster().getNumBands(); b++) {
                         originalImgValue = originalIMG.getRaster().getSample(i, j, b);
                         if(originalImgValue >= autofluorescenceImgValue) {
-                            resultImage.getRaster().setSample(i, j, b, originalImgValue - autofluorescenceImgValue);
+                            resultImage.getRaster().setSample(i, j, b, (originalImgValue/maxOriginalPixel - autofluorescenceImgValue/maxAFPixel) * 255);
                         } else {
-                            resultImage.getRaster().setSample(i, j, b, originalImgValue);
+                            if(minusAll) {
+                                resultImage.getRaster().setSample(i, j, b, 0);
+                            } else {
+                                resultImage.getRaster().setSample(i, j, b, originalImgValue/maxOriginalPixel * 255);
+                            }
+
                         }
                     }
                 }

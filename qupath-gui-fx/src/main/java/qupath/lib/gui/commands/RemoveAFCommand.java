@@ -117,6 +117,15 @@ public class RemoveAFCommand implements Runnable {
         Button buttonTiffMinusSome = DuplicateMatrixCommand.createThresholdConfirm();
         buttonTiffMinusAll.setText("Tiff Minus All");
         buttonTiffMinusSome.setText("Tiff Minus Some");
+
+        buttonTiffMinusAll.setMaxWidth(120);
+        buttonTiffMinusAll.setPrefWidth(120);
+        buttonTiffMinusAll.setMinWidth(120);
+
+        buttonTiffMinusSome.setMaxWidth(120);
+        buttonTiffMinusSome.setPrefWidth(120);
+        buttonTiffMinusSome.setMinWidth(120);
+
         overallPane.add(buttonTiffMinusAll, 0, 0);
         overallPane.add(buttonTiffMinusSome, 1, 0);
         buttonTiffMinusAll.setOnAction(e -> {
@@ -151,8 +160,19 @@ public class RemoveAFCommand implements Runnable {
         Button buttonIm3MinusSome = DuplicateMatrixCommand.createThresholdConfirm();
         buttonIm3MinusAll.setText("Tiff Minus All");
         buttonIm3MinusSome.setText("Tiff Minus Some");
-        overallPane.add(buttonIm3MinusAll, 2, 0);
-        overallPane.add(buttonIm3MinusSome, 3, 0);
+
+        buttonIm3MinusAll.setMaxWidth(120);
+        buttonIm3MinusAll.setPrefWidth(120);
+        buttonIm3MinusAll.setMinWidth(120);
+
+        buttonIm3MinusSome.setMaxWidth(120);
+        buttonIm3MinusSome.setPrefWidth(120);
+        buttonIm3MinusSome.setMinWidth(120);
+
+        overallPane.add(buttonIm3MinusAll, 0, 1);
+        overallPane.add(buttonIm3MinusSome, 1, 1);
+
+        //kind of pointless at this point
         buttonIm3MinusAll.setOnAction(e -> {
             String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.101);
             viewer.setImageData(ConcatChannelsABI.removeAF(true, imageData));
@@ -167,6 +187,8 @@ public class RemoveAFCommand implements Runnable {
             }
         });
 
+
+        //kind of pointless at this point
         buttonIm3MinusSome.setOnAction(e -> {
             String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.010);
             viewer.setImageData(ConcatChannelsABI.removeAF(false, imageData));
