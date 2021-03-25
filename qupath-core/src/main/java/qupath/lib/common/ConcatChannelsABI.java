@@ -331,7 +331,7 @@ public class ConcatChannelsABI {
      */
     public static float findMaximumPixelIntensity(BufferedImage img) {
         float maxValue = 0;
-        float sample = 0;
+        float sample;
         for(int height = 0; height < img.getHeight(); height++) {
             for(int width = 0; width < img.getWidth(); width++) {
                 for(int band = 0; band < img.getRaster().getNumBands(); band++) {
@@ -414,6 +414,8 @@ public class ConcatChannelsABI {
         }
         return img;
     }
+
+
 
     /**
      * Input a tiff image that includes the autofluorescence channel and subtract that from the image and return it.

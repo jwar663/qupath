@@ -113,13 +113,13 @@ public class RemoveAFCommand implements Runnable {
         }
 
         GridPane overallPane = DuplicateMatrixCommand.createThresholdPane();
-        Button buttonTrue = DuplicateMatrixCommand.createThresholdConfirm();
-        Button buttonFalse = DuplicateMatrixCommand.createThresholdConfirm();
-        buttonTrue.setText("True");
-        buttonFalse.setText("False");
-        overallPane.add(buttonTrue, 0, 0);
-        overallPane.add(buttonFalse, 1, 0);
-        buttonTrue.setOnAction(e -> {
+        Button buttonTiffMinusAll = DuplicateMatrixCommand.createThresholdConfirm();
+        Button buttonTiffMinusSome = DuplicateMatrixCommand.createThresholdConfirm();
+        buttonTiffMinusAll.setText("Tiff Minus All");
+        buttonTiffMinusSome.setText("Tiff Minus Some");
+        overallPane.add(buttonTiffMinusAll, 0, 0);
+        overallPane.add(buttonTiffMinusSome, 1, 0);
+        buttonTiffMinusAll.setOnAction(e -> {
             String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.101);
             viewer.setImageData(ConcatChannelsABI.removeAF(true, imageData));
             DuplicateMatrixCommand.exportImage(viewer, filePath);
@@ -133,7 +133,41 @@ public class RemoveAFCommand implements Runnable {
             }
         });
 
-        buttonFalse.setOnAction(e -> {
+        buttonTiffMinusSome.setOnAction(e -> {
+            String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.010);
+            viewer.setImageData(ConcatChannelsABI.removeAF(false, imageData));
+            DuplicateMatrixCommand.exportImage(viewer, filePath);
+            if(dialog.isShowing()) {
+                dialog.close();
+            }
+            try {
+                qupath.openImage(viewer, filePath + ".tif", false, false);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        });
+
+        Button buttonIm3MinusAll = DuplicateMatrixCommand.createThresholdConfirm();
+        Button buttonIm3MinusSome = DuplicateMatrixCommand.createThresholdConfirm();
+        buttonIm3MinusAll.setText("Tiff Minus All");
+        buttonIm3MinusSome.setText("Tiff Minus Some");
+        overallPane.add(buttonIm3MinusAll, 2, 0);
+        overallPane.add(buttonIm3MinusSome, 3, 0);
+        buttonIm3MinusAll.setOnAction(e -> {
+            String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.101);
+            viewer.setImageData(ConcatChannelsABI.removeAF(true, imageData));
+            DuplicateMatrixCommand.exportImage(viewer, filePath);
+            if(dialog.isShowing()) {
+                dialog.close();
+            }
+            try {
+                qupath.openImage(viewer, filePath + ".tif", false, false);
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        });
+
+        buttonIm3MinusSome.setOnAction(e -> {
             String filePath = DuplicateMatrixCommand.getFilePath(viewer, 0.010);
             viewer.setImageData(ConcatChannelsABI.removeAF(false, imageData));
             DuplicateMatrixCommand.exportImage(viewer, filePath);
