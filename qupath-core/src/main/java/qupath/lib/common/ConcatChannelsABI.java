@@ -152,8 +152,10 @@ public class ConcatChannelsABI {
      */
     public static void createSingleImageGIF(ImageData imageData, String filepath, int delayTime) throws Exception {
         BufferedImage[] channelImages = new BufferedImage[imageData.getServer().nChannels()];
+        BufferedImage img = convertImageDataToImage(imageData);
+        float maxPixel = findMaximumPixelIntensity(img);
         for(int i = 0; i < imageData.getServer().nChannels(); i++) {
-            channelImages[i] = singleChannelImage(imageData, i, imageData.getServer().getWidth(), imageData.getServer().getHeight())[1];
+            channelImages[i] = singleChannelImage(imageData, i, imageData.getServer().getWidth(), imageData.getServer().getHeight(), maxPixel)[1];
         }
         //singleChannelImage()
         ImageOutputStream output = new FileImageOutputStream(new File(filepath + ".gif"));
