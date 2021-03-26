@@ -103,6 +103,22 @@ public class ConcatChannelsABI {
         output.close();
     }
 
+    public static void createSingleImageGIF(ImageData imageData, String filepath, int delayTime) throws Exception {
+        BufferedImage[] channelImages = new BufferedImage[imageData.getServer().nChannels()];
+        for(int i = 0; i < imageData.getServer().nChannels(); i++) {
+            channelImages[i] = singleChannelImage(imageData, i, imageData.getServer().getWidth(), imageData.getServer().getHeight())[1];
+        }
+        //singleChannelImage()
+        ImageOutputStream output = new FileImageOutputStream(new File(filepath + ".gif"));
+        GifSequenceWriter writer = new GifSequenceWriter(output, channelImages[0].getType(), delayTime, true);
+
+        for(BufferedImage image : channelImages) {
+            writer.writeToSequence(image);
+        }
+        writer.close();
+        output.close();
+    }
+
     /**
      * @author Pete Bankhead
      * Set the channel colors for the specified ImageData.
