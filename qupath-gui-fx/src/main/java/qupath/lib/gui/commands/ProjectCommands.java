@@ -48,6 +48,7 @@ import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.prefs.PathPrefs;
 import qupath.lib.gui.viewer.QuPathViewer;
+import qupath.lib.images.ImageData;
 import qupath.lib.images.ImageData.ImageType;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerProvider;
@@ -118,21 +119,31 @@ public class ProjectCommands {
 	}
 
 	public static void exportStackAsGIF(QuPathGUI qupath){
-		BufferedImage[] images = new BufferedImage[qupath.getProject().getImageList().size()];
 		String filePath = qupath.getStackFilePath();
 		int delay = qupath.getStackDelay();
-		for(int i = 0; i < images.length; i++) {
+		if(qupath.getIsStack()) {
+			BufferedImage[] images = new BufferedImage[qupath.getProject().getImageList().size()];
+			for(int i = 0; i < images.length; i++) {
+				try {
+					images[i] = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(i).readImageData());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
 			try {
-				images[i] = ConcatChannelsABI.convertImageDataToImage(qupath.getProject().getImageList().get(i).readImageData());
-			} catch (IOException e) {
+				ConcatChannelsABI.createGIF(images, filePath + "-gif", delay);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			ImageData imageData = qupath.getImageData();
+			try {
+				ConcatChannelsABI.createSingleImageGIF(imageData, filePath + "-gif", delay);
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		try {
-			ConcatChannelsABI.createGIF(images, filePath + "gif", delay);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	/**
