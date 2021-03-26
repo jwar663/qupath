@@ -91,6 +91,13 @@ public class ConcatChannelsABI {
         return distinct;
     }
 
+    /**
+     * Create a gif file and export it to the chosen file path. This gif image will contain separate images.
+     *
+     * @param images
+     * @param filepath
+     * @param delayTime
+     */
     public static void createGIF(BufferedImage[] images, String filepath, int delayTime) throws Exception {
         BufferedImage first = images[0];
         ImageOutputStream output = new FileImageOutputStream(new File(filepath + ".gif"));
@@ -103,6 +110,14 @@ public class ConcatChannelsABI {
         output.close();
     }
 
+
+    /**
+     * Create a gif file and export it to the chosen file path. This gif image will contain each channel of the image separated.
+     *
+     * @param imageData
+     * @param filepath
+     * @param delayTime
+     */
     public static void createSingleImageGIF(ImageData imageData, String filepath, int delayTime) throws Exception {
         BufferedImage[] channelImages = new BufferedImage[imageData.getServer().nChannels()];
         for(int i = 0; i < imageData.getServer().nChannels(); i++) {
