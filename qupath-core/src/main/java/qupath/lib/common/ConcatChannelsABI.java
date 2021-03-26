@@ -92,6 +92,13 @@ public class ConcatChannelsABI {
         return distinct;
     }
 
+    /**
+     * Run the getThresholdFromChannels method for each different number
+     * of possible channels that could be selected. This will usually be between
+     * 1 and 43
+     *
+     * @param crossCorrelationMatrix
+     */
     public static double[] getAllThresholdValues(float[][] crossCorrelationMatrix) {
         double[] result = new double[crossCorrelationMatrix.length - 1];
         double thresholdValue = 0.50;
@@ -102,6 +109,15 @@ public class ConcatChannelsABI {
         return result;
     }
 
+
+    /**
+     * Find out the correct threshold value, considering the number of channels that are expected
+     * and the relevant cross correlation matrix.
+     *
+     * @param crossCorrelationMatrix
+     * @param numberOfChannelsRequired
+     * @param startThreshold
+     */
     public static double getThresholdFromChannels(float[][] crossCorrelationMatrix, int numberOfChannelsRequired, double startThreshold) {
         double result = startThreshold;
         double upperValue = 1;

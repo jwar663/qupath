@@ -246,6 +246,14 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewMatrix;
     }
 
+    /**
+     * Make sure the two preview images are being scrolled through at
+     * the same time, so you are viewing the same part of each image at all
+     * times.
+     *
+     * @param image1Scroll
+     * @param image2
+     */
     public static void bindImages(ScrollPane image1Scroll, ImageView image2) {
         image1Scroll.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(image2, ((image2.getImage().getHeight() - image1Scroll.getHeight()) * newValue.doubleValue()) * -1.0);
@@ -255,6 +263,11 @@ public class DuplicateMatrixCommand implements Runnable {
         });
     }
 
+    /**
+     * Make sure you cannot use the mousewheel to scroll through the matrix.
+     *
+     * @param labelScroll
+     */
     public static void counterMouseWheel(ScrollPane labelScroll) {
         labelScroll.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
             @Override
@@ -264,6 +277,15 @@ public class DuplicateMatrixCommand implements Runnable {
         });
     }
 
+    /**
+     * The matrix and labels are stored in scrollpanes. Assign them to move together so
+     * it seems to be connected.
+     *
+     * @param matrix
+     * @param horizontalLabels
+     * @param verticalLabels
+     * @param size
+     */
     public static void bindMatrixToHeaders(ScrollPane matrix, GridPane horizontalLabels, GridPane verticalLabels, double size) {
         matrix.vvalueProperty().addListener((ov, oldValue, newValue) -> {
             AnchorPane.setTopAnchor(verticalLabels, ((size * BUTTON_LABEL_HEIGHT - matrix.getHeight() + SCROLL_BAR_FONT_SIZE) * newValue.doubleValue()) * -1.0);
@@ -274,6 +296,14 @@ public class DuplicateMatrixCommand implements Runnable {
 
     }
 
+
+    /**
+     * Use the similarity value between two channels to find a colour that
+     * represents how similar it is. Values that are 0.5 or lower will always be red,
+     * and the closer you get to 1 will have a green colour.
+     *
+     * @param value
+     */
     public static String getHeatmapColour(double value) {
         double maxColour = 255;
         double minColour = 0;
