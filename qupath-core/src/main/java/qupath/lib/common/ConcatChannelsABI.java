@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.Buffer;
+import java.sql.Time;
 import java.util.*;
 import java.util.List;
 
@@ -89,6 +90,37 @@ public class ConcatChannelsABI {
             }
         }
         return distinct;
+    }
+
+    public static double[] getAllThresholdValues(float[][] crossCorrelationMatrix) {
+        double[] result = new double[crossCorrelationMatrix.length - 1];
+        double thresholdValue = 0.50;
+        for(int i = 1; i < crossCorrelationMatrix.length; i++) {
+            result[i - 1] = getThresholdFromChannels(crossCorrelationMatrix, i, thresholdValue);
+            thresholdValue = result[i - 1];
+        }
+        return result;
+    }
+
+    public static double getThresholdFromChannels(float[][] crossCorrelationMatrix, int numberOfChannelsRequired, double startThreshold) {
+        double result = startThreshold;
+        double upperValue = 1;
+        double lowerValue = 0;
+        int returnedChannels;
+        int iteration = 0;
+        while(true) {
+            returnedChannels = distinctChannels(crossCorrelationMatrix, result).size();
+            if(returnedChannels == numberOfChannelsRequired || iteration >= 100) {
+                return result;
+            } else if(returnedChannels > numberOfChannelsRequired) {
+                upperValue = result;
+                result = result - (result - lowerValue)/2;
+            } else {
+                lowerValue = result;
+                result = result + (upperValue - result)/2;
+            }
+            iteration++;
+        }
     }
 
     /**
@@ -311,6 +343,29 @@ public class ConcatChannelsABI {
         return channelMatrix;
     }
 
+
+    /**
+     * Run through the whole image to find the greatest pixel intensity, so it is
+     * possible to find the correct ratio.
+     *
+     * @param img
+     */
+    public static float findMaximumPixelIntensity(BufferedImage img) {
+        float maxValue = 0;
+        float sample = 0;
+        for(int height = 0; height < img.getHeight(); height++) {
+            for(int width = 0; width < img.getWidth(); width++) {
+                for(int band = 0; band < img.getRaster().getNumBands(); band++) {
+                    sample = img.getRaster().getSample(width, height, band);
+                    if(sample > maxValue) {
+                        maxValue = sample;
+                    }
+                }
+            }
+        }
+        return maxValue;
+    }
+
     /**
      * Use the image data to create an associated image with the specified channel.
      * This image will be used to compare to see if the channels are actually different.
@@ -318,7 +373,7 @@ public class ConcatChannelsABI {
      * @param imageData
      * @param channel
      */
-    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight) {
+    public static BufferedImage[] singleChannelImage(ImageData<BufferedImage> imageData, int channel, int desiredWidth, int desiredHeight, float maxValue) {
         RegionRequest request = RegionRequest.createInstance(imageData.getServer());
         int width = imageData.getServer().getMetadata().getWidth();
         int height = imageData.getServer().getMetadata().getHeight();
@@ -331,7 +386,7 @@ public class ConcatChannelsABI {
             for(int i = 0; i < width; i++) {
                 for(int j = 0; j < height; j++) {
                     //set the red colour, leave the other colours as 0.
-                    bufferedImage.getRaster().setSample(i, j, 0, img.getRaster().getSample(i, j, channel)/20);
+                    bufferedImage.getRaster().setSample(i, j, 0, (img.getRaster().getSample(i, j, channel)/maxValue) * 255);
                 }
             }
             grayScaleImages[1] = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
