@@ -21,6 +21,7 @@
 
 package qupath.lib.gui.commands;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -33,6 +34,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
@@ -144,6 +147,43 @@ public class ProjectCommands {
 			}
 		}
 
+	}
+
+
+	/**
+	 * Show prompt for the user to select images to import into the current project in QuPath.
+	 *
+	 * @author Jaedyn Ward
+	 *
+	 * @param qupath
+	 *
+	 */
+	public static void startStackAnimation(QuPathGUI qupath) {
+		QuPathViewer viewer = qupath.getViewer();
+		// ExecutorService es = Executors.newSingleThreadExecutor();
+		qupath.setAnimationIsOn(true);
+		boolean animationIsOn = qupath.getAnimationIsOn();
+		int projectNumber = 0;
+		ImageData currentImage;
+		//TODO: add this loop to a separate thread
+		while(animationIsOn) {
+			try {
+				if(projectNumber >= qupath.getProject().getImageList().size()) {
+					projectNumber = 0;
+				}
+				currentImage = qupath.getProject().getImageList().get(projectNumber).readImageData();
+				viewer.setImageData(currentImage);
+				projectNumber++;
+				animationIsOn = qupath.getAnimationIsOn();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			try {
+				Thread.currentThread().wait(qupath.getStackDelay());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**

@@ -222,6 +222,8 @@ public class QuPathGUI {
 	private String stackFilePath;
 
 	private boolean isStack = false;
+
+	private boolean animationIsOn = false;
 	
 	private ScriptEditor scriptEditor = null;
 	
@@ -532,8 +534,16 @@ public class QuPathGUI {
 		isStack = stackBoolean;
 	}
 
+	public void setAnimationIsOn(boolean animation) {
+		animationIsOn = animation;
+	}
 
-	/**
+    public boolean getAnimationIsOn() {
+		return animationIsOn;
+    }
+
+
+    /**
 	 * Default actions associated with a specific QuPath instance.
 	 * These are useful for generating toolbars and context menus, ensuring that the same actions are used consistently.
 	 */
