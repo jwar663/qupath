@@ -151,7 +151,7 @@ public class ProjectCommands {
 
 
 	/**
-	 * Show prompt for the user to select images to import into the current project in QuPath.
+	 * Allow the user to start a stack animation if all prerequisites are completed
 	 *
 	 * @author Jaedyn Ward
 	 *
@@ -184,6 +184,18 @@ public class ProjectCommands {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * Stop the stack animation.
+	 *
+	 * @author Jaedyn Ward
+	 *
+	 * @param qupath
+	 *
+	 */
+	public static void stopStackAnimation(QuPathGUI qupath) {
+		qupath.setAnimationIsOn(false);
 	}
 	
 	/**
