@@ -984,8 +984,8 @@ public class DuplicateMatrixCommand implements Runnable {
         Label placeholderLabel = createMatrixLabel("", true);
         horizontalLabelPane.add(placeholderLabel, 0, 0);
         for(int i = 0; i < size; i++) {
-            Label tempVerticalLabel = createMatrixLabel(Integer.toString(i + 1), true);
-            Label tempHorizontalLabel = createMatrixLabel(Integer.toString(i + 1), false);
+            Label tempVerticalLabel = createMatrixLabel(Integer.toString(distinctChannels.get(i) + 1), true);
+            Label tempHorizontalLabel = createMatrixLabel(Integer.toString(distinctChannels.get(i) + 1), false);
 
             horizontalLabelPane.add(tempHorizontalLabel, i + 1, 0);
             verticalLabelPane.add(tempVerticalLabel, 0, i);
