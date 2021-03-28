@@ -224,6 +224,8 @@ public class QuPathGUI {
 	private boolean isStack = false;
 
 	private boolean animationIsOn = false;
+
+	private boolean animationSettings = false;
 	
 	private ScriptEditor scriptEditor = null;
 	
@@ -541,6 +543,14 @@ public class QuPathGUI {
     public boolean getAnimationIsOn() {
 		return animationIsOn;
     }
+
+	public void setAnimationSettingsIsSet(boolean animationSettingsIsSet) {
+		animationSettings = animationSettingsIsSet;
+	}
+
+	public boolean getAnimationSettings() {
+		return animationSettings;
+	}
 
 
     /**

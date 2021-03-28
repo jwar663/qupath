@@ -174,6 +174,7 @@ public class AnimationSettingsCommand implements Runnable {
             qupath.setIsStack(newIsStack);
             qupath.setStackDelay(newDelay);
             qupath.setStackFilePath(newStackFilePath);
+            qupath.setAnimationSettingsIsSet(true);
             dialog.close();
         });
 

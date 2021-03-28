@@ -159,30 +159,34 @@ public class ProjectCommands {
 	 *
 	 */
 	public static void startStackAnimation(QuPathGUI qupath) {
-		QuPathViewer viewer = qupath.getViewer();
-		// ExecutorService es = Executors.newSingleThreadExecutor();
-		qupath.setAnimationIsOn(true);
-		boolean animationIsOn = qupath.getAnimationIsOn();
-		int projectNumber = 0;
-		ImageData currentImage;
-		//TODO: add this loop to a separate thread
-		while(animationIsOn) {
-			try {
-				if(projectNumber >= qupath.getProject().getImageList().size()) {
-					projectNumber = 0;
+		if(qupath.getAnimationSettings()) {
+			QuPathViewer viewer = qupath.getViewer();
+			// ExecutorService es = Executors.newSingleThreadExecutor();
+			qupath.setAnimationIsOn(true);
+			boolean animationIsOn = qupath.getAnimationIsOn();
+			int projectNumber = 0;
+			ImageData currentImage;
+			//TODO: add this loop to a separate thread
+			while(animationIsOn) {
+				try {
+					if(projectNumber >= qupath.getProject().getImageList().size()) {
+						projectNumber = 0;
+					}
+					currentImage = qupath.getProject().getImageList().get(projectNumber).readImageData();
+					viewer.setImageData(currentImage);
+					projectNumber++;
+					animationIsOn = qupath.getAnimationIsOn();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				currentImage = qupath.getProject().getImageList().get(projectNumber).readImageData();
-				viewer.setImageData(currentImage);
-				projectNumber++;
-				animationIsOn = qupath.getAnimationIsOn();
-			} catch (IOException e) {
-				e.printStackTrace();
+				try {
+					Thread.currentThread().wait(qupath.getStackDelay());
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
-			try {
-				Thread.currentThread().wait(qupath.getStackDelay());
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+		} else {
+			Dialogs.showErrorMessage("Error", "You must assign animation settings before starting animation");
 		}
 	}
 
@@ -195,7 +199,11 @@ public class ProjectCommands {
 	 *
 	 */
 	public static void stopStackAnimation(QuPathGUI qupath) {
-		qupath.setAnimationIsOn(false);
+		if(qupath.getAnimationIsOn()) {
+			qupath.setAnimationIsOn(false);
+		} else {
+			Dialogs.showErrorMessage("Error", "You need to start an animation before you can stop it.");
+		}
 	}
 	
 	/**
