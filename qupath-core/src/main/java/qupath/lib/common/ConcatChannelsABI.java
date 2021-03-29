@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.image.*;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.Buffer;
 import java.sql.Time;
 import java.util.*;
 import java.util.List;
@@ -222,6 +223,33 @@ public class ConcatChannelsABI {
             }
             return resultImage;
         }
+    }
+
+    public static ImageData removeMappedAF(ImageData originalImageData, ImageData autofluorescenceData) {
+        ArrayList<Integer> keepChannels = new ArrayList<>();
+        List<ImageChannel> channels = new ArrayList<>();
+         for(int i = 0; i < originalImageData.getServer().nChannels(); i++) {
+            keepChannels.add(i);
+            channels.add(originalImageData.getServer().getChannel(i));
+        }
+        BufferedImage originalImage = convertImageDataToImage(originalImageData);
+        BufferedImage autofluorescence = convertImageDataToImage(autofluorescenceData);
+        BufferedImage resultImage = createNewBufferedImage(keepChannels, originalImage);
+        for(int x = 0; x < originalImage.getWidth(); x++) {
+            for(int y = 0; y < originalImage.getHeight(); y++) {
+                for(int band = 0; band < originalImageData.getServer().nChannels(); band++) {
+                    resultImage.getRaster().setSample(x, y, band, originalImage.getRaster().getSample(x, y, band) - autofluorescence.getRaster().getSample(x, y, band));
+//                    System.out.println("resultImage: " + resultImage.getRaster().getSample(x, y, band));
+//                    System.out.println("originalImage: " + originalImage.getRaster().getSample(x, y, band));
+//                    System.out.println("autofluorescence: " + autofluorescence.getRaster().getSample(x, y, band));
+                }
+            }
+        }
+        ImageServer newServer = new WrappedBufferedImageServer(originalImageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        resultImageData.setImageType(ImageData.ImageType.FLUORESCENCE);
+        setRegularChannelNames(resultImageData);
+        return resultImageData;
     }
 
     /**

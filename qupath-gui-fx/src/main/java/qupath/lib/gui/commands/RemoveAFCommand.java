@@ -24,24 +24,12 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -49,13 +37,10 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import qupath.lib.common.ConcatChannelsABI;
-import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
-import qupath.lib.images.servers.*;
-import qupath.lib.images.writers.ImageWriter;
-import qupath.lib.images.writers.ImageWriterTools;
 
 /**
  * Command to show a Duplicate Matrix widget to preview and decide which threshold
@@ -70,11 +55,6 @@ public class RemoveAFCommand implements Runnable {
     private QuPathViewer viewer;
 
     private Stage dialog;
-
-    private float[][] duplicateMatrix;
-    private BufferedImage originalImg;
-    private BufferedImage autofluorescenceImg;
-    private BufferedImage img;
 
     public ImageData<BufferedImage> imageData;
 
@@ -93,6 +73,7 @@ public class RemoveAFCommand implements Runnable {
         Stage dialog = new Stage();
         dialog.initOwner(qupath.getStage());
         dialog.setTitle("Remove AF");
+
 
         imageData = qupath.getImageData();
         if(imageData == null) {
@@ -161,6 +142,33 @@ public class RemoveAFCommand implements Runnable {
         buttonIm3MinusAll.setText("Tiff Minus All");
         buttonIm3MinusSome.setText("Tiff Minus Some");
 
+        Button removeAFMapChannels = DuplicateMatrixCommand.createThresholdConfirm();
+        removeAFMapChannels.setText("Two im3 images");
+
+        removeAFMapChannels.setMaxWidth(120);
+        removeAFMapChannels.setPrefWidth(120);
+        removeAFMapChannels.setMinWidth(120);
+
+        removeAFMapChannels.setOnAction(e -> {
+            try {
+                ImageData autofluorescenceData = qupath.getProject().getImageList().get(1).readImageData();
+                String filePath = DuplicateMatrixCommand.getFilePath(viewer, 1.1);
+                viewer.setImageData(ConcatChannelsABI.removeMappedAF(imageData, autofluorescenceData));
+                DuplicateMatrixCommand.exportImage(viewer, filePath);
+            } catch (IOException ioException) {
+                Dialogs.showErrorMessage("Error", "Please open a valid project");
+                ioException.printStackTrace();
+            }
+            if(dialog.isShowing()) {
+                dialog.close();
+            }
+//            try {
+//                qupath.openImage(viewer, filePath + ".tif", false, false);
+//            } catch (IOException exception) {
+//                exception.printStackTrace();
+//            }
+        });
+
         buttonIm3MinusAll.setMaxWidth(120);
         buttonIm3MinusAll.setPrefWidth(120);
         buttonIm3MinusAll.setMinWidth(120);
@@ -171,6 +179,8 @@ public class RemoveAFCommand implements Runnable {
 
         overallPane.add(buttonIm3MinusAll, 0, 1);
         overallPane.add(buttonIm3MinusSome, 1, 1);
+        overallPane.add(removeAFMapChannels, 0, 2, 2, 1);
+
 
         //kind of pointless at this point
         buttonIm3MinusAll.setOnAction(e -> {
