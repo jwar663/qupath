@@ -658,7 +658,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
-                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, Double.parseDouble(thresholdValue)));
+                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
                 exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();

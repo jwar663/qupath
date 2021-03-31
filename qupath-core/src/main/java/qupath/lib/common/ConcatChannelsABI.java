@@ -105,6 +105,7 @@ public class ConcatChannelsABI {
         while(true) {
             returnedChannels = distinctChannels(crossCorrelationMatrix, result).size();
             if(returnedChannels == numberOfChannelsRequired || iteration >= 100) {
+                System.out.println(numberOfChannelsRequired + ", " + result);
                 return result;
             } else if(returnedChannels > numberOfChannelsRequired) {
                 upperValue = result;
@@ -131,13 +132,13 @@ public class ConcatChannelsABI {
         List<ImageChannel> oldChannels = imageData.getServer().getMetadata().getChannels();
         List<ImageChannel> newChannels = new ArrayList<>(oldChannels);
         for (int i = 0; i < oldChannels.size(); i++) {
+            if (i >= newChannels.size()) {
+                break;
+            }
             Integer color = colors[i];
             if (color == null)
                 continue;
             newChannels.set(i, ImageChannel.getInstance(newChannels.get(i).getName(), color));
-            if (i >= newChannels.size()) {
-                break;
-            }
         }
         setChannels(imageData, newChannels.toArray(ImageChannel[]::new));
     }
@@ -185,7 +186,7 @@ public class ConcatChannelsABI {
         regularChannelColourArray[4] = ColorTools.makeRGB(DAPI[0], DAPI[1], DAPI[2]); //DAPI
         regularChannelColourArray[5] = ColorTools.makeRGB(DL680_DUNBAR[0], DL680_DUNBAR[1], DL680_DUNBAR[2]); //DL680_Dunbar
         regularChannelColourArray[6] = ColorTools.makeRGB(DL755_DUNBAR[0], DL755_DUNBAR[1], DL755_DUNBAR[2]); //DL755_Dunbar
-        setChannelColors(imageData, regularChannelColourArray);
+        //setChannelColors(imageData, regularChannelColourArray);
     }
 
     /**
