@@ -48,8 +48,7 @@ import qupath.lib.images.writers.ImageWriter;
 import qupath.lib.images.writers.ImageWriterTools;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,7 +68,9 @@ public class CorrectStainCommand implements Runnable {
 
     private Stage dialog;
 
-    public ImageData<BufferedImage> imageData;
+    private ImageData<BufferedImage> imageData;
+
+    private double[][] proportionArray;
 
     //dimensions
     private double BUTTON_WIDTH = 60.0;
@@ -77,6 +78,9 @@ public class CorrectStainCommand implements Runnable {
 
     private double OVERALL_WIDTH = BUTTON_WIDTH*6 + 15;
     private double OVERALL_HEIGHT = BUTTON_HEIGHT*2 + 15;
+
+    private int numberOfChannels;
+    private int numberOfStains = 7;
 
 
 
@@ -101,6 +105,25 @@ public class CorrectStainCommand implements Runnable {
             filePath = GeneralTools.getNameWithoutExtension(Uri.getPath()) + "-distinct-" + thresholdString;
         }
         return filePath;
+    }
+
+    public static double[][] readCSV(String file, double[][] array) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            String[] lineArray;
+            for(int i = 0; i < array[0].length; i++) {
+                line = br.readLine();
+                lineArray = line.split(",");
+                for(int j = 0; j < array.length; j++) {
+                    array[j][i] = Double.parseDouble(lineArray[j]);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialogs.showErrorMessage("Invalid File", "Please select a '.csv' file that has the correct number of channels, stains, and numerical values");
+        }
+        return array;
     }
 
     public static void exportImage(QuPathViewer viewer, String filePath, Stage dialog) {
@@ -187,6 +210,9 @@ public class CorrectStainCommand implements Runnable {
             return error;
         }
 
+        numberOfChannels = imageData.getServer().nChannels();
+        proportionArray = new double[numberOfChannels][numberOfStains];
+
 
         Label instructionLabel = new Label("Please select the corresponding '.csv' file: ");
         Label fileLabel = new Label();
@@ -217,7 +243,13 @@ public class CorrectStainCommand implements Runnable {
         });
 
         submitButton.setOnAction(e -> {
-            dialog.close();
+            if(fileLabel.getText() == "") {
+                Dialogs.showErrorMessage("Error", "Please select a '.csv' file");
+            } else {
+                System.out.println("width: " + proportionArray.length + ", height: " + proportionArray[0].length);
+                proportionArray = readCSV(fileLabel.getText(), proportionArray);
+                dialog.close();
+            }
         });
 
         overallPane.add(instructionLabel, 0, 0, 4, 1);
