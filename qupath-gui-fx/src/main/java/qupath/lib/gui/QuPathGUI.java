@@ -527,7 +527,7 @@ public class QuPathGUI {
 		 * Show the Duplicate Matrix dialog.
 		 */
 		@ActionAccelerator("shift+q")
-		public final Action EXPORT_CORRECT_STAINS = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
+		public final Action EXPORT_CORRECT_STAINS = ActionTools.createAction(new CorrectStainCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
 		 * Toggle the image overview display on the viewers.
