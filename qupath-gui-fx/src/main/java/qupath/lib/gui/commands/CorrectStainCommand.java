@@ -40,6 +40,7 @@ import javafx.stage.Stage;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageServer;
@@ -187,8 +188,24 @@ public class CorrectStainCommand implements Runnable {
         }
 
 
-        Label instructionLabel = new Label("Set the correct proportions: ");
-        GridPane
+        Label instructionLabel = new Label("Please select the corresponding '.csv' file: ");
+        Label fileLabel = new Label();
+        Button fileButton = new Button("Choose file");
+        Button submitButton = new Button("Submit");
+
+        fileButton.setOnAction(e -> {
+            File file = Dialogs.promptForFile("Choose Input File", null, ".csv", new String[]{"csv"});
+            fileLabel.setText(file.toString());
+        });
+
+        submitButton.setOnAction(e -> {
+            dialog.close();
+        });
+
+        overallPane.add(instructionLabel, 0, 0, 2, 1);
+        overallPane.add(fileButton, 2, 0, 1, 1);
+        overallPane.add(fileLabel, 0, 1, 2, 1);
+        overallPane.add(submitButton, 2, 1, 1, 1);
 
 
         Scene scene = new Scene(overallPane);

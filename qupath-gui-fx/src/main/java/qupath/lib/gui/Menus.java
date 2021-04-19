@@ -384,7 +384,7 @@ class Menus {
 
 		@ActionDescription("Export an image that represents the correct stains for fluorescent im3 files")
 		@ActionMenu("Export images...>Export original stains")
-		public final Action EXPORT_ORIGINAL_STAINS = actionManager.EXPORT_ORIGINAL_STAINS;
+		public final Action EXPORT_ORIGINAL_STAINS = actionManager.EXPORT_CORRECT_STAINS;
 		
 		@ActionDescription("Export the area of the screen corresponding to the main QuPath window to the clipboard. " + 
 				"This includes any additional overlapping windows and dialog boxes.")
