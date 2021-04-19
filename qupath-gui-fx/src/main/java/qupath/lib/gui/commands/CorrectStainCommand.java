@@ -75,8 +75,8 @@ public class CorrectStainCommand implements Runnable {
     private double BUTTON_WIDTH = 60.0;
     private double BUTTON_HEIGHT = 25.0;
 
-    private double OVERALL_WIDTH = BUTTON_WIDTH*7;
-    private double OVERALL_HEIGHT = BUTTON_HEIGHT*2*9;
+    private double OVERALL_WIDTH = BUTTON_WIDTH*6 + 15;
+    private double OVERALL_HEIGHT = BUTTON_HEIGHT*2 + 15;
 
 
 
@@ -167,7 +167,7 @@ public class CorrectStainCommand implements Runnable {
         dialog.setTitle("Export Correct Stains");
 
         GridPane overallPane = new GridPane();
-        overallPane.setPrefSize(OVERALL_WIDTH, OVERALL_HEIGHT);
+        overallPane.setPrefSize(OVERALL_WIDTH - 10, OVERALL_HEIGHT - 10);
 
         imageData = qupath.getImageData();
         if(imageData == null) {
@@ -193,8 +193,26 @@ public class CorrectStainCommand implements Runnable {
         Button fileButton = new Button("Choose file");
         Button submitButton = new Button("Submit");
 
+        instructionLabel.setPrefSize(BUTTON_WIDTH * 4 + 5*3, BUTTON_HEIGHT);
+        instructionLabel.setAlignment(Pos.CENTER);
+
+        fileLabel.setPrefSize(BUTTON_WIDTH * 6 + 4*3, BUTTON_HEIGHT);
+        fileLabel.setAlignment(Pos.CENTER);
+
+        fileButton.setPrefSize(BUTTON_WIDTH * 2, BUTTON_HEIGHT);
+        fileButton.setAlignment(Pos.CENTER);
+
+        submitButton.setPrefSize(BUTTON_WIDTH, BUTTON_HEIGHT);
+        submitButton.setAlignment(Pos.CENTER);
+
+        overallPane.setVgap(5);
+        overallPane.setHgap(5);
+        overallPane.setPadding(new Insets(5));
+        overallPane.setAlignment(Pos.CENTER);
+
+
         fileButton.setOnAction(e -> {
-            File file = Dialogs.promptForFile("Choose Input File", null, ".csv", new String[]{"csv"});
+            File file = Dialogs.promptForFile("Choose Input File", null, "CSV", new String[]{"csv"});
             fileLabel.setText(file.toString());
         });
 
@@ -202,10 +220,10 @@ public class CorrectStainCommand implements Runnable {
             dialog.close();
         });
 
-        overallPane.add(instructionLabel, 0, 0, 2, 1);
-        overallPane.add(fileButton, 2, 0, 1, 1);
-        overallPane.add(fileLabel, 0, 1, 2, 1);
-        overallPane.add(submitButton, 2, 1, 1, 1);
+        overallPane.add(instructionLabel, 0, 0, 4, 1);
+        overallPane.add(fileButton, 4, 0, 2, 1);
+        overallPane.add(fileLabel, 0, 1, 6, 1);
+        overallPane.add(submitButton, 0, 2, 6, 1);
 
 
         Scene scene = new Scene(overallPane);
