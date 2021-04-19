@@ -381,6 +381,10 @@ class Menus {
 		@ActionDescription("Export an image region, as an RGB image matching how it is displayed in the viewer.")
 		@ActionMenu("Export images...>Rendered RGB (with overlays)")
 		public final Action EXPORT_RENDERED = qupath.createImageDataAction(imageData -> Commands.promptToExportImageRegion(qupath.getViewer(), true));
+
+		@ActionDescription("Export an image that represents the correct stains for fluorescent im3 files")
+		@ActionMenu("Export images...>Export original stains")
+		public final Action EXPORT_ORIGINAL_STAINS = actionManager.EXPORT_ORIGINAL_STAINS;
 		
 		@ActionDescription("Export the area of the screen corresponding to the main QuPath window to the clipboard. " + 
 				"This includes any additional overlapping windows and dialog boxes.")
