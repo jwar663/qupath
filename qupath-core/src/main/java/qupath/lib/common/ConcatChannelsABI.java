@@ -372,6 +372,34 @@ public class ConcatChannelsABI {
         return thumbnailImage;
     }
 
+
+    /**
+     * Use the proportion array to modify which parts of the image should be kept.
+     *
+     * @param imageData
+     * @param proportionArray
+     */
+    public static ImageData channelFromProportions(double[][] proportionArray, ImageData imageData) {
+        ImageData resultImageData = imageData;
+        BufferedImage img = convertImageDataToImage(imageData);
+        int[] intArray = new int[]{0,1,2,3,4,5,6};
+        double pixelIntensity = 0;
+        SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(intArray);
+        WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
+        BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
+        for(int band = 0; band < proportionArray[0].length; band++) {
+            for(int x = 0; x < img.getWidth(); x++) {
+                for(int y = 0; y < img.getHeight(); y++) {
+                    for(int i = 0; i < proportionArray.length; i++) {
+                        pixelIntensity =+ (img.getRaster().getSample(x, y, i) * proportionArray[i][band]);
+                    }
+                    resultImage.getRaster().setSample(x, y, band, pixelIntensity);
+                }
+            }
+        }
+        return resultImageData;
+    }
+
     /**
      * Use the image data to create the full buffered image for use in other methods.
      *
