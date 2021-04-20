@@ -380,23 +380,30 @@ public class ConcatChannelsABI {
      * @param proportionArray
      */
     public static ImageData channelFromProportions(double[][] proportionArray, ImageData imageData) {
-        ImageData resultImageData = imageData;
         BufferedImage img = convertImageDataToImage(imageData);
         int[] intArray = new int[]{0,1,2,3,4,5,6};
-        double pixelIntensity = 0;
+        double pixelIntensity;
+        List<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < intArray.length; i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
         SampleModel resultSampleModel = img.getSampleModel().createSubsetSampleModel(intArray);
         WritableRaster resultRaster = Raster.createWritableRaster(resultSampleModel, null);
         BufferedImage resultImage = new BufferedImage(img.getColorModel(), resultRaster, img.getColorModel().isAlphaPremultiplied(), null);
         for(int band = 0; band < proportionArray[0].length; band++) {
             for(int x = 0; x < img.getWidth(); x++) {
                 for(int y = 0; y < img.getHeight(); y++) {
+                    pixelIntensity = 0.00;
                     for(int i = 0; i < proportionArray.length; i++) {
                         pixelIntensity =+ (img.getRaster().getSample(x, y, i) * proportionArray[i][band]);
                     }
                     resultImage.getRaster().setSample(x, y, band, pixelIntensity);
+                    System.out.println("x: " + x + ", y: " + y + ", band: " + band + ", pixel intensity: " + pixelIntensity);
                 }
             }
         }
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
         return resultImageData;
     }
 

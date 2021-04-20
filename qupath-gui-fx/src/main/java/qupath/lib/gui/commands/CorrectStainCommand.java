@@ -248,7 +248,17 @@ public class CorrectStainCommand implements Runnable {
             } else {
                 System.out.println("width: " + proportionArray.length + ", height: " + proportionArray[0].length);
                 proportionArray = readCSV(fileLabel.getText(), proportionArray);
+                //ImageData resultImageData = ConcatChannelsABI.channelFromProportions(proportionArray, imageData);
+                viewer.setImageData(ConcatChannelsABI.channelFromProportions(proportionArray, imageData));
+                //change this to the file path you wish to save the image to
+                String filePath = "D:\\Desktop\\QuPath\\Indirect Panel\\result_image";
+                DuplicateMatrixCommand.exportImage(viewer, filePath, dialog);
                 dialog.close();
+                try {
+                    qupath.openImage(viewer, filePath + ".tif", false, false);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         });
 
