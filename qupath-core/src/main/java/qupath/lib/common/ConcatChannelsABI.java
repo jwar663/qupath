@@ -105,7 +105,6 @@ public class ConcatChannelsABI {
         while(true) {
             returnedChannels = distinctChannels(crossCorrelationMatrix, result).size();
             if(returnedChannels == numberOfChannelsRequired || iteration >= 100) {
-                System.out.println(numberOfChannelsRequired + ", " + result);
                 return result;
             } else if(returnedChannels > numberOfChannelsRequired) {
                 upperValue = result;

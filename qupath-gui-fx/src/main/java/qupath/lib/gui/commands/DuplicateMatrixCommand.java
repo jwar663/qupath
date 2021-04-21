@@ -631,13 +631,19 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         GridPane thresholdPane = createThresholdPane();
-        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH);
+        ColumnConstraints compareColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
+        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN, THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN, THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
         ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints toggleColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
+
+        Button compareButton = new Button("Compare");
+        compareButton.setPrefSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
+        compareButton.setMinSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
+        compareButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
 
         //Threshold Part
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
@@ -715,12 +721,13 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
 
-        thresholdPane.add(thresholdLabel, 0, 0);
-        thresholdPane.add(thresholdTextField, 1, 0);
-        thresholdPane.add(thresholdPreview, 2, 0);
-        thresholdPane.add(thresholdConfirm, 3, 0);
-        thresholdPane.add(thresholdToggle, 4, 0);
-        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn, toggleColumn);
+        thresholdPane.add(compareButton, 0, 0);
+        thresholdPane.add(thresholdLabel, 1, 0);
+        thresholdPane.add(thresholdTextField, 2, 0);
+        thresholdPane.add(thresholdPreview, 3, 0);
+        thresholdPane.add(thresholdConfirm, 4, 0);
+        thresholdPane.add(thresholdToggle, 5, 0);
+        thresholdPane.getColumnConstraints().addAll(compareColumn, labelColumn, fieldColumn, previewColumn, confirmColumn, toggleColumn);
         thresholdPane.getRowConstraints().add(rowConstraints);
         overallPane.setTop(thresholdPane);
 
