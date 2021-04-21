@@ -645,6 +645,16 @@ public class DuplicateMatrixCommand implements Runnable {
         compareButton.setMinSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
         compareButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
 
+        compareButton.setOnAction(e -> {
+            try {
+                //change .get(0/1/2) to decide which images from the project should be compared
+                ConcatChannelsABI.compareImages(qupath.getProject().getImageList().get(0).readImageData(), qupath.getProject().getImageList().get(1).readImageData());
+                dialog.close();
+            } catch (IOException ioException) {
+                ioException.printStackTrace();
+            }
+        });
+
         //Threshold Part
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
         TextField thresholdTextField = createThresholdTextField();

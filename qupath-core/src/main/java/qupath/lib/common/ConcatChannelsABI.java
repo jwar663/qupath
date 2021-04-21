@@ -13,6 +13,7 @@ import qupath.lib.roi.interfaces.ROI;
 
 import java.awt.*;
 import java.awt.image.*;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Time;
@@ -53,6 +54,60 @@ public class ConcatChannelsABI {
             secondDenominator += (secondChannel[i] * secondChannel[i]);
         }
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
+    }
+
+    public static void compareImages(ImageData image1, ImageData image2) {
+        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\im3_vs_Duplicate.csv";
+        String[] values = new String[7];
+        BufferedImage img1 = convertImageDataToImage(image1);
+        BufferedImage img2 = convertImageDataToImage(image2);
+        int width = img1.getWidth();
+        int height = img1.getHeight();
+        float[] pixelIntensities1 = new float[width * height];
+        float[] pixelIntensities2 = new float[width * height];
+
+        img1.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 0, pixelIntensities2);
+        values[0] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 10, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 1, pixelIntensities2);
+        values[1] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 13, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 2, pixelIntensities2);
+        values[2] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 19, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities2);
+        values[3] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 21, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 4, pixelIntensities2);
+        values[4] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 30, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 5, pixelIntensities2);
+        values[5] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        img1.getRaster().getSamples(0, 0, width, height, 38, pixelIntensities1);
+        img2.getRaster().getSamples(0, 0, width, height, 6, pixelIntensities2);
+        values[6] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+
+        //write values to csv file
+        try {
+            FileWriter writer = new FileWriter(filePath);
+            for(int i = 0; i < values.length; i++) {
+                writer.append(values[i]);
+                if(i != 6) {
+                    writer.append(",");
+                }
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
