@@ -57,10 +57,12 @@ public class ConcatChannelsABI {
     }
 
     public static void compareImages(ImageData image1, ImageData image2) {
-        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\im3_vs_Duplicate.csv";
+        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\im3_vs_Duplicate_Scaled.csv";
         String[] values = new String[7];
         BufferedImage img1 = convertImageDataToImage(image1);
         BufferedImage img2 = convertImageDataToImage(image2);
+        float maxIntensity1 = findMaximumPixelIntensity(img1);
+        float maxIntensity2 = findMaximumPixelIntensity(img2);
         int width = img1.getWidth();
         int height = img1.getHeight();
         float[] pixelIntensities1 = new float[width * height];
@@ -68,30 +70,58 @@ public class ConcatChannelsABI {
 
         img1.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 0, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[0] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 10, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 1, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[1] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 13, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 2, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[2] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 19, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[3] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 21, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 4, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[4] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 30, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 5, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[5] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         img1.getRaster().getSamples(0, 0, width, height, 38, pixelIntensities1);
         img2.getRaster().getSamples(0, 0, width, height, 6, pixelIntensities2);
+        for(int i = 0; i < pixelIntensities1.length; i++) {
+            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
+            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        }
         values[6] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
 
         //write values to csv file
