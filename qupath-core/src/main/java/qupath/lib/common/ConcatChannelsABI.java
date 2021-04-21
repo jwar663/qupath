@@ -395,10 +395,12 @@ public class ConcatChannelsABI {
                 for(int y = 0; y < img.getHeight(); y++) {
                     pixelIntensity = 0.00;
                     for(int i = 0; i < proportionArray.length; i++) {
-                        pixelIntensity =+ (img.getRaster().getSample(x, y, i) * proportionArray[i][band]);
+                        if(proportionArray[i][band] >= 0.01) {
+                            pixelIntensity += (img.getRaster().getSample(x, y, i) * proportionArray[i][band]);
+                        }
                     }
                     resultImage.getRaster().setSample(x, y, band, pixelIntensity);
-                    System.out.println("x: " + x + ", y: " + y + ", band: " + band + ", pixel intensity: " + pixelIntensity);
+                    //System.out.println("x: " + x + ", y: " + y + ", band: " + band + ", pixel intensity: " + pixelIntensity);
                 }
             }
         }
