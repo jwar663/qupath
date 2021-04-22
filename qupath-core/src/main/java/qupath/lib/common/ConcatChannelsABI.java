@@ -8,6 +8,7 @@ import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
 import qupath.lib.images.writers.ImageWriter;
 import qupath.lib.objects.PathObject;
+import qupath.lib.projects.Project;
 import qupath.lib.regions.RegionRequest;
 import qupath.lib.roi.interfaces.ROI;
 
@@ -56,87 +57,91 @@ public class ConcatChannelsABI {
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
     }
 
-    public static void compareImages(ImageData image1, ImageData image2) {
+    public static float[] convertAllMaximumPixelIntensities(BufferedImage img, int band, float maxIntensity) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        float[] pixelIntensities = new float[width * height];
+        img.getRaster().getSamples(0, 0, width, height, band, pixelIntensities);
+        for(int i = 0; i < pixelIntensities.length; i++) {
+            pixelIntensities[i] = pixelIntensities[i]/maxIntensity;
+        }
+        return pixelIntensities;
+    }
+
+    public static void compareImages(List<ImageData> imageDataList) {
         String filePath = "D:\\Desktop\\QuPath\\Compare Images\\im3_vs_Duplicate_Scaled.csv";
-        String[] values = new String[7];
-        BufferedImage img1 = convertImageDataToImage(image1);
-        BufferedImage img2 = convertImageDataToImage(image2);
-        float maxIntensity1 = findMaximumPixelIntensity(img1);
-        float maxIntensity2 = findMaximumPixelIntensity(img2);
-        int width = img1.getWidth();
-        int height = img1.getHeight();
-        float[] pixelIntensities1 = new float[width * height];
-        float[] pixelIntensities2 = new float[width * height];
-
-        img1.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 0, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
+        List<BufferedImage> images = new ArrayList<>();
+        float[] maxIntensities = new float[imageDataList.size()];
+        for(int i = 0; i < imageDataList.size(); i++) {
+            images.add(convertImageDataToImage(imageDataList.get(i)));
+            maxIntensities[i] = findMaximumPixelIntensity(images.get(i));
         }
-        values[0] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+        float[] pixelIntensities1;
+        float[] pixelIntensities2;
 
-        img1.getRaster().getSamples(0, 0, width, height, 10, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 1, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[1] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+        //use this to identify which channels are which filters
+        //it should be DAPI, DL755, ATTO425, DL680, Alexa488, Alexa555, Alexa594
+        List<List<Integer>> orderChannels = new ArrayList<>();
+        //order for unmodified im3 image
+        List<Integer> im3Order = new ArrayList<>();
+        im3Order.add(3);
+        im3Order.add(10);
+        im3Order.add(13);
+        im3Order.add(19);
+        im3Order.add(21);
+        im3Order.add(30);
+        im3Order.add(38);
+        //order for image altered by duplicate matrix
+        List<Integer> duplicateOrder = new ArrayList<>();
+        duplicateOrder.add(0);
+        duplicateOrder.add(1);
+        duplicateOrder.add(2);
+        duplicateOrder.add(3);
+        duplicateOrder.add(4);
+        duplicateOrder.add(5);
+        duplicateOrder.add(6);
+        //order for image altered by algorithm from proportions
+        List<Integer> algorithmOrder = new ArrayList<>();
+        algorithmOrder.add(4);
+        algorithmOrder.add(6);
+        algorithmOrder.add(3);
+        algorithmOrder.add(5);
+        algorithmOrder.add(0);
+        algorithmOrder.add(1);
+        algorithmOrder.add(2);
+        orderChannels.add(im3Order);
+        orderChannels.add(duplicateOrder);
+        orderChannels.add(algorithmOrder);
 
-        img1.getRaster().getSamples(0, 0, width, height, 13, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 2, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[2] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+        String[] values = new String[orderChannels.get(0).size()];
+        float maxIntensity1;
+        float maxIntensity2;
 
-        img1.getRaster().getSamples(0, 0, width, height, 19, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 3, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[3] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
-
-        img1.getRaster().getSamples(0, 0, width, height, 21, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 4, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[4] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
-
-        img1.getRaster().getSamples(0, 0, width, height, 30, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 5, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[5] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
-
-        img1.getRaster().getSamples(0, 0, width, height, 38, pixelIntensities1);
-        img2.getRaster().getSamples(0, 0, width, height, 6, pixelIntensities2);
-        for(int i = 0; i < pixelIntensities1.length; i++) {
-            pixelIntensities1[i] = pixelIntensities1[i]/maxIntensity1;
-            pixelIntensities2[i] = pixelIntensities2[i]/maxIntensity2;
-        }
-        values[6] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
-
-        //write values to csv file
-        try {
-            FileWriter writer = new FileWriter(filePath);
-            for(int i = 0; i < values.length; i++) {
-                writer.append(values[i]);
-                if(i != 6) {
-                    writer.append(",");
+        for(int img1 = 0; img1 < images.size() - 1; img1++) {
+            for(int img2 = img1 + 1; img2 < images.size(); img2++) {
+                for(int band = 0; band < orderChannels.get(0).size(); band++) {
+                    filePath = "D:\\Desktop\\QuPath\\Compare Images\\" + img1 + "_vs_" + img2 + "_compare" + ".csv";
+                    maxIntensity1 = maxIntensities[img1];
+                    maxIntensity2 = maxIntensities[img2];
+                    pixelIntensities1 = convertAllMaximumPixelIntensities(images.get(img1), orderChannels.get(img1).get(band), maxIntensity1);
+                    pixelIntensities2 = convertAllMaximumPixelIntensities(images.get(img2), orderChannels.get(img2).get(band), maxIntensity2);
+                    values[band] = Float.toString(normCrossCorrelationFloat(pixelIntensities1, pixelIntensities2));
+                }
+                //write values to csv file
+                try {
+                    FileWriter writer = new FileWriter(filePath);
+                    for(int i = 0; i < values.length; i++) {
+                        writer.append(values[i]);
+                        if(i != 6) {
+                            writer.append(",");
+                        }
+                    }
+                    writer.flush();
+                    writer.close();
+                } catch(IOException e) {
+                    e.printStackTrace();
                 }
             }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
         }
     }
 

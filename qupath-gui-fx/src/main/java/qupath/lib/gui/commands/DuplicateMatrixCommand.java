@@ -647,8 +647,11 @@ public class DuplicateMatrixCommand implements Runnable {
 
         compareButton.setOnAction(e -> {
             try {
-                //change .get(0/1/2) to decide which images from the project should be compared
-                ConcatChannelsABI.compareImages(qupath.getProject().getImageList().get(0).readImageData(), qupath.getProject().getImageList().get(1).readImageData());
+                List<ImageData> images = new ArrayList<>();
+                for(int i = 0; i < qupath.getProject().getImageList().size(); i++) {
+                    images.add(qupath.getProject().getImageList().get(i).readImageData());
+                }
+                ConcatChannelsABI.compareImages(images);
                 dialog.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();
