@@ -109,10 +109,9 @@ public class ConcatChannelsABI {
         algorithmOrder.add(0);
         algorithmOrder.add(1);
         algorithmOrder.add(2);
-//        orderChannels.add(im3Order);
-        orderChannels.add(duplicateOrder);
-        orderChannels.add(duplicateOrder);
-//        orderChannels.add(algorithmOrder);
+        orderChannels.add(im3Order);
+//        orderChannels.add(duplicateOrder);
+        orderChannels.add(algorithmOrder);
 
         String[] values = new String[orderChannels.get(0).size()];
         float maxIntensity1;
