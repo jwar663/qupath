@@ -109,9 +109,19 @@ public class ConcatChannelsABI {
         algorithmOrder.add(0);
         algorithmOrder.add(1);
         algorithmOrder.add(2);
-        orderChannels.add(im3Order);
+        //order for image unmixed with imageJ/LUMoS
+        List<Integer> lumosOrder = new ArrayList<>();
+        lumosOrder.add(4);
+        lumosOrder.add(3);
+        lumosOrder.add(2);
+        lumosOrder.add(1);
+        lumosOrder.add(6);
+        lumosOrder.add(5);
+        lumosOrder.add(0);
+//        orderChannels.add(im3Order);
 //        orderChannels.add(duplicateOrder);
         orderChannels.add(algorithmOrder);
+        orderChannels.add(lumosOrder);
 
         String[] values = new String[orderChannels.get(0).size()];
         float maxIntensity1;
