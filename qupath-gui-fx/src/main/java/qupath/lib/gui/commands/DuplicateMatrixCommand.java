@@ -651,7 +651,10 @@ public class DuplicateMatrixCommand implements Runnable {
                 for(int i = 0; i < qupath.getProject().getImageList().size(); i++) {
                     images.add(qupath.getProject().getImageList().get(i).readImageData());
                 }
-                ConcatChannelsABI.compareImages(images);
+                //to compare is you dont know which channels are mapped
+                ConcatChannelsABI.mapFilters(images);
+                //to compare only mapped channels
+//                ConcatChannelsABI.compareImages(images);
                 dialog.close();
             } catch (IOException ioException) {
                 ioException.printStackTrace();

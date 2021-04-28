@@ -67,36 +67,61 @@ public class ConcatChannelsABI {
         }
         return pixelIntensities;
     }
-
-    public static String[] mapFilters(List<ImageData> imageDataList) {
+    public static void mapFilters(List<ImageData> imageDataList) {
+//    public static float[][] mapFilters(List<ImageData> imageDataList) {
         //note: this will only work if you open a project and there are at least two images in the project
-        String[] stringArray = new String[7];
+        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\CorrelationMatrix.csv";
+        int[][] array = new int[8][7];
         BufferedImage img1 = convertImageDataToImage(imageDataList.get(0));
         BufferedImage img2 = convertImageDataToImage(imageDataList.get(1));
         int width = img1.getWidth();
         int height = img1.getHeight();
-        List<float[]> img1Channels = new ArrayList<>();
-        List<float[]> img2Channels = new ArrayList<>();
-        float[] temp1 = new float[width * height];
-        float[] temp2 = new float[width * height];
+        float[][] img1Channels = new float[7][width * height];
+        float[][] img2Channels = new float[7][width * height];
         for(int band = 0; band < 7; band++) {
-            img1.getRaster().getSamples(0,0, width, height, band, temp1);
-            img2.getRaster().getSamples(0,0, width, height, band, temp2);
-            img1Channels.add(temp1);
-            img2Channels.add(temp2);
+            img1.getRaster().getSamples(0,0, width, height, band, img1Channels[band]);
+            img2.getRaster().getSamples(0,0, width, height, band, img2Channels[band]);
         }
         float[][] correlationMatrix = new float[7][7];
         for(int i = 0; i < 7; i++) {
-            for(int j = 0; j < 7; i++) {
-                if(j < i) {
-                    correlationMatrix[i][j] = 0;
-                } else {
-                    correlationMatrix[i][j] = normCrossCorrelationFloat(img1Channels.get(i), img2Channels.get(j));
-                }
+            for(int j = 0; j < 7; j++) {
+                correlationMatrix[i][j] = normCrossCorrelationFloat(img1Channels[i], img2Channels[j]);
+                System.out.println("img1channel size: " + img1Channels.length + ", i: " + i + ", j: " + j);
             }
         }
 
-        return stringArray;
+//        for(int i = 0; i < 8; i++) {
+//            for(int j = 0; j < 7; j++) {
+//                if(i == 0) {
+//                    array[i][j] = j;
+//                } else {
+//
+//                }
+//            }
+//        }
+
+        try {
+            FileWriter writer = new FileWriter(filePath);
+            for(int i = 0; i < correlationMatrix.length - 1; i++) {
+                writer.append(i+ ",");
+            }
+            writer.append("6\n");
+            for(int i = 0; i < correlationMatrix.length; i++) {
+                for(int j = 0; j < correlationMatrix[0].length; j++) {
+                    writer.append(Float.toString(correlationMatrix[i][j]));
+                    if(j != 6) {
+                        writer.append(",");
+                    } else {
+                        writer.append("\n");
+                    }
+                }
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+//        return correlationMatrix;
     }
 
     public static void compareImages(List<ImageData> imageDataList) {
