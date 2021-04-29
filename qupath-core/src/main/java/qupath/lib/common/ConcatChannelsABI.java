@@ -28,6 +28,7 @@ import java.util.List;
  *
  */
 
+
 public class ConcatChannelsABI {
 
     //Macros
@@ -70,8 +71,8 @@ public class ConcatChannelsABI {
     public static void mapFilters(List<ImageData> imageDataList) {
 //    public static float[][] mapFilters(List<ImageData> imageDataList) {
         //note: this will only work if you open a project and there are at least two images in the project
-        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\CorrelationMatrix.csv";
-        int[][] array = new int[8][7];
+        //and it only uses the first two images
+        String filePath = "D:\\Desktop\\QuPath\\Compare Images\\MappedFilters.csv";
         BufferedImage img1 = convertImageDataToImage(imageDataList.get(0));
         BufferedImage img2 = convertImageDataToImage(imageDataList.get(1));
         int width = img1.getWidth();
@@ -89,39 +90,39 @@ public class ConcatChannelsABI {
                 System.out.println("img1channel size: " + img1Channels.length + ", i: " + i + ", j: " + j);
             }
         }
-
-//        for(int i = 0; i < 8; i++) {
-//            for(int j = 0; j < 7; j++) {
-//                if(i == 0) {
-//                    array[i][j] = j;
-//                } else {
-//
-//                }
-//            }
-//        }
+        Object[] tempOrderedArray;
+        List<Float> tempUnorderedList = new ArrayList<>();
+        List<Integer> finalList = new ArrayList<>();
+        for(int i = 0; i < 7; i++) {
+            tempUnorderedList.clear();
+            for(int l = 0; l < 7; l++) {
+                tempUnorderedList.add(correlationMatrix[i][l]);
+                System.out.println("count: " + l + ", float value: " + tempUnorderedList.get(l));
+            }
+            tempOrderedArray = tempUnorderedList.toArray();
+            Arrays.sort(tempOrderedArray, Collections.reverseOrder());
+            for(int j = 0; j < 7; j++) {
+                //if this channel is not in the list already then add it
+                if(!finalList.contains(tempUnorderedList.indexOf(tempOrderedArray[j]))) {
+                    finalList.add(tempUnorderedList.indexOf(tempOrderedArray[j]));
+                    break;
+                }
+            }
+        }
 
         try {
             FileWriter writer = new FileWriter(filePath);
-            for(int i = 0; i < correlationMatrix.length - 1; i++) {
-                writer.append(i+ ",");
-            }
-            writer.append("6\n");
-            for(int i = 0; i < correlationMatrix.length; i++) {
-                for(int j = 0; j < correlationMatrix[0].length; j++) {
-                    writer.append(Float.toString(correlationMatrix[i][j]));
-                    if(j != 6) {
+            for(int i = 0; i < 7; i++) {
+                    writer.append(Integer.toString(finalList.get(i)));
+                    if(i != 6) {
                         writer.append(",");
-                    } else {
-                        writer.append("\n");
                     }
-                }
             }
             writer.flush();
             writer.close();
         } catch(IOException e) {
             e.printStackTrace();
         }
-//        return correlationMatrix;
     }
 
     public static void compareImages(List<ImageData> imageDataList) {
@@ -174,10 +175,30 @@ public class ConcatChannelsABI {
         lumosOrder.add(6);
         lumosOrder.add(5);
         lumosOrder.add(0);
+        //order for image unmixed with imageJ/LUMoS
+        List<Integer> lumos1000Order = new ArrayList<>();
+        lumos1000Order.add(1);
+        lumos1000Order.add(4);
+        lumos1000Order.add(2);
+        lumos1000Order.add(3);
+        lumos1000Order.add(5);
+        lumos1000Order.add(0);
+        lumos1000Order.add(6);
+        //order for image unmixed with imageJ/LUMoS
+        List<Integer> lumosAbsoluteOrder = new ArrayList<>();
+        lumosAbsoluteOrder.add(6);
+        lumosAbsoluteOrder.add(3);
+        lumosAbsoluteOrder.add(2);
+        lumosAbsoluteOrder.add(5);
+        lumosAbsoluteOrder.add(0);
+        lumosAbsoluteOrder.add(4);
+        lumosAbsoluteOrder.add(1);
 //        orderChannels.add(im3Order);
 //        orderChannels.add(duplicateOrder);
-        orderChannels.add(algorithmOrder);
         orderChannels.add(lumosOrder);
+        orderChannels.add(lumos1000Order);
+        orderChannels.add(lumosAbsoluteOrder);
+        orderChannels.add(algorithmOrder);
 
         String[] values = new String[orderChannels.get(0).size()];
         float maxIntensity1;
