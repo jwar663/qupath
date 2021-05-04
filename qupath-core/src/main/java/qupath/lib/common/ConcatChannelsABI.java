@@ -193,12 +193,20 @@ public class ConcatChannelsABI {
         lumosAbsoluteOrder.add(0);
         lumosAbsoluteOrder.add(4);
         lumosAbsoluteOrder.add(1);
+        List<Integer> noBackgroundOrder1 = new ArrayList<>();
+        List<Integer> noBackgroundOrder2 = new ArrayList<>();
+        for(int i = 0; i < 43; i++) {
+            noBackgroundOrder1.add(i);
+            noBackgroundOrder2.add(i);
+        }
 //        orderChannels.add(im3Order);
 //        orderChannels.add(duplicateOrder);
-        orderChannels.add(lumosOrder);
-        orderChannels.add(lumos1000Order);
-        orderChannels.add(lumosAbsoluteOrder);
-        orderChannels.add(algorithmOrder);
+//        orderChannels.add(lumosOrder);
+//        orderChannels.add(lumos1000Order);
+//        orderChannels.add(lumosAbsoluteOrder);
+//        orderChannels.add(algorithmOrder);
+        orderChannels.add(noBackgroundOrder1);
+        orderChannels.add(noBackgroundOrder2);
 
         String[] values = new String[orderChannels.get(0).size()];
         float maxIntensity1;
@@ -219,7 +227,7 @@ public class ConcatChannelsABI {
                     FileWriter writer = new FileWriter(filePath);
                     for(int i = 0; i < values.length; i++) {
                         writer.append(values[i]);
-                        if(i != 6) {
+                        if(i != (values.length - 1)) {
                             writer.append(",");
                         }
                     }
