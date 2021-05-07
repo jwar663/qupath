@@ -53,6 +53,7 @@ import javafx.util.Duration;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.*;
@@ -640,26 +641,16 @@ public class DuplicateMatrixCommand implements Runnable {
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
 
-        Button compareButton = new Button("Compare");
-        compareButton.setPrefSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
-        compareButton.setMinSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
-        compareButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
+        Button unmixingButton = new Button("Unmix Image");
+        unmixingButton.setPrefSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
+        unmixingButton.setMinSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
+        unmixingButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
 
-        compareButton.setOnAction(e -> {
-            try {
-                List<ImageData> images = new ArrayList<>();
-                for(int i = 0; i < qupath.getProject().getImageList().size(); i++) {
-                    images.add(qupath.getProject().getImageList().get(i).readImageData());
-                }
-                //to compare is you dont know which channels are mapped
-//                ConcatChannelsABI.mapFilters(images);
-                //to compare only mapped channels
-                ConcatChannelsABI.compareImages(images);
+        unmixingButton.setOnAction(e -> {
+
+                File filePath = Dialogs.promptForFile("Select indirect data csv file", null, null);
                 dialog.close();
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        });
+            });
 
         //Threshold Part
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
@@ -737,7 +728,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
 
-        thresholdPane.add(compareButton, 0, 0);
+        thresholdPane.add(unmixingButton, 0, 0);
         thresholdPane.add(thresholdLabel, 1, 0);
         thresholdPane.add(thresholdTextField, 2, 0);
         thresholdPane.add(thresholdPreview, 3, 0);
