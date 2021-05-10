@@ -106,12 +106,14 @@ public class ConcatChannelsABI {
         double[] pixelIntensity = new double[9];
         double[][] referenceEmission = new double[9][keptChannels.size()];
         double[] beta;
+        double[][] aValues = new double[width * height][3];
 //        double channel18Value = 0;
 //        double channel19Value = 0;
 //        double channel20Value = 0;
         double channel1Value = 0;
         double channel2Value = 0;
         double channel3Value = 0;
+        int count = 0;
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 for(int channel = 0; channel < 9; channel++) {
@@ -127,9 +129,11 @@ public class ConcatChannelsABI {
                 OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
                 regression.newSampleData(pixelIntensity, referenceEmission);
                 beta = regression.estimateRegressionParameters();
+                aValues[count] = beta;
                 channel1Value = 0.0;
                 channel2Value = 0.0;
                 channel3Value = 0.0;
+                count++;
                 for(int i = 0; i < 9; i++) {
                     channel1Value += beta[0] * referenceEmission[i][0];
                     channel2Value += beta[1] * referenceEmission[i][1];
@@ -146,6 +150,18 @@ public class ConcatChannelsABI {
                 resultImage.getRaster().setSample(x, y, 2, channel3Value);
             }
         }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values.csv");
+            for(int i = 0; i < width * height; i++) {
+                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
         ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
         ImageData resultImageData = new ImageData<BufferedImage>(newServer);
         return resultImageData;
