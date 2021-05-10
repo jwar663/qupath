@@ -24,7 +24,9 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -592,6 +594,25 @@ public class DuplicateMatrixCommand implements Runnable {
         return toggleButton;
     }
 
+    public static double[][] readCSV(String file, double[][] array) {
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            String[] lineArray;
+            for(int i = 0; i < array[0].length; i++) {
+                line = br.readLine();
+                lineArray = line.split(",");
+                for(int j = 0; j < array.length; j++) {
+                    array[j][i] = Double.parseDouble(lineArray[j]);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialogs.showErrorMessage("Invalid File", "Please select a '.csv' file that has the correct number of channels, stains, and numerical values");
+        }
+        return array;
+    }
+
 
 
     protected Stage createDialog() throws IOException, NullPointerException {
@@ -648,7 +669,12 @@ public class DuplicateMatrixCommand implements Runnable {
 
         unmixingButton.setOnAction(e -> {
 
-                File filePath = Dialogs.promptForFile("Select indirect data csv file", null, null);
+                File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
+                double[][] proportionArray = new double[7][43];
+                proportionArray = readCSV(file.toString(), proportionArray);
+                ImageData newImageData = ConcatChannelsABI.unmixFullImage(imageData, proportionArray);
+                viewer.setImageData(newImageData);
+                exportImage(viewer, file.getParent() + "\\unmixed image", dialog);
                 dialog.close();
             });
 

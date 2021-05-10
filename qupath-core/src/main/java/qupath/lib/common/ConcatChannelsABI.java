@@ -1,6 +1,8 @@
 package qupath.lib.common;
 
 import com.google.common.primitives.Ints;
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
@@ -56,6 +58,71 @@ public class ConcatChannelsABI {
             secondDenominator += (secondChannel[i] * secondChannel[i]);
         }
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
+    }
+
+
+    //find the contribution of filter for each pixel in a single channel.
+//    public static BufferedImage unmixSingleChannel(BufferedImage img, float[] imgPixelValues, double[][] proportionArray, int band) {
+//        ArrayList<Integer> channel = new ArrayList<>();
+//        channel.add(band);
+//        double[] referenceEmission = new double[proportionArray.length];
+//        double[] filterContribution = new double[referenceEmission.length];
+//        for (int i = 0; i < proportionArray.length; i++) {
+//            referenceEmission[i] = proportionArray[i][band];
+//        }
+//
+//        for(int x = 0; x < img.getWidth(); x++) {
+//            for(int y = 0; y < img.getHeight(); y++) {
+//                for(int referenceEmissionValue = 0; referenceEmissionValue < referenceEmission.length; referenceEmissionValue++) {
+//                    //insert equation here... filterContribution[] = ...
+//                }
+//            }
+//        }
+//        BufferedImage resultImage = createNewBufferedImage(channel, img);
+//
+//        return resultImage;
+//    }
+
+    //completely unmix the whole image linearly by calling various sub methods
+    //at this point just hard coding for channels 18-20 to test
+    public static ImageData unmixFullImage(ImageData imageData, double[][] proportionArray) {
+        ImageData resultImageData = imageData;
+        BufferedImage overallImage = convertImageDataToImage(imageData);
+        ArrayList<Integer> keptChannels = new ArrayList<>();
+        //only includes channels  18-20 (-1 from original fu
+        keptChannels.add(17);
+        keptChannels.add(18);
+        keptChannels.add(19);
+        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        double[] pixelIntensity = new double[keptChannels.size()];
+        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel = 0; channel < limitedImage.getRaster().getNumBands(); channel++) {
+                    pixelIntensity[channel] = limitedImage.getRaster().getSample(x, y, channel);
+                    referenceEmission[0][channel] = proportionArray[2][channel];
+                    referenceEmission[1][channel] = proportionArray[5][channel];
+                    referenceEmission[2][channel] = proportionArray[6][channel];
+                }
+                //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
+                //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
+                //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
+                //resultImage.getRaster().setSample(x, y, 0, A1);
+                //resultImage.getRaster().setSample(x, y, 1, A2);
+                //resultImage.getRaster().setSample(x, y, 2, A3);
+                //todo: OLSMultipleLinearRegression
+            }
+        }
+
+        BufferedImage[] singleChannelImages = new BufferedImage[imageData.getServer().nChannels()];
+        float[] pixelIntensities = new float[width * height];
+        for(int i = 0; i < imageData.getServer().nChannels(); i++) {
+//            singleChannelImages[i] = unmixSingleChannel(overallImage, overallImage.getRaster().getSamples(0, 0, width, height, i, pixelIntensities), proportionArray, i);
+        }
+        return resultImageData;
     }
 
     public static float[] convertAllMaximumPixelIntensities(BufferedImage img, int band, float maxIntensity) {
