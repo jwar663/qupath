@@ -52,6 +52,7 @@ import javafx.stage.Modality;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
@@ -675,7 +676,18 @@ public class DuplicateMatrixCommand implements Runnable {
                 ImageData newImageData = ConcatChannelsABI.unmixFullImage(imageData, proportionArray);
                 viewer.setImageData(newImageData);
                 exportImage(viewer, file.getParent() + "\\unmixed image", dialog);
-                dialog.close();
+//            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+//            double[] y = new double[]{11.0, 12.0, 10.0};
+//            double[][] x = new double[3][];
+//            x[0] = new double[]{0, 4.0, 3.1};
+//            x[1] = new double[]{2.0, 0, 3.0};
+//            x[2] = new double[]{2.0, 0, 5.0};
+//            regression.newSampleData(y, x);
+//            double[] beta = regression.estimateRegressionParameters();
+//            for(int i = 0; i < beta.length; i++) {
+//                System.out.println(i + ": " + beta[i]);
+//            }
+            dialog.close();
             });
 
         //Threshold Part
