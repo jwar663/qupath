@@ -677,11 +677,12 @@ public class DuplicateMatrixCommand implements Runnable {
                 viewer.setImageData(newImageData);
                 exportImage(viewer, file.getParent() + "\\unmixed image", dialog);
 //            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-//            double[] y = new double[]{11.0, 12.0, 10.0};
-//            double[][] x = new double[3][];
-//            x[0] = new double[]{0, 4.0, 3.1};
-//            x[1] = new double[]{2.0, 0, 3.0};
-//            x[2] = new double[]{2.0, 0, 5.0};
+//            double[] y = new double[]{26.0, 9.0, 36.0, 58.0};
+//            double[][] x = new double[4][];
+//            x[0] = new double[]{6.0, 2.0, 4.0};
+//            x[1] = new double[]{1.0, 1.0, 1.0};
+//            x[2] = new double[]{4.0, 3.0, 7.0};
+//            x[3] = new double[]{2.0, 9.0, 1.0};
 //            regression.newSampleData(y, x);
 //            double[] beta = regression.estimateRegressionParameters();
 //            for(int i = 0; i < beta.length; i++) {
