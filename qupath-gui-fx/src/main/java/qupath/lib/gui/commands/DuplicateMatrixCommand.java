@@ -673,7 +673,8 @@ public class DuplicateMatrixCommand implements Runnable {
                 File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
                 double[][] proportionArray = new double[7][43];
                 proportionArray = readCSV(file.toString(), proportionArray);
-                ImageData newImageData = ConcatChannelsABI.unmixFullImage(imageData, proportionArray);
+//                ImageData newImageData = ConcatChannelsABI.unmixFullImage(imageData, proportionArray);
+                ImageData newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
                 viewer.setImageData(newImageData);
                 exportImage(viewer, file.getParent() + "\\unmixed image", dialog);
 //            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();

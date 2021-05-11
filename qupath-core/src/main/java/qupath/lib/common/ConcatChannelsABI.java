@@ -85,6 +85,86 @@ public class ConcatChannelsABI {
 
     //completely unmix the whole image linearly by calling various sub methods
     //at this point just hard coding for channels 18-20 to test
+    public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
+        BufferedImage overallImage = convertImageDataToImage(imageData);
+        ArrayList<Integer> keptChannels = new ArrayList<>();
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            keptChannels.add(i);
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        double[] pixelIntensity = new double[9];
+        double[][] referenceEmission = new double[9][keptChannels.size()];
+        double[][] aValues = new double[width * height][9];
+        double channel1Value;
+        double channel2Value;
+        double channel3Value;
+        double channel4Value;
+        double channel5Value;
+        int count = 0;
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel = 20; channel < 29; channel++) {
+                    pixelIntensity[channel - 20] = overallImage.getRaster().getSample(x, y, channel);
+                    referenceEmission[channel - 20][0] = proportionArray[0][channel];
+                    referenceEmission[channel - 20][1] = proportionArray[6][channel];
+                    referenceEmission[channel - 20][2] = proportionArray[1][channel];
+                    referenceEmission[channel - 20][3] = proportionArray[5][channel];
+                    referenceEmission[channel - 20][4] = proportionArray[2][channel];
+                }
+                //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
+                //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
+                //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
+                //todo: OLSMultipleLinearRegression
+                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+                regression.newSampleData(pixelIntensity, referenceEmission);
+                double[] beta = regression.estimateRegressionParameters();
+                aValues[count] = beta;
+                count++;
+                //different method
+                channel1Value = beta[0] * referenceEmission[1][0];
+                channel2Value = beta[1] * referenceEmission[2][1];
+                channel3Value = beta[2] * referenceEmission[3][2];
+                channel4Value = beta[3] * referenceEmission[8][3];
+                channel5Value = beta[4] * referenceEmission[5][4];
+
+//                channel18Value = beta[0] * (referenceEmission[0][0] + referenceEmission[1][0] + referenceEmission[2][0]);
+//                channel19Value = beta[1] * (referenceEmission[0][1] + referenceEmission[1][1] + referenceEmission[2][1]);
+//                channel20Value = beta[2] * (referenceEmission[0][2] + referenceEmission[1][2] + referenceEmission[2][2]);
+//                resultImage.getRaster().setSample(x, y, 0, channel18Value);
+//                resultImage.getRaster().setSample(x, y, 1, channel19Value);
+//                resultImage.getRaster().setSample(x, y, 2, channel20Value);
+                resultImage.getRaster().setSample(x, y, 0, channel1Value);
+                resultImage.getRaster().setSample(x, y, 1, channel2Value);
+                resultImage.getRaster().setSample(x, y, 2, channel3Value);
+                resultImage.getRaster().setSample(x, y, 3, channel4Value);
+                resultImage.getRaster().setSample(x, y, 4, channel5Value);
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values.csv");
+            for(int i = 0; i < width * height; i++) {
+                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "," + aValues[i][4] + "\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImageData;
+    }
+
+    //completely unmix the whole image linearly by calling various sub methods
+    //at this point just hard coding for channels 18-20 to test
     public static ImageData unmixFullImage(ImageData imageData, double[][] proportionArray) {
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
