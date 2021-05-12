@@ -61,6 +61,13 @@ public class ConcatChannelsABI {
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
     }
 
+    public static double[] completeRegression(double[] pixelIntensity, double[][] referenceEmission) {
+        OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
+        regression.newSampleData(pixelIntensity, referenceEmission);
+        double[] beta = regression.estimateRegressionParameters();
+        return beta;
+    }
+
     //completely unmix the whole image linearly by calling various sub methods
     //at this point just hard coding for channels 18-20 to test
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
@@ -108,10 +115,8 @@ public class ConcatChannelsABI {
                 //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
                 //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
                 //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
-                //todo: OLSMultipleLinearRegression
-                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-                regression.newSampleData(pixelIntensity, referenceEmission);
-                double[] beta = regression.estimateRegressionParameters();
+
+                double[] beta = completeRegression(pixelIntensity, referenceEmission);
 
                 aValues[count] = beta;
                 count++;
@@ -194,9 +199,9 @@ public class ConcatChannelsABI {
                 //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
 
                 //OLSMultipleLinearRegression
-                OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-                regression.newSampleData(pixelIntensity, referenceEmission);
-                double[] beta = regression.estimateRegressionParameters();
+
+                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                
                 aValues[count] = beta;
 
                 //original method
