@@ -112,8 +112,75 @@ public class ConcatChannelsABI {
         return result;
     }
 
-    //completely unmix the whole image linearly by calling various sub methods
-    //at this point just hard coding for channels 18-20 to test
+    public static ImageData unmixOpal480(ImageData imageData, double[][] proportionArray) {
+        BufferedImage overallImage = convertImageDataToImage(imageData);
+        ArrayList<Integer> keptChannels = new ArrayList<>();
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < 4; i++) {
+            keptChannels.add(i);
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        double[] pixelIntensity = new double[keptChannels.size()];
+        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
+        double[][] aValues = new double[width * height][keptChannels.size()];
+        double[] channelValue = new double[keptChannels.size()];
+        int count = 0;
+
+        for(int channel = 13; channel < 17; channel++) {
+            referenceEmission[channel - 13][0] = proportionArray[3][channel];
+            referenceEmission[channel - 13][1] = proportionArray[6][channel];
+            referenceEmission[channel - 13][2] = proportionArray[0][channel];
+            referenceEmission[channel - 13][3] = proportionArray[5][channel];
+        }
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel = 13; channel < 17; channel++) {
+                    pixelIntensity[channel - 13] = overallImage.getRaster().getSample(x, y, channel);
+                }
+
+                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
+
+                aValues[count] = beta;
+                count++;
+                //different method
+                channelValue[0] = beta[0] * referenceEmission[0][0];
+                channelValue[1] = beta[1] * referenceEmission[2][1];
+                channelValue[2] = beta[2] * referenceEmission[1][2];
+                channelValue[3] = beta[3] * referenceEmission[3][3];
+
+                for(int i = 0; i < channelValue.length; i++) {
+                    if(channelValue[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
+                    }
+                }
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-Opal480.csv");
+            for(int i = 0; i < width * height; i++) {
+                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImageData;
+    }
+
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
@@ -140,21 +207,12 @@ public class ConcatChannelsABI {
             referenceEmission[channel - 20][3] = proportionArray[5][channel];
             referenceEmission[channel - 20][4] = proportionArray[2][channel];
         }
-        for(int i = 0; i < referenceEmission.length; i++) {
-            for(int j = 0; j < referenceEmission[0].length; j++) {
-                System.out.print(" " + referenceEmission[i][j] + " ");
-            }
-            System.out.println();
-        }
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
                 for(int channel = 20; channel < 25; channel++) {
                     pixelIntensity[channel - 20] = overallImage.getRaster().getSample(x, y, channel);
                 }
-                //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
-                //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
-                //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
 
                 //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
                 double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
@@ -168,9 +226,6 @@ public class ConcatChannelsABI {
                 channelValue[3] = beta[3] * referenceEmission[4][3];
                 channelValue[4] = beta[4] * referenceEmission[4][4];
 
-//                channel18Value = beta[0] * (referenceEmission[0][0] + referenceEmission[1][0] + referenceEmission[2][0]);
-//                channel19Value = beta[1] * (referenceEmission[0][1] + referenceEmission[1][1] + referenceEmission[2][1]);
-//                channel20Value = beta[2] * (referenceEmission[0][2] + referenceEmission[1][2] + referenceEmission[2][2]);
                 for(int i = 0; i < channelValue.length; i++) {
                     if(channelValue[i] < 0) {
                         resultImage.getRaster().setSample(x, y, i, 0);
