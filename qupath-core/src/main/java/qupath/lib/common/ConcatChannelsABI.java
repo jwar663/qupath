@@ -130,20 +130,15 @@ public class ConcatChannelsABI {
         double[] pixelIntensity = new double[5];
         double[][] referenceEmission = new double[5][keptChannels.size()];
         double[][] aValues = new double[width * height][5];
-        double channel1Value;
-        double channel2Value;
-        double channel3Value;
-        double channel4Value;
-        double channel5Value;
         double[] channelValue = new double[5];
         int count = 0;
 
-        for(int channel = 21; channel < 26; channel++) {
-            referenceEmission[channel - 21][0] = proportionArray[0][channel];
-            referenceEmission[channel - 21][1] = proportionArray[6][channel];
-            referenceEmission[channel - 21][2] = proportionArray[1][channel];
-            referenceEmission[channel - 21][3] = proportionArray[5][channel];
-            referenceEmission[channel - 21][4] = proportionArray[2][channel];
+        for(int channel = 20; channel < 25; channel++) {
+            referenceEmission[channel - 20][0] = proportionArray[0][channel];
+            referenceEmission[channel - 20][1] = proportionArray[6][channel];
+            referenceEmission[channel - 20][2] = proportionArray[1][channel];
+            referenceEmission[channel - 20][3] = proportionArray[5][channel];
+            referenceEmission[channel - 20][4] = proportionArray[2][channel];
         }
         for(int i = 0; i < referenceEmission.length; i++) {
             for(int j = 0; j < referenceEmission[0].length; j++) {
@@ -154,8 +149,8 @@ public class ConcatChannelsABI {
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                for(int channel = 21; channel < 26; channel++) {
-                    pixelIntensity[channel - 21] = overallImage.getRaster().getSample(x, y, channel);
+                for(int channel = 20; channel < 25; channel++) {
+                    pixelIntensity[channel - 20] = overallImage.getRaster().getSample(x, y, channel);
                 }
                 //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
                 //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
@@ -167,9 +162,9 @@ public class ConcatChannelsABI {
                 aValues[count] = beta;
                 count++;
                 //different method
-                channelValue[0] = beta[0] * referenceEmission[0][0];
-                channelValue[1] = beta[1] * referenceEmission[1][1];
-                channelValue[2] = beta[2] * referenceEmission[2][2];
+                channelValue[0] = beta[0] * referenceEmission[1][0];
+                channelValue[1] = beta[1] * referenceEmission[2][1];
+                channelValue[2] = beta[2] * referenceEmission[3][2];
                 channelValue[3] = beta[3] * referenceEmission[4][3];
                 channelValue[4] = beta[4] * referenceEmission[4][4];
 
@@ -178,7 +173,7 @@ public class ConcatChannelsABI {
 //                channel20Value = beta[2] * (referenceEmission[0][2] + referenceEmission[1][2] + referenceEmission[2][2]);
                 for(int i = 0; i < channelValue.length; i++) {
                     if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, (channelValue[i] * (-1)));
+                        resultImage.getRaster().setSample(x, y, i, 0);
                     } else {
                         resultImage.getRaster().setSample(x, y, i, channelValue[i]);
                     }
@@ -241,27 +236,11 @@ public class ConcatChannelsABI {
                 for(int channel = 2; channel < 4; channel++) {
                     pixelIntensity[channel - 2] = overallImage.getRaster().getSample(x, y, channel);
                 }
-                //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
-                //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
-                //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
-
-                //OLSMultipleLinearRegression
 
 //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
                 double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
 
                 aValues[count] = beta;
-
-                //original method
-//                for(int i = 0; i < 4; i++) {
-//                    channel1Value += beta[0] * referenceEmission[i][0];
-//                    channel2Value += beta[1] * referenceEmission[i][1];
-//                    channel3Value += beta[2] * referenceEmission[i][2];
-//                }
-                //soroushs method to find correct values
-//                channel1Value = pixelIntensity[2] - beta[1] * referenceEmission[2][1] - beta[2] * referenceEmission[2][2];
-//                channel2Value = pixelIntensity[2] - beta[0] * referenceEmission[2][0] - beta[2] * referenceEmission[2][2];
-//                channel3Value = pixelIntensity[2] - beta[0] * referenceEmission[2][0] - beta[1] * referenceEmission[2][1];
 
                 //different method
                 channelValue[0] = beta[0] * referenceEmission[1][0];
@@ -272,23 +251,11 @@ public class ConcatChannelsABI {
 
                 for(int i = 0; i < channelValue.length; i++) {
                     if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, (channelValue[i] * (-1)));
+                        resultImage.getRaster().setSample(x, y, i, 0);
                     } else {
                         resultImage.getRaster().setSample(x, y, i, channelValue[i]);
                     }
                 }
-
-//                if(y == 10) {
-//                    System.out.println("beta0: " + beta[0]);
-//                    System.out.println("beta1: " + beta[1]);
-//                    System.out.println("referenceEmission0: " + referenceEmission[1][0]);
-//                    System.out.println("referenceEmission1: " + referenceEmission[1][1]);
-//                    System.out.println("channel1Value: " + channel1Value);
-//                    System.out.println("channel2Value: " + channel2Value);
-//                    System.out.println("actual value1: " + resultImage.getRaster().getSample(x, y, 0) + ", pixelIntensity: " + pixelIntensity[0]);
-//                    System.out.println("actual value2: " + resultImage.getRaster().getSample(x, y, 1)  + ", pixelIntensity: " + pixelIntensity[1]);
-//                    System.out.println();
-//                }
             }
         }
 
