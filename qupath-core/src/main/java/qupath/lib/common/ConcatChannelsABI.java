@@ -68,6 +68,50 @@ public class ConcatChannelsABI {
         return beta;
     }
 
+    public static double[] completeManualRegression(double[] pixelIntensity, double[][] referenceEmission) {
+
+        //Instantiate identity matrix
+        double [][] rhs = new double[pixelIntensity.length][pixelIntensity.length];
+        for(int i = 0; i < pixelIntensity.length; i++) {
+            for(int j = 0; j < pixelIntensity.length; j++) {
+                if(i == j) {
+                    rhs[i][j] = 1;
+                } else {
+                    rhs[i][j] = 0;
+                }
+            }
+        }
+        RealMatrix I = new Array2DRowRealMatrix(rhs);
+
+        RealMatrix referenceEmissionMatrix = new Array2DRowRealMatrix(referenceEmission);
+        RealMatrix pixelIntensityMatrix = new Array2DRowRealMatrix(pixelIntensity);
+
+        //M^t
+        RealMatrix referenceEmissionMatrixTransposed = referenceEmissionMatrix.transpose();
+
+        //M^t.x
+        RealMatrix transposeBySignal = referenceEmissionMatrixTransposed.multiply(pixelIntensityMatrix);
+
+        //M^t.M
+        RealMatrix transposeByNormal = referenceEmissionMatrixTransposed.multiply(referenceEmissionMatrix);
+
+        //invert matrix
+        DecompositionSolver solver = new LUDecomposition(transposeByNormal).getSolver();
+        RealMatrix toPowerOfNegativeOne = solver.solve(I);
+
+        RealMatrix solution = toPowerOfNegativeOne.multiply(transposeBySignal);
+        double[][] contribution = solution.getData();
+        double[] result = new double[contribution.length * contribution[0].length];
+        int count = 0;
+        for(int i = 0; i < contribution.length; i++) {
+            for(int j = 0; j < contribution[0].length; j++) {
+                result[count] = contribution[i][j];
+                count++;
+            }
+        }
+        return result;
+    }
+
     //completely unmix the whole image linearly by calling various sub methods
     //at this point just hard coding for channels 18-20 to test
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
@@ -83,9 +127,9 @@ public class ConcatChannelsABI {
         BufferedImage resultImage = limitedImage;
         int width = imageData.getServer().getWidth();
         int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[9];
-        double[][] referenceEmission = new double[9][keptChannels.size()];
-        double[][] aValues = new double[width * height][9];
+        double[] pixelIntensity = new double[5];
+        double[][] referenceEmission = new double[5][keptChannels.size()];
+        double[][] aValues = new double[width * height][5];
         double channel1Value;
         double channel2Value;
         double channel3Value;
@@ -93,12 +137,12 @@ public class ConcatChannelsABI {
         double channel5Value;
         int count = 0;
 
-        for(int channel = 20; channel < 29; channel++) {
-            referenceEmission[channel - 20][0] = proportionArray[0][channel];
-            referenceEmission[channel - 20][1] = proportionArray[6][channel];
-            referenceEmission[channel - 20][2] = proportionArray[1][channel];
-            referenceEmission[channel - 20][3] = proportionArray[5][channel];
-            referenceEmission[channel - 20][4] = proportionArray[2][channel];
+        for(int channel = 21; channel < 26; channel++) {
+            referenceEmission[channel - 21][0] = proportionArray[0][channel];
+            referenceEmission[channel - 21][1] = proportionArray[6][channel];
+            referenceEmission[channel - 21][2] = proportionArray[1][channel];
+            referenceEmission[channel - 21][3] = proportionArray[5][channel];
+            referenceEmission[channel - 21][4] = proportionArray[2][channel];
         }
         for(int i = 0; i < referenceEmission.length; i++) {
             for(int j = 0; j < referenceEmission[0].length; j++) {
@@ -109,23 +153,24 @@ public class ConcatChannelsABI {
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                for(int channel = 20; channel < 29; channel++) {
-                    pixelIntensity[channel - 20] = overallImage.getRaster().getSample(x, y, channel);
+                for(int channel = 21; channel < 26; channel++) {
+                    pixelIntensity[channel - 21] = overallImage.getRaster().getSample(x, y, channel);
                 }
                 //equation1 -> pixelIntensity[0] = A1 * referenceEmission[0][0] + A2 * referenceEmission[1][0] + A3 * referenceEmission[2][0]
                 //equation2 -> pixelIntensity[1] = A1 * referenceEmission[0][1] + A2 * referenceEmission[1][1] + A3 * referenceEmission[2][1]
                 //equation3 -> pixelIntensity[2] = A1 * referenceEmission[0][2] + A2 * referenceEmission[1][2] + A3 * referenceEmission[2][2]
 
-                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
 
                 aValues[count] = beta;
                 count++;
                 //different method
-                channel1Value = beta[0] * referenceEmission[1][0];
-                channel2Value = beta[1] * referenceEmission[2][1];
-                channel3Value = beta[2] * referenceEmission[3][2];
-                channel4Value = beta[3] * referenceEmission[8][3];
-                channel5Value = beta[4] * referenceEmission[5][4];
+                channel1Value = beta[0] * referenceEmission[0][0];
+                channel2Value = beta[1] * referenceEmission[1][1];
+                channel3Value = beta[2] * referenceEmission[2][2];
+                channel4Value = beta[3] * referenceEmission[4][3];
+                channel5Value = beta[4] * referenceEmission[4][4];
 
 //                channel18Value = beta[0] * (referenceEmission[0][0] + referenceEmission[1][0] + referenceEmission[2][0]);
 //                channel19Value = beta[1] * (referenceEmission[0][1] + referenceEmission[1][1] + referenceEmission[2][1]);
@@ -200,8 +245,9 @@ public class ConcatChannelsABI {
 
                 //OLSMultipleLinearRegression
 
-                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                
+//                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
+
                 aValues[count] = beta;
 
                 //original method
@@ -216,8 +262,8 @@ public class ConcatChannelsABI {
 //                channel3Value = pixelIntensity[2] - beta[0] * referenceEmission[2][0] - beta[1] * referenceEmission[2][1];
 
                 //different method
-                channel1Value = beta[0] * referenceEmission[2][0];
-                channel2Value = beta[1] * referenceEmission[2][1];
+                channel1Value = beta[0] * referenceEmission[1][0];
+                channel2Value = beta[1] * referenceEmission[1][1];
 
                 count++;
 
