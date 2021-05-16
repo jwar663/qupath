@@ -682,7 +682,8 @@ public class DuplicateMatrixCommand implements Runnable {
 //                ImageData newImageData = ConcatChannelsABI.unmixDAPI(imageData, proportionArray);
 //                ImageData newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
 //            ImageData newImageData = ConcatChannelsABI.unmixOpal480(imageData, proportionArray);
-            ImageData newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
+//            ImageData newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
+            ImageData newImageData = ConcatChannelsABI.unmixOpal780(imageData, proportionArray);
                 viewer.setImageData(newImageData);
                 exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed image", dialog);
 //            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
