@@ -382,6 +382,75 @@ public class ConcatChannelsABI {
         return resultImageData;
     }
 
+    public static ImageData unmixTexasRed(ImageData imageData, double[][] proportionArray) {
+        BufferedImage overallImage = convertImageDataToImage(imageData);
+        ArrayList<Integer> keptChannels = new ArrayList<>();
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < 4; i++) {
+            keptChannels.add(i);
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        double[] pixelIntensity = new double[keptChannels.size()];
+        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
+        double[][] aValues = new double[width * height][keptChannels.size()];
+        double[] channelValue = new double[keptChannels.size()];
+        int count = 0;
+
+        for(int channel = 38; channel < 42; channel++) {
+            referenceEmission[channel - 38][0] = proportionArray[2][channel];
+            referenceEmission[channel - 38][1] = proportionArray[6][channel];
+            referenceEmission[channel - 38][2] = proportionArray[1][channel];
+            referenceEmission[channel - 38][3] = proportionArray[5][channel];
+        }
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel = 38; channel < 42; channel++) {
+                    pixelIntensity[channel - 38] = overallImage.getRaster().getSample(x, y, channel);
+                }
+
+                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
+                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
+
+                aValues[count] = beta;
+                count++;
+                //different method
+                channelValue[0] = beta[0] * referenceEmission[0][0];
+                channelValue[1] = beta[1] * referenceEmission[3][1];
+                channelValue[2] = beta[2] * referenceEmission[0][2];
+                channelValue[3] = beta[3] * referenceEmission[3][3];
+
+                for(int i = 0; i < channelValue.length; i++) {
+                    if(channelValue[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
+                    }
+                }
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-TexasRed.csv");
+            for(int i = 0; i < width * height; i++) {
+                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImageData;
+    }
+
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
