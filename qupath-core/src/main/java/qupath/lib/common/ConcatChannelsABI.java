@@ -180,9 +180,66 @@ public class ConcatChannelsABI {
         return resultImageData;
     }
 
+    public static List<Integer>[] findFiltersAndChannels(List<Integer> possibleChannels, double[][] proportionArray) {
+        List<Integer>[] returnLists = new List[2];
+        List<Integer> chosenChannels = new ArrayList<>();
+        List<Integer> chosenFilters = new ArrayList<>();
+
+        for(int channel : possibleChannels) {
+            for(int filter = 0; filter < 7; filter++) {
+                if(!chosenFilters.contains(filter)) {
+                    if(proportionArray[filter][channel] > 0) {
+                        chosenFilters.add(filter);
+                        break;
+                    }
+                }
+            }
+        }
+
+        double maxValue;
+        int count = 0;
+        for(int filter : chosenFilters) {
+            maxValue = 0;
+            for(int channel : possibleChannels) {
+                if(proportionArray[filter][channel] > maxValue) {
+                    maxValue = proportionArray[filter][channel];
+                    if(chosenChannels.size() == count + 1) {
+                        chosenChannels.remove(count);
+                    }
+                    chosenChannels.add(count, channel);
+                    System.out.println("max value: " + maxValue + " (" + filter + ", " + channel + ")");
+                }
+            }
+            count++;
+        }
+
+        for(int channel : chosenChannels) {
+            System.out.println("channel: " + channel);
+        }
+
+        for(int filter : chosenFilters) {
+            System.out.println("filter: " + filter);
+        }
+
+        returnLists[0] = chosenChannels;
+        returnLists[1] = chosenFilters;
+        return returnLists;
+    }
+
     public static ImageData unmixOpal780(ImageData imageData, double[][] proportionArray) {
         //channels 10-11
+        List<Integer> possibleChannels = new ArrayList<>();
+
+        for(int i = 9; i < 11; i++) {
+            possibleChannels.add(i);
+        }
+
         BufferedImage overallImage = convertImageDataToImage(imageData);
+
+        List<Integer>[] lists = findFiltersAndChannels(possibleChannels, proportionArray);
+        List<Integer> chosenChannels = lists[0];
+        List<Integer> chosenFilters = lists[1];
+
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < 2; i++) {

@@ -683,34 +683,11 @@ public class DuplicateMatrixCommand implements Runnable {
 //                ImageData newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
 //            ImageData newImageData = ConcatChannelsABI.unmixOpal480(imageData, proportionArray);
 //            ImageData newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
-//            ImageData newImageData = ConcatChannelsABI.unmixOpal780(imageData, proportionArray);
+            ImageData newImageData = ConcatChannelsABI.unmixOpal780(imageData, proportionArray);
 //            ImageData newImageData = ConcatChannelsABI.unmixOpal690(imageData, proportionArray);
-            ImageData newImageData = ConcatChannelsABI.unmixTexasRed(imageData, proportionArray);
+//            ImageData newImageData = ConcatChannelsABI.unmixTexasRed(imageData, proportionArray);
                 viewer.setImageData(newImageData);
                 exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed image", dialog);
-//            OLSMultipleLinearRegression regression = new OLSMultipleLinearRegression();
-//            double[] y = new double[]{11.0, 12.0, 13.0, 14.0, 15.0, 16.0};
-//            double[][] x = new double[6][];
-//            x[0] = new double[]{0, 0, 0, 0, 0};
-//            x[1] = new double[]{2.0, 0, 0, 0, 0};
-//            x[2] = new double[]{0, 3.0, 0, 0, 0};
-//            x[3] = new double[]{0, 0, 4.0, 0, 0};
-//            x[4] = new double[]{0, 0, 0, 5.0, 0};
-//            x[5] = new double[]{0, 0, 0, 0, 6.0};
-//            regression.newSampleData(y, x);
-//
-//            double[] beta = regression.estimateRegressionParameters();
-//
-//            for(int i = 0; i < x.length; i++) {
-//                for(int j = 0; j < x[0].length; j++) {
-//                    System.out.print(" " + x[i][j] + " ");
-//                }
-//                System.out.println();
-//            }
-//
-//            for(int i = 0; i < beta.length; i++) {
-//                System.out.println(i + ": " + beta[i]);
-//            }
             dialog.close();
             });
 
