@@ -112,6 +112,61 @@ public class ConcatChannelsABI {
         return result;
     }
 
+    public static double[] completeManualRegression(ArrayList<Double> pixelIntensity, double[][] proportionArray, ArrayList<Integer> chosenFilters, ArrayList<Integer> chosenChannels) {
+
+        //Instantiate identity matrix
+        double [][] rhs = new double[pixelIntensity.size()][pixelIntensity.size()];
+        for(int i = 0; i < pixelIntensity.size(); i++) {
+            for(int j = 0; j < pixelIntensity.size(); j++) {
+                if(i == j) {
+                    rhs[i][j] = 1;
+                } else {
+                    rhs[i][j] = 0;
+                }
+            }
+        }
+        RealMatrix I = new Array2DRowRealMatrix(rhs);
+
+        double[] pixelIntensityArray = new double[pixelIntensity.size()];
+        double[][] referenceEmission = new double[pixelIntensity.size()][pixelIntensity.size()];
+
+        for(int i = 0; i < pixelIntensity.size(); i++) {
+            for(int j = 0; j < pixelIntensity.size(); j++) {
+                referenceEmission[i][j] = proportionArray[chosenFilters.get(j)][chosenChannels.get(i)];
+            }
+
+            pixelIntensityArray[i] = pixelIntensity.get(i);
+        }
+
+        RealMatrix referenceEmissionMatrix = new Array2DRowRealMatrix(referenceEmission);
+        RealMatrix pixelIntensityMatrix = new Array2DRowRealMatrix(pixelIntensityArray);
+
+        //M^t
+        RealMatrix referenceEmissionMatrixTransposed = referenceEmissionMatrix.transpose();
+
+        //M^t.x
+        RealMatrix transposeBySignal = referenceEmissionMatrixTransposed.multiply(pixelIntensityMatrix);
+
+        //M^t.M
+        RealMatrix transposeByNormal = referenceEmissionMatrixTransposed.multiply(referenceEmissionMatrix);
+
+        //invert matrix
+        DecompositionSolver solver = new LUDecomposition(transposeByNormal).getSolver();
+        RealMatrix toPowerOfNegativeOne = solver.solve(I);
+
+        RealMatrix solution = toPowerOfNegativeOne.multiply(transposeBySignal);
+        double[][] contribution = solution.getData();
+        double[] result = new double[contribution.length * contribution[0].length];
+        int count = 0;
+        for(int i = 0; i < contribution.length; i++) {
+            for(int j = 0; j < contribution[0].length; j++) {
+                result[count] = contribution[i][j];
+                count++;
+            }
+        }
+        return result;
+    }
+
     public static ImageData unmixOpal690(ImageData imageData, double[][] proportionArray) {
         //channels 18-20
         BufferedImage overallImage = convertImageDataToImage(imageData);
@@ -180,10 +235,11 @@ public class ConcatChannelsABI {
         return resultImageData;
     }
 
-    public static List<Integer>[] findFiltersAndChannels(List<Integer> possibleChannels, double[][] proportionArray) {
-        List<Integer>[] returnLists = new List[2];
-        List<Integer> chosenChannels = new ArrayList<>();
-        List<Integer> chosenFilters = new ArrayList<>();
+    public static ArrayList<Integer>[] findFiltersAndChannels(ArrayList<Integer> possibleChannels, double[][] proportionArray) {
+        ArrayList<Integer>[] returnLists = new ArrayList[3];
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        ArrayList<Integer> peak = new ArrayList<>();
 
         for(int channel : possibleChannels) {
             for(int filter = 0; filter < 7; filter++) {
@@ -201,14 +257,24 @@ public class ConcatChannelsABI {
         for(int filter : chosenFilters) {
             maxValue = 0;
             for(int channel : possibleChannels) {
-                if(proportionArray[filter][channel] > maxValue) {
-                    maxValue = proportionArray[filter][channel];
-                    if(chosenChannels.size() == count + 1) {
-                        chosenChannels.remove(count);
+                if(!chosenChannels.contains(channel)) {
+                    if(proportionArray[filter][channel] > maxValue) {
+                        maxValue = proportionArray[filter][channel];
+                        if(chosenChannels.size() == count + 1) {
+                            chosenChannels.remove(count);
+                        }
+                        chosenChannels.add(count, channel);
                     }
-                    chosenChannels.add(count, channel);
+                }
+                if(proportionArray[filter][channel] >= maxValue) {
+                    maxValue = proportionArray[filter][channel];
+                    if(peak.size() == count + 1) {
+                        peak.remove(count);
+                    }
+                    peak.add(count, channel);
                     System.out.println("max value: " + maxValue + " (" + filter + ", " + channel + ")");
                 }
+
             }
             count++;
         }
@@ -221,14 +287,19 @@ public class ConcatChannelsABI {
             System.out.println("filter: " + filter);
         }
 
+        for(int peaks : peak) {
+            System.out.println("peak: " + peaks);
+        }
+
         returnLists[0] = chosenChannels;
         returnLists[1] = chosenFilters;
+        returnLists[2] = peak;
         return returnLists;
     }
 
     public static ImageData unmixOpal780(ImageData imageData, double[][] proportionArray) {
         //channels 10-11
-        List<Integer> possibleChannels = new ArrayList<>();
+        ArrayList<Integer> possibleChannels = new ArrayList<>();
 
         for(int i = 9; i < 11; i++) {
             possibleChannels.add(i);
@@ -236,54 +307,45 @@ public class ConcatChannelsABI {
 
         BufferedImage overallImage = convertImageDataToImage(imageData);
 
-        List<Integer>[] lists = findFiltersAndChannels(possibleChannels, proportionArray);
-        List<Integer> chosenChannels = lists[0];
-        List<Integer> chosenFilters = lists[1];
+        ArrayList<Integer>[] lists = findFiltersAndChannels(possibleChannels, proportionArray);
+        ArrayList<Integer> chosenChannels = lists[0];
+        ArrayList<Integer> chosenFilters = lists[1];
+        ArrayList<Integer> peak = lists[2];
 
-        ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < 2; i++) {
-            keptChannels.add(i);
+        for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
         }
 
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, overallImage);
         BufferedImage resultImage = limitedImage;
         int width = imageData.getServer().getWidth();
         int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[keptChannels.size()];
-        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
-        double[][] aValues = new double[width * height][keptChannels.size()];
-        double[] channelValue = new double[keptChannels.size()];
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
         int count = 0;
-
-        for(int channel = 9; channel < 11; channel++) {
-            referenceEmission[channel - 9][0] = proportionArray[6][channel];
-            referenceEmission[channel - 9][1] = proportionArray[5][channel];
-        }
+        double samplePixel;
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
-                for(int channel = 9; channel < 11; channel++) {
-                    pixelIntensity[channel - 9] = overallImage.getRaster().getSample(x, y, channel);
+                for(int channel : chosenChannels) {
+                    samplePixel = overallImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
                 }
-
-                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
 
                 aValues[count] = beta;
                 count++;
                 //different method
-                channelValue[0] = beta[0] * referenceEmission[1][0];
-                channelValue[1] = beta[1] * referenceEmission[1][1];
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
+                for(int i = 0; i < peak.size(); i++) {
+                    double result = beta[i] * proportionArray[chosenFilters.get(i)][peak.get(i)];
+                    if(result < 0) {
                         resultImage.getRaster().setSample(x, y, i, 0);
                     } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
+                        resultImage.getRaster().setSample(x, y, i, result);
                     }
                 }
+                pixelIntensity.clear();
             }
         }
 
