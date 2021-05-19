@@ -113,6 +113,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixOpal690(ImageData imageData, double[][] proportionArray) {
+        //channels 18-20
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -180,6 +181,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixOpal780(ImageData imageData, double[][] proportionArray) {
+        //channels 10-11
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -245,6 +247,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixCy3(ImageData imageData, double[][] proportionArray) {
+        //channels 30-36
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -314,6 +317,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixOpal480(ImageData imageData, double[][] proportionArray) {
+        //channels 12-17
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -383,6 +387,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixTexasRed(ImageData imageData, double[][] proportionArray) {
+        //channels 37-43
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -452,6 +457,7 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
+        //channels 21-29
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -522,9 +528,8 @@ public class ConcatChannelsABI {
         return resultImageData;
     }
 
-    //completely unmix the whole image linearly by calling various sub methods
-    //at this point just hard coding for channels 18-20 to test
     public static ImageData unmixDAPI(ImageData imageData, double[][] proportionArray) {
+        //channels 1-9
         BufferedImage overallImage = convertImageDataToImage(imageData);
         ArrayList<Integer> keptChannels = new ArrayList<>();
         ArrayList<ImageChannel> channels = new ArrayList<>();
