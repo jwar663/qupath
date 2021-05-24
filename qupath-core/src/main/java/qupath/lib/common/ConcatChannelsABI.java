@@ -304,434 +304,44 @@ public class ConcatChannelsABI {
     }
 
     public static ImageData unmixOpal690(ImageData imageData, double[][] proportionArray) {
+        //channels 18-20
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 18, 20, "opal690");
         return resultImageData;
     }
 
     public static ImageData unmixOpal780(ImageData imageData, double[][] proportionArray) {
         //channels 10-11
-        ArrayList<Integer> possibleChannels = new ArrayList<>();
-
-        for(int i = 9; i < 11; i++) {
-            possibleChannels.add(i);
-        }
-
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-
-        ArrayList<Integer>[] lists = findFiltersAndChannels(possibleChannels, proportionArray);
-        ArrayList<Integer> chosenChannels = lists[0];
-        ArrayList<Integer> chosenFilters = lists[1];
-        ArrayList<Integer> peak = lists[2];
-
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < chosenChannels.size(); i++) {
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        ArrayList<Double> pixelIntensity = new ArrayList<>();
-        double[][] aValues = new double[width * height][chosenChannels.size()];
-        int count = 0;
-        double samplePixel;
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel : chosenChannels) {
-                    samplePixel = overallImage.getRaster().getSample(x, y, channel);
-                    pixelIntensity.add(samplePixel);
-                }
-                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
-
-                aValues[count] = beta;
-                count++;
-                //different method
-                for(int i = 0; i < peak.size(); i++) {
-                    double result = beta[i] * proportionArray[chosenFilters.get(i)][peak.get(i)];
-                    if(result < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, result);
-                    }
-                }
-                pixelIntensity.clear();
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-Opal780.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 10, 11, "opal780");
         return resultImageData;
     }
 
     public static ImageData unmixCy3(ImageData imageData, double[][] proportionArray) {
         //channels 30-36
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-        ArrayList<Integer> keptChannels = new ArrayList<>();
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < 4; i++) {
-            keptChannels.add(i);
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[keptChannels.size()];
-        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
-        double[][] aValues = new double[width * height][keptChannels.size()];
-        double[] channelValue = new double[keptChannels.size()];
-        int count = 0;
-
-        for(int channel = 30; channel < 34; channel++) {
-            referenceEmission[channel - 30][0] = proportionArray[1][channel];
-            referenceEmission[channel - 30][1] = proportionArray[2][channel];
-            referenceEmission[channel - 30][2] = proportionArray[6][channel];
-            referenceEmission[channel - 30][3] = proportionArray[5][channel];
-        }
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel = 30; channel < 34; channel++) {
-                    pixelIntensity[channel - 30] = overallImage.getRaster().getSample(x, y, channel);
-                }
-
-                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
-
-                aValues[count] = beta;
-                count++;
-                //different method
-                channelValue[0] = beta[0] * referenceEmission[0][0];
-                channelValue[1] = beta[1] * referenceEmission[2][1];
-                channelValue[2] = beta[2] * referenceEmission[1][2];
-                channelValue[3] = beta[3] * referenceEmission[3][3];
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
-                    }
-                }
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-Opal480.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 30, 36, "Cy3");
         return resultImageData;
     }
 
     public static ImageData unmixOpal480(ImageData imageData, double[][] proportionArray) {
         //channels 12-17
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-        ArrayList<Integer> keptChannels = new ArrayList<>();
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < 4; i++) {
-            keptChannels.add(i);
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[keptChannels.size()];
-        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
-        double[][] aValues = new double[width * height][keptChannels.size()];
-        double[] channelValue = new double[keptChannels.size()];
-        int count = 0;
-
-        for(int channel = 13; channel < 17; channel++) {
-            referenceEmission[channel - 13][0] = proportionArray[3][channel];
-            referenceEmission[channel - 13][1] = proportionArray[6][channel];
-            referenceEmission[channel - 13][2] = proportionArray[0][channel];
-            referenceEmission[channel - 13][3] = proportionArray[5][channel];
-        }
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel = 13; channel < 17; channel++) {
-                    pixelIntensity[channel - 13] = overallImage.getRaster().getSample(x, y, channel);
-                }
-
-                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
-
-                aValues[count] = beta;
-                count++;
-                //different method
-                channelValue[0] = beta[0] * referenceEmission[0][0];
-                channelValue[1] = beta[1] * referenceEmission[2][1];
-                channelValue[2] = beta[2] * referenceEmission[1][2];
-                channelValue[3] = beta[3] * referenceEmission[3][3];
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
-                    }
-                }
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-Opal480.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 12, 17, "opal480");
         return resultImageData;
     }
 
     public static ImageData unmixTexasRed(ImageData imageData, double[][] proportionArray) {
         //channels 37-43
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-        ArrayList<Integer> keptChannels = new ArrayList<>();
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < 4; i++) {
-            keptChannels.add(i);
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[keptChannels.size()];
-        double[][] referenceEmission = new double[keptChannels.size()][keptChannels.size()];
-        double[][] aValues = new double[width * height][keptChannels.size()];
-        double[] channelValue = new double[keptChannels.size()];
-        int count = 0;
-
-        for(int channel = 38; channel < 42; channel++) {
-            referenceEmission[channel - 38][0] = proportionArray[2][channel];
-            referenceEmission[channel - 38][1] = proportionArray[6][channel];
-            referenceEmission[channel - 38][2] = proportionArray[1][channel];
-            referenceEmission[channel - 38][3] = proportionArray[5][channel];
-        }
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel = 38; channel < 42; channel++) {
-                    pixelIntensity[channel - 38] = overallImage.getRaster().getSample(x, y, channel);
-                }
-
-                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
-
-                aValues[count] = beta;
-                count++;
-                //different method
-                channelValue[0] = beta[0] * referenceEmission[0][0];
-                channelValue[1] = beta[1] * referenceEmission[3][1];
-                channelValue[2] = beta[2] * referenceEmission[0][2];
-                channelValue[3] = beta[3] * referenceEmission[3][3];
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
-                    }
-                }
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-TexasRed.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 37, 43, "TexasRed");
         return resultImageData;
     }
 
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
         //channels 21-29
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-        ArrayList<Integer> keptChannels = new ArrayList<>();
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-        for(int i = 0; i < 5; i++) {
-            keptChannels.add(i);
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[5];
-        double[][] referenceEmission = new double[5][keptChannels.size()];
-        double[][] aValues = new double[width * height][5];
-        double[] channelValue = new double[5];
-        int count = 0;
-
-        for(int channel = 20; channel < 25; channel++) {
-            referenceEmission[channel - 20][0] = proportionArray[0][channel];
-            referenceEmission[channel - 20][1] = proportionArray[6][channel];
-            referenceEmission[channel - 20][2] = proportionArray[1][channel];
-            referenceEmission[channel - 20][3] = proportionArray[5][channel];
-            referenceEmission[channel - 20][4] = proportionArray[2][channel];
-        }
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel = 20; channel < 25; channel++) {
-                    pixelIntensity[channel - 20] = overallImage.getRaster().getSample(x, y, channel);
-                }
-
-                //                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
-
-                aValues[count] = beta;
-                count++;
-                //different method
-                channelValue[0] = beta[0] * referenceEmission[1][0];
-                channelValue[1] = beta[1] * referenceEmission[2][1];
-                channelValue[2] = beta[2] * referenceEmission[3][2];
-                channelValue[3] = beta[3] * referenceEmission[4][3];
-                channelValue[4] = beta[4] * referenceEmission[4][4];
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
-                    }
-                }
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-FITC.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "," + aValues[i][2] + "," + aValues[i][3] + "," + aValues[i][4] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 21, 29, "FITC");
         return resultImageData;
     }
 
     public static ImageData unmixDAPI(ImageData imageData, double[][] proportionArray) {
         //channels 1-9
-        BufferedImage overallImage = convertImageDataToImage(imageData);
-        ArrayList<Integer> keptChannels = new ArrayList<>();
-        ArrayList<ImageChannel> channels = new ArrayList<>();
-
-        for(int i = 0; i < 2; i++) {
-            keptChannels.add(i);
-            channels.add(imageData.getServer().getChannel(i));
-        }
-
-        BufferedImage limitedImage = createNewBufferedImage(keptChannels, overallImage);
-        BufferedImage resultImage = limitedImage;
-        int width = imageData.getServer().getWidth();
-        int height = imageData.getServer().getHeight();
-        double[] pixelIntensity = new double[2];
-        double[][] referenceEmission = new double[2][keptChannels.size()];
-        double[][] aValues = new double[width * height][2];
-        double[] channelValue = new double[2];
-        int count = 0;
-
-        for(int channel = 2; channel < 4; channel++) {
-            referenceEmission[channel - 2][0] = proportionArray[4][channel];
-            referenceEmission[channel - 2][1] = proportionArray[3][channel];
-        }
-
-        for(int i = 0; i < referenceEmission.length; i++) {
-            for(int j = 0; j < referenceEmission[0].length; j++) {
-                System.out.print(" " + referenceEmission[i][j] + " ");
-            }
-            System.out.println();
-        }
-
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                for(int channel = 2; channel < 4; channel++) {
-                    pixelIntensity[channel - 2] = overallImage.getRaster().getSample(x, y, channel);
-                }
-
-//                double[] beta = completeRegression(pixelIntensity, referenceEmission);
-                double[] beta = completeManualRegression(pixelIntensity, referenceEmission);
-
-                aValues[count] = beta;
-
-                //different method
-                channelValue[0] = beta[0] * referenceEmission[1][0];
-                channelValue[1] = beta[1] * referenceEmission[1][1];
-
-
-                count++;
-
-                for(int i = 0; i < channelValue.length; i++) {
-                    if(channelValue[i] < 0) {
-                        resultImage.getRaster().setSample(x, y, i, 0);
-                    } else {
-                        resultImage.getRaster().setSample(x, y, i, channelValue[i]);
-                    }
-                }
-            }
-        }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\a-values-DAPI.csv");
-            for(int i = 0; i < width * height; i++) {
-                writer.append(aValues[i][0] + "," + aValues[i][1] + "\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 1, 9, "DAPI");
         return resultImageData;
     }
 
