@@ -167,6 +167,596 @@ public class ConcatChannelsABI {
         return result;
     }
 
+    public static ImageData unmixTexasRed_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 36/38
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(36);
+        chosenChannels.add(38);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(2);
+        chosenFilters.add(6);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+                double result1 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "TexasRed_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static ImageData unmixCy3_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 30/34
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(30);
+        chosenChannels.add(34);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(1);
+        chosenFilters.add(2);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)]);
+                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Cy3_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static ImageData unmixOpal780_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 9-10
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(9);
+        chosenChannels.add(10);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(6);
+        chosenFilters.add(5);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+                double result1 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal780_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static ImageData unmixFITC_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 21-29
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(21);
+        chosenChannels.add(23);
+        chosenChannels.add(25);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(0);
+        chosenFilters.add(6);
+        chosenFilters.add(1);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
+                double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
+                double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                if(result2 < 0) {
+                    resultImage.getRaster().setSample(x, y, 2, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 2, result2);
+                }
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "FITC_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+        public static ImageData unmixOpal480_Crossed(ImageData imageData, double[][] proportionArray) {
+            //channels 21-29
+            BufferedImage oldImage = convertImageDataToImage(imageData);
+
+            ArrayList<Integer> chosenChannels = new ArrayList<>();
+            chosenChannels.add(13);
+            chosenChannels.add(14);
+            chosenChannels.add(15);
+            chosenChannels.add(16);
+
+            ArrayList<Integer> chosenFilters = new ArrayList<>();
+            chosenFilters.add(3);
+            chosenFilters.add(6);
+            chosenFilters.add(0);
+            chosenFilters.add(5);
+
+            ArrayList<ImageChannel> channels = new ArrayList<>();
+            for(int i = 0; i < chosenChannels.size(); i++) {
+                channels.add(imageData.getServer().getChannel(i));
+            }
+
+            BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+            BufferedImage resultImage = limitedImage;
+            int width = imageData.getServer().getWidth();
+            int height = imageData.getServer().getHeight();
+            ArrayList<Double> pixelIntensity = new ArrayList<>();
+            double[][] aValues = new double[width * height][chosenChannels.size()];
+            int count = 0;
+            double samplePixel;
+
+            for(int x = 0; x < width; x++) {
+                for(int y = 0; y < height; y++) {
+                    for(int channel : chosenChannels) {
+                        samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                        pixelIntensity.add(samplePixel);
+                    }
+                    double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                    aValues[count] = beta;
+                    count++;
+
+                    double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(0)] + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(0)]);
+                    double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)] + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(2)]);
+                    double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]  + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(1)]);
+                    double result3 = pixelIntensity.get(3) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(3)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(3)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(3)]);
+
+                    if(result0 < 0) {
+                        resultImage.getRaster().setSample(x, y, 0, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result0);
+                    }
+
+                    if(result1 < 0) {
+                        resultImage.getRaster().setSample(x, y, 1, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 1, result1);
+                    }
+
+                    if(result2 < 0) {
+                        resultImage.getRaster().setSample(x, y, 2, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 2, result2);
+                    }
+
+                    if(result3 < 0) {
+                        resultImage.getRaster().setSample(x, y, 3, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 3, result3);
+                    }
+
+                    pixelIntensity.clear();
+                }
+            }
+
+            try {
+                FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal480_Crossed_A" + ".csv");
+                for(int i = 0; i < width * height; i++) {
+                    for(int j = 0; j < chosenChannels.size(); j++) {
+                        writer.append((aValues[i][j] + ","));
+                        if(j == chosenChannels.size() - 1) {
+                            writer.append((Double.toString(aValues[i][j])));
+                        }
+                    }
+                    writer.append("\n");
+                }
+                writer.flush();
+                writer.close();
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static ImageData unmixOpal690_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 17-19
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(17);
+        chosenChannels.add(18);
+        chosenChannels.add(19);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(5);
+        chosenFilters.add(6);
+        chosenFilters.add(2);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(2) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
+                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(1)]);
+                double result2 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                if(result2 < 0) {
+                    resultImage.getRaster().setSample(x, y, 2, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 2, result2);
+                }
+
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal690_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static ImageData unmixDAPI_Crossed(ImageData imageData, double[][] proportionArray) {
+        //channels 21-29
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        ArrayList<Integer> chosenChannels = new ArrayList<>();
+        chosenChannels.add(2);
+        chosenChannels.add(3);
+
+        ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(4);
+        chosenFilters.add(3);
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+        for(int i = 0; i < chosenChannels.size(); i++) {
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage limitedImage = createNewBufferedImage(chosenChannels, oldImage);
+        BufferedImage resultImage = limitedImage;
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+        ArrayList<Double> pixelIntensity = new ArrayList<>();
+        double[][] aValues = new double[width * height][chosenChannels.size()];
+        int count = 0;
+        double samplePixel;
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                for(int channel : chosenChannels) {
+                    samplePixel = oldImage.getRaster().getSample(x, y, channel);
+                    pixelIntensity.add(samplePixel);
+                }
+                double[] beta = completeManualRegression(pixelIntensity, proportionArray, chosenFilters, chosenChannels);
+
+                aValues[count] = beta;
+                count++;
+
+                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+
+                if(result0 < 0) {
+                    resultImage.getRaster().setSample(x, y, 0, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 0, result0);
+                }
+
+                if(result1 < 0) {
+                    resultImage.getRaster().setSample(x, y, 1, 0);
+                } else {
+                    resultImage.getRaster().setSample(x, y, 1, result1);
+                }
+
+                pixelIntensity.clear();
+            }
+        }
+
+        try {
+            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "DAPI_Crossed_A" + ".csv");
+            for(int i = 0; i < width * height; i++) {
+                for(int j = 0; j < chosenChannels.size(); j++) {
+                    writer.append((aValues[i][j] + ","));
+                    if(j == chosenChannels.size() - 1) {
+                        writer.append((Double.toString(aValues[i][j])));
+                    }
+                }
+                writer.append("\n");
+            }
+            writer.flush();
+            writer.close();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+
+
     public static ArrayList<Integer>[] findFiltersAndChannels(ArrayList<Integer> possibleChannels, double[][] proportionArray) {
         ArrayList<Integer>[] returnLists = new ArrayList[3];
         ArrayList<Integer> chosenChannels = new ArrayList<>();
@@ -305,42 +895,49 @@ public class ConcatChannelsABI {
 
     public static ImageData unmixOpal690(ImageData imageData, double[][] proportionArray) {
         //channels 18-20
+        System.out.println("in 690");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 18, 20, "opal690");
         return resultImageData;
     }
 
     public static ImageData unmixOpal780(ImageData imageData, double[][] proportionArray) {
         //channels 10-11
+        System.out.println("in 780");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 10, 11, "opal780");
         return resultImageData;
     }
 
     public static ImageData unmixCy3(ImageData imageData, double[][] proportionArray) {
         //channels 30-36
+        System.out.println("in cy3");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 30, 36, "Cy3");
         return resultImageData;
     }
 
     public static ImageData unmixOpal480(ImageData imageData, double[][] proportionArray) {
         //channels 12-17
+        System.out.println("in 480");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 12, 17, "opal480");
         return resultImageData;
     }
 
     public static ImageData unmixTexasRed(ImageData imageData, double[][] proportionArray) {
         //channels 37-43
+        System.out.println("in texas");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 37, 43, "TexasRed");
         return resultImageData;
     }
 
     public static ImageData unmixFITC(ImageData imageData, double[][] proportionArray) {
         //channels 21-29
+        System.out.println("in fitc");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 21, 29, "FITC");
         return resultImageData;
     }
 
     public static ImageData unmixDAPI(ImageData imageData, double[][] proportionArray) {
         //channels 1-9
+        System.out.println("in dapi");
         ImageData resultImageData = unmixFluorophore(imageData, proportionArray, 1, 9, "DAPI");
         return resultImageData;
     }

@@ -679,15 +679,39 @@ public class DuplicateMatrixCommand implements Runnable {
                 }
                 System.out.println();
             }
-//                ImageData newImageData = ConcatChannelsABI.unmixDAPI(imageData, proportionArray);
-//                ImageData newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
-//            ImageData newImageData = ConcatChannelsABI.unmixOpal480(imageData, proportionArray);
-//            ImageData newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
+
 //            ImageData newImageData = ConcatChannelsABI.unmixOpal780(imageData, proportionArray);
-            ImageData newImageData = ConcatChannelsABI.unmixOpal690(imageData, proportionArray);
-//            ImageData newImageData = ConcatChannelsABI.unmixTexasRed(imageData, proportionArray);
-                viewer.setImageData(newImageData);
-                exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed image", dialog);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal780", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixOpal690(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal690", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixDAPI(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-DAPI", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-FITC", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixOpal480(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal480", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Cy3", dialog);
+//
+//            newImageData = ConcatChannelsABI.unmixTexasRed(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-TexasRed", dialog);
+
+            ImageData newImageData = ConcatChannelsABI.unmixTexasRed_Crossed(imageData, proportionArray);
+            viewer.setImageData(newImageData);
+            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-TexasRed_Crossed", dialog);
+
             dialog.close();
             });
 
