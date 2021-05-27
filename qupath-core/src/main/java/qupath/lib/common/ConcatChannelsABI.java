@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URI;
 import java.sql.Time;
+import java.time.chrono.ThaiBuddhistChronology;
 import java.util.*;
 import java.util.List;
 
@@ -167,7 +168,62 @@ public class ConcatChannelsABI {
         return result;
     }
 
-    public static ImageData unmixTexasRed_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static ImageData unmixAll_Crossed(ImageData imageData, double[][] proportionArray) {
+        BufferedImage oldImage = convertImageDataToImage(imageData);
+
+        int width = imageData.getServer().getWidth();
+        int height = imageData.getServer().getHeight();
+
+        ArrayList<Integer> notDuplicates = new ArrayList<>();
+
+        ArrayList<ImageChannel> channels = new ArrayList<>();
+
+        for(int i = 0; i < 7; i++) {
+            notDuplicates.add(i);
+            channels.add(imageData.getServer().getChannel(i));
+        }
+
+        BufferedImage resultImage = createNewBufferedImage(notDuplicates, oldImage);
+
+        BufferedImage DAPI_image = unmixDAPI_Crossed(imageData, proportionArray);
+
+        BufferedImage Opal780_image = unmixOpal780_Crossed(imageData, proportionArray);
+
+        BufferedImage Opal480_image = unmixOpal480_Crossed(imageData, proportionArray);
+
+        BufferedImage Opal690_image = unmixOpal690_Crossed(imageData, proportionArray);
+
+        BufferedImage FITC_image = unmixFITC_Crossed(imageData, proportionArray);
+
+        BufferedImage Cy3_image = unmixCy3_Crossed(imageData, proportionArray);
+
+        BufferedImage TexasRed_image = unmixTexasRed_Crossed(imageData, proportionArray);
+
+        for(int x = 0; x < width; x++) {
+            for(int y = 0; y < height; y++) {
+                resultImage.getRaster().setSample(x, y, 0, DAPI_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 1, Opal780_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 2, Opal480_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 3, Opal690_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 4, FITC_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 5, Cy3_image.getRaster().getSample(x, y, 0));
+
+                resultImage.getRaster().setSample(x, y, 6, TexasRed_image.getRaster().getSample(x, y, 0));
+            }
+        }
+
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+        return resultImageData;
+    }
+
+    public static BufferedImage unmixTexasRed_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 36/38
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -240,13 +296,15 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-    public static ImageData unmixCy3_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static BufferedImage unmixCy3_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 30/34
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -319,13 +377,15 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-    public static ImageData unmixOpal780_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static BufferedImage unmixOpal780_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 9-10
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -398,13 +458,15 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-    public static ImageData unmixFITC_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static BufferedImage unmixFITC_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 21-29
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -443,9 +505,9 @@ public class ConcatChannelsABI {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
-                double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
-                double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(0)]);
+                double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
+                double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
 
                 if(result0 < 0) {
                     resultImage.getRaster().setSample(x, y, 0, 0);
@@ -485,13 +547,15 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-        public static ImageData unmixOpal480_Crossed(ImageData imageData, double[][] proportionArray) {
+        public static BufferedImage unmixOpal480_Crossed(ImageData imageData, double[][] proportionArray) {
             //channels 21-29
             BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -582,13 +646,15 @@ public class ConcatChannelsABI {
                 e.printStackTrace();
             }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+            return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-    public static ImageData unmixOpal690_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static BufferedImage unmixOpal690_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 17-19
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -670,13 +736,15 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
-    public static ImageData unmixDAPI_Crossed(ImageData imageData, double[][] proportionArray) {
+    public static BufferedImage unmixDAPI_Crossed(ImageData imageData, double[][] proportionArray) {
         //channels 21-29
         BufferedImage oldImage = convertImageDataToImage(imageData);
 
@@ -749,10 +817,12 @@ public class ConcatChannelsABI {
             e.printStackTrace();
         }
 
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+        return resultImage;
 
-        return resultImageData;
+//        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+//        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+//
+//        return resultImageData;
     }
 
 

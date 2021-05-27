@@ -708,9 +708,9 @@ public class DuplicateMatrixCommand implements Runnable {
 //            viewer.setImageData(newImageData);
 //            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-TexasRed", dialog);
 
-            ImageData newImageData = ConcatChannelsABI.unmixTexasRed_Crossed(imageData, proportionArray);
+            ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
             viewer.setImageData(newImageData);
-            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-TexasRed_Crossed", dialog);
+            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
 
             dialog.close();
             });
