@@ -23,6 +23,7 @@
 
 package qupath.lib.gui.commands;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -595,6 +598,27 @@ public class DuplicateMatrixCommand implements Runnable {
         return toggleButton;
     }
 
+    protected ChoiceBox createUnmixChoiceBox(int numberOfPossibleChannels) {
+        ChoiceBox<Integer> choiceBox = new ChoiceBox<>();
+        for(int i = 0; i <= numberOfPossibleChannels; i++) {
+            choiceBox.getItems().add(i);
+        }
+        choiceBox.setPrefSize(80.0, 25.0);
+        choiceBox.setMinSize(80.0, 25.0);
+        choiceBox.setMaxSize(80.0, 25.0);
+        choiceBox.setValue(0);
+
+        return choiceBox;
+    }
+
+    protected Label createUnmixLabel(String fluor) {
+        Label label = new Label(fluor);
+        label.setPrefSize(80.0, 25.0);
+        label.setMinSize(80.0, 25.0);
+        label.setMaxSize(80.0, 25.0);
+        return label;
+    }
+
     public static double[][] readCSV(String file, double[][] array) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -1109,9 +1133,22 @@ public class DuplicateMatrixCommand implements Runnable {
         Stage previewDialog = new Stage();
         previewDialog.setTitle("Unmix Options");
 
-        //larger panes
+        Pane overallPane = createOverallPane();
 
-        BorderPane overallPane = createOverallPane();
+        //larger panes
+        GridPane gridPane = new GridPane();
+        gridPane.setMaxSize(400.0, 410.0);
+        gridPane.setPrefSize(400.0, 410.0);
+        gridPane.setMinSize(400.0, 410.0);
+        overallPane.getChildren().add(gridPane);
+
+        Label label1 = createUnmixLabel("label1");
+        ChoiceBox<Integer> choiceBox1 = createUnmixChoiceBox(5);
+
+        gridPane.add(label1, 0,0);
+        gridPane.add(choiceBox1, 1, 0);
+
+
 
         Scene scene = new Scene(overallPane, 400.0, 410.0);
         previewDialog.setScene(scene);
