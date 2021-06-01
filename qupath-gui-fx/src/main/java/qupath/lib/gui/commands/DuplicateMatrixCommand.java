@@ -672,47 +672,25 @@ public class DuplicateMatrixCommand implements Runnable {
 
                 File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
                 double[][] proportionArray = new double[7][43];
-                proportionArray = readCSV(file.toString(), proportionArray);
-            for(int i = 0; i < proportionArray.length; i++) {
-                for(int j = 0; j < proportionArray[0].length; j++) {
-                    System.out.print(" " + proportionArray[i][j] + " ");
+                try {
+                    proportionArray = readCSV(file.toString(), proportionArray);
+                } catch (NullPointerException npe){
+                    npe.printStackTrace();
                 }
-                System.out.println();
-            }
 
-//            ImageData newImageData = ConcatChannelsABI.unmixOpal780(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal780", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixOpal690(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal690", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixDAPI(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-DAPI", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixFITC(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-FITC", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixOpal480(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Opal480", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixCy3(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-Cy3", dialog);
-//
-//            newImageData = ConcatChannelsABI.unmixTexasRed(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-TexasRed", dialog);
 
-            ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
-            viewer.setImageData(newImageData);
-            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
+//            ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
+//            viewer.setImageData(newImageData);
+//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
 
-            dialog.close();
+            Stage unmixDialog;
+
+            unmixDialog = createUnmixingDialog(imageData, dialog);
+            unmixDialog.initOwner(dialog);
+            unmixDialog.initModality(Modality.WINDOW_MODAL);
+            unmixDialog.showAndWait();
+
+//            dialog.close();
             });
 
         //Threshold Part
@@ -1122,6 +1100,25 @@ public class DuplicateMatrixCommand implements Runnable {
         previewDialog.setMinHeight(OVERALL_HEIGHT);
         previewDialog.setMaxWidth(OVERALL_WIDTH);
         previewDialog.setMaxHeight(OVERALL_HEIGHT);
+
+        return previewDialog;
+    }
+
+    protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog) throws  NullPointerException {
+
+        Stage previewDialog = new Stage();
+        previewDialog.setTitle("Unmix Options");
+
+        //larger panes
+
+        BorderPane overallPane = createOverallPane();
+
+        Scene scene = new Scene(overallPane, 400.0, 410.0);
+        previewDialog.setScene(scene);
+        previewDialog.setMinWidth(400.0);
+        previewDialog.setMinHeight(410.0);
+        previewDialog.setMaxWidth(400.0);
+        previewDialog.setMaxHeight(410.0);
 
         return previewDialog;
     }
