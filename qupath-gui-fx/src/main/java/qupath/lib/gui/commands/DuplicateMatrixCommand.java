@@ -1177,6 +1177,16 @@ public class DuplicateMatrixCommand implements Runnable {
         gridPane.add(TexasRedLabel, 1,4);
         gridPane.add(TexasRedBox, 1, 5);
 
+        Button nextButton = new Button("Next");
+        nextButton.setPrefSize(100.0, 50.0);
+        nextButton.setMinSize(100.0, 50.0);
+        nextButton.setMaxSize(100.0, 50.0);
+        gridPane.add(nextButton, 2, 4, 1, 2);
+
+        nextButton.setOnAction(e -> {
+            //Go to the next option
+            
+        });
 
 
         Scene scene = new Scene(overallPane, 400.0, 410.0);
