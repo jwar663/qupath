@@ -1143,58 +1143,91 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.getChildren().add(gridPane);
 
         Label DAPILabel = createUnmixLabel("DAPI");
+        DAPILabel.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(9);
-        gridPane.add(DAPILabel, 0,0);
-        gridPane.add(DAPIBox, 0, 1);
+        gridPane.add(DAPILabel, 0,1);
+        gridPane.add(DAPIBox, 0, 2);
 
         Label Opal780Label = createUnmixLabel("Opal780");
+        Opal780Label.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> Opal780Box = createUnmixChoiceBox(2);
-        gridPane.add(Opal780Label, 1,0);
-        gridPane.add(Opal780Box, 1, 1);
+        gridPane.add(Opal780Label, 1,1);
+        gridPane.add(Opal780Box, 1, 2);
 
         Label Opal480Label = createUnmixLabel("Opal480");
+        Opal480Label.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> Opal480Box = createUnmixChoiceBox(6);
-        gridPane.add(Opal480Label, 2,0);
-        gridPane.add(Opal480Box, 2, 1);
+        gridPane.add(Opal480Label, 2,1);
+        gridPane.add(Opal480Box, 2, 2);
 
         Label Opal690Label = createUnmixLabel("Opal690");
+        Opal690Label.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> Opal690Box = createUnmixChoiceBox(3);
-        gridPane.add(Opal690Label, 0,2);
-        gridPane.add(Opal690Box, 0, 3);
+        gridPane.add(Opal690Label, 0,3);
+        gridPane.add(Opal690Box, 0, 4);
 
         Label FITCLabel = createUnmixLabel("FITC");
+        FITCLabel.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(9);
-        gridPane.add(FITCLabel, 1,2);
-        gridPane.add(FITCBox, 1, 3);
+        gridPane.add(FITCLabel, 1,3);
+        gridPane.add(FITCBox, 1, 4);
 
         Label Cy3Label = createUnmixLabel("Cy3");
+        Cy3Label.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> Cy3Box = createUnmixChoiceBox(7);
-        gridPane.add(Cy3Label, 2,2);
-        gridPane.add(Cy3Box, 2, 3);
+        gridPane.add(Cy3Label, 2,3);
+        gridPane.add(Cy3Box, 2, 4);
 
         Label TexasRedLabel = createUnmixLabel("TexasRed");
+        TexasRedLabel.setAlignment(Pos.CENTER);
         ChoiceBox<Integer> TexasRedBox = createUnmixChoiceBox(7);
-        gridPane.add(TexasRedLabel, 1,4);
-        gridPane.add(TexasRedBox, 1, 5);
+        gridPane.add(TexasRedLabel, 1,5);
+        gridPane.add(TexasRedBox, 1, 6);
 
         Button nextButton = new Button("Next");
         nextButton.setPrefSize(100.0, 50.0);
         nextButton.setMinSize(100.0, 50.0);
         nextButton.setMaxSize(100.0, 50.0);
-        gridPane.add(nextButton, 2, 4, 1, 2);
+        gridPane.add(nextButton, 2, 5, 1, 2);
+
 
         nextButton.setOnAction(e -> {
             //Go to the next option
-            
+
         });
 
+        ColumnConstraints column1 = new ColumnConstraints(134.0, 134.0, 134.0);
+        column1.setHalignment(HPos.CENTER);
+        ColumnConstraints column2 = new ColumnConstraints(134.0, 134.0, 134.0);
+        column2.setHalignment(HPos.CENTER);
+        ColumnConstraints column3 = new ColumnConstraints(134.0, 134.0, 134.0);
+        column3.setHalignment(HPos.CENTER);
 
-        Scene scene = new Scene(overallPane, 400.0, 410.0);
+        RowConstraints row1 = new RowConstraints(58.0, 58.0, 58.0);
+        RowConstraints row2 = new RowConstraints(58.0, 58.0, 58.0);
+        row2.setValignment(VPos.BOTTOM);
+        RowConstraints row3 = new RowConstraints(58.0, 58.0, 58.0);
+        row3.setValignment(VPos.TOP);
+        RowConstraints row4 = new RowConstraints(58.0, 58.0, 58.0);
+        row4.setValignment(VPos.BOTTOM);
+        RowConstraints row5 = new RowConstraints(58.0, 58.0, 58.0);
+        row5.setValignment(VPos.TOP);
+        RowConstraints row6 = new RowConstraints(58.0, 58.0, 58.0);
+        row6.setValignment(VPos.BOTTOM);
+        RowConstraints row7 = new RowConstraints(58.0, 58.0, 58.0);
+        row7.setValignment(VPos.TOP);
+
+        gridPane.getColumnConstraints().addAll(column1, column2, column3);
+        gridPane.getRowConstraints().addAll(row1, row2, row3, row4, row5, row6, row7);
+
+
+
+        Scene scene = new Scene(overallPane, 402.0, 406.0);
         previewDialog.setScene(scene);
-        previewDialog.setMinWidth(400.0);
-        previewDialog.setMinHeight(410.0);
-        previewDialog.setMaxWidth(400.0);
-        previewDialog.setMaxHeight(410.0);
+        previewDialog.setMinWidth(402.0);
+        previewDialog.setMinHeight(406.0);
+        previewDialog.setMaxWidth(402.0);
+        previewDialog.setMaxHeight(406.0);
 
         return previewDialog;
     }
