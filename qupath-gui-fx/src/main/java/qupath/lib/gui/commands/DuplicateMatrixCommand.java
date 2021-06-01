@@ -1142,11 +1142,40 @@ public class DuplicateMatrixCommand implements Runnable {
         gridPane.setMinSize(400.0, 410.0);
         overallPane.getChildren().add(gridPane);
 
-        Label label1 = createUnmixLabel("label1");
-        ChoiceBox<Integer> choiceBox1 = createUnmixChoiceBox(5);
+        Label DAPILabel = createUnmixLabel("DAPI");
+        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(9);
+        gridPane.add(DAPILabel, 0,0);
+        gridPane.add(DAPIBox, 0, 1);
 
-        gridPane.add(label1, 0,0);
-        gridPane.add(choiceBox1, 1, 0);
+        Label Opal780Label = createUnmixLabel("Opal780");
+        ChoiceBox<Integer> Opal780Box = createUnmixChoiceBox(2);
+        gridPane.add(Opal780Label, 1,0);
+        gridPane.add(Opal780Box, 1, 1);
+
+        Label Opal480Label = createUnmixLabel("Opal480");
+        ChoiceBox<Integer> Opal480Box = createUnmixChoiceBox(6);
+        gridPane.add(Opal480Label, 2,0);
+        gridPane.add(Opal480Box, 2, 1);
+
+        Label Opal690Label = createUnmixLabel("Opal690");
+        ChoiceBox<Integer> Opal690Box = createUnmixChoiceBox(3);
+        gridPane.add(Opal690Label, 0,2);
+        gridPane.add(Opal690Box, 0, 3);
+
+        Label FITCLabel = createUnmixLabel("FITC");
+        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(9);
+        gridPane.add(FITCLabel, 1,2);
+        gridPane.add(FITCBox, 1, 3);
+
+        Label Cy3Label = createUnmixLabel("Cy3");
+        ChoiceBox<Integer> Cy3Box = createUnmixChoiceBox(7);
+        gridPane.add(Cy3Label, 2,2);
+        gridPane.add(Cy3Box, 2, 3);
+
+        Label TexasRedLabel = createUnmixLabel("TexasRed");
+        ChoiceBox<Integer> TexasRedBox = createUnmixChoiceBox(7);
+        gridPane.add(TexasRedLabel, 1,4);
+        gridPane.add(TexasRedBox, 1, 5);
 
 
 
