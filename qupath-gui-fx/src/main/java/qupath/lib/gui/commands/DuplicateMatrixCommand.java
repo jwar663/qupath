@@ -147,6 +147,18 @@ public class DuplicateMatrixCommand implements Runnable {
 
     String thresholdValue = START_THRESHOLD;
 
+    //global variables for choosing channels
+    public List<Integer> DAPIChannels = new ArrayList<>();
+    public List<Integer> opal780Channels = new ArrayList<>();
+    public List<Integer> opal480Channels = new ArrayList<>();
+    public List<Integer> opal690Channels = new ArrayList<>();
+    public List<Integer> FITCChannels = new ArrayList<>();
+    public List<Integer> cy3Channels = new ArrayList<>();
+    public List<Integer> texasRedChannels = new ArrayList<>();
+
+
+
+
 
     /**
      * Constructor.
@@ -157,6 +169,102 @@ public class DuplicateMatrixCommand implements Runnable {
         this.viewer = qupath.getViewer();
     }
 
+    public List<Integer> getChannels(String filter) {
+        if(filter.equals("DAPI")) {
+            return DAPIChannels;
+        } else if(filter.equals("Opal780")) {
+            return opal780Channels;
+        } else if(filter.equals("Opal480")) {
+            return opal480Channels;
+        } else if(filter.equals("Opal690")) {
+            return opal690Channels;
+        } else if(filter.equals("FITC")) {
+            return FITCChannels;
+        } else if(filter.equals("Cy3")) {
+            return cy3Channels;
+        } else if(filter.equals("TexasRed")) {
+            return texasRedChannels;
+        } else {
+            return null;
+        }
+    }
+
+    public void setChannels(String filter, List<Integer> chosenChannels) {
+        if(filter.equals("DAPI")) {
+            DAPIChannels = chosenChannels;
+        } else if(filter.equals("Opal780")) {
+            opal780Channels = chosenChannels;
+        } else if(filter.equals("Opal480")) {
+            opal480Channels = chosenChannels;
+        } else if(filter.equals("Opal690")) {
+            opal690Channels = chosenChannels;
+        } else if(filter.equals("FITC")) {
+            FITCChannels = chosenChannels;
+        } else if(filter.equals("Cy3")) {
+            cy3Channels = chosenChannels;
+        } else if(filter.equals("TexasRed")) {
+            texasRedChannels = chosenChannels;
+        }
+    }
+
+    public void editChannel(String filter, int index, int channel) {
+        if(filter.equals("DAPI")) {
+            DAPIChannels.add(index, channel);
+        } else if(filter.equals("Opal780")) {
+            opal780Channels.add(index, channel);
+        } else if(filter.equals("Opal480")) {
+            opal480Channels.add(index, channel);
+        } else if(filter.equals("Opal690")) {
+            opal690Channels.add(index, channel);
+        } else if(filter.equals("FITC")) {
+            FITCChannels.add(index, channel);
+        } else if(filter.equals("Cy3")) {
+            cy3Channels.add(index, channel);
+        } else if(filter.equals("TexasRed")) {
+            texasRedChannels.add(index, channel);
+        }
+    }
+
+    public void initialiseChannelLists(int numberOfDAPI, int numberOfOpal780, int numberOfOpal480, int numberOfOpal690, int numberOfFITC, int numberOfCy3, int numberOfTexasRed) {
+        for(int i = 0; i < numberOfDAPI; i++) {
+            DAPIChannels.add(i);
+        }
+
+        for(int i = 0; i < numberOfOpal780; i++) {
+            opal780Channels.add(i);
+        }
+
+        for(int i = 0; i < numberOfOpal480; i++) {
+            opal480Channels.add(i);
+        }
+
+        for(int i = 0; i < numberOfOpal690; i++) {
+            opal690Channels.add(i);
+        }
+
+        for(int i = 0; i < numberOfFITC; i++) {
+            FITCChannels.add(i);
+        }
+
+        for(int i = 0; i < numberOfCy3; i++) {
+            cy3Channels.add(i);
+        }
+
+        for(int i = 0; i < numberOfTexasRed; i++) {
+            texasRedChannels.add(i);
+        }
+    }
+
+    public void resetChannelLists() {
+        DAPIChannels.clear();
+        opal780Channels.clear();
+        opal480Channels.clear();
+        opal690Channels.clear();
+        FITCChannels.clear();
+        cy3Channels.clear();
+        texasRedChannels.clear();
+    }
+    
     public static String getFilePath(QuPathViewer viewer, Double thresholdValue) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
