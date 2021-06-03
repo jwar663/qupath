@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import ij.plugin.Grid;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -172,7 +173,7 @@ public class DuplicateMatrixCommand implements Runnable {
         this.qupath = qupath;
         this.viewer = qupath.getViewer();
     }
-    public void initialiseOptions() {
+    public void initialiseChannelOptions() {
         for(int i = 1; i <= 9; i++) {
             DAPIOptions.add(i);
         }
@@ -1276,10 +1277,10 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, int[] numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
 
-        Stage previewDialog = new Stage();
-        previewDialog.setTitle("Unmix Options");
+        Stage unmixDialog = new Stage();
+        unmixDialog.setTitle("Unmix Options");
 
-        Pane overallPane = createOverallPane();
+        Pane overallPane = new Pane();
 
         //larger panes
         GridPane gridPane = new GridPane();
@@ -1360,8 +1361,19 @@ public class DuplicateMatrixCommand implements Runnable {
 
         nextButton.setOnAction(e -> {
             //Go to the next option
+            System.out.println(DAPIBox.getValue() + " " + Opal780Box.getValue() + " " + Opal480Box.getValue() + " " + Opal690Box.getValue() + " " + FITCBox.getValue() + " " + Cy3Box.getValue() + " " + TexasRedBox.getValue());
             initialiseChannelLists(DAPIBox.getValue(), Opal780Box.getValue(), Opal480Box.getValue(), Opal690Box.getValue(), FITCBox.getValue(), Cy3Box.getValue(), TexasRedBox.getValue());
-            createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
+            initialiseChannelOptions();
+            Stage channelSelectionDialog;
+
+            channelSelectionDialog = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
+            channelSelectionDialog.initOwner(dialog);
+            channelSelectionDialog.initModality(Modality.WINDOW_MODAL);
+
+            unmixDialog.close();
+
+            channelSelectionDialog.showAndWait();
+
         });
 
         ColumnConstraints column1 = new ColumnConstraints(134.0, 134.0, 134.0);
@@ -1391,13 +1403,35 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         Scene scene = new Scene(overallPane, 402.0, 406.0);
-        previewDialog.setScene(scene);
-        previewDialog.setMinWidth(402.0);
-        previewDialog.setMinHeight(406.0);
-        previewDialog.setMaxWidth(402.0);
-        previewDialog.setMaxHeight(406.0);
+        unmixDialog.setScene(scene);
+        unmixDialog.setMinWidth(402.0);
+        unmixDialog.setMinHeight(406.0);
+        unmixDialog.setMaxWidth(402.0);
+        unmixDialog.setMaxHeight(406.0);
 
-        return previewDialog;
+        return unmixDialog;
+    }
+
+    protected ChoiceBox createChannelSelectionChoiceBox(List<Integer> channelOptions, int index, String filter) {
+        ChoiceBox choiceBox = new ChoiceBox();
+        for(int i = 0; i < channelOptions.size(); i++) {
+            choiceBox.getItems().add(channelOptions.get(i));
+        }
+        System.out.println("creating choice box");
+        return choiceBox;
+    }
+
+    protected Label createChannelSelectionLabel(int index) {
+        Label label = new Label("Channel " + index);
+        System.out.println("creating label");
+        return label;
+    }
+
+    protected ColumnConstraints createColumnConstraintsChannelSelection() {
+        ColumnConstraints columnConstraints = new ColumnConstraints(60, 60, 60);
+        columnConstraints.setHalignment(HPos.CENTER);
+
+        return columnConstraints;
     }
 
     protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, String filter, int numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
@@ -1405,23 +1439,43 @@ public class DuplicateMatrixCommand implements Runnable {
         Stage previewDialog = new Stage();
         previewDialog.setTitle(filter);
 
-        Pane overallPane = createOverallPane();
+        Pane overallPane = new Pane();
 
-        VBox vbox = new VBox();
-        HBox selectionBox = new HBox();
-        vbox.getChildren().add(selectionBox);
+        GridPane grid = new GridPane();
+        overallPane.getChildren().add(grid);
+
+        ChoiceBox[] choiceBoxes = new ChoiceBox[numberOfChannels];
+        Label[] labels = new Label[numberOfChannels];
+        ColumnConstraints[] columnConstraints = new ColumnConstraints[numberOfChannels];
+
         for(int i = 0; i < numberOfChannels; i++) {
+            choiceBoxes[i] = createChannelSelectionChoiceBox(DAPIOptions, i, filter);
+            labels[i] = createChannelSelectionLabel(i);
+            columnConstraints[i] = createColumnConstraintsChannelSelection();
+
+            choiceBoxes[i].setValue(i);
+            int finalI = i;
+            choiceBoxes[i].setOnAction(e -> {
+                editChannel(filter, finalI, (Integer)choiceBoxes[finalI].getValue());
+            });
+
+            grid.add(labels[i], i, 0);
+            grid.add(choiceBoxes[i], i, 1);
+            grid.getColumnConstraints().add(columnConstraints[i]);
         }
 
         Button nextButton = new Button("Next");
         nextButton.setPrefSize(100.0, 50.0);
         nextButton.setMinSize(100.0, 50.0);
         nextButton.setMaxSize(100.0, 50.0);
-        vbox.getChildren().add(nextButton);
+        grid.add(nextButton, 0, 2, 1, 2);
 
 
         nextButton.setOnAction(e -> {
             //Go to the next option
+            for(int i = 0; i < DAPIChannels.size(); i++) {
+                System.out.println(DAPIChannels.get(i));
+            }
         });
 
         Scene scene = new Scene(overallPane, 402.0, 406.0);
