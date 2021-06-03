@@ -156,9 +156,13 @@ public class DuplicateMatrixCommand implements Runnable {
     public List<Integer> cy3Channels = new ArrayList<>();
     public List<Integer> texasRedChannels = new ArrayList<>();
 
-
-
-
+    public List<Integer> DAPIOptions = new ArrayList<>();
+    public List<Integer> opal780Options = new ArrayList<>();
+    public List<Integer> opal480Options = new ArrayList<>();
+    public List<Integer> opal690Options = new ArrayList<>();
+    public List<Integer> FITCOptions = new ArrayList<>();
+    public List<Integer> cy3Options = new ArrayList<>();
+    public List<Integer> texasRedOptions = new ArrayList<>();
 
     /**
      * Constructor.
@@ -167,6 +171,35 @@ public class DuplicateMatrixCommand implements Runnable {
     public DuplicateMatrixCommand(final QuPathGUI qupath) {
         this.qupath = qupath;
         this.viewer = qupath.getViewer();
+    }
+    public void initialiseOptions() {
+        for(int i = 1; i <= 9; i++) {
+            DAPIOptions.add(i);
+        }
+
+        for(int i = 10; i <= 11; i++) {
+            opal780Options.add(i);
+        }
+
+        for(int i = 12; i <= 17; i++) {
+            opal480Options.add(i);
+        }
+
+        for(int i = 18; i <= 20; i++) {
+            opal690Options.add(i);
+        }
+
+        for(int i = 21; i <= 29; i++) {
+            FITCOptions.add(i);
+        }
+
+        for(int i = 30; i <= 36; i++) {
+            cy3Options.add(i);
+        }
+
+        for(int i = 37; i <= 43; i++) {
+            texasRedOptions.add(i);
+        }
     }
 
     public List<Integer> getChannels(String filter) {
@@ -264,7 +297,7 @@ public class DuplicateMatrixCommand implements Runnable {
         cy3Channels.clear();
         texasRedChannels.clear();
     }
-    
+
     public static String getFilePath(QuPathViewer viewer, Double thresholdValue) {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         Collection<URI> uris = imageServer.getURIs();
@@ -1327,9 +1360,8 @@ public class DuplicateMatrixCommand implements Runnable {
 
         nextButton.setOnAction(e -> {
             //Go to the next option
-            for(int i = 0; i < numberOfChannels.length; i++) {
-                System.out.println(numberOfChannels[i]);
-            }
+            initialiseChannelLists(DAPIBox.getValue(), Opal780Box.getValue(), Opal480Box.getValue(), Opal690Box.getValue(), FITCBox.getValue(), Cy3Box.getValue(), TexasRedBox.getValue());
+            createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
         });
 
         ColumnConstraints column1 = new ColumnConstraints(134.0, 134.0, 134.0);
@@ -1368,99 +1400,29 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewDialog;
     }
 
-    protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog) throws  NullPointerException {
+    protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, String filter, int numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
 
         Stage previewDialog = new Stage();
-        previewDialog.setTitle("Unmix Options");
+        previewDialog.setTitle(filter);
 
         Pane overallPane = createOverallPane();
 
-        //larger panes
-        GridPane gridPane = new GridPane();
-        gridPane.setMaxSize(400.0, 410.0);
-        gridPane.setPrefSize(400.0, 410.0);
-        gridPane.setMinSize(400.0, 410.0);
-        overallPane.getChildren().add(gridPane);
-
-        Label DAPILabel = createUnmixLabel("DAPI");
-        DAPILabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(9);
-        gridPane.add(DAPILabel, 0,1);
-        gridPane.add(DAPIBox, 0, 2);
-
-        Label Opal780Label = createUnmixLabel("Opal780");
-        Opal780Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal780Box = createUnmixChoiceBox(2);
-        gridPane.add(Opal780Label, 1,1);
-        gridPane.add(Opal780Box, 1, 2);
-
-        Label Opal480Label = createUnmixLabel("Opal480");
-        Opal480Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal480Box = createUnmixChoiceBox(6);
-        gridPane.add(Opal480Label, 2,1);
-        gridPane.add(Opal480Box, 2, 2);
-
-        Label Opal690Label = createUnmixLabel("Opal690");
-        Opal690Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal690Box = createUnmixChoiceBox(3);
-        gridPane.add(Opal690Label, 0,3);
-        gridPane.add(Opal690Box, 0, 4);
-
-        Label FITCLabel = createUnmixLabel("FITC");
-        FITCLabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(9);
-        gridPane.add(FITCLabel, 1,3);
-        gridPane.add(FITCBox, 1, 4);
-
-        Label Cy3Label = createUnmixLabel("Cy3");
-        Cy3Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Cy3Box = createUnmixChoiceBox(7);
-        gridPane.add(Cy3Label, 2,3);
-        gridPane.add(Cy3Box, 2, 4);
-
-        Label TexasRedLabel = createUnmixLabel("TexasRed");
-        TexasRedLabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> TexasRedBox = createUnmixChoiceBox(7);
-        gridPane.add(TexasRedLabel, 1,5);
-        gridPane.add(TexasRedBox, 1, 6);
+        VBox vbox = new VBox();
+        HBox selectionBox = new HBox();
+        vbox.getChildren().add(selectionBox);
+        for(int i = 0; i < numberOfChannels; i++) {
+        }
 
         Button nextButton = new Button("Next");
         nextButton.setPrefSize(100.0, 50.0);
         nextButton.setMinSize(100.0, 50.0);
         nextButton.setMaxSize(100.0, 50.0);
-        gridPane.add(nextButton, 2, 5, 1, 2);
+        vbox.getChildren().add(nextButton);
 
 
         nextButton.setOnAction(e -> {
             //Go to the next option
-
         });
-
-        ColumnConstraints column1 = new ColumnConstraints(134.0, 134.0, 134.0);
-        column1.setHalignment(HPos.CENTER);
-        ColumnConstraints column2 = new ColumnConstraints(134.0, 134.0, 134.0);
-        column2.setHalignment(HPos.CENTER);
-        ColumnConstraints column3 = new ColumnConstraints(134.0, 134.0, 134.0);
-        column3.setHalignment(HPos.CENTER);
-
-        RowConstraints row1 = new RowConstraints(58.0, 58.0, 58.0);
-        RowConstraints row2 = new RowConstraints(58.0, 58.0, 58.0);
-        row2.setValignment(VPos.BOTTOM);
-        RowConstraints row3 = new RowConstraints(58.0, 58.0, 58.0);
-        row3.setValignment(VPos.TOP);
-        RowConstraints row4 = new RowConstraints(58.0, 58.0, 58.0);
-        row4.setValignment(VPos.BOTTOM);
-        RowConstraints row5 = new RowConstraints(58.0, 58.0, 58.0);
-        row5.setValignment(VPos.TOP);
-        RowConstraints row6 = new RowConstraints(58.0, 58.0, 58.0);
-        row6.setValignment(VPos.BOTTOM);
-        RowConstraints row7 = new RowConstraints(58.0, 58.0, 58.0);
-        row7.setValignment(VPos.TOP);
-
-        gridPane.getColumnConstraints().addAll(column1, column2, column3);
-        gridPane.getRowConstraints().addAll(row1, row2, row3, row4, row5, row6, row7);
-
-
 
         Scene scene = new Scene(overallPane, 402.0, 406.0);
         previewDialog.setScene(scene);
@@ -1471,6 +1433,8 @@ public class DuplicateMatrixCommand implements Runnable {
 
         return previewDialog;
     }
+
+
 
     @Override
     public void run() {
