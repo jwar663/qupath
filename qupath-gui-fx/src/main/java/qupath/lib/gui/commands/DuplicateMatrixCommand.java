@@ -1291,7 +1291,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
         Label DAPILabel = createUnmixLabel("DAPI");
         DAPILabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(9);
+        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(7);
         DAPIBox.setOnAction(e -> {
             numberOfChannels[0] = DAPIBox.getValue();
         });
@@ -1327,7 +1327,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
         Label FITCLabel = createUnmixLabel("FITC");
         FITCLabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(9);
+        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(7);
         FITCBox.setOnAction(e -> {
             numberOfChannels[4] = FITCBox.getValue();
         });
@@ -1417,6 +1417,13 @@ public class DuplicateMatrixCommand implements Runnable {
         for(int i = 0; i < channelOptions.size(); i++) {
             choiceBox.getItems().add(channelOptions.get(i));
         }
+
+        choiceBox.setValue(channelOptions.get(index));
+
+        choiceBox.setOnAction(e -> {
+            editChannel(filter, index, (Integer) choiceBox.getValue());
+        });
+
         System.out.println("creating choice box");
         return choiceBox;
     }
@@ -1447,23 +1454,15 @@ public class DuplicateMatrixCommand implements Runnable {
         overallPane.getChildren().add(grid);
 //        grid.setPadding(new Insets(0,0,10,0));
 
-        ChoiceBox[] choiceBoxes = new ChoiceBox[numberOfChannels];
         Label[] labels = new Label[numberOfChannels];
         ColumnConstraints[] columnConstraints = new ColumnConstraints[numberOfChannels];
 
         for(int i = 0; i < numberOfChannels; i++) {
-            choiceBoxes[i] = createChannelSelectionChoiceBox(DAPIOptions, i, filter);
             labels[i] = createChannelSelectionLabel(i);
             columnConstraints[i] = createColumnConstraintsChannelSelection(numberOfChannels);
 
-            choiceBoxes[i].setValue(i);
-            int finalI = i;
-            choiceBoxes[i].setOnAction(e -> {
-                editChannel(filter, finalI, (Integer)choiceBoxes[finalI].getValue());
-            });
-
             grid.add(labels[i], i, 0);
-            grid.add(choiceBoxes[i], i, 1);
+            grid.add(createChannelSelectionChoiceBox(DAPIOptions, i, filter), i, 1);
             grid.getColumnConstraints().add(columnConstraints[i]);
         }
 
