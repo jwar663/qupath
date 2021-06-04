@@ -1422,13 +1422,14 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     protected Label createChannelSelectionLabel(int index) {
-        Label label = new Label("Channel " + index);
+        Label label = new Label("Channel " + (index + 1));
         System.out.println("creating label");
         return label;
     }
 
-    protected ColumnConstraints createColumnConstraintsChannelSelection() {
-        ColumnConstraints columnConstraints = new ColumnConstraints(60, 60, 60);
+    protected ColumnConstraints createColumnConstraintsChannelSelection(int numberOfChannels) {
+        double width = 420/numberOfChannels;
+        ColumnConstraints columnConstraints = new ColumnConstraints(width, width, width);
         columnConstraints.setHalignment(HPos.CENTER);
 
         return columnConstraints;
@@ -1441,8 +1442,10 @@ public class DuplicateMatrixCommand implements Runnable {
 
         Pane overallPane = new Pane();
 
+
         GridPane grid = new GridPane();
         overallPane.getChildren().add(grid);
+//        grid.setPadding(new Insets(0,0,10,0));
 
         ChoiceBox[] choiceBoxes = new ChoiceBox[numberOfChannels];
         Label[] labels = new Label[numberOfChannels];
@@ -1451,7 +1454,7 @@ public class DuplicateMatrixCommand implements Runnable {
         for(int i = 0; i < numberOfChannels; i++) {
             choiceBoxes[i] = createChannelSelectionChoiceBox(DAPIOptions, i, filter);
             labels[i] = createChannelSelectionLabel(i);
-            columnConstraints[i] = createColumnConstraintsChannelSelection();
+            columnConstraints[i] = createColumnConstraintsChannelSelection(numberOfChannels);
 
             choiceBoxes[i].setValue(i);
             int finalI = i;
@@ -1464,11 +1467,19 @@ public class DuplicateMatrixCommand implements Runnable {
             grid.getColumnConstraints().add(columnConstraints[i]);
         }
 
+        RowConstraints row1 = new RowConstraints(35, 35, 35);
+        row1.setValignment(VPos.CENTER);
+        RowConstraints row2 = new RowConstraints(35, 35, 35);
+        row2.setValignment(VPos.CENTER);
+        RowConstraints row3 = new RowConstraints(35, 35, 35);
+        row3.setValignment(VPos.CENTER);
+        grid.getRowConstraints().addAll(row1, row2, row3);
+
         Button nextButton = new Button("Next");
-        nextButton.setPrefSize(100.0, 50.0);
-        nextButton.setMinSize(100.0, 50.0);
-        nextButton.setMaxSize(100.0, 50.0);
-        grid.add(nextButton, 0, 2, 1, 2);
+        nextButton.setPrefSize(100.0, 40.0);
+        nextButton.setMinSize(100.0, 40.0);
+        nextButton.setMaxSize(100.0, 40.0);
+        grid.add(nextButton, 2, 2, 2, 2);
 
 
         nextButton.setOnAction(e -> {
@@ -1478,12 +1489,23 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
 
-        Scene scene = new Scene(overallPane, 402.0, 406.0);
+        Button backButton = new Button("Back");
+        backButton.setPrefSize(100.0, 40.0);
+        backButton.setMinSize(100.0, 40.0);
+        backButton.setMaxSize(100.0, 40.0);
+        grid.add(backButton, 0, 2, 2, 2);
+
+
+        backButton.setOnAction(e -> {
+            //Go to the next option
+            for(int i = 0; i < DAPIChannels.size(); i++) {
+                System.out.println(DAPIChannels.get(i));
+            }
+        });
+
+        Scene scene = new Scene(overallPane);
         previewDialog.setScene(scene);
-        previewDialog.setMinWidth(402.0);
-        previewDialog.setMinHeight(406.0);
-        previewDialog.setMaxWidth(402.0);
-        previewDialog.setMaxHeight(406.0);
+        previewDialog.setResizable(false);
 
         return previewDialog;
     }
