@@ -165,6 +165,8 @@ public class DuplicateMatrixCommand implements Runnable {
     public List<Integer> cy3Options = new ArrayList<>();
     public List<Integer> texasRedOptions = new ArrayList<>();
 
+    public int[] numberOfChannelsArray = new int[7];
+
     /**
      * Constructor.
      * @param qupath
@@ -740,7 +742,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return toggleButton;
     }
 
-    protected ChoiceBox createUnmixChoiceBox(int numberOfPossibleChannels) {
+    protected ChoiceBox createUnmixChoiceBox(int numberOfPossibleChannels, String filter) {
         ChoiceBox<Integer> choiceBox = new ChoiceBox<>();
         for(int i = 0; i <= numberOfPossibleChannels; i++) {
             choiceBox.getItems().add(i);
@@ -748,7 +750,7 @@ public class DuplicateMatrixCommand implements Runnable {
         choiceBox.setPrefSize(80.0, 25.0);
         choiceBox.setMinSize(80.0, 25.0);
         choiceBox.setMaxSize(80.0, 25.0);
-        choiceBox.setValue(0);
+        choiceBox.setValue(getChannels(filter).size());
 
         return choiceBox;
     }
@@ -835,8 +837,8 @@ public class DuplicateMatrixCommand implements Runnable {
         unmixingButton.setMaxSize(THRESHOLD_BUTTONS_WIDTH, BUTTON_LABEL_HEIGHT);
 
         int[] numberOfChannels = new int[7];
-        for(int i = 0; i < numberOfChannels.length; i++) {
-            numberOfChannels[i] = 0;
+        for(int i = 0; i < numberOfChannelsArray.length; i++) {
+            numberOfChannelsArray[i] = 0;
         }
 
         unmixingButton.setOnAction(e -> {
@@ -856,12 +858,12 @@ public class DuplicateMatrixCommand implements Runnable {
 
             Stage unmixDialog;
 
-            unmixDialog = createUnmixingDialog(imageData, numberOfChannels, dialog);
+            unmixDialog = createUnmixingDialog(imageData, dialog);
             unmixDialog.initOwner(dialog);
             unmixDialog.initModality(Modality.WINDOW_MODAL);
             unmixDialog.showAndWait();
 
-//            dialog.close();
+            dialog.close();
             });
 
         //Threshold Part
@@ -1275,7 +1277,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewDialog;
     }
 
-    protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, int[] numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
+    protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog) throws  NullPointerException {
 
         Stage unmixDialog = new Stage();
         unmixDialog.setTitle("Unmix Options");
@@ -1291,63 +1293,63 @@ public class DuplicateMatrixCommand implements Runnable {
 
         Label DAPILabel = createUnmixLabel("DAPI");
         DAPILabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(7);
+        ChoiceBox<Integer> DAPIBox = createUnmixChoiceBox(7, "DAPI");
         DAPIBox.setOnAction(e -> {
-            numberOfChannels[0] = DAPIBox.getValue();
+            numberOfChannelsArray[0] = DAPIBox.getValue();
         });
         gridPane.add(DAPILabel, 0,1);
         gridPane.add(DAPIBox, 0, 2);
 
         Label Opal780Label = createUnmixLabel("Opal780");
         Opal780Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal780Box = createUnmixChoiceBox(2);
+        ChoiceBox<Integer> Opal780Box = createUnmixChoiceBox(2, "Opal780");
         Opal780Box.setOnAction(e -> {
-            numberOfChannels[1] = Opal780Box.getValue();
+            numberOfChannelsArray[1] = Opal780Box.getValue();
         });
         gridPane.add(Opal780Label, 1,1);
         gridPane.add(Opal780Box, 1, 2);
 
         Label Opal480Label = createUnmixLabel("Opal480");
         Opal480Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal480Box = createUnmixChoiceBox(6);
+        ChoiceBox<Integer> Opal480Box = createUnmixChoiceBox(6, "Opal480");
         Opal480Box.setOnAction(e -> {
-            numberOfChannels[2] = Opal480Box.getValue();
+            numberOfChannelsArray[2] = Opal480Box.getValue();
         });
         gridPane.add(Opal480Label, 2,1);
         gridPane.add(Opal480Box, 2, 2);
 
         Label Opal690Label = createUnmixLabel("Opal690");
         Opal690Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Opal690Box = createUnmixChoiceBox(3);
+        ChoiceBox<Integer> Opal690Box = createUnmixChoiceBox(3, "Opal690");
         Opal690Box.setOnAction(e -> {
-            numberOfChannels[3] = Opal690Box.getValue();
+            numberOfChannelsArray[3] = Opal690Box.getValue();
         });
         gridPane.add(Opal690Label, 0,3);
         gridPane.add(Opal690Box, 0, 4);
 
         Label FITCLabel = createUnmixLabel("FITC");
         FITCLabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(7);
+        ChoiceBox<Integer> FITCBox = createUnmixChoiceBox(7, "FITC");
         FITCBox.setOnAction(e -> {
-            numberOfChannels[4] = FITCBox.getValue();
+            numberOfChannelsArray[4] = FITCBox.getValue();
         });
         gridPane.add(FITCLabel, 1,3);
         gridPane.add(FITCBox, 1, 4);
 
         Label Cy3Label = createUnmixLabel("Cy3");
         Cy3Label.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> Cy3Box = createUnmixChoiceBox(7);
+        ChoiceBox<Integer> Cy3Box = createUnmixChoiceBox(7, "Cy3");
         Cy3Box.setOnAction(e -> {
-            numberOfChannels[5] = Cy3Box.getValue();
+            numberOfChannelsArray[5] = Cy3Box.getValue();
         });
         gridPane.add(Cy3Label, 2,3);
         gridPane.add(Cy3Box, 2, 4);
 
         Label TexasRedLabel = createUnmixLabel("TexasRed");
         TexasRedLabel.setAlignment(Pos.CENTER);
-        ChoiceBox<Integer> TexasRedBox = createUnmixChoiceBox(7);
+        ChoiceBox<Integer> TexasRedBox = createUnmixChoiceBox(7, "TexasRed");
         TexasRedBox.setOnAction(e -> {
-            numberOfChannels[6] = TexasRedBox.getValue();
+            numberOfChannelsArray[6] = TexasRedBox.getValue();
         });
         gridPane.add(TexasRedLabel, 1,5);
         gridPane.add(TexasRedBox, 1, 6);
@@ -1367,7 +1369,7 @@ public class DuplicateMatrixCommand implements Runnable {
             Stage channelSelectionDialog;
 
             channelSelectionDialog = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
-            channelSelectionDialog.initOwner(dialog);
+            channelSelectionDialog.initOwner(duplicateDialog);
             channelSelectionDialog.initModality(Modality.WINDOW_MODAL);
 
             unmixDialog.close();
@@ -1412,8 +1414,10 @@ public class DuplicateMatrixCommand implements Runnable {
         return unmixDialog;
     }
 
-    protected ChoiceBox createChannelSelectionChoiceBox(List<Integer> channelOptions, int index, String filter) {
+    protected ChoiceBox createChannelSelectionChoiceBox(int index, String filter) {
         ChoiceBox choiceBox = new ChoiceBox();
+        List<Integer> channelOptions;
+        channelOptions = getChannels(filter);
         for(int i = 0; i < channelOptions.size(); i++) {
             choiceBox.getItems().add(channelOptions.get(i));
         }
@@ -1452,7 +1456,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
         GridPane grid = new GridPane();
         overallPane.getChildren().add(grid);
-//        grid.setPadding(new Insets(0,0,10,0));
 
         Label[] labels = new Label[numberOfChannels];
         ColumnConstraints[] columnConstraints = new ColumnConstraints[numberOfChannels];
@@ -1462,7 +1465,7 @@ public class DuplicateMatrixCommand implements Runnable {
             columnConstraints[i] = createColumnConstraintsChannelSelection(numberOfChannels);
 
             grid.add(labels[i], i, 0);
-            grid.add(createChannelSelectionChoiceBox(DAPIOptions, i, filter), i, 1);
+            grid.add(createChannelSelectionChoiceBox(i, filter), i, 1);
             grid.getColumnConstraints().add(columnConstraints[i]);
         }
 
@@ -1474,7 +1477,13 @@ public class DuplicateMatrixCommand implements Runnable {
         row3.setValignment(VPos.CENTER);
         grid.getRowConstraints().addAll(row1, row2, row3);
 
-        Button nextButton = new Button("Next");
+
+        Button nextButton = new Button();
+        if(filter.equals("TexasRed")) {
+            nextButton.setText("Submit");
+        } else {
+            nextButton.setText("Next");
+        }
         nextButton.setPrefSize(60.0, 30.0);
         nextButton.setMinSize(60.0, 30.0);
         nextButton.setMaxSize(60.0, 30.0);
@@ -1483,9 +1492,30 @@ public class DuplicateMatrixCommand implements Runnable {
 
         nextButton.setOnAction(e -> {
             //Go to the next option
-            for(int i = 0; i < DAPIChannels.size(); i++) {
-                System.out.println(DAPIChannels.get(i));
+            for(int i = 0; i < getChannels(filter).size(); i++) {
+                System.out.println(getChannels(filter).get(i));
             }
+            Stage newStage = new Stage();
+            if(filter.equals("DAPI")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog);
+            } else if(filter.equals("Opal780")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog);
+            } else if(filter.equals("Opal480")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog);
+            } else if(filter.equals("Opal690")) {
+                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog);
+            } else if(filter.equals("FITC")) {
+                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog);
+            } else if(filter.equals("Cy3")) {
+                newStage = createChannelSelectionDialog(imageData, "TexasRed", getChannels("TexasRed").size(), duplicateDialog);
+            }
+
+            newStage.initOwner(duplicateDialog);
+            newStage.initModality(Modality.WINDOW_MODAL);
+
+            channelSelectDialog.close();
+
+            newStage.showAndWait();
         });
 
         Button backButton = new Button("Back");
@@ -1500,6 +1530,29 @@ public class DuplicateMatrixCommand implements Runnable {
             for(int i = 0; i < DAPIChannels.size(); i++) {
                 System.out.println(DAPIChannels.get(i));
             }
+            Stage newStage = new Stage();
+            if(filter.equals("DAPI")) {
+                newStage = createUnmixingDialog(imageData, duplicateDialog);
+            } else if(filter.equals("Opal780")) {
+                newStage = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
+            } else if(filter.equals("Opal480")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog);
+            } else if(filter.equals("Opal690")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog);
+            } else if(filter.equals("FITC")) {
+                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog);
+            } else if(filter.equals("Cy3")) {
+                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog);
+            } else if(filter.equals("TexasRed")) {
+                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog);
+            }
+
+            newStage.initOwner(duplicateDialog);
+            newStage.initModality(Modality.WINDOW_MODAL);
+
+            channelSelectDialog.close();
+
+            newStage.showAndWait();
         });
 
         Scene scene = new Scene(overallPane);
