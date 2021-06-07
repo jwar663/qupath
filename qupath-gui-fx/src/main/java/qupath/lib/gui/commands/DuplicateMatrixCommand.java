@@ -1435,7 +1435,7 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     protected ColumnConstraints createColumnConstraintsChannelSelection(int numberOfChannels) {
-        double width = 420/numberOfChannels;
+        double width = 420.0/numberOfChannels;
         ColumnConstraints columnConstraints = new ColumnConstraints(width, width, width);
         columnConstraints.setHalignment(HPos.CENTER);
 
@@ -1444,8 +1444,8 @@ public class DuplicateMatrixCommand implements Runnable {
 
     protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, String filter, int numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
 
-        Stage previewDialog = new Stage();
-        previewDialog.setTitle(filter);
+        Stage channelSelectDialog = new Stage();
+        channelSelectDialog.setTitle(filter);
 
         Pane overallPane = new Pane();
 
@@ -1475,10 +1475,10 @@ public class DuplicateMatrixCommand implements Runnable {
         grid.getRowConstraints().addAll(row1, row2, row3);
 
         Button nextButton = new Button("Next");
-        nextButton.setPrefSize(100.0, 40.0);
-        nextButton.setMinSize(100.0, 40.0);
-        nextButton.setMaxSize(100.0, 40.0);
-        grid.add(nextButton, 2, 2, 2, 2);
+        nextButton.setPrefSize(60.0, 30.0);
+        nextButton.setMinSize(60.0, 30.0);
+        nextButton.setMaxSize(60.0, 30.0);
+        grid.add(nextButton, (numberOfChannels - 1), 2, 1, 2);
 
 
         nextButton.setOnAction(e -> {
@@ -1489,10 +1489,10 @@ public class DuplicateMatrixCommand implements Runnable {
         });
 
         Button backButton = new Button("Back");
-        backButton.setPrefSize(100.0, 40.0);
-        backButton.setMinSize(100.0, 40.0);
-        backButton.setMaxSize(100.0, 40.0);
-        grid.add(backButton, 0, 2, 2, 2);
+        backButton.setPrefSize(60.0, 30.0);
+        backButton.setMinSize(60.0, 30.0);
+        backButton.setMaxSize(60.0, 30.0);
+        grid.add(backButton, 0, 2, 1, 2);
 
 
         backButton.setOnAction(e -> {
@@ -1503,10 +1503,12 @@ public class DuplicateMatrixCommand implements Runnable {
         });
 
         Scene scene = new Scene(overallPane);
-        previewDialog.setScene(scene);
-        previewDialog.setResizable(false);
+        channelSelectDialog.setWidth(420.0);
+        channelSelectDialog.setHeight(180.0);
+        channelSelectDialog.setScene(scene);
+        channelSelectDialog.setResizable(false);
 
-        return previewDialog;
+        return channelSelectDialog;
     }
 
 
