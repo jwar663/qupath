@@ -59,6 +59,7 @@ import javafx.util.Duration;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
+import qupath.lib.common.Unmixing;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
@@ -149,21 +150,21 @@ public class DuplicateMatrixCommand implements Runnable {
     String thresholdValue = START_THRESHOLD;
 
     //global variables for choosing channels
-    public List<Integer> DAPIChannels = new ArrayList<>();
-    public List<Integer> opal780Channels = new ArrayList<>();
-    public List<Integer> opal480Channels = new ArrayList<>();
-    public List<Integer> opal690Channels = new ArrayList<>();
-    public List<Integer> FITCChannels = new ArrayList<>();
-    public List<Integer> cy3Channels = new ArrayList<>();
-    public List<Integer> texasRedChannels = new ArrayList<>();
+    public ArrayList<Integer> DAPIChannels = new ArrayList<>();
+    public ArrayList<Integer> opal780Channels = new ArrayList<>();
+    public ArrayList<Integer> opal480Channels = new ArrayList<>();
+    public ArrayList<Integer> opal690Channels = new ArrayList<>();
+    public ArrayList<Integer> FITCChannels = new ArrayList<>();
+    public ArrayList<Integer> cy3Channels = new ArrayList<>();
+    public ArrayList<Integer> texasRedChannels = new ArrayList<>();
 
-    public List<Integer> DAPIOptions = new ArrayList<>();
-    public List<Integer> opal780Options = new ArrayList<>();
-    public List<Integer> opal480Options = new ArrayList<>();
-    public List<Integer> opal690Options = new ArrayList<>();
-    public List<Integer> FITCOptions = new ArrayList<>();
-    public List<Integer> cy3Options = new ArrayList<>();
-    public List<Integer> texasRedOptions = new ArrayList<>();
+    public ArrayList<Integer> DAPIOptions = new ArrayList<>();
+    public ArrayList<Integer> opal780Options = new ArrayList<>();
+    public ArrayList<Integer> opal480Options = new ArrayList<>();
+    public ArrayList<Integer> opal690Options = new ArrayList<>();
+    public ArrayList<Integer> FITCOptions = new ArrayList<>();
+    public ArrayList<Integer> cy3Options = new ArrayList<>();
+    public ArrayList<Integer> texasRedOptions = new ArrayList<>();
 
     public int[] numberOfChannelsArray = new int[7];
 
@@ -225,7 +226,7 @@ public class DuplicateMatrixCommand implements Runnable {
         }
     }
 
-    public void setChannels(String filter, List<Integer> chosenChannels) {
+    public void setChannels(String filter, ArrayList<Integer> chosenChannels) {
         if(filter.equals("DAPI")) {
             DAPIChannels = chosenChannels;
         } else if(filter.equals("Opal780")) {
@@ -858,7 +859,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
             Stage unmixDialog;
 
-            unmixDialog = createUnmixingDialog(imageData, dialog);
+            unmixDialog = createUnmixingDialog(imageData, dialog, proportionArray);
             unmixDialog.initOwner(dialog);
             unmixDialog.initModality(Modality.WINDOW_MODAL);
             unmixDialog.showAndWait();
@@ -1277,7 +1278,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return previewDialog;
     }
 
-    protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog) throws  NullPointerException {
+    protected Stage createUnmixingDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog, double[][] proportionArray) throws  NullPointerException {
 
         Stage unmixDialog = new Stage();
         unmixDialog.setTitle("Unmix Options");
@@ -1368,7 +1369,7 @@ public class DuplicateMatrixCommand implements Runnable {
             initialiseChannelOptions();
             Stage channelSelectionDialog;
 
-            channelSelectionDialog = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
+            channelSelectionDialog = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog, proportionArray);
             channelSelectionDialog.initOwner(duplicateDialog);
             channelSelectionDialog.initModality(Modality.WINDOW_MODAL);
 
@@ -1446,7 +1447,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return columnConstraints;
     }
 
-    protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, String filter, int numberOfChannels, Stage duplicateDialog) throws  NullPointerException {
+    protected Stage createChannelSelectionDialog(ImageData<BufferedImage> imageData, String filter, int numberOfChannels, Stage duplicateDialog, double[][] proportionArray) throws  NullPointerException {
 
         Stage channelSelectDialog = new Stage();
         channelSelectDialog.setTitle(filter);
@@ -1497,17 +1498,23 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             Stage newStage = new Stage();
             if(filter.equals("DAPI")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Opal780")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Opal480")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Opal690")) {
-                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("FITC")) {
-                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Cy3")) {
-                newStage = createChannelSelectionDialog(imageData, "TexasRed", getChannels("TexasRed").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "TexasRed", getChannels("TexasRed").size(), duplicateDialog, proportionArray);
+            } else if(filter.equals("TexasRed")) {
+                ImageData newImageData = Unmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
+                viewer.setImageData(newImageData);
+                exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
+                channelSelectDialog.close();
+                duplicateDialog.close();
             }
 
             newStage.initOwner(duplicateDialog);
@@ -1532,19 +1539,19 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             Stage newStage = new Stage();
             if(filter.equals("DAPI")) {
-                newStage = createUnmixingDialog(imageData, duplicateDialog);
+                newStage = createUnmixingDialog(imageData, duplicateDialog, proportionArray);
             } else if(filter.equals("Opal780")) {
-                newStage = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "DAPI", getChannels("DAPI").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Opal480")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal780", getChannels("Opal780").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Opal690")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal480", getChannels("Opal480").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("FITC")) {
-                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Opal690", getChannels("Opal690").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("Cy3")) {
-                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "FITC", getChannels("FITC").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("TexasRed")) {
-                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog);
+                newStage = createChannelSelectionDialog(imageData, "Cy3", getChannels("Cy3").size(), duplicateDialog, proportionArray);
             }
 
             newStage.initOwner(duplicateDialog);
