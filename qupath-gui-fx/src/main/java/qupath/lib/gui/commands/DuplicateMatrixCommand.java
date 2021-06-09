@@ -23,7 +23,6 @@
 
 package qupath.lib.gui.commands;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
@@ -34,11 +33,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import ij.plugin.Grid;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
@@ -55,11 +50,10 @@ import javafx.stage.Modality;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
-import qupath.lib.common.ConcatChannelsABI;
+import qupath.lib.common.AutoUnmixing;
+import qupath.lib.common.RemoveDuplicate;
 import qupath.lib.common.GeneralTools;
-import qupath.lib.common.Unmixing;
+import qupath.lib.common.ManualUnmixing;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
@@ -810,11 +804,11 @@ public class DuplicateMatrixCommand implements Runnable {
         }
         int size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
-        img = ConcatChannelsABI.convertImageDataToImage(imageData);
-        duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
+        img = RemoveDuplicate.convertImageDataToImage(imageData);
+        duplicateMatrix = RemoveDuplicate.createConcatMatrix(img);
         thresholdValues = new double[size];
-        thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
-        maxPixelIntensity = ConcatChannelsABI.findMaximumPixelIntensity(img);
+        thresholdValues = RemoveDuplicate.getAllThresholdValues(duplicateMatrix);
+        maxPixelIntensity = RemoveDuplicate.findMaximumPixelIntensity(img);
 //        System.out.println("threshold value: " + ConcatChannelsABI.getThresholdFromChannels(duplicateMatrix, 7, 0.50));
 
         //larger panes
@@ -854,7 +848,7 @@ public class DuplicateMatrixCommand implements Runnable {
 
                 String choice = Dialogs.showChoiceDialog("Unmix Option", "Auto-unmix or manually select channels", new String[]{"Auto", "Manual"},"Auto");
                 if(choice.equals("Auto")) {
-                    ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
+                    ImageData newImageData = AutoUnmixing.unmixAll_Crossed(imageData, proportionArray);
                     viewer.setImageData(newImageData);
                     exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
                 } else {
@@ -888,7 +882,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
-                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
+                viewer.setImageData(RemoveDuplicate.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
                 exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();
@@ -918,7 +912,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
+                distinctPreviewChannels = RemoveDuplicate.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
                    previewDialog = createPreviewDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels, dialog);
@@ -1045,8 +1039,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages1 = RemoveDuplicate.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = RemoveDuplicate.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
@@ -1233,8 +1227,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages1 = RemoveDuplicate.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = RemoveDuplicate.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
@@ -1512,7 +1506,7 @@ public class DuplicateMatrixCommand implements Runnable {
             } else if(filter.equals("Cy3")) {
                 newStage = createChannelSelectionDialog(imageData, "TexasRed", getChannels("TexasRed").size(), duplicateDialog, proportionArray);
             } else if(filter.equals("TexasRed")) {
-                ImageData newImageData = Unmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
+                ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
                 viewer.setImageData(newImageData);
                 exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
                 channelSelectDialog.close();
