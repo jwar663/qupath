@@ -852,17 +852,19 @@ public class DuplicateMatrixCommand implements Runnable {
                     npe.printStackTrace();
                 }
 
+                String choice = Dialogs.showChoiceDialog("Unmix Option", "Auto-unmix or manually select channels", new String[]{"Auto", "Manual"},"Auto");
+                if(choice.equals("Auto")) {
+                    ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
+                    viewer.setImageData(newImageData);
+                    exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
+                } else {
+                    Stage unmixDialog;
 
-//            ImageData newImageData = ConcatChannelsABI.unmixAll_Crossed(imageData, proportionArray);
-//            viewer.setImageData(newImageData);
-//            exportImage(viewer, "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", dialog);
-
-            Stage unmixDialog;
-
-            unmixDialog = createUnmixingDialog(imageData, dialog, proportionArray);
-            unmixDialog.initOwner(dialog);
-            unmixDialog.initModality(Modality.WINDOW_MODAL);
-            unmixDialog.showAndWait();
+                    unmixDialog = createUnmixingDialog(imageData, dialog, proportionArray);
+                    unmixDialog.initOwner(dialog);
+                    unmixDialog.initModality(Modality.WINDOW_MODAL);
+                    unmixDialog.showAndWait();
+                }
 
             dialog.close();
             });
