@@ -523,6 +523,12 @@ public class QuPathGUI {
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
 
 		/**
+		 * Unmix image with automatic options
+		 */
+//		@ActionAccelerator("shift+u")
+//		public final Action AUTO_UNMIX = ActionTools.createAction(new AutoUnmixingDialog(QuPathGUI.this), "Auto Unmix");
+
+		/**
 		 * Toggle the image overview display on the viewers.
 		 */
 		@ActionIcon(PathIcons.OVERVIEW)

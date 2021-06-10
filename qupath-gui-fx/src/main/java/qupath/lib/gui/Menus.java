@@ -45,10 +45,7 @@ import qupath.lib.gui.ActionTools.ActionDescription;
 import qupath.lib.gui.ActionTools.ActionIcon;
 import qupath.lib.gui.ActionTools.ActionMenu;
 import qupath.lib.gui.QuPathGUI.DefaultActions;
-import qupath.lib.gui.commands.Commands;
-import qupath.lib.gui.commands.MeasurementExportCommand;
-import qupath.lib.gui.commands.ProjectCommands;
-import qupath.lib.gui.commands.TMACommands;
+import qupath.lib.gui.commands.*;
 import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.panes.SlideLabelView;
 import qupath.lib.gui.prefs.PathPrefs;
@@ -246,6 +243,9 @@ class Menus {
 		@ActionDescription("Add new shape-based features to objects.")
 		@ActionMenu("Calculate features>Add shape features")
 		public final Action SHAPE_FEATURES = qupath.createImageDataAction(imageData -> Commands.promptToAddShapeFeatures(qupath));
+		@ActionDescription("Unmix the image with automatic values")
+		@ActionMenu("Unmix...>Auto Unmix")
+		public final Action AUTO_UNMIX = qupath.createImageDataAction(imageData -> AutoUnmixingDialog.createAutoUnmix(qupath));
 
 //		@Deprecated
 //		public final Action SHAPE_FEATURES = qupath.createPluginAction("Add shape features", ShapeFeaturesPlugin.class, null);
