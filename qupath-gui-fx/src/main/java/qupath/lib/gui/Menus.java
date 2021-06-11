@@ -246,6 +246,9 @@ class Menus {
 		@ActionDescription("Unmix the image with automatic values")
 		@ActionMenu("Unmix...>Auto Unmix")
 		public final Action AUTO_UNMIX = qupath.createImageDataAction(imageData -> AutoUnmixingDialog.createAutoUnmix(qupath));
+		@ActionDescription("Unmix the image with manually set values")
+		@ActionMenu("Unmix...>Manual Unmix")
+		public final Action MANUAL_UNMIX = qupath.createImageDataAction(imageData -> ManualUnmixingDialog.createManualUnmix(qupath));
 
 //		@Deprecated
 //		public final Action SHAPE_FEATURES = qupath.createPluginAction("Add shape features", ShapeFeaturesPlugin.class, null);
