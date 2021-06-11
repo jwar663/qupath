@@ -17,7 +17,7 @@ public class AutoUnmixingDialog {
             proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
             ImageData newImageData = AutoUnmixing.unmixAll_Crossed(qupath.getImageData(), proportionArray);
             qupath.getViewer().setImageData(newImageData);
-            DuplicateMatrixCommand.exportImage(qupath.getViewer(),  "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\unmixed-All_Crossed", qupath.getStage());
+            DuplicateMatrixCommand.exportImage(qupath.getViewer(),  "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\Unmixed-Auto", qupath.getStage());
         } catch (NullPointerException npe){
             npe.printStackTrace();
         }
