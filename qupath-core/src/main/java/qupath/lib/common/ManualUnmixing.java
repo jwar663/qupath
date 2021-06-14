@@ -167,22 +167,22 @@ public class ManualUnmixing {
             }
         }
 
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "TexasRed_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "TexasRed_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -268,22 +268,24 @@ public class ManualUnmixing {
             }
         }
 
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Cy3_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        //un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Cy3_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -353,23 +355,23 @@ public class ManualUnmixing {
                 pixelIntensity.clear();
             }
         }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal780_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+//un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal780_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -459,23 +461,23 @@ public class ManualUnmixing {
                 pixelIntensity.clear();
             }
         }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "FITC_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        //un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "FITC_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -571,23 +573,23 @@ public class ManualUnmixing {
                 pixelIntensity.clear();
             }
         }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal480_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        //un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal480_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -667,23 +669,23 @@ public class ManualUnmixing {
                 pixelIntensity.clear();
             }
         }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal690_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        //un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "Opal690_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 
@@ -768,23 +770,23 @@ public class ManualUnmixing {
                 pixelIntensity.clear();
             }
         }
-
-        try {
-            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "DAPI_A" + ".csv");
-            for(int i = 0; i < width * height; i++) {
-                for(int j = 0; j < chosenChannels.size(); j++) {
-                    writer.append((aValues[i][j] + ","));
-                    if(j == chosenChannels.size() - 1) {
-                        writer.append((Double.toString(aValues[i][j])));
-                    }
-                }
-                writer.append("\n");
-            }
-            writer.flush();
-            writer.close();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        //un-comment this to export a-values
+//        try {
+//            FileWriter writer = new FileWriter("D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\" + "DAPI_A" + ".csv");
+//            for(int i = 0; i < width * height; i++) {
+//                for(int j = 0; j < chosenChannels.size(); j++) {
+//                    writer.append((aValues[i][j] + ","));
+//                    if(j == chosenChannels.size() - 1) {
+//                        writer.append((Double.toString(aValues[i][j])));
+//                    }
+//                }
+//                writer.append("\n");
+//            }
+//            writer.flush();
+//            writer.close();
+//        } catch(IOException e) {
+//            e.printStackTrace();
+//        }
         return resultImage;
     }
 }

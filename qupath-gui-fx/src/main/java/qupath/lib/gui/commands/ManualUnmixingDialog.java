@@ -51,15 +51,19 @@ public class ManualUnmixingDialog {
 
     public static void createManualUnmix(QuPathGUI qupath) {
         File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
-        double[][] proportionArray = new double[7][43];
-        System.out.println("in manual unmixing");
-        Stage dialog;
-        try {
-            proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
-           dialog = createUnmixingDialog(qupath.getImageData(), qupath.getStage(), proportionArray, qupath);
-           dialog.showAndWait();
-        } catch (NullPointerException npe) {
-            npe.printStackTrace();
+        if(file.isFile()) {
+            double[][] proportionArray = new double[7][43];
+            System.out.println("in manual unmixing");
+            Stage dialog;
+            try {
+                proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
+                dialog = createUnmixingDialog(qupath.getImageData(), qupath.getStage(), proportionArray, qupath);
+                dialog.showAndWait();
+            } catch (NullPointerException npe) {
+                npe.printStackTrace();
+            }
+        } else {
+            Dialogs.showErrorMessage("Error", "No file was chosen");
         }
     }
 
@@ -232,7 +236,11 @@ public class ManualUnmixingDialog {
                     resetChannelLists();
                     unmixDialog.close();
                     qupath.getViewer().setImageData(newImageData);
-                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\Unmixed-Manual", qupath.getStage());
+                    File file = Dialogs.promptForDirectory(null);
+                    if(file.isFile()){
+                        String filePath = file.toString();
+                        DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + "unmixed-image", qupath.getStage());
+                    }
                 } catch (SingularMatrixException sme) {
                     Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
                     resetChannelLists();
