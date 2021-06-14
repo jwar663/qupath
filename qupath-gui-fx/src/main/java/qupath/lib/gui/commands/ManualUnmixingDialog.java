@@ -237,14 +237,16 @@ public class ManualUnmixingDialog {
                     unmixDialog.close();
                     qupath.getViewer().setImageData(newImageData);
                     File file = Dialogs.promptForDirectory(null);
-                    if(file.isFile()){
-                        String filePath = file.toString();
-                        DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + "unmixed-image", qupath.getStage());
-                    }
+                    String filePath = file.toString();
+                    System.out.println(filePath);
+                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator +"manual-unmixed-image", qupath.getStage());
                 } catch (SingularMatrixException sme) {
                     Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
                     resetChannelLists();
                     sme.printStackTrace();
+                } catch (NullPointerException npe) {
+                    Dialogs.showErrorMessage("Error", "No export directory was chosen");
+                    npe.printStackTrace();
                 }
             } else {
                 Dialogs.showErrorMessage("Error", "Please select a maximum of 7 channels for each filter");
