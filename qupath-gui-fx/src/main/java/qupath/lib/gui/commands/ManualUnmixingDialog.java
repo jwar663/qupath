@@ -8,6 +8,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import org.apache.commons.math3.linear.SingularMatrixException;
 import qupath.lib.common.ManualUnmixing;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
@@ -82,10 +83,49 @@ public class ManualUnmixingDialog {
         }
     }
 
+    protected static void setChannels(CheckBox[] checkBoxes) {
+        for(int i = 0; i < DAPIOptions; i++) {
+            if(checkBoxes[i].isSelected()) {
+                DAPIChannels.add(i);
+            }
+        }
+        for(int i = 9; i < 9 + opal780Options; i++) {
+            if(checkBoxes[i].isSelected()) {
+                opal780Channels.add(i);
+            }
+        }
+        for(int i = 11; i < 11 + opal480Options; i++) {
+            if(checkBoxes[i].isSelected()) {
+                opal480Channels.add(i);
+            }
+        }
+        for(int i = 17; i < 17 + opal690Options; i++) {
+            if(checkBoxes[i].isSelected()) {
+                opal690Channels.add(i);
+            }
+        }
+        for(int i = 20; i < 20 + FITCOptions; i++) {
+            if(checkBoxes[i].isSelected()) {
+                FITCChannels.add(i);
+            }
+        }
+        for(int i = 29; i < 29 + cy3Options; i++) {
+            if(checkBoxes[i].isSelected()) {
+                cy3Channels.add(i);
+            }
+        }
+        for(int i = 36; i < 36 + texasRedOptions; i++) {
+            if(checkBoxes[i].isSelected()) {
+                texasRedChannels.add(i);
+            }
+        }
+    }
+
     protected static Stage createUnmixingDialog(ImageData<BufferedImage> imageData, Stage duplicateDialog, double[][] proportionArray, QuPathGUI qupath) throws  NullPointerException {
 
         Stage unmixDialog = new Stage();
         unmixDialog.setTitle("Unmix Options");
+        unmixDialog.initOwner(qupath.getStage());
 
         Pane overallPane = new Pane();
 
@@ -94,6 +134,10 @@ public class ManualUnmixingDialog {
 
         overallPane.getChildren().add(overallVBox);
 
+        Label infoLabel = new Label("Please select which channels to use for unmixing");
+
+        overallVBox.getChildren().add(infoLabel);
+
         HBox dapiHBox = createHBox("DAPI");
         HBox opal780HBox = createHBox("OPAL 780");
         HBox opal480HBox = createHBox("OPAL 480");
@@ -101,6 +145,12 @@ public class ManualUnmixingDialog {
         HBox fitcHBox = createHBox("FITC");
         HBox cy3HBox = createHBox("Cy3");
         HBox texasRedHBox = createHBox("TEXAS RED");
+
+        HBox bottomHBox = new HBox();
+        bottomHBox.setAlignment(Pos.CENTER);
+        bottomHBox.setSpacing(40.0);
+
+        Label noteLabel = new Label("Note: Please only select a maximum of 7 channels per filter");
 
         overallVBox.getChildren().addAll(dapiHBox, opal780HBox, opal480HBox, opal690HBox, fitcHBox, cy3HBox, texasRedHBox);
         overallVBox.setPadding(new Insets(10));
@@ -175,16 +225,29 @@ public class ManualUnmixingDialog {
         Button submitButton = new Button("Submit");
         submitButton.setPrefSize(60.0, 25.0);
         submitButton.setOnAction(e -> {
-
+            setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
-                ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
-                qupath.getViewer().setImageData(newImageData);
-                DuplicateMatrixCommand.exportImage(qupath.getViewer(),  "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\Unmixed-Manual", qupath.getStage());
+                try {
+                    ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
+                    resetChannelLists();
+                    unmixDialog.close();
+                    qupath.getViewer().setImageData(newImageData);
+                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  "D:\\Desktop\\QuPath\\Indirect Panel\\indirect panel data\\Unmixed-Manual", qupath.getStage());
+                } catch (SingularMatrixException sme) {
+                    Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
+                    resetChannelLists();
+                    sme.printStackTrace();
+                }
             } else {
                 Dialogs.showErrorMessage("Error", "Please select a maximum of 7 channels for each filter");
                 resetChannelLists();
             }
         });
+
+        bottomHBox.getChildren().add(noteLabel);
+        bottomHBox.getChildren().add(submitButton);
+
+        overallVBox.getChildren().add(bottomHBox);
 
         Scene scene = new Scene(overallPane);
         unmixDialog.setScene(scene);

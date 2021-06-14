@@ -1,5 +1,6 @@
 package qupath.lib.common;
 
+import org.apache.commons.math3.linear.SingularMatrixException;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
@@ -27,7 +28,7 @@ public class ManualUnmixing {
      * @param opal780Channels
      * @param texasRedChannels
      */
-    public static ImageData unmixAll(ImageData imageData, double[][] proportionArray, ArrayList<Integer> DAPIChannels, ArrayList<Integer> opal780Channels, ArrayList<Integer> opal480Channels, ArrayList<Integer> opal690Channels, ArrayList<Integer> FITCChannels, ArrayList<Integer> cy3Channels, ArrayList<Integer> texasRedChannels) {
+    public static ImageData unmixAll(ImageData imageData, double[][] proportionArray, ArrayList<Integer> DAPIChannels, ArrayList<Integer> opal780Channels, ArrayList<Integer> opal480Channels, ArrayList<Integer> opal690Channels, ArrayList<Integer> FITCChannels, ArrayList<Integer> cy3Channels, ArrayList<Integer> texasRedChannels) throws SingularMatrixException {
         BufferedImage oldImage = RemoveDuplicate.convertImageDataToImage(imageData);
 
         int width = imageData.getServer().getWidth();
@@ -41,6 +42,7 @@ public class ManualUnmixing {
             notDuplicates.add(i);
             channels.add(imageData.getServer().getChannel(i));
         }
+
 
         BufferedImage resultImage = RemoveDuplicate.createNewBufferedImage(notDuplicates, oldImage);
 
