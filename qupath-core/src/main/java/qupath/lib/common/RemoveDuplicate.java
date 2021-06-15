@@ -441,4 +441,21 @@ public class RemoveDuplicate {
         setRegularChannelNames(resultImageData);
         return resultImageData;
     }
+
+    public static ImageData createSingleChannelImageData(ImageData imageData, int channel) {
+        ImageData resultImageData;
+        int height = imageData.getServer().getHeight();
+        int width = imageData.getServer().getWidth();
+        List<ImageChannel> channels = new ArrayList<>();
+        channels.add(imageData.getServer().getChannel(channel));
+        float maxValue = findMaximumPixelIntensity(convertImageDataToImage(imageData));
+        BufferedImage returnImage = singleChannelImage(imageData, channel, width, height, maxValue)[1];
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), returnImage, channels);
+        ImageData imageData1 = new ImageData<BufferedImage>(newServer);
+        imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
+        setRegularChannelColours(imageData1);
+        resultImageData = imageData1;
+        setRegularChannelNames(resultImageData);
+        return resultImageData;
+    }
 }

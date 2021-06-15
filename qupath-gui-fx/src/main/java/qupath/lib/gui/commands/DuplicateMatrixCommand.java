@@ -169,7 +169,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        File file = new File(filePath + "." + writer.getDefaultExtension());
+        File file = new File(filePath + "." + "tif");
 //        if(!file.exists()) {
             try{
                 writer.writeImage(imageServer, file.getPath());
@@ -658,6 +658,17 @@ public class DuplicateMatrixCommand implements Runnable {
         ColumnConstraints toggleColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
+        Button splitButton = new Button("Split");
+        splitButton.setOnAction(e -> {
+            ImageData originalImageData = imageData;
+            viewer.setImageData(RemoveDuplicate.createSingleChannelImageData(originalImageData, 0));
+            String filePath0 = "D:\\Desktop\\QuPath\\channel0";
+            exportImage(viewer, filePath0, dialog);
+            viewer.setImageData(RemoveDuplicate.createSingleChannelImageData(originalImageData, 1));
+            String filePath1 = "D:\\Desktop\\QuPath\\channel1";
+            exportImage(viewer, filePath1, dialog);
+        });
+
         //Threshold Part
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
         TextField thresholdTextField = createThresholdTextField();
@@ -734,6 +745,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
 
+        thresholdPane.add(splitButton, 0, 0);
         thresholdPane.add(thresholdLabel, 1, 0);
         thresholdPane.add(thresholdTextField, 2, 0);
         thresholdPane.add(thresholdPreview, 3, 0);
