@@ -1,6 +1,5 @@
 package qupath.lib.gui.commands;
 
-import org.bytedeco.javacpp.annotation.Platform;
 import qupath.lib.common.AutoUnmixing;
 import qupath.lib.gui.QuPathGUI;
 import qupath.lib.gui.dialogs.Dialogs;
