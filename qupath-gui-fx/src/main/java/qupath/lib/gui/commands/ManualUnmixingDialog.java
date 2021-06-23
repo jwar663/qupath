@@ -50,20 +50,16 @@ public class ManualUnmixingDialog {
     }
 
     public static void createManualUnmix(QuPathGUI qupath) {
-        File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
-        if(file.isFile()) {
+        try {
+            File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
             double[][] proportionArray = new double[7][43];
             System.out.println("in manual unmixing");
             Stage dialog;
-            try {
-                proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
-                dialog = createUnmixingDialog(qupath.getImageData(), qupath.getStage(), proportionArray, qupath);
-                dialog.showAndWait();
-            } catch (NullPointerException npe) {
-                npe.printStackTrace();
-            }
-        } else {
-            Dialogs.showErrorMessage("Error", "No file was chosen");
+            proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
+            dialog = createUnmixingDialog(qupath.getImageData(), qupath.getStage(), proportionArray, qupath);
+            dialog.showAndWait();
+        } catch(NullPointerException npe) {
+            Dialogs.showErrorMessage("Error", "No file was chosen, or file was invalid");
         }
     }
 
@@ -246,6 +242,7 @@ public class ManualUnmixingDialog {
                     sme.printStackTrace();
                 } catch (NullPointerException npe) {
                     Dialogs.showErrorMessage("Error", "No export directory was chosen");
+                    resetChannelLists();
                     npe.printStackTrace();
                 }
             } else {
