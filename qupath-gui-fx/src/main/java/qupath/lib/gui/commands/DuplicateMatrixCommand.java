@@ -593,20 +593,38 @@ public class DuplicateMatrixCommand implements Runnable {
     }
 
     public static double[][] readCSV(String file, double[][] array) {
+        boolean warning = false;
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             String line;
             String[] lineArray;
+            String[] fakeLineArray = new String[array[0].length];
+            for(int i = 0; i < array[0].length; i++) {
+                fakeLineArray[i] = Integer.toString(0);
+            }
             for(int i = 0; i < array.length; i++) {
-                line = br.readLine();
-                lineArray = line.split(",");
+                if(br.ready()) {
+                    line = br.readLine();
+                    lineArray = line.split(",");
+                } else {
+                    warning = true;
+                    lineArray = fakeLineArray;
+                }
                 for(int j = 0; j < array[0].length; j++) {
-                    array[i][j] = Double.parseDouble(lineArray[j]);
+                    if(j >= lineArray.length) {
+                        warning = true;
+                        array[i][j] = 0;
+                    } else {
+                        array[i][j] = Double.parseDouble(lineArray[j]);
+                    }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
             Dialogs.showErrorMessage("Invalid File", "Please select a '.csv' file that has the correct number of channels, stains, and numerical values");
+        }
+        if(warning) {
+            Dialogs.showWarningNotification("Incorrect Format", "File did not have correct number of channels/stains, please consider using a new file");
         }
         return array;
     }
