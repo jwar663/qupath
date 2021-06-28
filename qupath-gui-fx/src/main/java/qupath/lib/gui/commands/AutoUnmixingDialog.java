@@ -18,11 +18,15 @@ public class AutoUnmixingDialog {
                 File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
                 proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
                 ImageData newImageData = AutoUnmixing.unmixAll_Crossed(qupath.getImageData(), proportionArray);
-                qupath.getViewer().setImageData(newImageData);
-                File exportDirectory = Dialogs.promptForDirectory(null);
-                String filePath = exportDirectory.toString();
-                System.out.println(filePath);
-                DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator + "auto-unmixed-image", qupath.getStage());
+                if(newImageData.equals(null)) {
+                    Dialogs.showErrorMessage("Error", "Please select a valid csv file");
+                } else {
+                    qupath.getViewer().setImageData(newImageData);
+                    File exportDirectory = Dialogs.promptForDirectory(null);
+                    String filePath = exportDirectory.toString();
+                    System.out.println(filePath);
+                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator + "auto-unmixed-image", qupath.getStage());
+                }
             } catch (NullPointerException npe){
                 Dialogs.showErrorMessage("Error", "No directory/file was chosen");
                 npe.printStackTrace();

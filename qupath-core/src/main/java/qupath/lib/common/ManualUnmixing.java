@@ -32,6 +32,8 @@ public class ManualUnmixing {
         int width = imageData.getServer().getWidth();
         int height = imageData.getServer().getHeight();
 
+        boolean error = false;
+
         ArrayList<Integer> notDuplicates = new ArrayList<>();
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -58,15 +60,15 @@ public class ManualUnmixing {
 
         Thread texasRedThread = new MultiThreadManualUnmix("TexasRed", imageData, proportionArray, texasRedChannels);
 
-        DAPIThread.start();
-        opal780Thread.start();
-        opal480Thread.start();
-        opal690Thread.start();
-        FITCThread.start();
-        cy3Thread.start();
-        texasRedThread.start();
-
         try {
+            DAPIThread.start();
+            opal780Thread.start();
+            opal480Thread.start();
+            opal690Thread.start();
+            FITCThread.start();
+            cy3Thread.start();
+            texasRedThread.start();
+
             DAPIThread.join();
             opal780Thread.join();
             opal480Thread.join();
@@ -74,45 +76,53 @@ public class ManualUnmixing {
             FITCThread.join();
             cy3Thread.join();
             texasRedThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch(InterruptedException ie) {
+            error = true;
+            ie.printStackTrace();
+        } catch(SingularMatrixException sme) {
+            error = true;
+            sme.printStackTrace();
         }
 
-        BufferedImage DAPI_image = ((MultiThreadManualUnmix) DAPIThread).getImage();
+        if(error) {
+            return null;
+        } else {
+            BufferedImage DAPI_image = ((MultiThreadManualUnmix) DAPIThread).getImage();
 
-        BufferedImage Opal780_image = ((MultiThreadManualUnmix) opal780Thread).getImage();
+            BufferedImage Opal780_image = ((MultiThreadManualUnmix) opal780Thread).getImage();
 
-        BufferedImage Opal480_image = ((MultiThreadManualUnmix) opal480Thread).getImage();
+            BufferedImage Opal480_image = ((MultiThreadManualUnmix) opal480Thread).getImage();
 
-        BufferedImage Opal690_image = ((MultiThreadManualUnmix) opal690Thread).getImage();
+            BufferedImage Opal690_image = ((MultiThreadManualUnmix) opal690Thread).getImage();
 
-        BufferedImage FITC_image = ((MultiThreadManualUnmix) FITCThread).getImage();
+            BufferedImage FITC_image = ((MultiThreadManualUnmix) FITCThread).getImage();
 
-        BufferedImage Cy3_image = ((MultiThreadManualUnmix) cy3Thread).getImage();
+            BufferedImage Cy3_image = ((MultiThreadManualUnmix) cy3Thread).getImage();
 
-        BufferedImage TexasRed_image = ((MultiThreadManualUnmix) texasRedThread).getImage();
+            BufferedImage TexasRed_image = ((MultiThreadManualUnmix) texasRedThread).getImage();
 
-        for(int x = 0; x < width; x++) {
-            for(int y = 0; y < height; y++) {
-                resultImage.getRaster().setSample(x, y, 0, DAPI_image.getRaster().getSample(x, y, 0));
+            for(int x = 0; x < width; x++) {
+                for(int y = 0; y < height; y++) {
+                    resultImage.getRaster().setSample(x, y, 0, DAPI_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 1, Opal780_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 1, Opal780_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 2, Opal480_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 2, Opal480_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 3, Opal690_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 3, Opal690_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 4, FITC_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 4, FITC_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 5, Cy3_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 5, Cy3_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 6, TexasRed_image.getRaster().getSample(x, y, 0));
+                    resultImage.getRaster().setSample(x, y, 6, TexasRed_image.getRaster().getSample(x, y, 0));
+                }
             }
+
+            ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
+            ImageData resultImageData = new ImageData<BufferedImage>(newServer);
+
+            return resultImageData;
         }
-
-        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), resultImage, channels);
-        ImageData resultImageData = new ImageData<BufferedImage>(newServer);
-
-        return resultImageData;
     }
 }

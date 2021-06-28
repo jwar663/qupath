@@ -83,6 +83,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(0);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -109,21 +122,21 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
-                double result1 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
-                }
-
                 pixelIntensity.clear();
             }
         }
@@ -185,6 +198,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(3);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -210,19 +236,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)]);
-                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
 
                 pixelIntensity.clear();
@@ -273,6 +300,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(5);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -298,19 +338,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
-                double result1 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
 
                 pixelIntensity.clear();
@@ -373,6 +414,20 @@ public class MultiThreadManualUnmix extends Thread {
         if(numberOfFilters >= 7) {
             chosenFilters.add(4);
         }
+
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -398,26 +453,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(0)]);
-                double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
-                double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
-                }
-
-                if(result2 < 0) {
-                    resultImage.getRaster().setSample(x, y, 2, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 2, result2);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
                 pixelIntensity.clear();
             }
@@ -477,6 +526,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(4);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -502,33 +564,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(0) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(0)] + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(0)]);
-                double result1 = pixelIntensity.get(2) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)] + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(2)]);
-                double result2 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]  + beta[3] * proportionArray[chosenFilters.get(3)][chosenChannels.get(1)]);
-                double result3 = pixelIntensity.get(3) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(3)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(3)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(3)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
-                }
-
-                if(result2 < 0) {
-                    resultImage.getRaster().setSample(x, y, 2, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 2, result2);
-                }
-
-                if(result3 < 0) {
-                    resultImage.getRaster().setSample(x, y, 3, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 3, result3);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
 
                 pixelIntensity.clear();
@@ -580,6 +629,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(2);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -605,26 +667,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(2) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(2)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(2)]);
-                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(1)] + beta[2] * proportionArray[chosenFilters.get(2)][chosenChannels.get(1)]);
-                double result2 = pixelIntensity.get(0) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)] + beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(0)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
-                }
-
-                if(result2 < 0) {
-                    resultImage.getRaster().setSample(x, y, 2, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 2, result2);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
 
                 pixelIntensity.clear();
@@ -688,6 +744,19 @@ public class MultiThreadManualUnmix extends Thread {
             chosenFilters.add(2);
         }
 
+        ArrayList<Integer> primaryChannels = new ArrayList<>();
+        for(int i = 0; i < numberOfFilters; i++) {
+            int bestChannel = chosenChannels.get(0);
+            double bestChannelValue = 0;
+            for(int j = 0; j < chosenChannels.size(); j++) {
+                if(proportionArray[chosenFilters.get(i)][chosenChannels.get(j)] > bestChannelValue) {
+                    bestChannelValue = proportionArray[chosenFilters.get(i)][chosenChannels.get(j)];
+                    bestChannel = chosenChannels.get(j);
+                }
+            }
+            primaryChannels.add(bestChannel);
+        }
+
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
             channels.add(imageData.getServer().getChannel(i));
@@ -713,19 +782,20 @@ public class MultiThreadManualUnmix extends Thread {
                 aValues[count] = beta;
                 count++;
 
-                double result0 = pixelIntensity.get(1) - (beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)]);
-                double result1 = pixelIntensity.get(1) - (beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)]);
+                double[] result = new double[numberOfFilters];
 
-                if(result0 < 0) {
-                    resultImage.getRaster().setSample(x, y, 0, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 0, result0);
-                }
-
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
+                for(int i = 0 ; i < numberOfFilters; i++) {
+                    result[i] = pixelIntensity.get(chosenChannels.indexOf(primaryChannels.get(i)));
+                    for(int j = 0; j < numberOfFilters; j++) {
+                        if(j != i) {
+                            result[i] = result[i] - (beta[j] * proportionArray[chosenFilters.get(j)][primaryChannels.get(i)]);
+                        }
+                    }
+                    if(result[i] < 0) {
+                        resultImage.getRaster().setSample(x, y, i, 0);
+                    } else {
+                        resultImage.getRaster().setSample(x, y, 0, result[i]);
+                    }
                 }
 
                 pixelIntensity.clear();

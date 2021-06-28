@@ -59,7 +59,7 @@ public class ManualUnmixingDialog {
             dialog = createUnmixingDialog(qupath.getImageData(), qupath.getStage(), proportionArray, qupath);
             dialog.showAndWait();
         } catch(NullPointerException npe) {
-            Dialogs.showErrorMessage("Error", "No file was chosen, or file was invalid");
+            Dialogs.showErrorMessage("Error", "No file was chosen");
         }
     }
 
@@ -225,29 +225,33 @@ public class ManualUnmixingDialog {
         Button submitButton = new Button("Submit");
         submitButton.setPrefSize(60.0, 25.0);
         submitButton.setOnAction(e -> {
+            resetChannelLists();
             setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
                 try {
                     ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
-                    resetChannelLists();
-                    unmixDialog.close();
-                    qupath.getViewer().setImageData(newImageData);
-                    File file = Dialogs.promptForDirectory(null);
-                    String filePath = file.toString();
-                    System.out.println(filePath);
-                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator +"manual-unmixed-image", qupath.getStage());
+                    if(newImageData.equals(null)) {
+                        Dialogs.showErrorMessage("Error", "Please select a valid csv file");
+                    } else {
+                        unmixDialog.close();
+                        qupath.getViewer().setImageData(newImageData);
+                        try {
+                            File file = Dialogs.promptForDirectory(null);
+                            String filePath = file.toString();
+                            System.out.println(filePath);
+                            DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator +"manual-unmixed-image", qupath.getStage());
+                        } catch (NullPointerException npe) {
+                            Dialogs.showErrorMessage("Error", "No export directory was chosen");
+                            npe.printStackTrace();
+                        }
+
+                    }
                 } catch (SingularMatrixException sme) {
                     Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
-                    resetChannelLists();
                     sme.printStackTrace();
-                } catch (NullPointerException npe) {
-                    Dialogs.showErrorMessage("Error", "No export directory was chosen");
-                    resetChannelLists();
-                    npe.printStackTrace();
                 }
             } else {
                 Dialogs.showErrorMessage("Error", "Please select a maximum of 7 channels for each filter");
-                resetChannelLists();
             }
         });
 
