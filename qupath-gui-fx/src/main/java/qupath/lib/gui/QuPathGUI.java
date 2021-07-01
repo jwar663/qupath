@@ -159,7 +159,6 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import jfxtras.scene.menu.CirclePopupMenu;
-import qupath.lib.common.ConcatChannelsABI;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.common.ThreadTools;
 import qupath.lib.gui.ActionTools.ActionAccelerator;
@@ -522,6 +521,12 @@ public class QuPathGUI {
 		 */
 		@ActionAccelerator("shift+j")
 		public final Action DUPLICATE_MATRIX = ActionTools.createAction(new DuplicateMatrixCommand(QuPathGUI.this), "Duplicate Matrix");
+
+		/**
+		 * Unmix image with automatic options
+		 */
+//		@ActionAccelerator("shift+u")
+//		public final Action AUTO_UNMIX = ActionTools.createAction(new AutoUnmixingDialog(QuPathGUI.this), "Auto Unmix");
 
 		/**
 		 * Toggle the image overview display on the viewers.

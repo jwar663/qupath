@@ -6,16 +6,12 @@ import qupath.lib.images.servers.ImageChannel;
 import qupath.lib.images.servers.ImageServer;
 import qupath.lib.images.servers.ImageServerMetadata;
 import qupath.lib.images.servers.WrappedBufferedImageServer;
-import qupath.lib.images.writers.ImageWriter;
-import qupath.lib.objects.PathObject;
 import qupath.lib.regions.RegionRequest;
-import qupath.lib.roi.interfaces.ROI;
 
 import java.awt.*;
 import java.awt.image.*;
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Time;
 import java.util.*;
 import java.util.List;
 
@@ -26,7 +22,8 @@ import java.util.List;
  *
  */
 
-public class ConcatChannelsABI {
+
+public class RemoveDuplicate {
 
     //Macros
     private static final int[] ALEXA_488 = {0, 204, 0}; //GREEN
@@ -53,6 +50,25 @@ public class ConcatChannelsABI {
             secondDenominator += (secondChannel[i] * secondChannel[i]);
         }
         return nominator/(float)(Math.sqrt((firstDenominator * secondDenominator)));
+    }
+
+    /**
+     * This method scales all pixel values in an image to what the maximum pixel intensity is for every image.
+     * This allows for a more fair comparison as values seem more normalised.
+     *
+     * @param img
+     * @param band
+     * @param maxIntensity
+     */
+    public static float[] convertAllMaximumPixelIntensities(BufferedImage img, int band, float maxIntensity) {
+        int width = img.getWidth();
+        int height = img.getHeight();
+        float[] pixelIntensities = new float[width * height];
+        img.getRaster().getSamples(0, 0, width, height, band, pixelIntensities);
+        for(int i = 0; i < pixelIntensities.length; i++) {
+            pixelIntensities[i] = pixelIntensities[i]/maxIntensity;
+        }
+        return pixelIntensities;
     }
 
     /**
@@ -86,6 +102,12 @@ public class ConcatChannelsABI {
         return distinct;
     }
 
+    /**
+     * Find out the threshold value for every single different channel value. This allows this information to be calculated
+     * when opening the DuplicateMatrixCommand so it seems much quicker when given any different number of channels.
+     *
+     * @param crossCorrelationMatrix
+     */
     public static double[] getAllThresholdValues(float[][] crossCorrelationMatrix) {
         double[] result = new double[crossCorrelationMatrix.length - 1];
         double thresholdValue = 0.50;
@@ -96,6 +118,16 @@ public class ConcatChannelsABI {
         return result;
     }
 
+
+    /**
+     * Find out how what the threshold value is for a specified number of channels. You can give a channel number between 1 and 43 and
+     * this will find the threshold value corresponding to it. This makes it easier to enter the values in a different method, which is
+     * only interested in the threshold value.
+     *
+     * @param crossCorrelationMatrix
+     * @param numberOfChannelsRequired
+     * @param startThreshold
+     */
     public static double getThresholdFromChannels(float[][] crossCorrelationMatrix, int numberOfChannelsRequired, double startThreshold) {
         double result = startThreshold;
         double upperValue = 1;
@@ -105,7 +137,6 @@ public class ConcatChannelsABI {
         while(true) {
             returnedChannels = distinctChannels(crossCorrelationMatrix, result).size();
             if(returnedChannels == numberOfChannelsRequired || iteration >= 100) {
-                System.out.println(numberOfChannelsRequired + ", " + result);
                 return result;
             } else if(returnedChannels > numberOfChannelsRequired) {
                 upperValue = result;
@@ -403,6 +434,23 @@ public class ConcatChannelsABI {
         }
         BufferedImage finalImg = createNewBufferedImage(distinct, img);
         ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), finalImg, channels);
+        ImageData imageData1 = new ImageData<BufferedImage>(newServer);
+        imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
+        setRegularChannelColours(imageData1);
+        resultImageData = imageData1;
+        setRegularChannelNames(resultImageData);
+        return resultImageData;
+    }
+
+    public static ImageData createSingleChannelImageData(ImageData imageData, int channel) {
+        ImageData resultImageData;
+        int height = imageData.getServer().getHeight();
+        int width = imageData.getServer().getWidth();
+        List<ImageChannel> channels = new ArrayList<>();
+        channels.add(imageData.getServer().getChannel(channel));
+        float maxValue = findMaximumPixelIntensity(convertImageDataToImage(imageData));
+        BufferedImage returnImage = singleChannelImage(imageData, channel, width, height, maxValue)[1];
+        ImageServer newServer = new WrappedBufferedImageServer(imageData.getServer().getOriginalMetadata().getName(), returnImage, channels);
         ImageData imageData1 = new ImageData<BufferedImage>(newServer);
         imageData1.setImageType(ImageData.ImageType.FLUORESCENCE);
         setRegularChannelColours(imageData1);

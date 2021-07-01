@@ -24,7 +24,9 @@
 package qupath.lib.gui.commands;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,7 +34,6 @@ import java.util.Collection;
 import java.util.List;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.*;
 import javafx.geometry.Insets;
@@ -49,10 +50,11 @@ import javafx.stage.Modality;
 
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import qupath.lib.common.ConcatChannelsABI;
+import qupath.lib.common.AutoUnmixing;
+import qupath.lib.common.RemoveDuplicate;
 import qupath.lib.common.GeneralTools;
 import qupath.lib.gui.QuPathGUI;
+import qupath.lib.gui.dialogs.Dialogs;
 import qupath.lib.gui.viewer.QuPathViewer;
 import qupath.lib.images.ImageData;
 import qupath.lib.images.servers.*;
@@ -140,7 +142,6 @@ public class DuplicateMatrixCommand implements Runnable {
 
     String thresholdValue = START_THRESHOLD;
 
-
     /**
      * Constructor.
      * @param qupath
@@ -168,7 +169,7 @@ public class DuplicateMatrixCommand implements Runnable {
         ImageServer<BufferedImage> imageServer = viewer.getServer();
         List<ImageWriter<BufferedImage>> writers = ImageWriterTools.getCompatibleWriters(imageServer, null);
         ImageWriter<BufferedImage> writer = writers.get(0);
-        File file = new File(filePath + "." + writer.getDefaultExtension());
+        File file = new File(filePath + "." + "tif");
 //        if(!file.exists()) {
             try{
                 writer.writeImage(imageServer, file.getPath());
@@ -591,6 +592,43 @@ public class DuplicateMatrixCommand implements Runnable {
         return toggleButton;
     }
 
+    public static double[][] readCSV(String file, double[][] array) {
+        boolean warning = false;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            String[] lineArray;
+            String[] fakeLineArray = new String[array[0].length];
+            for(int i = 0; i < array[0].length; i++) {
+                fakeLineArray[i] = Integer.toString(0);
+            }
+            for(int i = 0; i < array.length; i++) {
+                if(br.ready()) {
+                    line = br.readLine();
+                    lineArray = line.split(",");
+                } else {
+                    warning = true;
+                    lineArray = fakeLineArray;
+                }
+                for(int j = 0; j < array[0].length; j++) {
+                    if(j >= lineArray.length) {
+                        warning = true;
+                        array[i][j] = 0;
+                    } else {
+                        array[i][j] = Double.parseDouble(lineArray[j]);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Dialogs.showErrorMessage("Invalid File", "Please select a '.csv' file that has the correct number of channels, stains, and numerical values");
+        }
+        if(warning) {
+            Dialogs.showWarningNotification("Incorrect Format", "File did not have correct number of channels/stains, please consider using a new file");
+        }
+        return array;
+    }
+
 
 
     protected Stage createDialog() throws IOException, NullPointerException {
@@ -618,12 +656,11 @@ public class DuplicateMatrixCommand implements Runnable {
         }
         int size = imageData.getServer().nChannels();
         duplicateMatrix = new float[size][size];
-        img = ConcatChannelsABI.convertImageDataToImage(imageData);
-        duplicateMatrix = ConcatChannelsABI.createConcatMatrix(img);
+        img = RemoveDuplicate.convertImageDataToImage(imageData);
+        duplicateMatrix = RemoveDuplicate.createConcatMatrix(img);
         thresholdValues = new double[size];
-        thresholdValues = ConcatChannelsABI.getAllThresholdValues(duplicateMatrix);
-        maxPixelIntensity = ConcatChannelsABI.findMaximumPixelIntensity(img);
-//        System.out.println("threshold value: " + ConcatChannelsABI.getThresholdFromChannels(duplicateMatrix, 7, 0.50));
+        thresholdValues = RemoveDuplicate.getAllThresholdValues(duplicateMatrix);
+        maxPixelIntensity = RemoveDuplicate.findMaximumPixelIntensity(img);
 
         //larger panes
 
@@ -631,13 +668,24 @@ public class DuplicateMatrixCommand implements Runnable {
 
 
         GridPane thresholdPane = createThresholdPane();
-        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH, THRESHOLD_LABEL_WIDTH);
+        ColumnConstraints compareColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
+        ColumnConstraints labelColumn = new ColumnConstraints(THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN, THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN, THRESHOLD_LABEL_WIDTH - THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints fieldColumn = new ColumnConstraints(THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN, THRESHOLD_FIELD_COLUMN);
         ColumnConstraints confirmColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints previewColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         ColumnConstraints toggleColumn = new ColumnConstraints(THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN, THRESHOLD_BUTTON_COLUMN);
         RowConstraints rowConstraints = new RowConstraints(BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT, BUTTON_LABEL_HEIGHT);
 
+        Button splitButton = new Button("Split");
+        splitButton.setOnAction(e -> {
+            ImageData originalImageData = imageData;
+            viewer.setImageData(RemoveDuplicate.createSingleChannelImageData(originalImageData, 0));
+            String filePath0 = "D:\\Desktop\\QuPath\\channel0";
+            exportImage(viewer, filePath0, dialog);
+            viewer.setImageData(RemoveDuplicate.createSingleChannelImageData(originalImageData, 1));
+            String filePath1 = "D:\\Desktop\\QuPath\\channel1";
+            exportImage(viewer, filePath1, dialog);
+        });
 
         //Threshold Part
         Label thresholdLabel = createThresholdLabel("Please enter a threshold value: ");
@@ -658,7 +706,7 @@ public class DuplicateMatrixCommand implements Runnable {
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
                 String filePath = getFilePath(viewer, confirmDouble);
-                viewer.setImageData(ConcatChannelsABI.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
+                viewer.setImageData(RemoveDuplicate.concatDuplicateChannels(imageData, img, duplicateMatrix, confirmDouble));
                 exportImage(viewer, filePath, dialog);
                 if(dialog.isShowing()) {
                     dialog.close();
@@ -688,7 +736,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 System.out.println("Exception: " + e);
             }
             if(confirmDouble >= -1.0 && confirmDouble <= 1.0) {
-                distinctPreviewChannels = ConcatChannelsABI.distinctChannels(duplicateMatrix, confirmDouble);
+                distinctPreviewChannels = RemoveDuplicate.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
                    previewDialog = createPreviewDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels, dialog);
@@ -715,12 +763,13 @@ public class DuplicateMatrixCommand implements Runnable {
             }
         });
 
-        thresholdPane.add(thresholdLabel, 0, 0);
-        thresholdPane.add(thresholdTextField, 1, 0);
-        thresholdPane.add(thresholdPreview, 2, 0);
-        thresholdPane.add(thresholdConfirm, 3, 0);
-        thresholdPane.add(thresholdToggle, 4, 0);
-        thresholdPane.getColumnConstraints().addAll(labelColumn, fieldColumn, previewColumn, confirmColumn, toggleColumn);
+        thresholdPane.add(splitButton, 0, 0);
+        thresholdPane.add(thresholdLabel, 1, 0);
+        thresholdPane.add(thresholdTextField, 2, 0);
+        thresholdPane.add(thresholdPreview, 3, 0);
+        thresholdPane.add(thresholdConfirm, 4, 0);
+        thresholdPane.add(thresholdToggle, 5, 0);
+        thresholdPane.getColumnConstraints().addAll(compareColumn, labelColumn, fieldColumn, previewColumn, confirmColumn, toggleColumn);
         thresholdPane.getRowConstraints().add(rowConstraints);
         overallPane.setTop(thresholdPane);
 
@@ -814,8 +863,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages1 = RemoveDuplicate.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = RemoveDuplicate.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
@@ -1002,8 +1051,8 @@ public class DuplicateMatrixCommand implements Runnable {
                     image2ScrollLabel.setText("Channel " + (tempJ + 1));
                     image1ThumbnailLabel.setText("Channel " + (tempI + 1));
                     image2ThumbnailLabel.setText("Channel " + (tempJ + 1));
-                    BufferedImage[] bufferedImages1 = ConcatChannelsABI.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
-                    BufferedImage[] bufferedImages2 = ConcatChannelsABI.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages1 = RemoveDuplicate.singleChannelImage(imageData, tempI, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
+                    BufferedImage[] bufferedImages2 = RemoveDuplicate.singleChannelImage(imageData, tempJ, (int)image1ThumbnailPane.getWidth(), (int)image1ThumbnailPane.getHeight(), maxPixelIntensity);
                     imageScrollView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[1], null));
                     imageScrollView2.setImage(SwingFXUtils.toFXImage(bufferedImages2[1], null));
                     imageThumbnailView1.setImage(SwingFXUtils.toFXImage(bufferedImages1[0], null));
