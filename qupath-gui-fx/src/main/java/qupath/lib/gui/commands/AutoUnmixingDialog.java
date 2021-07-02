@@ -12,11 +12,19 @@ public class AutoUnmixingDialog {
     public static void createAutoUnmix(QuPathGUI qupath) {
 
 
-            double[][] proportionArray = new double[7][43];
+            double[][] proportionArray = new double[9][43];
             System.out.println("in auto unmixing");
             try {
                 File file = Dialogs.promptForFile("Select indirect data csv file", null, null);
                 proportionArray = DuplicateMatrixCommand.readCSV(file.toString(), proportionArray);
+                int count = 0;
+                for(int i = 0; i < proportionArray.length; i++) {
+                    for(int j = 0; j < proportionArray[0].length; j++) {
+                        System.out.println((proportionArray[i][j]));
+                        count++;
+                        System.out.println(count);
+                    }
+                }
                 ImageData newImageData = AutoUnmixing.unmixAll_Crossed(qupath.getImageData(), proportionArray);
                 qupath.getViewer().setImageData(newImageData);
                 File exportDirectory = Dialogs.promptForDirectory(null);
