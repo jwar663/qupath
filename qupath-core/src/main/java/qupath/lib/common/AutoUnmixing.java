@@ -31,7 +31,7 @@ public class AutoUnmixing {
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
 
-        for(int i = 0; i < 7; i++) {
+        for(int i = 0; i < 9; i++) {
             notDuplicates.add(i);
             channels.add(imageData.getServer().getChannel(i));
         }
@@ -89,19 +89,33 @@ public class AutoUnmixing {
 
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
+
+                //DAPI
                 resultImage.getRaster().setSample(x, y, 0, DAPI_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 1, Opal780_image.getRaster().getSample(x, y, 0));
+                //AF
+                resultImage.getRaster().setSample(x, y, 1, DAPI_image.getRaster().getSample(x, y, 1));
 
-                resultImage.getRaster().setSample(x, y, 2, Opal480_image.getRaster().getSample(x, y, 0));
+                //CD163
+                resultImage.getRaster().setSample(x, y, 2, Opal780_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 3, Opal690_image.getRaster().getSample(x, y, 0));
+                //CD31
+                resultImage.getRaster().setSample(x, y, 3, Opal480_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 4, FITC_image.getRaster().getSample(x, y, 0));
+                //Ki67
+                resultImage.getRaster().setSample(x, y, 4, Opal690_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 5, Cy3_image.getRaster().getSample(x, y, 0));
+                //CD141
+                resultImage.getRaster().setSample(x, y, 5, FITC_image.getRaster().getSample(x, y, 0));
 
-                resultImage.getRaster().setSample(x, y, 6, TexasRed_image.getRaster().getSample(x, y, 0));
+                //CD21
+                resultImage.getRaster().setSample(x, y, 6, FITC_image.getRaster().getSample(x, y, 1));
+
+                //CD3
+                resultImage.getRaster().setSample(x, y, 7, Cy3_image.getRaster().getSample(x, y, 0));
+
+                //CD34
+                resultImage.getRaster().setSample(x, y, 8, TexasRed_image.getRaster().getSample(x, y, 0));
             }
         }
 
