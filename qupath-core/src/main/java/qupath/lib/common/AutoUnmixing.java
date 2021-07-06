@@ -46,7 +46,11 @@ public class AutoUnmixing {
 
         Thread opal690Thread = new MultiThreadAutoUnmix("Opal690", imageData, proportionArray);
 
-        Thread FITCThread = new MultiThreadAutoUnmix("FITC", imageData, proportionArray);
+//        Thread FITCThread = new MultiThreadAutoUnmix("FITC", imageData, proportionArray);
+
+        Thread FITCaThread = new MultiThreadAutoUnmix("FITCa", imageData, proportionArray);
+
+        Thread FITCbThread = new MultiThreadAutoUnmix("FITCb", imageData, proportionArray);
 
         Thread cy3Thread = new MultiThreadAutoUnmix("Cy3", imageData, proportionArray);
 
@@ -56,7 +60,9 @@ public class AutoUnmixing {
         opal780Thread.start();
         opal480Thread.start();
         opal690Thread.start();
-        FITCThread.start();
+//        FITCThread.start();
+        FITCaThread.start();
+        FITCbThread.start();
         cy3Thread.start();
         texasRedThread.start();
 
@@ -65,7 +71,9 @@ public class AutoUnmixing {
             opal780Thread.join();
             opal480Thread.join();
             opal690Thread.join();
-            FITCThread.join();
+//            FITCThread.join();
+            FITCaThread.join();
+            FITCbThread.join();
             cy3Thread.join();
             texasRedThread.join();
         } catch (InterruptedException e) {
@@ -80,7 +88,11 @@ public class AutoUnmixing {
 
         BufferedImage Opal690_image = ((MultiThreadAutoUnmix) opal690Thread).getImage();
 
-        BufferedImage FITC_image = ((MultiThreadAutoUnmix) FITCThread).getImage();
+//        BufferedImage FITC_image = ((MultiThreadAutoUnmix) FITCThread).getImage();
+
+        BufferedImage FITCa_image = ((MultiThreadAutoUnmix) FITCaThread).getImage();
+
+        BufferedImage FITCb_image = ((MultiThreadAutoUnmix) FITCbThread).getImage();
 
         BufferedImage Cy3_image = ((MultiThreadAutoUnmix) cy3Thread).getImage();
 
@@ -106,10 +118,16 @@ public class AutoUnmixing {
                 resultImage.getRaster().setSample(x, y, 4, Opal690_image.getRaster().getSample(x, y, 0));
 
                 //CD141
-                resultImage.getRaster().setSample(x, y, 5, FITC_image.getRaster().getSample(x, y, 0));
+//                resultImage.getRaster().setSample(x, y, 5, FITC_image.getRaster().getSample(x, y, 0));
+
+                //CD141
+                resultImage.getRaster().setSample(x, y, 5, FITCa_image.getRaster().getSample(x, y, 0));
 
                 //CD21
-                resultImage.getRaster().setSample(x, y, 6, FITC_image.getRaster().getSample(x, y, 1));
+//                resultImage.getRaster().setSample(x, y, 6, FITC_image.getRaster().getSample(x, y, 1));
+
+                //CD21
+                resultImage.getRaster().setSample(x, y, 6, FITCb_image.getRaster().getSample(x, y, 0));
 
                 //CD3
                 resultImage.getRaster().setSample(x, y, 7, Cy3_image.getRaster().getSample(x, y, 0));
