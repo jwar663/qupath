@@ -187,7 +187,7 @@ public class ManualUnmixingDialog {
         bottomHBox.setAlignment(Pos.CENTER);
         bottomHBox.setSpacing(40.0);
 
-        Label noteLabel = new Label("Note: Please only select a maximum of 7 channels per filter");
+        Label noteLabel = new Label("Note: Please select less channels per filter than specified number of stains above");
 
         overallVBox.getChildren().addAll(dapiHBox, opal780HBox, opal480HBox, opal690HBox, fitcHBox, cy3HBox, texasRedHBox);
         overallVBox.setPadding(new Insets(10));
@@ -259,13 +259,13 @@ public class ManualUnmixingDialog {
             texasRedHBox.getChildren().add(checkBoxes[i - 1]);
         }
 
-        Button submitButton = new Button("Submit");
+        Button submitButton = new Button("Next");
         submitButton.setPrefSize(60.0, 25.0);
         submitButton.setOnAction(e -> {
             setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
                 try {
-                    setNumberOfStainsEntered(numberOfStainsText.getText());
+                    setNumberOfStainsEntered(Integer.parseInt(numberOfStainsText.getText()));
                     ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
                     resetChannelLists();
                     unmixDialog.close();
