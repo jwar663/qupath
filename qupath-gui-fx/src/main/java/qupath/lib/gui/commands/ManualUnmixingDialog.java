@@ -1,11 +1,14 @@
 package qupath.lib.gui.commands;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.apache.commons.math3.linear.SingularMatrixException;
@@ -39,6 +42,8 @@ public class ManualUnmixingDialog {
     public static final int cy3Options = 7;
     public static final int texasRedOptions = 7;
 
+    public static int numberOfStainsEntered = 0;
+
     public static void resetChannelLists() {
         DAPIChannels.clear();
         opal780Channels.clear();
@@ -47,6 +52,14 @@ public class ManualUnmixingDialog {
         FITCChannels.clear();
         cy3Channels.clear();
         texasRedChannels.clear();
+    }
+
+    public static void setNumberOfStainsEntered(int value) {
+        numberOfStainsEntered = value;
+    }
+
+    public static int getNumberOfStainsEntered() {
+        return numberOfStainsEntered;
     }
 
     public static void createManualUnmix(QuPathGUI qupath) {
@@ -135,6 +148,30 @@ public class ManualUnmixingDialog {
         overallPane.getChildren().add(overallVBox);
 
         Label infoLabel = new Label("Please select which channels to use for unmixing");
+
+        HBox numberOfStainsHBox = new HBox();
+        numberOfStainsHBox.setPrefHeight(40.0);
+        numberOfStainsHBox.setPrefWidth(450.0);
+        numberOfStainsHBox.setSpacing(20.0);
+        Label numberOfStainsLabel = new Label("Number of stains to unmix:");
+
+        TextField numberOfStainsText = new TextField("7");
+        numberOfStainsText.setPrefSize(40,25);
+        // force the field to be numeric only
+        numberOfStainsText.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue,
+                                String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    numberOfStainsText.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        numberOfStainsHBox.getChildren().add(numberOfStainsLabel);
+        numberOfStainsHBox.getChildren().add(numberOfStainsText);
+
+        overallVBox.getChildren().add(numberOfStainsHBox);
 
         overallVBox.getChildren().add(infoLabel);
 
@@ -228,6 +265,7 @@ public class ManualUnmixingDialog {
             setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
                 try {
+                    setNumberOfStainsEntered(numberOfStainsText.getText());
                     ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
                     resetChannelLists();
                     unmixDialog.close();

@@ -64,8 +64,8 @@ public class MultiThreadAutoUnmix extends Thread {
         chosenChannels.add(23);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(2);
         chosenFilters.add(3);
-        chosenFilters.add(4);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -144,12 +144,12 @@ public class MultiThreadAutoUnmix extends Thread {
         BufferedImage oldImage = RemoveDuplicate.convertImageDataToImage(imageData);
 
         ArrayList<Integer> chosenChannels = new ArrayList<>();
-        chosenChannels.add(26);
         chosenChannels.add(28);
+        chosenChannels.add(25);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
         chosenFilters.add(6);
-        chosenFilters.add(5);
+        chosenFilters.add(4);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -229,11 +229,11 @@ public class MultiThreadAutoUnmix extends Thread {
 
         ArrayList<Integer> chosenChannels = new ArrayList<>();
         chosenChannels.add(39);
-        chosenChannels.add(42);
+//        chosenChannels.add(42);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
-        chosenFilters.add(5);
-        chosenFilters.add(0);
+        chosenFilters.add(4);
+//        chosenFilters.add(0);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -261,7 +261,7 @@ public class MultiThreadAutoUnmix extends Thread {
                 count++;
 
                 double result0 = beta[0] * proportionArray[chosenFilters.get(0)][chosenChannels.get(0)];
-                double result1 = beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)];
+//                double result1 = beta[1] * proportionArray[chosenFilters.get(1)][chosenChannels.get(1)];
 
                 if(result0 < 0) {
                     resultImage.getRaster().setSample(x, y, 0, 0);
@@ -269,11 +269,11 @@ public class MultiThreadAutoUnmix extends Thread {
                     resultImage.getRaster().setSample(x, y, 0, result0);
                 }
 
-                if(result1 < 0) {
-                    resultImage.getRaster().setSample(x, y, 1, 0);
-                } else {
-                    resultImage.getRaster().setSample(x, y, 1, result1);
-                }
+//                if(result1 < 0) {
+//                    resultImage.getRaster().setSample(x, y, 1, 0);
+//                } else {
+//                    resultImage.getRaster().setSample(x, y, 1, result1);
+//                }
 
                 pixelIntensity.clear();
             }
@@ -307,16 +307,16 @@ public class MultiThreadAutoUnmix extends Thread {
      *
      */
     public static BufferedImage unmixCy3_Crossed(ImageData imageData, double[][] proportionArray) {
-        //channels 30/33
+        //channels 30/33        30/32
         BufferedImage oldImage = RemoveDuplicate.convertImageDataToImage(imageData);
 
         ArrayList<Integer> chosenChannels = new ArrayList<>();
         chosenChannels.add(30);
-        chosenChannels.add(33);
+        chosenChannels.add(32);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
+        chosenFilters.add(3);
         chosenFilters.add(4);
-        chosenFilters.add(5);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -562,19 +562,19 @@ public class MultiThreadAutoUnmix extends Thread {
 
         ArrayList<Integer> chosenChannels = new ArrayList<>();
         chosenChannels.add(12);
-        chosenChannels.add(11);
-        chosenChannels.add(13);
-        chosenChannels.add(14);
-        chosenChannels.add(15);
         chosenChannels.add(16);
+//        chosenChannels.add(13);
+//        chosenChannels.add(14);
+//        chosenChannels.add(15);
+//        chosenChannels.add(16);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
-        chosenFilters.add(2);
+        chosenFilters.add(1);
         chosenFilters.add(7);
-        chosenFilters.add(8);
-        chosenFilters.add(4);
-        chosenFilters.add(3);
-        chosenFilters.add(5);
+//        chosenFilters.add(8);
+//        chosenFilters.add(4);
+//        chosenFilters.add(3);
+//        chosenFilters.add(5);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
         for(int i = 0; i < chosenChannels.size(); i++) {
@@ -650,7 +650,7 @@ public class MultiThreadAutoUnmix extends Thread {
         chosenChannels.add(19);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
-        chosenFilters.add(0);
+        chosenFilters.add(5);
         chosenFilters.add(6);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();
@@ -729,11 +729,11 @@ public class MultiThreadAutoUnmix extends Thread {
         BufferedImage oldImage = RemoveDuplicate.convertImageDataToImage(imageData);
 
         ArrayList<Integer> chosenChannels = new ArrayList<>();
-        chosenChannels.add(4);
-        chosenChannels.add(7);
+        chosenChannels.add(3);
+        chosenChannels.add(8);
 
         ArrayList<Integer> chosenFilters = new ArrayList<>();
-        chosenFilters.add(1);
+        chosenFilters.add(0);
         chosenFilters.add(8);
 
         ArrayList<ImageChannel> channels = new ArrayList<>();

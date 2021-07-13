@@ -102,37 +102,37 @@ public class AutoUnmixing {
         for(int x = 0; x < width; x++) {
             for(int y = 0; y < height; y++) {
 
-                //DAPI
+                //DAPI      DAPI
                 resultImage.getRaster().setSample(x, y, 0, DAPI_image.getRaster().getSample(x, y, 0));
 
-                //AF
+                //AF        AF
                 resultImage.getRaster().setSample(x, y, 1, DAPI_image.getRaster().getSample(x, y, 1));
 
-                //CD163
+                //CD163     CD163
                 resultImage.getRaster().setSample(x, y, 2, Opal780_image.getRaster().getSample(x, y, 0));
 
-                //CD31
+                //CD31      CD31
                 resultImage.getRaster().setSample(x, y, 3, Opal480_image.getRaster().getSample(x, y, 0));
 
-                //Ki67
+                //Ki67      PD_L1
                 resultImage.getRaster().setSample(x, y, 4, Opal690_image.getRaster().getSample(x, y, 0));
 
                 //CD141
 //                resultImage.getRaster().setSample(x, y, 5, FITC_image.getRaster().getSample(x, y, 0));
 
-                //CD141
+                //CD141     CD8a
                 resultImage.getRaster().setSample(x, y, 5, FITCa_image.getRaster().getSample(x, y, 0));
 
                 //CD21
 //                resultImage.getRaster().setSample(x, y, 6, FITC_image.getRaster().getSample(x, y, 1));
 
-                //CD21
+                //CD21      CD21
                 resultImage.getRaster().setSample(x, y, 6, FITCb_image.getRaster().getSample(x, y, 0));
 
-                //CD3
+                //CD3       CD3
                 resultImage.getRaster().setSample(x, y, 7, Cy3_image.getRaster().getSample(x, y, 0));
 
-                //CD34
+                //CD34      PD1
                 resultImage.getRaster().setSample(x, y, 8, TexasRed_image.getRaster().getSample(x, y, 0));
             }
         }
