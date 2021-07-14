@@ -2,14 +2,13 @@ package qupath.lib.gui.commands;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.apache.commons.math3.linear.SingularMatrixException;
 import qupath.lib.common.ManualUnmixing;
@@ -19,6 +18,7 @@ import qupath.lib.images.ImageData;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ManualUnmixingDialog {
@@ -143,7 +143,6 @@ public class ManualUnmixingDialog {
         Pane overallPane = new Pane();
 
         VBox overallVBox = new VBox();
-//        overallVBox.setPrefSize(470.0, 780.0);
 
         overallPane.getChildren().add(overallVBox);
 
@@ -264,25 +263,8 @@ public class ManualUnmixingDialog {
         submitButton.setOnAction(e -> {
             setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
-                try {
-                    setNumberOfStainsEntered(Integer.parseInt(numberOfStainsText.getText()));
-                    ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
-                    resetChannelLists();
-                    unmixDialog.close();
-                    qupath.getViewer().setImageData(newImageData);
-                    File file = Dialogs.promptForDirectory(null);
-                    String filePath = file.toString();
-                    System.out.println(filePath);
-                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator +"manual-unmixed-image", qupath.getStage());
-                } catch (SingularMatrixException sme) {
-                    Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
-                    resetChannelLists();
-                    sme.printStackTrace();
-                } catch (NullPointerException npe) {
-                    Dialogs.showErrorMessage("Error", "No export directory was chosen");
-                    resetChannelLists();
-                    npe.printStackTrace();
-                }
+                Stage stainDialog = createStainDialog(imageData, proportionArray, qupath, unmixDialog);
+                stainDialog.showAndWait();
             } else {
                 Dialogs.showErrorMessage("Error", "Please select a maximum of 7 channels for each filter");
                 resetChannelLists();
@@ -298,5 +280,69 @@ public class ManualUnmixingDialog {
         unmixDialog.setScene(scene);
 
         return unmixDialog;
+    }
+
+    private static HBox createStainHBox(int number, ObservableList<Integer> choices) {
+        HBox hBox = new HBox();
+        hBox.setSpacing(20.0);
+        Label label = new Label("Stain " + number);
+        TextField textField = new TextField("Stain " + number);
+        ChoiceBox choiceBox = new ChoiceBox();
+        choiceBox.setItems(choices);
+
+        hBox.getChildren().add(label);
+        hBox.getChildren().add(textField);
+        hBox.getChildren().add(choiceBox);
+        return hBox;
+    }
+
+    protected static Stage createStainDialog(ImageData<BufferedImage> imageData, double[][] proportionArray, QuPathGUI qupath, Stage unmixDialog) throws  NullPointerException {
+
+        Stage stainDialog = new Stage();
+        stainDialog.setTitle("Stain Options");
+        stainDialog.initOwner(qupath.getStage());
+        stainDialog.initModality(Modality.WINDOW_MODAL);
+
+        Pane overallPane = new Pane();
+
+        VBox overallVBox = new VBox();
+
+        overallPane.getChildren().add(overallVBox);
+
+        Button submitButton = new Button("Submit");
+        submitButton.setPrefSize(60.0, 25.0);
+        submitButton.setOnAction(e -> {
+                try {
+                    ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
+                    resetChannelLists();
+                    unmixDialog.close();
+                    stainDialog.close();
+                    qupath.getViewer().setImageData(newImageData);
+                    File file = Dialogs.promptForDirectory(null);
+                    String filePath = file.toString();
+                    DuplicateMatrixCommand.exportImage(qupath.getViewer(),  filePath + File.separator +"manual-unmixed-image", qupath.getStage());
+                } catch (SingularMatrixException sme) {
+                    Dialogs.showErrorMessage("Error", "One or more values create a singular matrix");
+                    resetChannelLists();
+                    sme.printStackTrace();
+                } catch (NullPointerException npe) {
+                    Dialogs.showErrorMessage("Error", "No export directory was chosen");
+                    resetChannelLists();
+                    npe.printStackTrace();
+                }
+        });
+
+        HBox bottomHBox = new HBox();
+        bottomHBox.setAlignment(Pos.CENTER);
+        bottomHBox.setSpacing(40.0);
+
+        bottomHBox.getChildren().add(submitButton);
+
+        overallVBox.getChildren().add(bottomHBox);
+
+        Scene scene = new Scene(overallPane);
+        stainDialog.setScene(scene);
+
+        return stainDialog;
     }
 }

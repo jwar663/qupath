@@ -739,7 +739,7 @@ public class DuplicateMatrixCommand implements Runnable {
                 distinctPreviewChannels = RemoveDuplicate.distinctChannels(duplicateMatrix, confirmDouble);
                 float[][] previewMatrix = createPreviewMatrix(duplicateMatrix, distinctPreviewChannels);
                 try {
-                   previewDialog = createPreviewDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels, dialog);
+                   previewDialog = createPreviewDialog(previewMatrix, confirmDouble, imageData, img, distinctPreviewChannels);
                    previewDialog.initOwner(dialog);
                    previewDialog.initModality(Modality.WINDOW_MODAL);
                    previewDialog.showAndWait();
@@ -911,7 +911,7 @@ public class DuplicateMatrixCommand implements Runnable {
         return dialog;
     }
 
-    protected Stage createPreviewDialog(float[][] duplicateMatrix, Double thresholdValue, ImageData<BufferedImage> imageData, BufferedImage img, ArrayList<Integer> distinctChannels, Stage duplicateDialog) throws IOException, NullPointerException {
+    protected Stage createPreviewDialog(float[][] duplicateMatrix, Double thresholdValue, ImageData<BufferedImage> imageData, BufferedImage img, ArrayList<Integer> distinctChannels) throws IOException, NullPointerException {
 
         Stage previewDialog = new Stage();
         previewDialog.setTitle("Preview");
