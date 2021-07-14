@@ -2,6 +2,7 @@ package qupath.lib.gui.commands;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -263,6 +264,7 @@ public class ManualUnmixingDialog {
         submitButton.setOnAction(e -> {
             setChannels(checkBoxes);
             if(checkValidCheckBoxes()) {
+                setNumberOfStainsEntered(Integer.parseInt(numberOfStainsText.getText()));
                 Stage stainDialog = createStainDialog(imageData, proportionArray, qupath, unmixDialog);
                 stainDialog.showAndWait();
             } else {
@@ -284,16 +286,49 @@ public class ManualUnmixingDialog {
 
     private static HBox createStainHBox(int number, ObservableList<Integer> choices) {
         HBox hBox = new HBox();
+        hBox.setPadding(new Insets(10));
         hBox.setSpacing(20.0);
         Label label = new Label("Stain " + number);
         TextField textField = new TextField("Stain " + number);
         ChoiceBox choiceBox = new ChoiceBox();
         choiceBox.setItems(choices);
+        if(choices.size() >= number) {
+            choiceBox.setValue(choiceBox.getItems().get(number - 1));
+        } else {
+            choiceBox.setValue(choiceBox.getItems().get(0));
+        }
+
 
         hBox.getChildren().add(label);
         hBox.getChildren().add(textField);
         hBox.getChildren().add(choiceBox);
         return hBox;
+    }
+
+    private static ArrayList<Integer> setPossibleChannelsArrayList() {
+        ArrayList<Integer> possibleChannels = new ArrayList<>();
+        for(int i = 0; i < DAPIChannels.size(); i++) {
+            possibleChannels.add(DAPIChannels.get(i) + 1);
+        }
+        for(int i = 0; i < opal780Channels.size(); i++) {
+            possibleChannels.add(opal780Channels.get(i) + 1);
+        }
+        for(int i = 0; i < opal480Channels.size(); i++) {
+            possibleChannels.add(opal480Channels.get(i) + 1);
+        }
+        for(int i = 0; i < opal690Channels.size(); i++) {
+            possibleChannels.add(opal690Channels.get(i) + 1);
+        }
+        for(int i = 0; i < FITCChannels.size(); i++) {
+            possibleChannels.add(FITCChannels.get(i) + 1);
+        }
+        for(int i = 0; i < cy3Channels.size(); i++) {
+            possibleChannels.add(cy3Channels.get(i) + 1);
+        }
+        for(int i = 0; i < texasRedChannels.size(); i++) {
+            possibleChannels.add(texasRedChannels.get(i) + 1);
+        }
+        return possibleChannels;
     }
 
     protected static Stage createStainDialog(ImageData<BufferedImage> imageData, double[][] proportionArray, QuPathGUI qupath, Stage unmixDialog) throws  NullPointerException {
@@ -307,7 +342,21 @@ public class ManualUnmixingDialog {
 
         VBox overallVBox = new VBox();
 
+        int numberOfStainsEntered = getNumberOfStainsEntered();
+
+        HBox[] hBoxes = new HBox[numberOfStainsEntered];
+
         overallPane.getChildren().add(overallVBox);
+
+        ArrayList<Integer> possibleChannels = setPossibleChannelsArrayList();
+
+
+        ObservableList<Integer> possibleChannelsObservable = FXCollections.observableArrayList(possibleChannels);
+
+        for(int i = 0; i < numberOfStainsEntered; i++) {
+            hBoxes[i] = createStainHBox(i + 1, possibleChannelsObservable);
+            overallVBox.getChildren().add(hBoxes[i]);
+        }
 
         Button submitButton = new Button("Submit");
         submitButton.setPrefSize(60.0, 25.0);
