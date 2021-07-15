@@ -6,6 +6,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -345,6 +346,8 @@ public class ManualUnmixingDialog {
         int numberOfStainsEntered = getNumberOfStainsEntered();
 
         HBox[] hBoxes = new HBox[numberOfStainsEntered];
+        String[] stainNames = new String[numberOfStainsEntered];
+        int[] stainDominants = new int[numberOfStainsEntered];
 
         overallPane.getChildren().add(overallVBox);
 
@@ -362,6 +365,16 @@ public class ManualUnmixingDialog {
         submitButton.setPrefSize(60.0, 25.0);
         submitButton.setOnAction(e -> {
                 try {
+                    for(int i = 0; i < numberOfStainsEntered; i++) {
+                        Node textFieldNode = hBoxes[i].getChildren().get(1);
+                        Node choiceBoxNode = hBoxes[i].getChildren().get(2);
+                        if(textFieldNode instanceof TextField){
+                            stainNames[i] = ((TextField) textFieldNode).getText();
+                        }
+                        if(choiceBoxNode instanceof ChoiceBox){
+                            stainDominants[i] = (int)((ChoiceBox) choiceBoxNode).getValue();
+                        }
+                    }
                     ImageData newImageData = ManualUnmixing.unmixAll(imageData, proportionArray, DAPIChannels, opal780Channels, opal480Channels, opal690Channels, FITCChannels, cy3Channels, texasRedChannels);
                     resetChannelLists();
                     unmixDialog.close();
