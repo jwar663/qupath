@@ -267,6 +267,7 @@ public class ManualUnmixingDialog {
             if(checkValidCheckBoxes()) {
                 setNumberOfStainsEntered(Integer.parseInt(numberOfStainsText.getText()));
                 Stage stainDialog = createStainDialog(imageData, proportionArray, qupath, unmixDialog);
+                unmixDialog.close();
                 stainDialog.showAndWait();
             } else {
                 Dialogs.showErrorMessage("Error", "Please select a maximum of 7 channels for each filter");
@@ -361,6 +362,13 @@ public class ManualUnmixingDialog {
             overallVBox.getChildren().add(hBoxes[i]);
         }
 
+        Button backButton = new Button("Back");
+        backButton.setPrefSize(60, 25);
+        backButton.setOnAction(e -> {
+            stainDialog.close();
+            unmixDialog.showAndWait();
+        });
+
         Button submitButton = new Button("Submit");
         submitButton.setPrefSize(60.0, 25.0);
         submitButton.setOnAction(e -> {
@@ -398,6 +406,7 @@ public class ManualUnmixingDialog {
         bottomHBox.setAlignment(Pos.CENTER);
         bottomHBox.setSpacing(40.0);
 
+        bottomHBox.getChildren().add(backButton);
         bottomHBox.getChildren().add(submitButton);
 
         overallVBox.getChildren().add(bottomHBox);
